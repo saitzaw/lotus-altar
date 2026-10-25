@@ -1,0 +1,150 @@
+<meta charset="utf-8">
+<title>Lotus Altar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&family=Noto+Serif+TC:wght@600&family=Noto+Sans+Myanmar:wght@400;600&display=swap">
+<link rel="stylesheet" href="lotus-altar.css">
+
+<div class="app">
+  <div class="stage" id="stage">
+    <canvas id="scene" aria-label="3D shrine with a white-robed Guanyin seated on a lotus, a white aura behind her, and an altar with flowers, water bowls, fruit, candles and a bronze incense censer"></canvas>
+    <div class="hud">
+      <h1>Lotus Altar</h1>
+      <div class="where" id="where">1F · Guanyin Main Hall</div>
+      <div class="hud-actions"><button type="button" class="pillbtn" id="outsideBtn">Outside view</button><button type="button" class="pillbtn" id="fpBtn" hidden>Walk (first person)</button><button type="button" class="pillbtn" id="marketBtn" hidden>Walk into the market</button><button type="button" class="pillbtn" id="leaveMarketBtn" hidden>Bird's-eye view</button><button type="button" class="pillbtn" id="timeBtn" aria-pressed="false">☀ Day</button><button type="button" class="pillbtn" id="viewBtn">Look closer</button><span class="zoom" role="group" aria-label="Zoom"><button type="button" class="pillbtn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><button type="button" class="pillbtn" id="zoomIn" aria-label="Zoom in" title="Zoom in">+</button></span><button type="button" class="pillbtn" id="upBtn" hidden></button><button type="button" class="pillbtn" id="downBtn" hidden></button><button type="button" class="pillbtn" id="hallBtn" hidden>Back to the hall</button><span class="status" id="skyInfo" hidden></span><span class="status" id="sculptStatus">Preparing Guanyin…</span><span class="status" id="scanCredit" hidden>Seated bodhisattva Guanyin, 12th c. · 3D scan by Minneapolis Institute of Art, CC0</span></div>
+      <p id="hint">Drag to walk around Guanyin's shrine. Tap the vase, water bowls, fruit plate, candle stands or censer to add an offering, the wooden fish or bell to recite, or the red cylinder to draw a fortune stick.</p>
+    </div>
+    <div class="tally" aria-live="polite" hidden>
+      <span class="chip"><i style="background:var(--lotus)"></i><span id="t_flower">0</span> flowers</span>
+      <span class="chip"><i style="background:var(--water)"></i><span id="t_water">0</span> water</span>
+      <span class="chip"><i style="background:var(--saffron)"></i><span id="t_fruit">0</span> fruit</span>
+      <span class="chip"><i style="background:var(--flame)"></i><span id="t_candle">0</span> candles</span>
+      <span class="chip"><i style="background:var(--smoke)"></i><span id="t_incense">0</span> incense</span>
+    </div>
+    <div class="chant" id="chant" hidden aria-live="polite">
+            <div class="chant-py" id="chantPy"><span>Nā</span><span>mó</span><span>&nbsp;Ē</span><span>mí</span><span>tuó</span><span>fó</span></div>
+      <div class="chant-n" id="chantN">1 of 3</div>
+    </div>
+    <nav class="floors" id="floors" aria-label="Floors of the pagoda">
+      <button type="button" class="fl-pagoda" id="toPagoda" aria-label="See the pagoda from outside" title="The pagoda from outside" data-f="pagoda"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v2.5M8 7h8M9 7l-1.5 2.5h9L15 7M7 12h10M8.5 12 7 14.5h10L15.5 12M6.5 17h11M8 17v4h8v-4"/></svg></button>
+    </nav>
+    <div class="fade" id="fade" hidden><div class="fade-card"><span class="fade-name" id="fadeName"></span></div></div>
+    <div class="topgame" id="topGame" hidden role="dialog" aria-labelledby="tgTitle">
+      <div class="tg-head"><h3 id="tgTitle"><b lang="my">လေးကောင်ဂျင်</b> Four-animal top</h3><button type="button" class="tg-x" id="tgClose" aria-label="Close the game">×</button></div>
+      <p class="hint">A market-night folk game of Northern Shan State, played here for festival tokens only. Back one animal (pays 3 to 1) or a colour (pays 1 to 1), then spin.</p>
+      <div class="tg-faces" id="tgFaces" role="radiogroup" aria-label="Your pick"></div>
+      <div class="tg-row"><span>Stake</span><div class="step"><button type="button" id="tgLess" aria-label="Lower stake"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12"/></svg></button><output id="tgStake">1</output><button type="button" id="tgMore" aria-label="Raise stake"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12M12 6v12"/></svg></button></div><span class="tg-tokens"><b id="tgTokens">20</b> tokens</span></div>
+      <button type="button" class="btn" id="tgSpin">Spin the top</button>
+      <p class="tg-msg" id="tgMsg" aria-live="polite"></p>
+    </div>
+    <div class="walkpad" id="walkPad" role="group" aria-label="Walk">
+      <button type="button" data-move="f" aria-label="Walk forward"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button>
+      <button type="button" data-move="tl" aria-label="Turn left"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" data-move="b" aria-label="Walk back"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><button type="button" data-move="tr" aria-label="Turn right"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="aim" aria-hidden="true"></div>
+    <div class="aim-tip" id="aimTip" hidden></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="toast" id="toast" hidden></div>
+  </div>
+
+  <nav class="actions" id="actions" aria-label="Actions">
+    <button type="button" data-sheet="buy"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>Buy</button>
+    <button type="button" data-sheet="offer" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c2 2.6 2.2 5.4 0 8.4-2.2-3-2-5.8 0-8.4z"/><path d="M4.5 9.5c3.2.4 5.6 2.3 7.5 5.4-3.4.1-6-1.6-7.5-5.4zM19.5 9.5c-3.2.4-5.6 2.3-7.5 5.4 3.4.1 6-1.6 7.5-5.4z"/><path d="M5 18.5c4 1.6 10 1.6 14 0"/></svg>Offer<i class="badge" id="bagBadge" hidden></i></button>
+    <button type="button" data-sheet="donate"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Donate</button>
+    <button type="button" data-sheet="recite"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="4.5" r="1.4" fill="currentColor"/><path d="M9 11.5c1-1 2-1 3 0s2 1 3 0"/></svg>Recite</button>
+    <button type="button" data-sheet="fortune"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8l-1 11H9z"/><path d="M10 9 9 3M12 9V2.5M14 9l1.2-5.5"/></svg>Fortune</button>
+  </nav>
+  <aside class="panel" id="panel" hidden role="dialog" aria-labelledby="sheetTitle">
+    <div class="sheet-head"><h2 id="sheetTitle">Buy</h2><button type="button" class="tg-x" id="sheetClose" aria-label="Close">×</button></div>
+    <div data-sheet="buy offer">
+      <ol class="journey" aria-label="How offering works">
+        <li id="j1"><b>1</b>Buy them at the temple shop</li>
+        <li id="j2"><b>2</b>Carry them in your bag</li>
+        <li id="j3"><b>3</b>Offer them in the pagoda's main hall</li>
+      </ol>
+    </div>
+
+    <div id="orderView" class="section" style="gap:22px" data-sheet="buy">
+      <div class="section">
+        <h3>Offerings for sale</h3>
+        <p class="hint" id="shopHint"></p>
+        <div class="items" id="items"></div>
+      </div>
+      <div class="summary">
+        <div class="lines" id="lines"></div>
+        <div class="total"><span>Total</span><strong id="total">$0</strong></div>
+        <button type="button" class="btn" id="reviewBtn">Buy</button>
+      </div>
+    </div>
+
+    <div data-sheet="buy"><div id="reviewView" class="section" hidden>
+      <h3>Review</h3>
+      <div class="summary">
+        <div class="lines" id="rLines"></div>
+        <div class="total"><span>Total</span><strong id="rTotal">$0</strong></div>
+        <p class="note">Demo checkout. No payment is collected and nothing is charged.</p>
+        <div class="row">
+          <button type="button" class="btn ghost" id="backBtn">Edit</button>
+          <button type="button" class="btn" id="confirmBtn">Pay and take them</button>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="section" data-sheet="offer">
+      <h3>Your offering bag</h3>
+      <div class="summary">
+        <div class="lines" id="bag"></div>
+        <div class="field"><label for="donor">Your name</label><input id="donor" autocomplete="name" placeholder="Name shown on the dedication card"></div>
+        <div class="field"><label for="dedication">Dedicate the merit to</label><input id="dedication" placeholder="e.g. my grandmother's recovery"></div>
+        <button type="button" class="btn" id="offerBtn">Offer everything at Guanyin's altar</button>
+        <p class="hint">Or tap the vase, water bowls, fruit plate, candle stands or censer in Guanyin's hall to place them one at a time.</p>
+      </div>
+    </div>
+
+    <div class="section" data-sheet="donate">
+      <h3>Donate to the temple</h3>
+      <p class="hint">A gift toward the temple's upkeep, the monks' alms round or the lamps. Demo only: no payment is collected and nothing is charged.</p>
+      <div class="seg amounts" role="radiogroup" aria-label="Amount" id="donAmounts"></div>
+      <div class="field"><label for="donPurpose">For</label><select id="donPurpose"><option>Temple upkeep</option><option>The monks' alms round</option><option>Oil for the lamps</option><option>The stupa hill</option></select></div>
+      <div class="field"><label for="donName">Your name</label><input id="donName" autocomplete="name" placeholder="Shown on the merit board"></div>
+      <button type="button" class="btn" id="donBtn">Donate</button>
+    </div>
+
+    <div class="section" data-sheet="recite">
+      <h3>Recite</h3>
+      <p class="hint">Join your palms and recite the name of Amitābha Buddha three times, keeping time with the wooden fish: Nāmó Ēmítuófó.</p>
+      <button type="button" class="btn ghost" id="chantBtn">Recite three times</button>
+      <label class="check" for="soundOn"><input type="checkbox" id="soundOn" checked> Play the wooden fish and bell</label>
+      <p class="hint" id="chantCount"></p>
+    </div>
+
+    <div class="section" data-sheet="fortune">
+      <h3>Fortune sticks</h3>
+      <p class="hint">Hold one question in your mind, then shake the bamboo cylinder until a single stick falls out. Its number gives your verse.</p>
+      <button type="button" class="btn ghost" id="shakeBtn">Shake the cylinder</button>
+      <div class="fortune" id="fortune" hidden>
+        <div class="slip" id="fHan">1</div>
+        <div class="fbody">
+          <div class="fnum" id="fNum">Stick 1 of 100</div>
+          <div class="grade" id="fGrade"></div>
+          <p class="poem" id="fPoem"></p>
+          <p class="advice" id="fAdvice"></p>
+          <p class="hint">These verses were written for this shrine. They are not the classical Guanyin temple verses.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" data-sheet="offer donate">
+      <h3>Your offerings and gifts</h3>
+      <ul class="log" id="log"></ul>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="four-face-top.js" charset="utf-8"></script>
+<script src="temple-floors.js" charset="utf-8"></script>
+<script src="lotus-altar.js" charset="utf-8"></script>
