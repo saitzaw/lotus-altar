@@ -1485,8 +1485,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     }
     // the farm track south from the arched bridge
     flat(mesh(new THREE.BoxGeometry(2.4, .04, -36 - Z1), std({ color: 0x8a7a5e, roughness: 1 }), 0, .03, (-36 + Z1) / 2, g));
-    // a raised bamboo field hut with a thatched roof, where farmers rest at midday
-    const hut = new THREE.Group(); hut.position.set(-14, 0, -62); g.add(hut);
+    // a raised bamboo field hut with a thatched roof, where farmers rest at midday, beside the farm track
+    const hut = new THREE.Group(); hut.position.set(6, 0, -62); g.add(hut);
     sRect(hut, -1.3, 1.3, -1.1, 1.1);
     const bamboo = std({ color: 0xb8a060, roughness: .8 }), thatch = std({ color: 0x9a8050, roughness: 1, flatShading: true });
     [[-1.2, -1], [1.2, -1], [-1.2, 1], [1.2, 1]].forEach(([x, z]) => mesh(new THREE.CylinderGeometry(.08, .1, 2.6, 6), bamboo, x, 1.3, z, hut));
