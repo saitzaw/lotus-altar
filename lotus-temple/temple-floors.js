@@ -17,6 +17,28 @@ window.TempleFloors = function TempleFloors(ctx) {
   };
   const clickable = (list, m, data) => { Object.assign(m.userData, data); list.push(m); return m; };
   const flat = m => { m.castShadow = false; return m; };
+  // a part repeated many times, drawn with all its copies as one InstancedMesh: part() takes a shared geometry and stands in for
+  // mesh(), returning an empty placeholder to move, turn, scale or flat() like the mesh; bakeParts(root) swaps every placeholder
+  // under root for one instanced mesh per geometry, material and shadow once root is built. Only for parts that never move and
+  // are not clicked.
+  const part = (geo, mat, x = 0, y = 0, z = 0, parent) => {
+    const o = new THREE.Object3D(); o.position.set(x, y, z); o.castShadow = true; o.userData.part = { geo, mat }; parent.add(o); return o;
+  };
+  function bakeParts(root) {
+    root.updateMatrixWorld(true);
+    const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), sets = new Map(), found = [];
+    root.traverse(o => { if (o.userData.part) found.push(o); });
+    found.forEach(o => {
+      const { geo, mat } = o.userData.part, k = geo.uuid + mat.uuid + o.castShadow;
+      let s = sets.get(k); if (!s) sets.set(k, s = { geo, mat, shadow: o.castShadow, list: [] });
+      s.list.push(o.matrixWorld.clone().premultiply(inv)); o.parent.remove(o);
+    });
+    sets.forEach(({ geo, mat, shadow, list }) => {
+      const im = new THREE.InstancedMesh(geo, mat, list.length);
+      list.forEach((m4, i) => im.setMatrixAt(i, m4));
+      im.castShadow = shadow; im.receiveShadow = true; root.add(im);
+    });
+  }
   // day and night: every outdoor sky registers how it changes with daylight d (0 = night, 1 = day)
   let daylight = 0;
   const dayParts = [];
@@ -1214,20 +1236,21 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   // 松, a pine with a leaning red-brown trunk and flat cloud-like pads of needles on its branches
   const pineBark = std({ color: 0x6a3a26, roughness: .9 }), pineMats = [0x22412a, 0x2c4f30, 0x1d3a26].map(c => std({ color: c, roughness: .9, flatShading: true }));
+  const pineTrunkGeo = new THREE.CylinderGeometry(.12, .26, 5.2, 8), pineBranchGeo = new THREE.CylinderGeometry(.03, .07, 1, 6), pinePadGeo = new THREE.IcosahedronGeometry(1, 1);
   function pine(g, x, z, s = 1, seed = 1) {
     const r = rng(seed * 17), t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); t.rotation.y = r() * TAU; g.add(t);
     sCircle(t, 0, 0, .26);
     const lean = (r() - .5) * .25, H = 5.2;
-    const trunk = mesh(new THREE.CylinderGeometry(.12, .26, H, 8), pineBark, Math.sin(lean) * H / 2, H / 2, 0, t); trunk.rotation.z = -lean;
+    const trunk = part(pineTrunkGeo, pineBark, Math.sin(lean) * H / 2, H / 2, 0, t); trunk.rotation.z = -lean;
     const tiers = 5;
     for (let i = 0; i < tiers; i++) {
       const y = 2.0 + i * (H - 2.0) / tiers, a = i * 2.3 + r(), len = (1 - i / tiers) * 1.6 + .4, cx = Math.sin(lean) * y;
-      const br = mesh(new THREE.CylinderGeometry(.03, .07, len, 6), pineBark, cx + Math.cos(a) * len / 2, y, Math.sin(a) * len / 2, t); br.rotation.set(0, -a, Math.PI / 2 - .25); br.rotation.order = "YZX";
-      const pad = mesh(new THREE.IcosahedronGeometry(1, 1), pineMats[i % 3], cx + Math.cos(a) * len, y + .15, Math.sin(a) * len, t);
+      const br = part(pineBranchGeo, pineBark, cx + Math.cos(a) * len / 2, y, Math.sin(a) * len / 2, t); br.rotation.set(0, -a, Math.PI / 2 - .25); br.rotation.order = "YZX"; br.scale.y = len;
+      const pad = part(pinePadGeo, pineMats[i % 3], cx + Math.cos(a) * len, y + .15, Math.sin(a) * len, t);
       pad.scale.set(.9 + len * .35, .32, .8 + len * .3);
-      if (i % 2) { const p2 = mesh(new THREE.IcosahedronGeometry(1, 1), pineMats[(i + 1) % 3], cx - Math.cos(a) * len * .6, y + .4, -Math.sin(a) * len * .6, t); p2.scale.set(.8, .28, .7); }
+      if (i % 2) { const p2 = part(pinePadGeo, pineMats[(i + 1) % 3], cx - Math.cos(a) * len * .6, y + .4, -Math.sin(a) * len * .6, t); p2.scale.set(.8, .28, .7); }
     }
-    const crown = mesh(new THREE.IcosahedronGeometry(1, 1), pineMats[0], Math.sin(lean) * H, H + .1, 0, t); crown.scale.set(1.1, .38, 1.0);
+    const crown = part(pinePadGeo, pineMats[0], Math.sin(lean) * H, H + .1, 0, t); crown.scale.set(1.1, .38, 1.0);
     return t;
   }
   // a temple wall run between two points, red with a painted band and a tiled coping
@@ -1322,6 +1345,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   const shutter = std({ map: shutterTex, roughness: .5, metalness: .5 }), tank = std({ color: 0x2a6ac0, roughness: .5 });
   onDaylight(d => { townGlass.emissiveIntensity = .9 * (1 - d) + .02; });
   // one house in local coordinates: front faces +z, width W along x, depth D, `floors` storeys, a shop on the ground floor or not
+  const balusterGeo = new THREE.BoxGeometry(.03, .9, .03), plantGeo = new THREE.IcosahedronGeometry(.22, 0);
   function shanHouse(g, x, z, ry, o) {
     const h = new THREE.Group(); h.position.set(x, 0, z); h.rotation.y = ry; g.add(h);
     sRect(h, -o.W / 2, o.W / 2, -o.D / 2, o.D / 2);
@@ -1354,9 +1378,9 @@ window.TempleFloors = function TempleFloors(ctx) {
         win(W / 4, y0 + 1.6, 1.5, 1.3, D / 2);
         mesh(new THREE.BoxGeometry(W - .4, .16, 1.3), concrete, 0, y0 + .08, D / 2 + .65, h);
         mesh(new THREE.BoxGeometry(W - .4, .05, .06), steel, 0, y0 + 1.05, D / 2 + 1.27, h);
-        for (let i = 0; i <= 16; i++) mesh(new THREE.BoxGeometry(.03, .9, .03), steel, -W / 2 + .25 + i * (W - .5) / 16, y0 + .6, D / 2 + 1.27, h);
+        for (let i = 0; i <= 16; i++) part(balusterGeo, steel, -W / 2 + .25 + i * (W - .5) / 16, y0 + .6, D / 2 + 1.27, h);
         if (r() < .7) { const ac = mesh(new THREE.BoxGeometry(.8, .55, .3), townFrame, W / 2 - .7, y0 + 2.3, D / 2 + .16, h); ac.castShadow = false; }
-        if (r() < .5) for (let k = 0; k < 3; k++) mesh(new THREE.IcosahedronGeometry(.22, 0), leafMats[k % 4], -W / 2 + .6 + k * .5, y0 + .45, D / 2 + 1.0, h);   // potted plants
+        if (r() < .5) for (let k = 0; k < 3; k++) part(plantGeo, leafMats[k % 4], -W / 2 + .6 + k * .5, y0 + .45, D / 2 + 1.0, h);   // potted plants
       }
     }
     const top = .25 + floors * FH;
@@ -1470,6 +1494,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     const KINDS = [rice("#c8a23a", "#a8842a"), rice("#d4b048", "#b4902e"), rice("#6a9a3a", "#4e7e2a"), std({ color: 0x4a6a6e, roughness: .15, metalness: .3 })];
     const bund = std({ color: 0x7a6448, roughness: 1 });
     const PW = 11, PD = 8, X0 = -104, X1 = 64, Z0 = -42, Z1 = -94;
+    const plotGeo = new THREE.PlaneGeometry(PW, PD), riceGeo = new THREE.BoxGeometry(PW - .3, .35, PD - .3);
+    const bundGeoX = new THREE.BoxGeometry(PW + .6, .3, .5), bundGeoZ = new THREE.BoxGeometry(.5, .3, PD);
     for (let x = X0; x + PW <= X1; x += PW + .6) for (let z = Z0; z - PD >= Z1; z -= PD + .6) {
       const cx = x + PW / 2, cz = z - PD / 2;
       if (Math.abs(cx - TOWN.roadX) < PW / 2 + 4.5) continue;            // the road
@@ -1477,11 +1503,11 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (cz + PD / 2 > riverZ(cx) - 5) continue;                       // stay off the stream bank
       if (cx + PW / 2 > -40 && cx - PW / 2 < -12 && cz + PD / 2 > -67 && cz - PD / 2 < -42) continue;   // the fuel station
       const k = r() < .55 ? (r() < .5 ? 0 : 1) : r() < .7 ? 2 : 3;
-      flat(mesh(new THREE.PlaneGeometry(PW, PD), KINDS[k], cx, .05, cz, g)).rotation.x = -Math.PI / 2;
+      flat(part(plotGeo, KINDS[k], cx, .05, cz, g)).rotation.x = -Math.PI / 2;
       if (k < 3) {   // standing rice: a low layer of stalks above the mud
-        const top = flat(mesh(new THREE.BoxGeometry(PW - .3, .35, PD - .3), KINDS[k], cx, .22, cz, g)); top.castShadow = false;
+        flat(part(riceGeo, KINDS[k], cx, .22, cz, g));
       }
-      [[0, PD / 2, PW + .6, .5], [0, -PD / 2, PW + .6, .5], [PW / 2, 0, .5, PD], [-PW / 2, 0, .5, PD]].forEach(([dx, dz, w, d]) => flat(mesh(new THREE.BoxGeometry(w, .3, d), bund, cx + dx, .15, cz + dz, g)));
+      [[0, PD / 2, bundGeoX], [0, -PD / 2, bundGeoX], [PW / 2, 0, bundGeoZ], [-PW / 2, 0, bundGeoZ]].forEach(([dx, dz, geo]) => flat(part(geo, bund, cx + dx, .15, cz + dz, g)));
     }
     // the farm track south from the arched bridge
     flat(mesh(new THREE.BoxGeometry(2.4, .04, -36 - Z1), std({ color: 0x8a7a5e, roughness: 1 }), 0, .03, (-36 + Z1) / 2, g));
@@ -2252,6 +2278,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   // a wooden Shan house in local coordinates: front faces +z, width W, depth D, a verandah across the front; one storey raised
   // on teak posts with a stair up to the verandah, or two: a wooden storey on a whitewashed brick ground floor
+  const winBackGeo = new THREE.BoxGeometry(.9, 1.1, .06), winLintelGeo = new THREE.BoxGeometry(1.06, .08, .12), winShutterGeo = new THREE.BoxGeometry(.45, 1.1, .05);
   function shanWoodHouse(g, x, z, ry, o) {
     const h = new THREE.Group(); h.position.set(x, 0, z); h.rotation.y = ry; g.add(h);
     const { W, D, floors, roof, seed } = o, r = rng(seed), FH = 2.8, VD = 1.6, shut = SHUTTERS[seed % SHUTTERS.length];
@@ -2259,8 +2286,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     // a window: a dark opening between two painted plank shutters folded open, on a wall facing local +z of its frame
     const win = (px, py, pz, rot) => {
       const w = new THREE.Group(); w.position.set(px, py, pz); w.rotation.y = rot; h.add(w);
-      mesh(new THREE.BoxGeometry(.9, 1.1, .06), houseInside, 0, 0, .02, w);
-      [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(1.06, .08, .12), teakDark, 0, sd * .58, .04, w); mesh(new THREE.BoxGeometry(.45, 1.1, .05), shut, sd * .72, 0, .06, w); });
+      part(winBackGeo, houseInside, 0, 0, .02, w);
+      [-1, 1].forEach(sd => { part(winLintelGeo, teakDark, 0, sd * .58, .04, w); part(winShutterGeo, shut, sd * .72, 0, .06, w); });
     };
     let y0 = 1.1;   // the wooden storey's floor
     const left = seed % 2 ? 1 : -1;   // which side the door (and the stair) is on
@@ -3854,6 +3881,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     dayLight(warm, [0xffb070, 1.6], [0xffb070, .4]);
     const door = new THREE.PointLight(0xffa050, 2, 14, 2); door.position.set(0, DECK + 2.5, 8); g.add(door);
     updaters.pagoda.push((dt, t) => storeys.forEach(s => s.winMat.emissiveIntensity = s.base * (hovered && hovered.userData.floor === s.f ? 2.2 : 1) + Math.sin(t * 1.3 + s.f) * .05));
+    bakeParts(g);
     indexCull(g);
     return g;
   }
