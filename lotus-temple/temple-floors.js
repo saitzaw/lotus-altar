@@ -1913,7 +1913,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     [[11, .6], [9, 1.2], [7.4, 1.8]].forEach(([w, yy]) => mesh(new THREE.BoxGeometry(w, .6, w), whiteWash, 0, yy - .3, 0, MS));
     for (let i = 0; i < 6; i++) { const y1 = (i + 1) * .3; mesh(new THREE.BoxGeometry(2.4, y1, .52), whiteWash, 0, y1 / 2, -6.6 + i * .5, MS); }
     mesh(new THREE.BoxGeometry(5.6, 3.2, 5.6), whiteWash, 0, 3.4, 0, MS);
-    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.9, 1.4, 4), gold, Math.sin(a) * 2.85, 4.6, Math.cos(a) * 2.85, MS); pd.rotation.y = a + Math.PI / 4; pd.scale.z = .15; });
+    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.8, .9, 4), gold, Math.sin(a) * 2.85, 4.55, Math.cos(a) * 2.85, MS); pd.rotation.y = a; pd.scale.z = .15; });
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.ConeGeometry(.3, 2.0, 8), gold, a * 2.55, 6.0, b * 2.55, MS));
     MS.add(new THREE.Mesh(lath([[0, 5], [2.4, 5], [2.3, 5.8], [1.8, 7.0], [1.4, 7.6], [0, 7.6]], 32), whiteWash));
     const rings = []; for (let i = 0; i <= 16; i++) rings.push([1.3 - i * .055 + (i % 2 ? .12 : 0), 7.6 + i * .2]);
