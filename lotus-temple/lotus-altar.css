@@ -222,7 +222,7 @@ button,input{font:inherit;color:inherit}
 /* the action column on the right edge, sheets opening beside it */
 .actions{left:auto;right:max(16px,env(safe-area-inset-right,0px));top:50%;bottom:auto;transform:translateY(-50%);flex-direction:column}
 .actions button{min-width:64px;padding:8px 6px}
-.actions button[hidden]{display:none}
+.actions[hidden],.actions button[hidden]{display:none}
 .panel{right:calc(max(16px,env(safe-area-inset-right,0px)) + 92px);top:16px;bottom:16px;max-height:none;height:max-content;margin:auto 0}
 .walkpad{bottom:16px}
 .tally{bottom:16px}

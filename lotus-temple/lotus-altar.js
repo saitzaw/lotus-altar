@@ -549,12 +549,21 @@ for (let i = 0; i < 3; i++) {
   const leg = mesh(new THREE.CylinderGeometry(.018, .012, .08, 10), M.bronze, Math.sin(a) * .1, .04, Math.cos(a) * .1, censer);
   leg.rotation.set(Math.cos(a) * .2, 0, -Math.sin(a) * .2);
 }
-const cBowl = lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.155, .128], [0, .128]], M.bronze, 40);
+// the bowl is open: its inner wall drops from the rim to a bed of ash sunk below it
+const cBowl = lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.bronze, 40);
 cBowl.position.y = .06; cBowl.castShadow = true; censer.add(cBowl); clickable(cBowl, "incense");
 mesh(new THREE.TorusGeometry(.168, .006, 6, 48), M.trim, 0, .16, 0, censer).rotation.x = Math.PI / 2;
-const ash = mesh(new THREE.CircleGeometry(.155, 32), M.ash, 0, .186, 0, censer); ash.rotation.x = -Math.PI / 2;
+// a gently mounded bed of ash with the stubs of burnt sticks standing in it
+const ashGeo = new THREE.CircleGeometry(.152, 32), ap = ashGeo.attributes.position;
+for (let i = 0; i < ap.count; i++) { const d = Math.hypot(ap.getX(i), ap.getY(i)) / .152; ap.setZ(i, (1 - d * d) * .014); }
+ashGeo.computeVertexNormals();
+const ash = mesh(ashGeo, M.ash, 0, .17, 0, censer); ash.rotation.x = -Math.PI / 2; clickable(ash, "incense");
+[[.06, .03], [-.05, .06], [.02, -.08], [-.09, -.03], [.1, -.05], [-.02, .1]].forEach(([x, z], i) => {
+  const st = mesh(new THREE.CylinderGeometry(.0025, .0025, .03 + i % 3 * .012, 5), M.stickRed, x, .18, z, censer);
+  st.rotation.set((i % 2 - .5) * .3, 0, (i % 3 - 1) * .2);
+});
 [-1, 1].forEach(s => mesh(new THREE.TorusGeometry(.035, .009, 6, 16, Math.PI), M.bronze, s * .14, .205, 0, censer));
-const ASH_Y = INCENSE.y + .186 * CS;
+const ASH_Y = INCENSE.y + .18 * CS;
 const INCENSE_SETS = [V(0, 0, .02), V(-.075, 0, .01), V(.075, 0, .01), V(-.04, 0, -.07), V(.04, 0, -.07)].map(v => v.multiplyScalar(CS));
 const incenseObjs = new Array(INCENSE_SETS.length).fill(null);
 const embers = [];
@@ -962,6 +971,7 @@ function applyMode(mode) {
   tip.hidden = true;
   if (arriveInStairs) { arriveInStairs = false; setView("stairs", true); }
   if ((wasWalking || typeof mode === "number") && !inStairs) stayFirstPerson(prev);   // walking in or out keeps you on foot; the pagoda's floors are always seen on foot
+  $("actions").hidden = mode !== 1;   // Buy, Donate, Recite and Fortune belong to Guanyin's main hall
   if (mode === "shop") openSheet("buy");
   if (typeof render === "function") render();
 }
