@@ -45,7 +45,7 @@ const CONFIG = {
   // the Halloween festival: on these nights ([month, day] on the temple's clock) the houses and village huts put their lights out
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
-  halloween: { from: [10, 24], to: [11, 1], outHour: 21, untilHour: 5 },
+  halloween: { from: [10, 27], to: [11, 1], outHour: 21, untilHour: 5 },
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
   sculpt: { worker: "statue-sculpt.js", bodyCell: .012, headCell: .0058,  // smaller cells: smoother, slower to build and to draw
             cells: { lion: [.022, .014], lionL: [.022, .014] } },        // [body, head] per figure: the stone lions outside need far less detail than a face
