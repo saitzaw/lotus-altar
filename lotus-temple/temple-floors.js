@@ -3965,16 +3965,20 @@ window.TempleFloors = function TempleFloors(ctx) {
     for (let i = 0; i < 7; i++) { const t = mesh(new THREE.TorusGeometry(.4 - i * .04, .06, 8, 32), M.gold, 0, .75 + i * .32, 0, top); t.rotation.x = Math.PI / 2; }
     mesh(new THREE.ConeGeometry(.16, 1.4, 12), M.gold, 0, 3.6, 0, top);
     const hemi = new THREE.HemisphereLight(0x6f78c8, 0x2a1408, .55); g.add(hemi);
-    dayLight(hemi, [0x6f78c8, .55, 0x2a1408], [0xc8dcff, .8, 0x5a4a34]);
     const moonLight = new THREE.DirectionalLight(0xb8c4ff, .7); moonLight.position.set(-30, 50, 40); g.add(moonLight);
     const sunLight = new THREE.DirectionalLight(0xfff0d8, 0); sunLight.position.set(35, 60, -30); g.add(sunLight);
     const lights = () => {
       const d = daylight, m = celestial.moonNight;
+      // on Halloween night, once the houses are dark, the town gives off no glow: the sky's fill light all but goes,
+      // the moonlight thins and the roads fall dark between the street lamps
+      const dark = (1 - d) * FEST.out;
+      hemi.color.copy(lerpC(0x6f78c8, 0xc8dcff, d)); hemi.groundColor.copy(lerpC(0x2a1408, 0x5a4a34, d));
+      hemi.intensity = (.55 + .25 * d) * (1 - .8 * dark);
       sunLight.position.copy(celestial.sun).multiplyScalar(80);
       const moonUp = m && m.up;
       if (moonUp) moonLight.position.copy(m.dir).multiplyScalar(80);
       // moonlight scales with how much of the moon is lit and whether it is up; starlight keeps a little
-      moonLight.intensity = (1 - d) * (moonUp ? .25 + .6 * celestial.fraction : .15);
+      moonLight.intensity = (1 - d) * (moonUp ? .25 + .6 * celestial.fraction : .15) * (1 - .55 * dark);
       sunLight.intensity = 1.5 * d * clamp(celestial.sun.y * 2.5, .35, 1);
     };
     onDaylight(lights); onCelestial(lights);

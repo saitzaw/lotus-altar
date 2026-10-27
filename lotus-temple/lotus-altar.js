@@ -1099,8 +1099,10 @@ const torch = new THREE.SpotLight(0xfff1d6, 0, 34, .42, .55, 1.4);
 world.add(torch, torch.target);
 const _look = new THREE.Vector3();
 function festStep(dt) {
+  const was = festOut;
   festOut = clamp(festOut + (fest.night ? dt : -dt) / 2.5, 0, 1);   // the house lights go out over a couple of seconds
   temple.setHalloween({ on: fest.night, out: festOut });
+  if (festOut !== was) skyColors();
   const outside = current === "pagoda", dark = fest.night && daylight < .5;
   const want = dark && outside && inMarket;
   torch.intensity += ((want ? 2.4 : 0) - torch.intensity) * Math.min(1, dt * 6);
@@ -1125,11 +1127,16 @@ function festNote() {
 // day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit
 let daylight = 0;
 try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; } catch (e) {}
+// the sky and haze outside; on Halloween night, with the houses dark, they deepen to a near-black blue with no town glow in them
+function skyColors() {
+  const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
+  const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
+  world.background.copy(out ? mix(0x16122a, 0x86b8e6).lerp(new THREE.Color(0x07060f), dark) : new THREE.Color(0x120a07));
+  world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0).lerp(new THREE.Color(0x09080f), dark) : new THREE.Color(0x120a07));
+}
 function applySky() {
   const out = current === "pagoda" || inCorridor, d = daylight;
-  const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
-  world.background.copy(out ? mix(0x16122a, 0x86b8e6) : new THREE.Color(0x120a07));
-  world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0) : new THREE.Color(0x120a07));
+  skyColors();
   renderer.toneMappingExposure = CONFIG.light.exposure * (out ? 1 + .05 * d : 1);
   temple.setDaylight(d);
   const btn = $("timeBtn");
