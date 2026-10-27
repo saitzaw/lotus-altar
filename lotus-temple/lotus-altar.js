@@ -42,6 +42,10 @@ const CONFIG = {
   lanterns: { color: 0xb0180c, glow: 0xd0200a, glowStrength: .55 },
   // where the temple stands, for the real sun and moon; times are shown in Indochina Time (ICT, UTC+7)
   sky: { lat: 13.75, lon: 100.5, tz: "Asia/Bangkok", place: "Bangkok" },
+  // the Halloween festival: on these nights ([month, day] on the temple's clock) the houses and village huts put their lights out
+  // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
+  // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
+  halloween: { from: [10, 24], to: [11, 1], outHour: 21, untilHour: 5 },
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
   sculpt: { worker: "statue-sculpt.js", bodyCell: .012, headCell: .0058,  // smaller cells: smoother, slower to build and to draw
             cells: { lion: [.022, .014], lionL: [.022, .014] } },        // [body, head] per figure: the stone lions outside need far less detail than a face
@@ -1077,6 +1081,47 @@ function updateCelestial() {
   skyNote = { night: `${nightT === now ? "Now" : "Tonight " + fmt(nightT)} in ${CONFIG.sky.place} · ${moonText(mN)}`,
               day: `${dayT === now ? "Now" : "Today " + fmt(dayT)} in ${CONFIG.sky.place} · sun ${height(sd.alt)}${compass(sd.az)} · ${mD.up ? moonText(mD).replace(" moon,", " moon also up,") : "no moon in the sky"}` };
 }
+/* ---------- Halloween night: the houses go dark at 9 pm ICT, a friendly ghost walks the roads, walkers carry a torch ---------- */
+const FEST_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("halloween"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+function festNow() {
+  if (FEST_FORCE !== null) return { season: FEST_FORCE, night: FEST_FORCE };
+  const { tz } = CONFIG.sky, { from, to, outHour, untilHour } = CONFIG.halloween;
+  const clock = t => Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: tz, month: "numeric", day: "numeric", hour: "numeric", hourCycle: "h23" })
+    .formatToParts(t).filter(p => p.type !== "literal").map(p => [p.type, +p.value]));
+  const n = Date.now(), hour = clock(n).hour, eve = clock(n - untilHour * 36e5);   // a night belongs to the evening it began on
+  const md = eve.month * 100 + eve.day, season = md >= from[0] * 100 + from[1] && md <= to[0] * 100 + to[1];
+  return { season, night: season && (hour >= outHour || hour < untilHour) };
+}
+let fest = festNow(), festOut = fest.night ? 1 : 0, festTold = { torch: false, ghost: false };
+setInterval(() => { const was = fest.night; fest = festNow(); if (fest.night !== was) applySky(); }, 3e4);
+// the walker's torch: always in the scene (adding a light later would rebuild every material), dark until it is needed
+const torch = new THREE.SpotLight(0xfff1d6, 0, 34, .42, .55, 1.4);
+world.add(torch, torch.target);
+const _look = new THREE.Vector3();
+function festStep(dt) {
+  festOut = clamp(festOut + (fest.night ? dt : -dt) / 2.5, 0, 1);   // the house lights go out over a couple of seconds
+  temple.setHalloween({ on: fest.night, out: festOut });
+  const outside = current === "pagoda", dark = fest.night && daylight < .5;
+  const want = dark && outside && inMarket;
+  torch.intensity += ((want ? 2.4 : 0) - torch.intensity) * Math.min(1, dt * 6);
+  if (torch.intensity > .01) {
+    camera.getWorldDirection(_look);
+    torch.position.copy(camera.position).addScaledVector(_look, .2).add(V(0, -.35, 0));
+    torch.target.position.copy(camera.position).addScaledVector(_look, 10);
+  }
+  if (want && !festTold.torch) { festTold.torch = true; toast("Happy Halloween! The houses are dark tonight, so you switch on your torch."); }
+  const gh = temple.ghost;
+  if (want && gh && !festTold.ghost && Math.hypot(gh.x - camera.position.x, gh.z - camera.position.z) < 9) {
+    festTold.ghost = true; toast("👻 Just a friendly little ghost out for Halloween. It waves hello and drifts on along the road.");
+  }
+}
+function festNote() {
+  const el = $("festInfo"); if (!el) return;
+  el.hidden = current !== "pagoda" || !fest.season;
+  el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
+    : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
+}
+
 // day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit
 let daylight = 0;
 try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; } catch (e) {}
@@ -1090,6 +1135,7 @@ function applySky() {
   const btn = $("timeBtn");
   const note = $("skyInfo");
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }
+  festNote();
   if (btn) { btn.textContent = daylight > .5 ? "☾ Night" : "☀ Day"; btn.title = daylight > .5 ? "Switch to night" : "Switch to day"; btn.setAttribute("aria-pressed", String(daylight > .5)); }
 }
 updateCelestial();
@@ -1472,7 +1518,8 @@ function frame() {
   keepInside();
   walkStep(dt);
   aimPrompt(dt);
-  temple.update(dt, now, current, motion);
+  festStep(dt);
+  temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);
   renderer.render(world, camera);
   requestAnimationFrame(frame);

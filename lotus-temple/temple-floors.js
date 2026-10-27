@@ -43,6 +43,10 @@ window.TempleFloors = function TempleFloors(ctx) {
   let daylight = 0;
   const dayParts = [];
   const onDaylight = fn => { dayParts.push(fn); fn(daylight); };
+  // Halloween night (set from the main script): `out` 0–1 as the houses and village huts put their lights out at 9 pm,
+  // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
+  const FEST = { on: false, out: 0, eye: null };
+  const poleLights = [];   // { x, z, set(lit) } in the grounds' frame
   const lerpC = (a, b, d) => new THREE.Color(a).lerp(new THREE.Color(b), d);
   // the real sun and moon, set from the main script: directions for the day view and the night view (temple frame:
   // +z south, +x east, +y up), whether each is above the horizon, and the moon's phase texture and tilt
@@ -127,6 +131,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   const lanternGeo = new THREE.SphereGeometry(.26, 24, 16), capGeo = new THREE.CylinderGeometry(.12, .12, .06, 16);
   const ribGeo = new THREE.TorusGeometry(.262, .006, 6, 40), tasselGeo = new THREE.CylinderGeometry(.012, .03, .22, 8);
   const lanternMat = std({ color: 0xb0180c, emissive: 0xd0200a, emissiveIntensity: .55, roughness: .55 });
+  const lanternOff = std({ color: 0x5a0c06, roughness: .55 });   // a street lantern blinking out as the ghost passes
   function lantern(parent, x, y, z, ceil = 6.9, scale = 1) {
     const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(scale); parent.add(g);
     flat(mesh(new THREE.CylinderGeometry(.005, .005, (ceil - y) / scale, 4), M.feature, 0, (ceil - y) / scale / 2, 0, g));
@@ -1310,6 +1315,7 @@ window.TempleFloors = function TempleFloors(ctx) {
           const arm = mesh(new THREE.BoxGeometry(.06, .06, .7), M.lacquer, x, 3.35, z + (side ? -.3 : .3), g); arm.rotation.y = ry;
           const l = flat(mesh(lanternGeo, lanternMat, x, 3.05, z + (side ? -.6 : .6), g)); l.scale.set(.75, .9, .75);
           const gl = glowSprite(0xff7a3a, 2.2, .6); gl.position.copy(l.position); g.add(gl);
+          poleLights.push({ x, z: l.position.z, set: lit => { l.material = lit ? lanternMat : lanternOff; gl.material.opacity = lit ? .6 : 0; } });
         } else (((x / 10) | 0) % 4 === 1 || ((x / 10) | 0) % 4 === -3 ? tree : pine)(g, x, z + (side ? .3 : -.3), .85, seed++);
       });
     }
@@ -1343,7 +1349,8 @@ window.TempleFloors = function TempleFloors(ctx) {
   const shutterTex = canvasTex(64, (c, sz) => { c.fillStyle = "#9aa0a4"; c.fillRect(0, 0, sz, sz); c.fillStyle = "#6e7478"; for (let y = 0; y < sz; y += 6) c.fillRect(0, y, sz, 2); });
   shutterTex.wrapS = shutterTex.wrapT = THREE.RepeatWrapping;
   const shutter = std({ map: shutterTex, roughness: .5, metalness: .5 }), tank = std({ color: 0x2a6ac0, roughness: .5 });
-  onDaylight(d => { townGlass.emissiveIntensity = .9 * (1 - d) + .02; });
+  const houseGlass = townGlass.clone();   // the houses' windows, which go dark on Halloween night; public buildings keep townGlass
+  onDaylight(d => { townGlass.emissiveIntensity = .9 * (1 - d) + .02; houseGlass.emissiveIntensity = .9 * (1 - d) * (1 - FEST.out) + .02; });
   // one house in local coordinates: front faces +z, width W along x, depth D, `floors` storeys, a shop on the ground floor or not
   const balusterGeo = new THREE.BoxGeometry(.03, .9, .03), plantGeo = new THREE.IcosahedronGeometry(.22, 0);
   function shanHouse(g, x, z, ry, o) {
@@ -1357,7 +1364,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.BoxGeometry(W + .1, .18, D + .1), townFrame, 0, y0 + FH - .09, 0, h);           // white floor band
       const win = (wx, wy, ww, wh, zf) => {
         mesh(new THREE.BoxGeometry(ww + .16, wh + .16, .08), townFrame, wx, wy, zf, h);
-        mesh(new THREE.BoxGeometry(ww, wh, .1), townGlass, wx, wy, zf + .01, h);
+        mesh(new THREE.BoxGeometry(ww, wh, .1), houseGlass, wx, wy, zf + .01, h);
         mesh(new THREE.BoxGeometry(.04, wh, .12), townFrame, wx, wy, zf + .02, h);
       };
       if (f === 0 && shop) {   // a shopfront: two bays with rolling shutters, one rolled up over a glass front, and a signboard
@@ -1431,6 +1438,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const head = mesh(new THREE.BoxGeometry(.5, .1, .25), std({ color: 0xf8f4e8, emissive: 0xfff2d0, emissiveIntensity: 1 }), x - 1.5, 5.08, z, g);
       const gl = glowSprite(0xfff0d0, 2.6, .7); gl.position.set(x - 1.5, 4.95, z); g.add(gl);
       onDaylight(d => { gl.material.opacity = .7 * (1 - d); head.material.emissiveIntensity = 1 - .8 * d; });
+      poleLights.push({ x: x - 1.5, z, set: lit => { gl.material.opacity = lit ? .7 * (1 - daylight) : 0; head.material.emissiveIntensity = lit ? 1 - .8 * daylight : 0; } });
     }
     // a row of trees in the strip between the temple wall and the road
     for (let z = z0 + 8; z < z1 - 4; z += 9) (Math.round(z) % 2 ? pine : tree)(g, -35.3, z, .7, 70 + z | 0);
@@ -2264,7 +2272,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   teakTex.wrapS = teakTex.wrapT = THREE.RepeatWrapping; teakTex.repeat.set(3, 1.2);
   const teakWall = std({ map: teakTex, roughness: .8 }), teakDark = std({ color: 0x3e2414, roughness: .8 }), teakPost = std({ color: 0x4a2c18, roughness: .85 });
   const whiteWall = std({ color: 0xece6d6, roughness: .9 }), houseInside = std({ color: 0x1a120c, roughness: .9, emissive: 0xffc070, emissiveIntensity: 0 });
-  onDaylight(d => { houseInside.emissiveIntensity = .55 * (1 - d); });
+  onDaylight(d => { houseInside.emissiveIntensity = .55 * (1 - d) * (1 - FEST.out); });
   const SHUTTERS = [0x2f6a8a, 0x3a7a4a, 0x8a3a2a, 0x4a3020].map(c => std({ color: c, roughness: .6 }));
   const rustRoof = (() => { const t = corrugated("", "#b0703a", "#5a3018"); return std({ map: t, roughness: .7, metalness: .3, side: THREE.DoubleSide }); })();
   // a hip roof over a 2a × 2b rectangle, its ridge along x (a ≥ b), rising hgt; corrugations run down each slope
@@ -2411,8 +2419,13 @@ window.TempleFloors = function TempleFloors(ctx) {
     c.fillStyle = gr; c.fillRect(0, 0, sz, sz);
   });
   const lampPool = new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
-  const lampGlows = [];
-  onDaylight(d => { lampBulb.emissiveIntensity = 1 - .85 * d; lampPool.opacity = .75 * (1 - d); lampGlows.forEach(s => s.material.opacity = .8 * (1 - d)); });
+  const lampBulbOff = std({ color: 0x8a8678, roughness: .4 });
+  const hutLamp = lampBulb.clone();   // the huts' own oil lamps, put out on Halloween night with the house lights
+  const lampGlows = [], hutGlows = [];
+  onDaylight(d => {
+    lampBulb.emissiveIntensity = 1 - .85 * d; lampPool.opacity = .75 * (1 - d); lampGlows.forEach(s => s.material.opacity = .8 * (1 - d));
+    const hut = 1 - FEST.out; hutLamp.emissiveIntensity = (1 - .85 * d) * hut; hutGlows.forEach(s => s.material.opacity = .8 * (1 - d) * hut);
+  });
   function villageLamp(g, x, y, z, ry, bamboo = false) {
     const p = new THREE.Group(); p.position.set(x, y, z); p.rotation.y = ry; g.add(p);
     sCircle(p, 0, 0, .13);
@@ -2427,10 +2440,11 @@ window.TempleFloors = function TempleFloors(ctx) {
     mesh(new THREE.BoxGeometry(.03, .14, .03), steel, A, H - 1.32, 0, p);
     const shade = new THREE.ConeGeometry(.3, .16, 14, 1, true);
     mesh(shade, enamel, A, H - 1.44, 0, p); mesh(shade, enamelIn, A, H - 1.44, 0, p);
-    mesh(new THREE.SphereGeometry(.07, 8, 6), lampBulb, A, H - 1.55, 0, p);
+    const bulb = mesh(new THREE.SphereGeometry(.07, 8, 6), lampBulb, A, H - 1.55, 0, p);
     const gl = glowSprite(0xffd890, 2, 0); gl.position.set(A, H - 1.55, 0); p.add(gl); lampGlows.push(gl);
     gl.material.opacity = .8 * (1 - daylight);
     const pool = flat(mesh(new THREE.CircleGeometry(3.2, 20), lampPool, A + .3, .07, 0, p)); pool.rotation.x = -Math.PI / 2; pool.receiveShadow = false;
+    poleLights.push({ x: x + A * c, z: z - A * s, set: lit => { bulb.material = lit ? lampBulb : lampBulbOff; gl.visible = pool.visible = lit; } });
     return [-.55, .55].map(ix => [x + ix * c, y + H - .12, z - ix * s]);
   }
   // sagging wires between consecutive lamps (the arrays `villageLamp` returns)
@@ -2523,8 +2537,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     const pot = mesh(new THREE.SphereGeometry(.26, 10, 8), hutPot, left * (W / 2 - .45), y0 + .26, D / 2 + VD / 2, h); pot.scale.y = 1.15;
     if (y0 - gAt(0, 0) > 1) { const fw = mesh(new THREE.BoxGeometry(1.4, .45, .5), std({ color: 0x6a4a2a, roughness: 1 }), -left * W / 5, gAt(-left * W / 5, -D / 4) + .2, -D / 4, h); fw.castShadow = false; }
     mesh(new THREE.CylinderGeometry(.005, .005, .4, 3), steel, left * W / 4, ye - .2, rz - .1, h);
-    mesh(new THREE.CylinderGeometry(.07, .09, .16, 8), lampBulb, left * W / 4, ye - .48, rz - .1, h);
-    const gl = glowSprite(0xffb060, 1.4, .8 * (1 - daylight)); gl.position.set(left * W / 4, ye - .48, rz - .1); h.add(gl); lampGlows.push(gl);
+    mesh(new THREE.CylinderGeometry(.07, .09, .16, 8), hutLamp, left * W / 4, ye - .48, rz - .1, h);
+    const gl = glowSprite(0xffb060, 1.4, .8 * (1 - daylight) * (1 - FEST.out)); gl.position.set(left * W / 4, ye - .48, rz - .1); h.add(gl); hutGlows.push(gl);
     // keep the outside camera above the hut
     const R = Math.max(ex, b) + .5, cx = x + zc * s, cz = z + zc * c;
     TALL.push({ x0: cx - R, x1: cx + R, z0: cz - R, z1: cz + R, h: ye + rh + .3 });
@@ -2567,6 +2581,92 @@ window.TempleFloors = function TempleFloors(ctx) {
     lampWires(g, [44, 30, 18, 6].map(z => villageLamp(g, X + 1.9, 0, z, Math.PI, true)));   // in the gaps between the east huts' ladders
     [[X - 4, 46], [X + 4, 45], [X - 11, 25], [X - 11.5, 36], [X + 5, 4], [X - 4, 2]].forEach(([x, z], i) => banana(g, x, z, 700 + i));
     [[X - 12.5, 31], [X - 12, 14], [X + 2.5, 1]].forEach(([x, z], i) => tree(g, x, z, .85 + i * .08, 720 + i));
+  }
+  /* ---------- Halloween night: one small friendly ghost, round-headed and smiling with a jack-o'-lantern in its hand, drifts along
+     the streets and lanes, choosing a way at random at every corner. It is never scary: it stops and waves when someone comes
+     near, and keeps its distance. The pole lights it passes flicker on and off, then come back on behind it ---------- */
+  // the roads it walks, in the grounds' frame: nodes [x, z] and the stretches of road between them
+  const GHOST_ROADS = {
+    nodes: [[-97, 54], [-97, 6], [-70.75, 54], [-70.75, -22], [-41.5, 54], [-41.5, -24], [0, 54], [4.6, 61], [4.6, 69.5], [0, 72],
+            [0, 77.5], [0, 105], [-20, 77.5], [41, 77.5], [41, 54], [41, 150], [140, 54]],
+    // the street from the hut village to the fire station; the hut lane, the west lane and the town road off it; round the plaza
+    // opposite the gate to the plaza lane and the back lane; the market lane
+    edges: [[0, 2], [2, 4], [4, 6], [6, 14], [14, 16], [0, 1], [2, 3], [4, 5], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [10, 12], [10, 13],
+            [13, 14], [13, 15]]
+  };
+  function halloweenGhost(g) {
+    const { nodes, edges } = GHOST_ROADS, next = nodes.map(() => []);
+    edges.forEach(([a, b]) => { next[a].push(b); next[b].push(a); });
+    const gh = new THREE.Group(); gh.userData.noCull = true; g.add(gh);
+    const body = new THREE.Group(); body.visible = false; gh.add(body);   // the light stays in the scene; only the ghost hides
+    // a sheet-like body: a big round head over a narrower middle, flaring to a wavy hem
+    const sheet = std({ color: 0xf6f8ff, emissive: 0xcad8ff, emissiveIntensity: .55, roughness: .5, transparent: true, opacity: .9, side: THREE.DoubleSide });
+    const sh = lathe([[.4, 0], [.33, .2], [.3, .38], [.36, .58], [.42, .78], [.4, .95], [.32, 1.08], [.18, 1.17], [0, 1.2]], sheet, 32);
+    const pos = sh.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i++) { const y = pos.getY(i); if (y < .15) pos.setY(i, y + Math.sin(Math.atan2(pos.getX(i), pos.getZ(i)) * 6) * .06 * (1 - y / .15)); }
+    sh.geometry.computeVertexNormals(); body.add(sh);
+    // big friendly eyes with a glint, a smile and rosy cheeks, on the front (local +z)
+    const ink = std({ color: 0x1a1a24, roughness: .3 }), white = std({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: .6 }), rosy = std({ color: 0xffa0b4, emissive: 0xff8098, emissiveIntensity: .3, roughness: .6 });
+    [-1, 1].forEach(sd => {
+      const e = mesh(new THREE.SphereGeometry(.065, 12, 10), ink, sd * .13, .84, .385, body); e.scale.set(1, 1.45, .5);
+      mesh(new THREE.SphereGeometry(.018, 6, 6), white, sd * .13 + .02, .87, .415, body);
+      const ck = mesh(new THREE.CircleGeometry(.05, 12), rosy, sd * .24, .74, .355, body); ck.rotation.y = sd * .6;
+    });
+    const smile = mesh(new THREE.TorusGeometry(.075, .014, 6, 14, Math.PI), ink, 0, .74, .405, body); smile.rotation.z = Math.PI;
+    // stubby arms; the right one waves, the left carries a little jack-o'-lantern
+    const arm = sd => {
+      const a = new THREE.Group(); a.position.set(sd * .3, .55, .02); body.add(a);
+      mesh(new THREE.SphereGeometry(.09, 10, 8), sheet, sd * .1, 0, 0, a).scale.set(1.5, .75, .75);
+      return a;
+    };
+    const armR = arm(1), armL = arm(-1);
+    armL.rotation.z = .35;
+    const pumpkin = mesh(new THREE.SphereGeometry(.1, 12, 8), std({ color: 0xe86a10, emissive: 0xff7a10, emissiveIntensity: .45, roughness: .6 }), -.2, -.12, .1, armL);
+    pumpkin.scale.y = .8;
+    mesh(new THREE.CylinderGeometry(.012, .016, .05, 5), std({ color: 0x3a5a1a }), -.2, -.03, .1, armL);
+    const pumpkinGlow = glowSprite(0xff8a20, .5, .6); pumpkinGlow.position.set(-.2, -.12, .14); armL.add(pumpkinGlow);
+    const halo = glowSprite(0xd8e4ff, 2.6, .3); halo.position.y = .6; body.add(halo);
+    body.traverse(o => { if (o.isMesh) o.castShadow = false; });
+    const light = new THREE.PointLight(0xcfdcff, 0, 7, 2); light.position.y = .7; gh.add(light);   // a soft pale light on the road
+
+    // walking: from node `a` to node `b`; at each corner it picks a road at random, not straight back unless it is a dead end
+    const r = rng(1031);
+    let a = 6, b = 14, along = 0, heading = 0, pause = 0, greet = 0;
+    const pick = (at, from) => { const opts = next[at].filter(n => n !== from); const l = opts.length ? opts : next[at]; return l[(r() * l.length) | 0]; };
+    const flick = [];   // per pole light: lit or not, and how long until it next blinks (lights built after this join in)
+    const SPEED = 1.3, NEAR = 7.5;
+    updaters.pagoda.push((dt, t, motion) => {
+      const on = FEST.on && daylight < .5;
+      body.visible = on; light.intensity = on ? .9 : 0;
+      if (!on) { FEST.ghost = null; flick.forEach((f, i) => { if (f && !f.lit) { f.lit = true; poleLights[i].set(true); } }); return; }
+      const [ax, az] = nodes[a], [bx, bz] = nodes[b], len = Math.hypot(bx - ax, bz - az);
+      let x = ax + (bx - ax) * along / len, z = az + (bz - az) * along / len;
+      // someone near: stop, turn to them and wave for a while, then carry on
+      const eye = FEST.eye, dEye = eye ? Math.hypot(eye.x - x, eye.z - z) : Infinity;
+      if (dEye < 4 && pause <= 0 && greet <= 0) { pause = 5; greet = 12; }
+      greet -= dt;
+      let face = Math.atan2(bx - ax, bz - az);
+      if (pause > 0) { pause -= dt; if (eye) face = Math.atan2(eye.x - x, eye.z - z); }
+      else {
+        along += SPEED * dt;
+        if (along >= len) { along -= len; const from = a; a = b; b = pick(b, from); }
+      }
+      heading += Math.atan2(Math.sin(face - heading), Math.cos(face - heading)) * Math.min(1, dt * 3);
+      const w = walkAt(x, z), ground = w === null ? terrainAt(x, z) : w;
+      gh.position.set(x, ground + .35 + Math.sin(t * 2.1) * .08 * motion, z);
+      gh.rotation.y = heading;
+      body.rotation.z = Math.sin(t * 1.3) * .06 * motion;
+      armR.rotation.z = pause > 0 ? -.9 - Math.sin(t * 9) * .45 : -.2 - Math.sin(t * 2) * .1 * motion;
+      // the pole lights near it flicker: off and on at random, quicker off than on, and steady again once it has gone by
+      poleLights.forEach((p, i) => {
+        const f = flick[i] || (flick[i] = { lit: true, t: 0 });
+        if (Math.hypot(p.x - x, p.z - z) > NEAR) { if (!f.lit) { f.lit = true; p.set(true); } return; }
+        if ((f.t -= dt) > 0) return;
+        f.lit = !f.lit; p.set(f.lit);
+        f.t = f.lit ? .08 + Math.random() * .4 : .04 + Math.random() * .16;
+      });
+      FEST.ghost = { x, z };
+    });
   }
   /* ---------- the town's public buildings, in the plain painted concrete of Shan State towns today: the township hospital by the
      hut village, the high school south of the daily market, a fuel station on the road out past the bridge, and the fire station
@@ -3712,6 +3812,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     highSchool(g);
     fuelStation(g);
     fireAndPolice(g);
+    halloweenGhost(g);
     // 溪, the stream behind the compound: it winds across the land beyond the pines on the far side of the back wall,
     // between grassy banks edged with stones, with rocks, reeds and a stone slab bridge; the water flows to the east
     (function stream() {
@@ -3991,6 +4092,9 @@ window.TempleFloors = function TempleFloors(ctx) {
       return false;
     },
     setDaylight(d) { daylight = d; dayParts.forEach(fn => fn(d)); },
+    // Halloween night: `on` lets the ghost out, `out` (0–1) puts out the houses' and huts' lights; `ghost` is where it is, while out
+    setHalloween({ on, out }) { FEST.on = on; if (out !== FEST.out) { FEST.out = out; dayParts.forEach(fn => fn(daylight)); } },
+    get ghost() { return FEST.ghost || null; },
     setCelestial(c) { Object.assign(celestial, c); celestialParts.forEach(fn => fn()); },
     openDoor(mode) { return openers[mode] ? openers[mode]() : 0; },
     dress(hall) { const list = []; sumeru(hall, 0, -1.7); hallColumns(hall); hallWalls(hall, M.wall, false); moreLanterns(hall, 1); spiralStairs(hall, 1, list); stairRoom(hall, 1, list); frontWall(hall, 1, list); return list; },
@@ -4013,7 +4117,8 @@ window.TempleFloors = function TempleFloors(ctx) {
       const act = actions[mode];
       return act ? act(obj.userData.act) || {} : {};
     },
-    update(dt, t, mode, motion) {
+    update(dt, t, mode, motion, eye) {
+      FEST.eye = mode === "pagoda" ? eye : null;
       (updaters[mode] || []).forEach(fn => fn(dt, t, motion));
       if (backdrop && mode !== "pagoda") (updaters.pagoda || []).forEach(fn => fn(dt, t, motion));   // koi, smoke, flags seen from the corridor
     },
