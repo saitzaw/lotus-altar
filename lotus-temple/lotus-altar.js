@@ -52,7 +52,7 @@ const CONFIG = {
   // add ?weather=rain (or clear, cloudy, mist, haze) to the address to force one
   weather: { spell: 3, odds: [[5, 2, 0, 3, 2], [4, 1, 0, 2, 4], [2, 1, .5, 0, 6], [2, 2, 1.5, 0, 5], [2, 3, 4, 0, 1], [1, 4, 5, .5, 0],
                               [1, 4, 5, .5, 0], [1, 4, 6, .5, 0], [1, 4, 6, .5, 0], [3, 3, 3, 1, 0], [5, 2, .5, 2, 0], [5, 2, 0, 3, .5]] },
-  // the sounds outside: wind, water, birds and insects, the stupas' hti bells, the temple bell and gong (all made in WebAudio)
+  // the sounds outside: wind, birds and insects, the stupas' hti bells, the temple bell and gong (all made in WebAudio)
   ambience: { volume: .8, bellEvery: [50, 90], gongEvery: [35, 70],   // seconds between strokes of the temple bell and gong
               windRest: [13 * 60, 17 * 60] },                         // seconds of stillness after the banyan's or the field's one breath of wind
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
@@ -1253,7 +1253,7 @@ $("timeBtn").addEventListener("click", () => {
   tween(reduceMotion ? .01 : 1.6, t => { daylight = from + (to - from) * easeInOut(t); applySky(); }, () => { daylight = to; applySky(); });
 });
 /* ---------- the sounds outside, made on the fly in WebAudio (no recordings): wind in the banyan and over the paddies,
-   the stream, birds and cicadas by day and crickets by night at the forest, the hti bells on the stupas, the temple bell
+   birds and cicadas by day and crickets by night at the forest, the hti bells on the stupas, the temple bell
    and the gong in the Lotus Temple hall now and then, and the rain ---------- */
 let amb = null;
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -1271,19 +1271,16 @@ function ambStart() {
     const g = a.createGain(); g.gain.value = 0; n.connect(g); g.connect(out); s.start(0, Math.random() * 1.9);
     return { g, fs };
   };
-  const wobble = (param, hz, depth) => { const o = a.createOscillator(), og = a.createGain(); o.frequency.value = hz; og.gain.value = depth; o.connect(og); og.connect(param); o.start(); };
   amb = {
     out, buf,
     leaves: bed([["bandpass", 900, .5], ["lowpass", 1800, .7]]),   // a breeze through the banyan: airy, not a hiss
     wind: bed([["bandpass", 650, .5], ["lowpass", 1400, .7]]),   // a breeze over the open fields and the hilltop: airy, not a rumble
     rice: bed([["highpass", 2800, .5]]),                          // the ripe rice hissing in it
-    water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
     breaths: { banyan: { left: 0, wait: rand(5, 40) }, field: { left: 0, wait: rand(10, 60) }, hill: { left: 0, wait: rand(1, 5) } },
     next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
-  wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
 }
 // one struck or plucked tone into the ambience: freq, loudness, ring time, delay, swell (a gong's upper partials bloom)
 function ping(f, peak, decay, t0 = 0, swell = .004, type = "sine") {
@@ -1324,16 +1321,14 @@ function ambStep(dt) {
   const near = (d, r0, r1) => clamp(1 - (d - r0) / (r1 - r0), 0, 1);   // 1 within r0 metres, fading to nothing at r1
   const toRect = ([x0, x1, z0, z1]) => Math.hypot(Math.max(x0 - p.x, 0, p.x - x1), Math.max(z0 - p.z, 0, p.z - z1));
   const gust = .55 + .25 * Math.sin(now * .31) + .2 * Math.sin(now * .83 + 1), wind = (.4 + .6 * wx.wind) * gust, wet = wx.rain;
-  let leaves = 0, field = 0, water = 0, forest = 0, stupa = 0;
+  let leaves = 0, field = 0, forest = 0, stupa = 0;
   if (out) {
     leaves = near(Math.hypot(p.x - S.banyan[0], p.z - S.banyan[1]), 5, 25);
     field = near(toRect(S.fields), 0, 25);
-    water = p.x > S.river[0] - 10 && p.x < S.river[1] + 10 ? near(Math.abs(p.z - S.riverZ(p.x)), 3, 32) : 0;
     forest = clamp((S.forestZ + 20 - p.z) / 25, 0, 1);   // from 20 m short of the trees to a few metres in
     stupa = near(Math.hypot(p.x - S.stupa[0], p.y - S.stupa[1], p.z - S.stupa[2]), 14, 50);
   }
   const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
-  set(amb.water, .3 * water); set(amb.water2, .08 * water);
   set(amb.cicada, day && wet < .5 && out ? .02 + .05 * forest : 0);
   set(amb.rain, .28 * wet * (out ? 1 : .35));
   amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors

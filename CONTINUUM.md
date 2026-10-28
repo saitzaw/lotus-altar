@@ -11,7 +11,7 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Weather outside follows northern Thai seasons, picked per 3-hour spell from the date (`CONFIG.weather`, no live API):
   clear, cloudy, rain (streaks, thunder), mist, smoky haze. Force with `?weather=rain|clear|cloudy|mist|haze`.
 - Ambient sound is synthesized in WebAudio (`ambStart`/`ambStep` in `lotus-altar.js`), placed by `temple.sounds` in
-  `temple-floors.js`: stupa hti bells, temple bell and Lotus Temple hall gong, banyan leaves, stream, forest birds/cicadas/
+  `temple-floors.js`: stupa hti bells, temple bell and Lotus Temple hall gong, banyan leaves, forest birds/cicadas/
   crickets, wind over the paddies, rain. HUD 🔊 button mirrors the `soundOn` checkbox.
 - `guanyin.glb` (the museum scan in `CONFIG.scan`) is **not in the repo**, so the floor-1 Guanyin is the sculpted SDF
   figure. `build-dist.sh` copies the scan only if it exists.
@@ -29,6 +29,7 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-28
+- Removed the stream's flowing-water sound.
 - Made every wind (banyan, fields, stupa hill) come in soft breaths with stillness between and a faint moan at night
   (`b2818d9`); quieter field and banyan wind.
 - Repo remote now pushes as the saitzaw GitHub account via the `github-personal` SSH host.
