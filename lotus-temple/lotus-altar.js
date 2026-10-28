@@ -1112,19 +1112,37 @@ function festStep(dt) {
   temple.setHalloween({ on: fest.night, out: festOut });
   if (festOut !== was) skyColors();
   const outside = current === "pagoda", dark = fest.night && daylight < .5;
-  const want = dark && outside && inMarket;
-  torch.intensity += ((want ? 2.4 : 0) - torch.intensity) * Math.min(1, dt * 6);
+  const want = dark && outside && inMarket, onFootAtNight = outside && inMarket && daylight < .5;
+  if (!onFootAtNight) torchChoice = null;   // a new walk at night starts with the torch as the night has it
+  const lit = onFootAtNight && (torchChoice === null ? want : torchChoice);
+  torchButton(onFootAtNight, lit);
+  torch.intensity += ((lit ? 2.4 : 0) - torch.intensity) * Math.min(1, dt * 6);
   if (torch.intensity > .01) {
     camera.getWorldDirection(_look);
     torch.position.copy(camera.position).addScaledVector(_look, .2).add(V(0, -.35, 0));
     torch.target.position.copy(camera.position).addScaledVector(_look, 10);
   }
-  if (want && !festTold.torch) { festTold.torch = true; toast("Happy Halloween! The houses are dark tonight, so you switch on your torch."); }
+  if (want && torchChoice === null && !festTold.torch) { festTold.torch = true; toast("Happy Halloween! The houses are dark tonight, so you switch on your torch."); }
   const gh = temple.ghost;
   if (want && gh && !festTold.ghost && Math.hypot(gh.x - camera.position.x, gh.z - camera.position.z) < 9) {
     festTold.ghost = true; toast("👻 Just a friendly little ghost out for Halloween. It waves hello and drifts on along the road.");
   }
 }
+// the torch switch: shown while walking outside at night; on Halloween night the torch starts on, any other night off
+let torchChoice = null, torchShown = null;   // torchChoice: null until the walker flips the switch
+function torchButton(show, lit) {
+  const b = $("torchBtn"), key = show && (lit ? "on" : "off");
+  if (key === torchShown) return; torchShown = key;
+  b.hidden = !show; if (!show) return;
+  b.textContent = lit ? "🔦 Torch on" : "🔦 Torch off"; b.title = `Switch the torch ${lit ? "off" : "on"} (T)`; b.setAttribute("aria-pressed", String(lit));
+}
+function flipTorch() {
+  if ($("torchBtn").hidden) return;
+  torchChoice = $("torchBtn").getAttribute("aria-pressed") !== "true";
+  tone(2200, 1400, .06, .04, "square");   // the switch's click
+}
+$("torchBtn").addEventListener("click", flipTorch);
+document.addEventListener("keydown", e => { if (e.code === "KeyT" && !e.repeat && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) flipTorch(); });
 function festNote() {
   const el = $("festInfo"); if (!el) return;
   el.hidden = current !== "pagoda" || !fest.season;
@@ -1487,7 +1505,7 @@ function enterWalk(at, look, where) {
   tween(reduceMotion ? .01 : 1.8, t => { const e = easeInOut(t); camera.position.lerpVectors(p0, p1, e); controls.target.lerpVectors(t0, t1, e); }, () => lookFrom(p1, t1));
   $("marketBtn").hidden = true; $("fpBtn").hidden = true; $("leaveMarketBtn").hidden = false; $("outsideBtn").hidden = true; $("walkPad").hidden = false;
   $("where").innerHTML = where;
-  $("hint").textContent = "First-person view. Drag to look around. Walk with the arrow keys, W A S D or the pad. Tap a door or building to go in. The four-animal top (လေးကောင်ဂျင်) is in the gambling hall on the east edge of the seven-day market.";
+  $("hint").textContent = "First-person view. Drag to look around. Walk with the arrow keys, W A S D or the pad. Tap a door or building to go in. At night, T or the torch button switches your torch on and off. The four-animal top (လေးကောင်ဂျင်) is in the gambling hall on the east edge of the seven-day market.";
 }
 function enterMarket() { const M = temple.market; if (M) enterWalk(M.entry, M.look, `<b lang="my">ဈေး</b>The seven-day market`); }
 function enterFirstPerson() { enterWalk([0, 52], [0, 40], "Walking the temple grounds"); }
