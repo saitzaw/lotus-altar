@@ -1273,13 +1273,13 @@ function ambStart() {
   const wobble = (param, hz, depth) => { const o = a.createOscillator(), og = a.createGain(); o.frequency.value = hz; og.gain.value = depth; o.connect(og); og.connect(param); o.start(); };
   amb = {
     out, buf,
-    leaves: bed([["bandpass", 2200, .6]]),                       // the banyan's leaves
+    leaves: bed([["bandpass", 900, .5], ["lowpass", 1800, .7]]),   // a breeze through the banyan: airy, not a hiss
     wind: bed([["lowpass", 700, .5], ["bandpass", 360, .9]]),    // wind over the open fields
     rice: bed([["highpass", 2800, .5]]),                          // the ripe rice hissing in it
     water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
-    gustLeft: 0, next: { tink: 0, bird: 2, cricket: 0, gust: rand(3, 10), bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
+    gustLeft: 0, breathLeft: 0, next: { tink: 0, breath: rand(2, 6), bird: 2, cricket: 0, gust: rand(3, 10), bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
   wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
 }
@@ -1331,7 +1331,6 @@ function ambStep(dt) {
     stupa = near(Math.hypot(p.x - S.stupa[0], p.y - S.stupa[1], p.z - S.stupa[2]), 14, 50);
   }
   const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
-  set(amb.leaves, .14 * leaves * wind);   // a soft rustle, under the other sounds
   set(amb.water, .3 * water); set(amb.water2, .08 * water);
   set(amb.cicada, day && wet < .5 && out ? .02 + .05 * forest : 0);
   set(amb.rain, .28 * wet * (out ? 1 : .35));
@@ -1344,6 +1343,14 @@ function ambStep(dt) {
   const blowing = amb.gustLeft > 0 ? wind : 0;
   amb.wind.g.gain.setTargetAtTime((.15 * field + (out ? .02 : 0)) * blowing, T, 1.5);   // a slow swell in and out
   amb.rice.g.gain.setTargetAtTime(.025 * field * blowing, T, 1.5);
+  // the old banyan breathes: a soft breeze through its leaves for a few seconds, then stillness. At night each breath
+  // carries a faint low moan through the hanging roots
+  if (amb.breathLeft > 0) amb.breathLeft -= dt;
+  else if (due("breath", 5, 14)) {
+    amb.breathLeft = rand(2.5, 5.5);
+    if (!day && leaves > .05) { const f = rand(300, 420), o = ping(f, .01 * leaves, amb.breathLeft + 1, 0, amb.breathLeft * .45); if (o) o.frequency.linearRampToValueAtTime(f * .9, T + amb.breathLeft + 1); }
+  }
+  amb.leaves.g.gain.setTargetAtTime(amb.breathLeft > 0 ? .16 * leaves * (.6 + .4 * gust) : 0, T, 1.2);   // swells in and dies away slowly
   if (stupa > .02 && due("tink", .12, 1.5 - wind)) tinkle(.06 * stupa * (.4 + .6 * gust));
   const birds = out && day && wet < .5 ? Math.max(forest, .2) : 0;
   if (birds && due("bird", 1.2, 5)) bird(.035 * birds);
