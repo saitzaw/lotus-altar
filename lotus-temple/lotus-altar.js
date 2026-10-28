@@ -53,7 +53,8 @@ const CONFIG = {
   weather: { spell: 3, odds: [[5, 2, 0, 3, 2], [4, 1, 0, 2, 4], [2, 1, .5, 0, 6], [2, 2, 1.5, 0, 5], [2, 3, 4, 0, 1], [1, 4, 5, .5, 0],
                               [1, 4, 5, .5, 0], [1, 4, 6, .5, 0], [1, 4, 6, .5, 0], [3, 3, 3, 1, 0], [5, 2, .5, 2, 0], [5, 2, 0, 3, .5]] },
   // the sounds outside: wind, water, birds and insects, the stupas' hti bells, the temple bell and gong (all made in WebAudio)
-  ambience: { volume: .8, bellEvery: [50, 90], gongEvery: [35, 70] },   // seconds between strokes of the temple bell and gong
+  ambience: { volume: .8, bellEvery: [50, 90], gongEvery: [35, 70],   // seconds between strokes of the temple bell and gong
+              windRest: [13 * 60, 17 * 60] },                         // seconds of stillness after the banyan's or the field's one breath of wind
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
   sculpt: { worker: "statue-sculpt.js", bodyCell: .012, headCell: .0058,  // smaller cells: smoother, slower to build and to draw
             cells: { lion: [.022, .014], lionL: [.022, .014] } },        // [body, head] per figure: the stone lions outside need far less detail than a face
@@ -1279,7 +1280,7 @@ function ambStart() {
     water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
-    breaths: { banyan: { left: 0, wait: rand(2, 6) }, field: { left: 0, wait: rand(3, 10) }, hill: { left: 0, wait: rand(1, 5) } },
+    breaths: { banyan: { left: 0, wait: rand(5, 40) }, field: { left: 0, wait: rand(10, 60) }, hill: { left: 0, wait: rand(1, 5) } },
     next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
   wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
@@ -1338,18 +1339,20 @@ function ambStep(dt) {
   amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors
   // the one-off sounds, each on its own timer
   const due = (k, a0, a1) => (amb.next[k] -= dt) < 0 && (amb.next[k] = rand(a0, a1), true);
-  // every wind follows one pattern: a breath of soft breeze for a few seconds, swelling in and dying away, then stillness
-  // (shorter in windy weather). At night each breath carries a faint low moan, falling as it fades
-  const breath = (b, len, gap, moan, level) => {
+  // every wind follows one pattern: a breath of soft breeze for a few seconds, swelling in and dying away, then stillness.
+  // At night each breath carries a faint low moan, falling as it fades. `byWeather`: windy weather shortens the stillness
+  const breath = (b, len, gap, moan, level, byWeather = true) => {
     if (b.left > 0) b.left -= dt;
     else if ((b.wait -= dt) < 0) {
-      b.left = rand(...len); b.wait = rand(gap[0], gap[1] - (gap[1] - gap[0]) * .6 * wx.wind);
+      b.left = rand(...len); b.wait = rand(gap[0], gap[1] - (byWeather ? (gap[1] - gap[0]) * .6 * wx.wind : 0));
       if (!day && level > .05) { const f = rand(...moan), o = ping(f, .01 * level, b.left + 1, 0, b.left * .45); if (o) o.frequency.linearRampToValueAtTime(f * .9, T + b.left + 1); }
     }
     return b.left > 0 ? 1 : 0;
   };
-  const tree = breath(amb.breaths.banyan, [2.5, 5.5], [5, 14], [300, 420], leaves);   // through the banyan's hanging roots
-  const open = breath(amb.breaths.field, [3, 7], [6, 18], [200, 300], field);          // across the paddies, and faintly anywhere outside
+  // the banyan and the fields blow once, at a random moment, then lie still for a quarter of an hour or so
+  const rest = CONFIG.ambience.windRest;
+  const tree = breath(amb.breaths.banyan, [3, 6], rest, [300, 420], leaves, false);   // through the banyan's hanging roots
+  const open = breath(amb.breaths.field, [4, 8], rest, [200, 300], field, false);     // across the paddies, and faintly anywhere outside
   const hill = breath(amb.breaths.hill, [2, 5], [4, 12], [260, 360], stupa);           // round the stupas on the hilltop
   const soft = .6 + .4 * gust;
   amb.leaves.g.gain.setTargetAtTime(.16 * leaves * soft * tree, T, 1.2);
