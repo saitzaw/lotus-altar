@@ -4076,6 +4076,11 @@ window.TempleFloors = function TempleFloors(ctx) {
     get fourTop() { return fourTop; },
     get market() { return MARKET; },
     groundAt, terrainAt, walkAt, get monasteries() { return MONASTERIES; },
+    // where the world makes its sounds, in the grounds' frame (the main script's ambience fades each in by distance):
+    // the hti bells on the stupa hill's spires, the Bell Tower, the gong in the Lotus Temple hall, the compound's walls
+    // [x0, x1, z0, z1], the old banyan, the stream (its centre line and x extent), the paddies [x0, x1, z0, z1], the forest's edge
+    sounds: { stupa: [HILL.cx, HILL.top + 8, HILL.cz], bell: [-17, -1.5], gong: [24.5, 26], compound: [-33, 33, -16, 43],
+              banyan: [36.4, 65.4], riverZ, river: [-110, 110], fields: [-104, 64, -94, -42], forestZ: -98 },
     get pavilionSeat() { return PAV_SEAT; },
     get corridorRing() { return CORRIDOR_RING; },
     // inside a hall: is (x, z) taken by furniture, columns or the stair room?

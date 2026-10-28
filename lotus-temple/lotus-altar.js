@@ -46,6 +46,14 @@ const CONFIG = {
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
   halloween: { from: [10, 27], to: [11, 1], outHour: 21, untilHour: 5 },
+  // the weather outside follows the seasons of the northern Thai hills (no live weather service): rain from May to October,
+  // cool clear days and misty mornings from November to February, smoky haze from the field burning in March and April.
+  // Each `spell` of hours on the temple's clock gets one kind, from that month's odds [clear, cloudy, rain, mist, haze];
+  // add ?weather=rain (or clear, cloudy, mist, haze) to the address to force one
+  weather: { spell: 3, odds: [[5, 2, 0, 3, 2], [4, 1, 0, 2, 4], [2, 1, .5, 0, 6], [2, 2, 1.5, 0, 5], [2, 3, 4, 0, 1], [1, 4, 5, .5, 0],
+                              [1, 4, 5, .5, 0], [1, 4, 6, .5, 0], [1, 4, 6, .5, 0], [3, 3, 3, 1, 0], [5, 2, .5, 2, 0], [5, 2, 0, 3, .5]] },
+  // the sounds outside: wind, water, birds and insects, the stupas' hti bells, the temple bell and gong (all made in WebAudio)
+  ambience: { volume: .8, bellEvery: [50, 90], gongEvery: [35, 70] },   // seconds between strokes of the temple bell and gong
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
   sculpt: { worker: "statue-sculpt.js", bodyCell: .012, headCell: .0058,  // smaller cells: smoother, slower to build and to draw
             cells: { lion: [.022, .014], lionL: [.022, .014] } },        // [body, head] per figure: the stone lions outside need far less detail than a face
@@ -1124,6 +1132,74 @@ function festNote() {
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
 }
 
+/* ---------- weather: rain, cloud, mist and haze over the northern hills, picked from the date ---------- */
+const WEATHER = {   // fog: how far you see (x the usual haze), tint: the sky's colour and how much of it, rain: 0–1, wind: 0–1
+  clear:  { icon: "☀", label: "Clear skies", fog: 1, tint: 0x9aa4ae, k: 0, rain: 0, wind: .5 },
+  cloudy: { icon: "☁", label: "Cloudy", fog: .8, tint: 0x8c939a, k: .45, rain: 0, wind: .75 },
+  rain:   { icon: "🌧", label: "Rain", fog: .45, tint: 0x6a737c, k: .7, rain: 1, wind: 1 },
+  mist:   { icon: "🌫", label: "Mist in the valley", fog: .3, tint: 0xc2c6ca, k: .65, rain: 0, wind: .15 },
+  haze:   { icon: "🌫", label: "Smoky haze from the field burning", fog: .5, tint: 0xb39c78, k: .55, rain: 0, wind: .3 }
+};
+const WX_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("weather"); return WEATHER[v] ? v : null; } catch (e) { return null; } })();
+function weatherNow() {
+  if (WX_FORCE) return WX_FORCE;
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", hourCycle: "h23" })
+    .formatToParts(Date.now()).filter(q => q.type !== "literal").map(q => [q.type, +q.value]));
+  const spell = Math.floor(p.hour / CONFIG.weather.spell), mistHour = p.hour >= 4 && p.hour < 10;
+  // the same weather for every visitor in this spell: a hash of the date and the spell
+  let h = (p.year * 400 + p.month * 32 + p.day) * 8 + spell;
+  h = Math.imul(h ^ h >>> 16, 0x45d9f3b); h = Math.imul(h ^ h >>> 16, 0x45d9f3b); h = ((h ^ h >>> 16) >>> 0) / 4294967296;
+  const w = CONFIG.weather.odds[p.month - 1].map((o, i) => i === 3 ? o * (mistHour ? 2.5 : .3) : o), kinds = Object.keys(WEATHER);
+  let r = h * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < kinds.length; i++) if ((r -= w[i]) < 0) return kinds[i];
+  return "clear";
+}
+const seasonName = () => { const m = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, month: "numeric" }).format(Date.now()); return m >= 5 && m <= 10 ? "rainy season" : m >= 3 ? "hot season" : "cool season"; };
+let wxKind = weatherNow();
+const wx = (({ fog, k, rain, wind, tint }) => ({ fog, k, rain, wind, tint: new THREE.Color(tint) }))(WEATHER[wxKind]);   // the weather as it is now, drifting toward wxKind
+setInterval(() => { const was = wxKind; wxKind = weatherNow(); if (wxKind !== was) weatherNote(); }, 6e4);
+function weatherNote() {
+  const el = $("weatherInfo"); if (!el) return;
+  const w = WEATHER[wxKind];
+  el.hidden = !(current === "pagoda" || inCorridor);
+  el.textContent = `${w.icon} ${w.label} · ${seasonName()} in the northern hills`;
+}
+// rain: streaks falling in a box that travels with the camera (left out when motion is reduced; the sound stays)
+const RAIN_N = 2400, RAIN_BOX = [50, 24, 50];
+const rainLines = (() => {
+  const pos = new Float32Array(RAIN_N * 6);
+  for (let i = 0; i < RAIN_N; i++) { const x = (Math.random() - .5) * RAIN_BOX[0], y = Math.random() * RAIN_BOX[1], z = (Math.random() - .5) * RAIN_BOX[2]; pos.set([x, y, z, x, y - .5, z], i * 6); }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xaab4c0, transparent: true, opacity: 0, depthWrite: false }));
+  l.frustumCulled = false; l.visible = false; world.add(l); return l;
+})();
+function weatherStep(dt) {
+  const T = WEATHER[wxKind], e = Math.min(1, dt / 6);   // a change of weather drifts in over half a minute or so
+  ["fog", "k", "rain", "wind"].forEach(n => wx[n] += (T[n] - wx[n]) * e);
+  wx.tint.lerp(_wxTint.set(T.tint), e);
+  const out = current === "pagoda" || inCorridor;
+  if (out) {   // closer haze, a greyer sky and a dimmer day
+    const base = inCorridor ? CONFIG.fog.corridor : inMarket ? CONFIG.fog.walk : CONFIG.fog.outside, f = inMarket ? wx.fog : .5 + .5 * wx.fog;
+    world.fog.near = base[0] * f; world.fog.far = base[1] * f;
+    renderer.toneMappingExposure = CONFIG.light.exposure * (1 + .05 * daylight) * (1 - .2 * wx.k * daylight);
+    skyColors();
+  }
+  const show = out && wx.rain > .02 && !reduceMotion;
+  rainLines.visible = show;
+  if (!show) return;
+  rainLines.material.opacity = .45 * wx.rain * (.6 + .4 * daylight);
+  rainLines.position.set(camera.position.x, camera.position.y - RAIN_BOX[1] / 2, camera.position.z);
+  const a = rainLines.geometry.attributes.position, p = a.array, fall = 14 * dt, drift = 1.2 * wx.wind * dt;
+  for (let i = 0; i < RAIN_N * 6; i += 6) {
+    p[i + 1] -= fall; p[i + 4] -= fall; p[i] += drift; p[i + 3] += drift;
+    if (p[i + 4] < 0) { p[i + 1] += RAIN_BOX[1]; p[i + 4] += RAIN_BOX[1]; }
+    if (p[i] > RAIN_BOX[0] / 2) { p[i] -= RAIN_BOX[0]; p[i + 3] -= RAIN_BOX[0]; }
+    p[i + 3] = p[i] - .06 * wx.wind;   // the streak leans with the wind
+  }
+  a.needsUpdate = true;
+}
+const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
+
 // day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit
 let daylight = 0;
 try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; } catch (e) {}
@@ -1133,6 +1209,10 @@ function skyColors() {
   const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
   world.background.copy(out ? mix(0x16122a, 0x86b8e6).lerp(new THREE.Color(0x07060f), dark) : new THREE.Color(0x120a07));
   world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0).lerp(new THREE.Color(0x09080f), dark) : new THREE.Color(0x120a07));
+  if (out && wx.k > .001) {   // cloud, rain, mist or haze greys the sky (darker at night)
+    const tint = _wxSky.copy(wx.tint).multiplyScalar(.15 + .85 * d), k = wx.k * (1 - dark);
+    world.background.lerp(tint, k); world.fog.color.lerp(tint, k);
+  }
 }
 function applySky() {
   const out = current === "pagoda" || inCorridor, d = daylight;
@@ -1143,6 +1223,7 @@ function applySky() {
   const note = $("skyInfo");
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }
   festNote();
+  weatherNote();
   if (btn) { btn.textContent = daylight > .5 ? "☾ Night" : "☀ Day"; btn.title = daylight > .5 ? "Switch to night" : "Switch to day"; btn.setAttribute("aria-pressed", String(daylight > .5)); }
 }
 updateCelestial();
@@ -1152,6 +1233,114 @@ $("timeBtn").addEventListener("click", () => {
   try { localStorage.setItem("lotus-altar-daylight", String(to)); } catch (e) {}
   tween(reduceMotion ? .01 : 1.6, t => { daylight = from + (to - from) * easeInOut(t); applySky(); }, () => { daylight = to; applySky(); });
 });
+/* ---------- the sounds outside, made on the fly in WebAudio (no recordings): wind in the banyan and over the paddies,
+   the stream, birds and cicadas by day and crickets by night at the forest, the hti bells on the stupas, the temple bell
+   and the gong in the Lotus Temple hall now and then, and the rain ---------- */
+let amb = null;
+const rand = (a, b) => a + Math.random() * (b - a);
+function ambStart() {
+  if (amb || !$("soundOn").checked) return;
+  const a = ac(); if (!a) return;
+  const out = a.createGain(); out.gain.value = 0; out.connect(a.destination);
+  const buf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  // a bed of noise shaped by filters [type, freq, Q], optionally beating at `am` Hz (insects), into its own gain
+  const bed = (filters, am) => {
+    const s = a.createBufferSource(); s.buffer = buf; s.loop = true;
+    let n = s; const fs = filters.map(([type, f, q]) => { const fl = a.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q; n.connect(fl); return n = fl; });
+    if (am) { const m = a.createGain(), o = a.createOscillator(), og = a.createGain(); m.gain.value = .5; o.frequency.value = am; og.gain.value = .5; o.connect(og); og.connect(m.gain); o.start(); n.connect(m); n = m; }
+    const g = a.createGain(); g.gain.value = 0; n.connect(g); g.connect(out); s.start(0, Math.random() * 1.9);
+    return { g, fs };
+  };
+  const wobble = (param, hz, depth) => { const o = a.createOscillator(), og = a.createGain(); o.frequency.value = hz; og.gain.value = depth; o.connect(og); og.connect(param); o.start(); };
+  amb = {
+    out, buf,
+    leaves: bed([["bandpass", 2200, .6]]),                       // the banyan's leaves
+    wind: bed([["lowpass", 700, .5], ["bandpass", 360, .9]]),    // wind over the open fields
+    rice: bed([["highpass", 2800, .5]]),                          // the ripe rice hissing in it
+    water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
+    cicada: bed([["bandpass", 5200, 9]], 42),
+    rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
+    next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
+  };
+  wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
+}
+// one struck or plucked tone into the ambience: freq, loudness, ring time, delay, swell (a gong's upper partials bloom)
+function ping(f, peak, decay, t0 = 0, swell = .004, type = "sine") {
+  if (peak < .0005) return null;
+  const a = audio, t = a.currentTime + t0, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + swell); g.gain.exponentialRampToValueAtTime(.0001, t + decay);
+  o.connect(g); g.connect(amb.out); o.start(t); o.stop(t + decay + .05); return o;
+}
+// the little bells hung from the stupas' hti crowns, swung by the wind
+const tinkle = v => { const f = [2093, 2349, 2637, 3136, 3520][(Math.random() * 5) | 0] * rand(.99, 1.01); ping(f, v, 1.8); ping(f * 2.76, v * .35, .8); ping(f * 5.4, v * .12, .35); };
+// the great bell in the Bell Tower, struck with the log (the same voice as ringing it yourself)
+const templeBell = v => [[98, .35, 7], [196 * 1.19, .14, 5], [98 * 2.76, .09, 3.5], [98 * 5.4, .04, 2]].forEach(([f, p, d]) => ping(f, p * v, d));
+// the hall's gong: a low hum whose upper partials swell after the stroke, the note sagging a little as it settles
+function gong(v) {
+  const o = ping(110, .5 * v, 8); if (o) o.frequency.exponentialRampToValueAtTime(104, audio.currentTime + 1.5);
+  [[1.52, .3, 6, .15], [2.13, .22, 5, .3], [2.8, .14, 4, .45], [3.6, .09, 3, .6], [4.9, .05, 2.2, .7]].forEach(([r, p, d, s]) => ping(110 * r, p * v, d, 0, s));
+}
+// a bulbul's call: a few quick whistled notes sliding up or down
+function bird(v) {
+  const base = rand(1800, 3400), n = 2 + (Math.random() * 4 | 0);
+  for (let i = 0; i < n; i++) { const o = ping(base * rand(.85, 1.2), v, .12, i * rand(.1, .16), .01); if (o) o.frequency.exponentialRampToValueAtTime(base * rand(.7, 1.5), audio.currentTime + i * .13 + .09); }
+}
+const crickets = v => { const f = rand(4100, 4700); for (let i = 0; i < 3; i++) ping(f, v, .04, i * .06); };
+// far thunder in heavy rain: a burst of noise through a low filter
+function thunder(v) {
+  const a = audio, t = a.currentTime, s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain();
+  s.buffer = amb.buf; s.loop = true; fl.type = "lowpass"; fl.frequency.value = 140;
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .4); g.gain.exponentialRampToValueAtTime(.0001, t + 5);
+  s.connect(fl); fl.connect(g); g.connect(amb.out); s.start(t, Math.random()); s.stop(t + 5.1);
+}
+function ambStep(dt) {
+  if (!amb) return;
+  const a = audio, on = $("soundOn").checked, T = a.currentTime;
+  amb.out.gain.setTargetAtTime(on ? CONFIG.ambience.volume : 0, T, .3);
+  if (!on) return;
+  const S = temple.sounds, p = camera.position, out = current === "pagoda" || inCorridor, day = daylight > .5;
+  const near = (d, r0, r1) => clamp(1 - (d - r0) / (r1 - r0), 0, 1);   // 1 within r0 metres, fading to nothing at r1
+  const toRect = ([x0, x1, z0, z1]) => Math.hypot(Math.max(x0 - p.x, 0, p.x - x1), Math.max(z0 - p.z, 0, p.z - z1));
+  const gust = .55 + .25 * Math.sin(now * .31) + .2 * Math.sin(now * .83 + 1), wind = (.4 + .6 * wx.wind) * gust, wet = wx.rain;
+  let leaves = 0, field = 0, water = 0, forest = 0, stupa = 0;
+  if (out) {
+    leaves = near(Math.hypot(p.x - S.banyan[0], p.z - S.banyan[1]), 6, 32);
+    field = near(toRect(S.fields), 0, 25);
+    water = p.x > S.river[0] - 10 && p.x < S.river[1] + 10 ? near(Math.abs(p.z - S.riverZ(p.x)), 3, 32) : 0;
+    forest = clamp((S.forestZ + 20 - p.z) / 25, 0, 1);   // from 20 m short of the trees to a few metres in
+    stupa = near(Math.hypot(p.x - S.stupa[0], p.y - S.stupa[1], p.z - S.stupa[2]), 14, 50);
+  }
+  const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
+  set(amb.leaves, .4 * leaves * wind);
+  set(amb.wind, (.4 * field + (out ? .05 : 0)) * wind);   // and a light breeze anywhere outside
+  set(amb.rice, .06 * field * wind);
+  set(amb.water, .3 * water); set(amb.water2, .08 * water);
+  set(amb.cicada, day && wet < .5 && out ? .02 + .05 * forest : 0);
+  set(amb.rain, .28 * wet * (out ? 1 : .35));
+  amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors
+  // the one-off sounds, each on its own timer
+  const due = (k, a0, a1) => (amb.next[k] -= dt) < 0 && (amb.next[k] = rand(a0, a1), true);
+  if (stupa > .02 && due("tink", .12, 1.5 - wind)) tinkle(.06 * stupa * (.4 + .6 * gust));
+  const birds = out && day && wet < .5 ? Math.max(forest, .2) : 0;
+  if (birds && due("bird", 1.2, 5)) bird(.035 * birds);
+  if (out && !day && due("cricket", .25, .9)) crickets(.012 * Math.max(forest, field, .35));
+  const [b0, b1] = CONFIG.ambience.bellEvery, [g0, g1] = CONFIG.ambience.gongEvery, inYard = d => out ? near(d, 8, 75) : .12;
+  if (due("bell", b0, b1)) templeBell(current === "bell" ? 1 : .6 * inYard(Math.hypot(p.x - S.bell[0], p.z - S.bell[1])));
+  if (due("gong", g0, g1)) gong(current === "library" ? 1 : .6 * inYard(Math.hypot(p.x - S.gong[0], p.z - S.gong[1])));
+  if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
+}
+// the sound starts with the first tap or key (browsers keep audio off until then); off in a hidden tab
+["pointerdown", "keydown"].forEach(ev => addEventListener(ev, ambStart, { passive: true }));
+document.addEventListener("visibilitychange", () => { if (audio) document.hidden ? audio.suspend() : audio.resume(); });
+function soundButton() {
+  const on = $("soundOn").checked, b = $("soundBtn");
+  b.textContent = on ? "🔊 Sound" : "🔇 Sound"; b.title = on ? "Turn sound off" : "Turn sound on"; b.setAttribute("aria-pressed", String(on));
+}
+$("soundOn").addEventListener("change", () => { soundButton(); ambStart(); });
+$("soundBtn").addEventListener("click", () => { $("soundOn").checked = !$("soundOn").checked; soundButton(); ambStart(); });
+
 // indoors the camera may pull well back, but never through a wall, the floor or the ceiling
 function keepInside() {
   if (current === "pagoda" && !inMarket) {   // outside, never sink into the stupa hill
@@ -1526,6 +1715,8 @@ function frame() {
   walkStep(dt);
   aimPrompt(dt);
   festStep(dt);
+  weatherStep(dt);
+  ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);
   renderer.render(world, camera);
