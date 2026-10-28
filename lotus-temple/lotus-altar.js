@@ -1279,7 +1279,7 @@ function ambStart() {
     water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
-    next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
+    gustLeft: 0, next: { tink: 0, bird: 2, cricket: 0, gust: rand(3, 10), bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
   wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
 }
@@ -1332,14 +1332,18 @@ function ambStep(dt) {
   }
   const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
   set(amb.leaves, .14 * leaves * wind);   // a soft rustle, under the other sounds
-  set(amb.wind, (.4 * field + (out ? .05 : 0)) * wind);   // and a light breeze anywhere outside
-  set(amb.rice, .06 * field * wind);
   set(amb.water, .3 * water); set(amb.water2, .08 * water);
   set(amb.cicada, day && wet < .5 && out ? .02 + .05 * forest : 0);
   set(amb.rain, .28 * wet * (out ? 1 : .35));
   amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors
   // the one-off sounds, each on its own timer
   const due = (k, a0, a1) => (amb.next[k] -= dt) < 0 && (amb.next[k] = rand(a0, a1), true);
+  // the wind over the fields comes and goes: a gust of a few seconds, then stillness (more often in windy weather);
+  // the rice hisses only while it blows, and a lighter breath of it reaches anywhere outside
+  if (amb.gustLeft > 0) amb.gustLeft -= dt; else if (due("gust", 8, 25 - 15 * wx.wind)) amb.gustLeft = rand(3, 8);
+  const blowing = amb.gustLeft > 0 ? wind : 0;
+  amb.wind.g.gain.setTargetAtTime((.15 * field + (out ? .02 : 0)) * blowing, T, 1.5);   // a slow swell in and out
+  amb.rice.g.gain.setTargetAtTime(.025 * field * blowing, T, 1.5);
   if (stupa > .02 && due("tink", .12, 1.5 - wind)) tinkle(.06 * stupa * (.4 + .6 * gust));
   const birds = out && day && wet < .5 ? Math.max(forest, .2) : 0;
   if (birds && due("bird", 1.2, 5)) bird(.035 * birds);
