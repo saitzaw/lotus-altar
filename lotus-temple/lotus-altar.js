@@ -1324,14 +1324,14 @@ function ambStep(dt) {
   const gust = .55 + .25 * Math.sin(now * .31) + .2 * Math.sin(now * .83 + 1), wind = (.4 + .6 * wx.wind) * gust, wet = wx.rain;
   let leaves = 0, field = 0, water = 0, forest = 0, stupa = 0;
   if (out) {
-    leaves = near(Math.hypot(p.x - S.banyan[0], p.z - S.banyan[1]), 6, 32);
+    leaves = near(Math.hypot(p.x - S.banyan[0], p.z - S.banyan[1]), 5, 25);
     field = near(toRect(S.fields), 0, 25);
     water = p.x > S.river[0] - 10 && p.x < S.river[1] + 10 ? near(Math.abs(p.z - S.riverZ(p.x)), 3, 32) : 0;
     forest = clamp((S.forestZ + 20 - p.z) / 25, 0, 1);   // from 20 m short of the trees to a few metres in
     stupa = near(Math.hypot(p.x - S.stupa[0], p.y - S.stupa[1], p.z - S.stupa[2]), 14, 50);
   }
   const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
-  set(amb.leaves, .4 * leaves * wind);
+  set(amb.leaves, .14 * leaves * wind);   // a soft rustle, under the other sounds
   set(amb.wind, (.4 * field + (out ? .05 : 0)) * wind);   // and a light breeze anywhere outside
   set(amb.rice, .06 * field * wind);
   set(amb.water, .3 * water); set(amb.water2, .08 * water);
