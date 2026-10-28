@@ -31,6 +31,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-28
+- Added a Kachin Baptist church past the end of the plaza lane (white hall, red roof, bell tower and spire, manau
+  patterns on the porch pillars and front gable; board in Burmese and English) with six houses round it.
 - Named the town Hsenwi: a Shan-style welcome board by the police station at the east end of the street, in Shan
   (ယိၼ်းၸူမ်းႁပ်ႉ ၸူး ဝဵင်းသဵၼ်ဝီ), Burmese (သိန္နီမြို့မှ ကြိုဆိုပါသည်) and English. Shan wording wants a native speaker's check.
 - Added a bamboo grove behind the high school and a row of houses facing the school gate across the market lane.

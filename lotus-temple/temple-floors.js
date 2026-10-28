@@ -2961,6 +2961,74 @@ window.TempleFloors = function TempleFloors(ctx) {
     mesh(new THREE.ConeGeometry(.09, .7, 8), gold, 0, top + 1.65, 0, b);
     [0, 1, 2].forEach(i => mesh(new THREE.TorusGeometry(.12 - i * .03, .015, 5, 12), gold, 0, top + 1.45 + i * .14, 0, b).rotation.x = Math.PI / 2);
   }
+  // the Kachin Baptist church past the end of the plaza lane, where the Kachin families of the town worship: a white hall
+  // under a steep red roof, a bell tower and spire over the door with the cross on top, and the manau patterns of the Kachin
+  // (red and black diamonds and zigzags, as on the poles of the manau dance ground) on the porch pillars and under the gable
+  // ကချင်နှစ်ခြင်းအသင်းတော်; Jinghpaw services on Sunday, hymns sung in parts, and the whole town comes at Christmas
+  function kachinChurch(g, x, z) {
+    const data = { tip: "The Kachin Baptist church · ကချင်နှစ်ခြင်းအသင်းတော်", toast: "The Kachin Baptist church. Most Kachin are Christian, the greater part Baptist since American missionaries came to the hills more than a century ago. On Sunday the service is in Jinghpaw and the hymns are sung in parts; at Christmas the whole town, Buddhist neighbours too, comes for the carols and the meal." };
+    const c = new THREE.Group(); c.position.set(x, 0, z); c.rotation.y = Math.PI; g.add(c);   // its front (local +z) faces the plaza lane's end
+    const W = 9, L = 16, H = 6, base = .5;
+    const lime = civicWhite, trim = std({ color: 0x9a2a22, roughness: .6 }), glass = std({ color: 0x2a3a5a, roughness: .3, metalness: .2 }), door = std({ color: 0x5a3a22, roughness: .7 });
+    const manau = (() => {   // a strip of manau pattern: red diamonds edged in black, yellow points, on white
+      const t = canvasTex(128, (cx, sz) => {
+        cx.fillStyle = "#f4f0e4"; cx.fillRect(0, 0, sz, sz);
+        cx.fillStyle = "#1a1412"; cx.fillRect(0, 0, 10, sz); cx.fillRect(sz - 10, 0, 10, sz);
+        for (let k = 0; k < 2; k++) {
+          const y = k * sz / 2, h = sz / 2;
+          cx.fillStyle = "#1a1412"; cx.beginPath(); cx.moveTo(sz / 2, y + 4); cx.lineTo(sz - 18, y + h / 2); cx.lineTo(sz / 2, y + h - 4); cx.lineTo(18, y + h / 2); cx.fill();
+          cx.fillStyle = "#b8281e"; cx.beginPath(); cx.moveTo(sz / 2, y + 12); cx.lineTo(sz - 28, y + h / 2); cx.lineTo(sz / 2, y + h - 12); cx.lineTo(28, y + h / 2); cx.fill();
+          cx.fillStyle = "#e8b830"; cx.beginPath(); cx.arc(sz / 2, y + h / 2, 7, 0, TAU); cx.fill();
+          [[14, y + 6], [sz - 14, y + 6]].forEach(([px, py]) => { cx.beginPath(); cx.arc(px, py, 4, 0, TAU); cx.fill(); });
+        }
+      });
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+    })();
+    const manauMat = (rx, ry) => { const t = manau.clone(); t.needsUpdate = true; t.repeat.set(rx, ry); return std({ map: t, roughness: .7 }); };
+    // the plinth, the hall and its steep roof
+    mesh(new THREE.BoxGeometry(W + 1, base, L + 1), forecourt, 0, base / 2, 0, c);
+    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(W, H, L), lime, 0, base + H / 2, 0, c), data);
+    sRect(c, -W / 2 - .5, W / 2 + .5, -L / 2 - .5, L / 2 + .5);
+    const RH = 4.6, rr = (W + 1.4) / 1.73, roofGeo = new THREE.CylinderGeometry(rr, rr, L + 1.2, 3, 1, false, Math.PI / 2);
+    roofGeo.rotateZ(Math.PI / 2); roofGeo.rotateY(Math.PI / 2); roofGeo.scale(1, RH / (rr * 1.5), 1);
+    clickable(picks.pagoda, mesh(roofGeo, ROOFS[1](1), 0, base + H + RH / 3 - .1, 0, c), data);
+    // the gable ends: white triangles, the front one banded with manau pattern under its eaves
+    const gab = new THREE.Shape(); gab.moveTo(-W / 2, 0); gab.lineTo(W / 2, 0); gab.lineTo(0, RH * .95); gab.lineTo(-W / 2, 0);
+    [-1, 1].forEach(e => { const gm = mesh(new THREE.ShapeGeometry(gab), std({ color: 0xf4f2ec, roughness: .85, side: THREE.DoubleSide }), 0, base + H, e * (L / 2 + .01), c); gm.castShadow = false; });
+    [-1, 1].forEach(sd => { const band = mesh(new THREE.BoxGeometry(Math.hypot(W / 2, RH * .95) - .3, .4, .06), manauMat(6, 1), sd * W / 4, base + H + RH * .95 / 2 - .25, L / 2 + .06, c); band.rotation.z = -sd * Math.atan2(RH * .95, W / 2); });
+    mesh(new THREE.BoxGeometry(W + .2, .35, .3), trim, 0, base + H - .1, L / 2 + .1, c);   // the red band along the eaves
+    // tall pointed windows down both sides, and a round window in the back gable
+    for (let i = 0; i < 5; i++) [-1, 1].forEach(sd => {
+      const wz = -L / 2 + 2.2 + i * (L - 4.4) / 4;
+      mesh(new THREE.BoxGeometry(.08, 2.6, 1), glass, sd * (W / 2 + .02), base + 2.9, wz, c);
+      const tip = mesh(new THREE.BoxGeometry(.08, .72, .72), glass, sd * (W / 2 + .02), base + 4.2, wz, c); tip.rotation.x = Math.PI / 4;
+      mesh(new THREE.BoxGeometry(.12, .16, 1.3), trim, sd * (W / 2 + .04), base + 1.55, wz, c);   // the sill
+    });
+    mesh(new THREE.CylinderGeometry(.7, .7, .08, 16), glass, 0, base + H + 1.4, -L / 2 - .03, c).rotation.x = Math.PI / 2;
+    // the bell tower over the door, its spire and the cross
+    const TW = 3, TH = 11, tz = L / 2 + TW / 2 - .2;
+    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(TW, TH, TW), lime, 0, base + TH / 2, tz, c), data);
+    sRect(c, -TW / 2 - .1, TW / 2 + .1, tz - TW / 2, tz + TW / 2 + .1);
+    [4, 8.2].forEach(y => mesh(new THREE.BoxGeometry(TW + .2, .25, TW + .2), trim, 0, base + y, tz, c));
+    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([dx, dz]) => mesh(new THREE.BoxGeometry(dx ? .06 : .9, 1.6, dz ? .06 : .9), std({ color: 0x1a1412, roughness: .9 }), dx * (TW / 2 + .01), base + 9.4, tz + dz * (TW / 2 + .01), c));   // the belfry's openings
+    const spire = mesh(new THREE.ConeGeometry(TW * .78, 5, 4), ROOFS[1](1), 0, base + TH + 2.5, tz, c); spire.rotation.y = Math.PI / 4;
+    const crossM = std({ color: 0xf4f2ec, roughness: .5 });
+    mesh(new THREE.BoxGeometry(.14, 1.6, .14), crossM, 0, base + TH + 5.6, tz, c); mesh(new THREE.BoxGeometry(.9, .14, .14), crossM, 0, base + TH + 5.9, tz, c);
+    mesh(new THREE.BoxGeometry(1.5, 2.6, .1), door, 0, base + 1.3, tz + TW / 2 + .01, c);   // the double door
+    mesh(new THREE.BoxGeometry(1.8, .25, .2), trim, 0, base + 2.75, tz + TW / 2 + .05, c);
+    // the porch before the door on two manau-painted pillars, and the steps down
+    const PZ = tz + TW / 2 + 1.4;
+    mesh(new THREE.BoxGeometry(4.6, base, 2.8), forecourt, 0, base / 2, PZ, c);
+    [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(.45, 3.2, .45), manauMat(1, 3), sd * 1.9, base + 1.6, PZ + .9, c); sCircle(c, sd * 1.9, PZ + .9, .3); });
+    const pr = 4.6 / 1.73, porchRoof = new THREE.CylinderGeometry(pr, pr, 3, 3, 1, false, Math.PI / 2);   // a little gable, ridge running out from the door
+    porchRoof.rotateZ(Math.PI / 2); porchRoof.rotateY(Math.PI / 2); porchRoof.scale(1, .9 / (pr * 1.5), 1);
+    mesh(porchRoof, ROOFS[1](1), 0, base + 3.2 + .3, PZ, c);
+    for (let i = 0; i < 2; i++) mesh(new THREE.BoxGeometry(3.4, base - i * .25, .4), forecourt, 0, (base - i * .25) / 2, PZ + 1.6 + i * .4, c);
+    // the forecourt and a path from the end of the plaza lane, and the church's board
+    flat(mesh(new THREE.BoxGeometry(14, .05, 6), forecourt, 0, .03, PZ + 4.6, c)).receiveShadow = true;
+    civicSign(c, "ကချင်နှစ်ခြင်းအသင်းတော်", "Hsenwi Kachin Baptist Church", "#f4f2ec", "#9a2a22", 3.4, 5, 1.9, PZ + 3.5);
+    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.1, .12), door, 5 + sd * 1.5, 1.05, PZ + 3.45, c));
+  }
   function backStreets(g) {
     const lane = std({ color: 0x7e7a72, roughness: .9 }), drain = std({ color: 0x3a3632, roughness: .9 });
     const inLane = (x, z, skip) => LANES.some((l, i) => i !== skip && x > l.x0 - .5 && x < l.x1 + .5 && z > l.z0 - .5 && z < l.z1 + .5);
@@ -3006,8 +3074,13 @@ window.TempleFloors = function TempleFloors(ctx) {
     // gardens: shade trees and banana clumps behind and between the houses
     [[15, 96], [24, 104], [-14, 98], [-86, 30], [-86.5, 8], [-86, -12]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 3) * .1, 300 + i));
     [[14, 93], [20, 99], [26, 95], [-12, 104], [-85.5, 40], [-85.5, 19], [-86, -2], [-85.5, -20]].forEach(([x, z], i) => banana(g, x, z, 400 + i));
-    [[24, 116], [23, 131], [24.5, 146]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the houses facing the school
-    [[25, 123], [24, 139]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
+    [[16, 143], [4, 144], [24.5, 146.5]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the church and its houses
+    [[10, 145.5], [20, 145]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
+    kachinChurch(g, 12, 128);
+    flat(mesh(new THREE.BoxGeometry(8, .05, 3), lane, 2, .03, 108.6, g));   // the path from the end of the plaza lane to the church
+    // six houses round the church, three each side, their fronts toward it
+    [118, 127, 136].forEach(z => { const W = 6 + (seq % 3) * .5, D = 6.5; house(-1, z, Math.PI / 2, W, D); });
+    [118, 127, 136].forEach(z => { const W = 6 + (seq % 3) * .5, D = 6.5; house(24.2, z, -Math.PI / 2, W, D); });
     // the old banyan on the corner of the market lane and the street
     banyan(g, 36.4, 65.4);
   }

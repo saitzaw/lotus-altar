@@ -24,6 +24,7 @@
 | Stupa hill | centre (−88, 140), top at y 15 (`HILL`) |
 | High school | x 46–98, z 111–152; gate on the market lane at x 46, z 118–126; houses face it from x ≈ 30–36 |
 | Bamboo grove (`bambooGrove`) | x 44–100, z 153–178, behind the school's back wall |
+| Kachin Baptist church (`kachinChurch`) | centre (12, 128), front facing the plaza lane's end (z 107); forecourt z ≈ 108–114; three houses each side at x −1 and 24.2, z 118 / 127 / 136 |
 | Police station | (133, 36); the Hsenwi welcome board (`welcomeSign`, Shan/Burmese/English, unlit) stands on the verge at (144, 44.4), east of the police forecourt and clear of the road and pavement, facing back down the street |
 
 Walkers may go up to `WORLD_R` (225 m) from the temple.
