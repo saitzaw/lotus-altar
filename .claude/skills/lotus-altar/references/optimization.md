@@ -56,5 +56,6 @@ against this list.
 ## Checking
 
 There's no profiler set up. In Chrome, open DevTools → Performance and record a walk through the town and market; look
-for long frames and stalls when entering a building. `renderer.info.render.calls` and `.triangles` in the console give
-draw calls and triangles for the current view; compare before and after a change.
+for long frames and stalls when entering a building. For draw calls and triangles, temporarily log
+`renderer.info.render.calls` and `.triangles` from the frame loop (`renderer` is inside the app's closure, not on
+`window`), compare before and after a change, and remove the log.
