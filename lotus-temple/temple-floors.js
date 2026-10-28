@@ -2908,12 +2908,12 @@ window.TempleFloors = function TempleFloors(ctx) {
     flagPole(g, 127, 44.5);
     vehicle(g, 137.5, 44.5, Math.PI / 2, { L: 4.8, W: 2, H: 1.8, cabL: 2.6, body: civicWhite, stripe: civicBlue, beacons: 2 });
   }
-  // the town's welcome board at the east end of the street, beside the police station, made the Shan way: a carved teak board
+  // the town's welcome board on the verge at the east end of the street, beside the police station and clear of the road, made the Shan way: a carved teak board
   // on two posts under a small two-tiered roof with a golden finial, lettered in gold in Shan, Burmese and English. It isn't lit
   const WELCOME = { shan: "ယိၼ်းၸူမ်းႁပ်ႉ ၸူး ဝဵင်းသဵၼ်ဝီ", my: "သိန္နီမြို့မှ ကြိုဆိုပါသည်", en: "Welcome to Hsenwi" };
   function welcomeSign(g) {
     const data = { tip: "Welcome to Hsenwi · သဵၼ်ဝီ", toast: "Welcome to Hsenwi (သဵၼ်ဝီ in Shan, သိန္နီ in Burmese), on the road from Lashio to Muse in northern Shan State: once the seat of one of the oldest Shan states, its sawbwa's palace long gone, now a market town among the hills." };
-    const b = new THREE.Group(); b.position.set(147.5, 0, 52); b.rotation.y = -Math.PI / 2; g.add(b);   // its face looks back down the street
+    const b = new THREE.Group(); b.position.set(144, 0, 44.4); b.rotation.y = -Math.PI / 2; g.add(b);   // on the verge beside the street, its face looking back down it
     const teak = std({ color: 0x5a2e18, roughness: .7 }), dark = std({ color: 0x3a1c10, roughness: .8 }), gold = M.gold;
     const lime = std({ color: 0xe8e2d4, roughness: .9 }), tin = std({ color: 0x4a3a30, roughness: .6, metalness: .3, flatShading: true });
     // the board: both faces lettered, in a carved frame
