@@ -2908,6 +2908,59 @@ window.TempleFloors = function TempleFloors(ctx) {
     flagPole(g, 127, 44.5);
     vehicle(g, 137.5, 44.5, Math.PI / 2, { L: 4.8, W: 2, H: 1.8, cabL: 2.6, body: civicWhite, stripe: civicBlue, beacons: 2 });
   }
+  // the town's welcome board at the east end of the street, beside the police station, made the Shan way: a carved teak board
+  // on two posts under a small two-tiered roof with a golden finial, lettered in gold in Shan, Burmese and English. It isn't lit
+  const WELCOME = { shan: "ယိၼ်းၸူမ်းႁပ်ႉ ၸူး ဝဵင်းသဵၼ်ဝီ", my: "သိန္နီမြို့မှ ကြိုဆိုပါသည်", en: "Welcome to Hsenwi" };
+  function welcomeSign(g) {
+    const data = { tip: "Welcome to Hsenwi · သဵၼ်ဝီ", toast: "Welcome to Hsenwi (သဵၼ်ဝီ in Shan, သိန္နီ in Burmese), on the road from Lashio to Muse in northern Shan State: once the seat of one of the oldest Shan states, its sawbwa's palace long gone, now a market town among the hills." };
+    const b = new THREE.Group(); b.position.set(147.5, 0, 52); b.rotation.y = -Math.PI / 2; g.add(b);   // its face looks back down the street
+    const teak = std({ color: 0x5a2e18, roughness: .7 }), dark = std({ color: 0x3a1c10, roughness: .8 }), gold = M.gold;
+    const lime = std({ color: 0xe8e2d4, roughness: .9 }), tin = std({ color: 0x4a3a30, roughness: .6, metalness: .3, flatShading: true });
+    // the board: both faces lettered, in a carved frame
+    const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 400;
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    const paint = () => {
+      const c = cv.getContext("2d"), W = 1024, H = 400;
+      c.fillStyle = "#5a2a16"; c.fillRect(0, 0, W, H);
+      c.strokeStyle = "#d8b25a"; c.lineWidth = 10; c.strokeRect(14, 14, W - 28, H - 28); c.lineWidth = 3; c.strokeRect(32, 32, W - 64, H - 64);
+      c.fillStyle = "#d8b25a";   // lotus-bud corners
+      [[48, 48], [W - 48, 48], [48, H - 48], [W - 48, H - 48]].forEach(([x, y]) => { c.beginPath(); c.arc(x, y, 9, 0, TAU); c.fill(); });
+      c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#f0cf72";
+      c.font = '600 76px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText(WELCOME.shan, W / 2, 130, W - 110);
+      c.font = '600 64px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText(WELCOME.my, W / 2, 238, W - 110);
+      c.font = '400 44px "Marcellus", serif'; c.fillText(WELCOME.en, W / 2, 330, W - 110);
+      t.needsUpdate = true;
+    };
+    paint();
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('600 82px "Noto Sans Myanmar"', WELCOME.shan + WELCOME.my), document.fonts.load('400 44px "Marcellus"', WELCOME.en)]).then(paint, () => {});
+    const face = std({ map: t, roughness: .65 });
+    const BW = 4.4, BH = BW * 400 / 1024, BY = 2.3;
+    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(BW, BH, .12), [dark, dark, dark, dark, face, face], 0, BY, 0, b), data);
+    [[0, BY + BH / 2 + .07, BW + .3, .14], [0, BY - BH / 2 - .07, BW + .3, .14]].forEach(([x, y, w, h]) => mesh(new THREE.BoxGeometry(w, h, .2), teak, x, y, 0, b));   // top and bottom rails
+    // the two posts on whitewashed brick footings, with carved brackets under the board
+    [-1, 1].forEach(sd => {
+      const x = sd * (BW / 2 + .2);
+      mesh(new THREE.BoxGeometry(.6, .5, .6), lime, x, .25, 0, b); sCircle(b, x, 0, .4);
+      mesh(new THREE.BoxGeometry(.22, 3.9, .22), teak, x, 2.2, 0, b);
+      const br = mesh(new THREE.BoxGeometry(.5, .1, .14), teak, x - sd * .3, BY - BH / 2 - .3, 0, b); br.rotation.z = sd * .6;
+    });
+    // the two-tiered roof: gables of dark tin with upturned ends, a gilded fretwork edge, the upper tier smaller
+    const gable = (w, d, h, y) => {
+      const geo = new THREE.CylinderGeometry(d / 1.73, d / 1.73, w, 3, 1, false, Math.PI / 2); geo.rotateZ(Math.PI / 2); geo.scale(1, h / (d / 1.73 * 1.5), 1);
+      mesh(geo, tin, 0, y, 0, b);
+      [-1, 1].forEach(sd => {   // the gable ends curl up
+        const tip = mesh(new THREE.ConeGeometry(.07, .4, 5), gold, sd * (w / 2 + .05), y + .05, 0, b); tip.rotation.z = -sd * .9;
+        [-1, 1].forEach(e => mesh(new THREE.BoxGeometry(w, .06, .03), gold, 0, y - h * .32, e * d * .5, b));   // fretwork along the eaves
+      });
+    };
+    const top = BY + BH / 2 + .14;
+    gable(BW + 1, 1.1, .55, top + .3);
+    mesh(new THREE.BoxGeometry(BW * .45, .35, .5), dark, 0, top + .78, 0, b);   // the little upper storey between the tiers
+    gable(BW * .6, .8, .45, top + 1.15);
+    // the finial: a gilded spire with umbrella rings, as on a monastery roof
+    mesh(new THREE.ConeGeometry(.09, .7, 8), gold, 0, top + 1.65, 0, b);
+    [0, 1, 2].forEach(i => mesh(new THREE.TorusGeometry(.12 - i * .03, .015, 5, 12), gold, 0, top + 1.45 + i * .14, 0, b).rotation.x = Math.PI / 2);
+  }
   function backStreets(g) {
     const lane = std({ color: 0x7e7a72, roughness: .9 }), drain = std({ color: 0x3a3632, roughness: .9 });
     const inLane = (x, z, skip) => LANES.some((l, i) => i !== skip && x > l.x0 - .5 && x < l.x1 + .5 && z > l.z0 - .5 && z < l.z1 + .5);
@@ -3849,6 +3902,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     bambooGrove(g);
     fuelStation(g);
     fireAndPolice(g);
+    welcomeSign(g);
     halloweenGhost(g);
     // 溪, the stream behind the compound: it winds across the land beyond the pines on the far side of the back wall,
     // between grassy banks edged with stones, with rocks, reeds and a stone slab bridge; the water flows to the east

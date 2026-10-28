@@ -20,6 +20,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Open threads
 
+- Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
+
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
 - Stale comment in `lotus-altar.js` (~line 297) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
@@ -29,6 +31,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-28
+- Named the town Hsenwi: a Shan-style welcome board by the police station at the east end of the street, in Shan
+  (ယိၼ်းၸူမ်းႁပ်ႉ ၸူး ဝဵင်းသဵၼ်ဝီ), Burmese (သိန္နီမြို့မှ ကြိုဆိုပါသည်) and English. Shan wording wants a native speaker's check.
 - Added a bamboo grove behind the high school and a row of houses facing the school gate across the market lane.
   Not yet checked by eye in a browser (headless renders couldn't reach the spot).
 - Removed the stream's flowing-water sound.
