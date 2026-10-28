@@ -1274,12 +1274,13 @@ function ambStart() {
   amb = {
     out, buf,
     leaves: bed([["bandpass", 900, .5], ["lowpass", 1800, .7]]),   // a breeze through the banyan: airy, not a hiss
-    wind: bed([["lowpass", 700, .5], ["bandpass", 360, .9]]),    // wind over the open fields
+    wind: bed([["bandpass", 650, .5], ["lowpass", 1400, .7]]),   // a breeze over the open fields and the hilltop: airy, not a rumble
     rice: bed([["highpass", 2800, .5]]),                          // the ripe rice hissing in it
     water: bed([["bandpass", 1000, 1.4]]), water2: bed([["bandpass", 2400, 4]]),   // the stream over its stones
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
-    gustLeft: 0, breathLeft: 0, next: { tink: 0, breath: rand(2, 6), bird: 2, cricket: 0, gust: rand(3, 10), bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
+    breaths: { banyan: { left: 0, wait: rand(2, 6) }, field: { left: 0, wait: rand(3, 10) }, hill: { left: 0, wait: rand(1, 5) } },
+    next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
   wobble(amb.water.fs[0].frequency, .7, 260); wobble(amb.water2.fs[0].frequency, 1.9, 700);
 }
@@ -1337,21 +1338,25 @@ function ambStep(dt) {
   amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors
   // the one-off sounds, each on its own timer
   const due = (k, a0, a1) => (amb.next[k] -= dt) < 0 && (amb.next[k] = rand(a0, a1), true);
-  // the wind over the fields comes and goes: a gust of a few seconds, then stillness (more often in windy weather);
-  // the rice hisses only while it blows, and a lighter breath of it reaches anywhere outside
-  if (amb.gustLeft > 0) amb.gustLeft -= dt; else if (due("gust", 8, 25 - 15 * wx.wind)) amb.gustLeft = rand(3, 8);
-  const blowing = amb.gustLeft > 0 ? wind : 0;
-  amb.wind.g.gain.setTargetAtTime((.15 * field + (out ? .02 : 0)) * blowing, T, 1.5);   // a slow swell in and out
-  amb.rice.g.gain.setTargetAtTime(.025 * field * blowing, T, 1.5);
-  // the old banyan breathes: a soft breeze through its leaves for a few seconds, then stillness. At night each breath
-  // carries a faint low moan through the hanging roots
-  if (amb.breathLeft > 0) amb.breathLeft -= dt;
-  else if (due("breath", 5, 14)) {
-    amb.breathLeft = rand(2.5, 5.5);
-    if (!day && leaves > .05) { const f = rand(300, 420), o = ping(f, .01 * leaves, amb.breathLeft + 1, 0, amb.breathLeft * .45); if (o) o.frequency.linearRampToValueAtTime(f * .9, T + amb.breathLeft + 1); }
-  }
-  amb.leaves.g.gain.setTargetAtTime(amb.breathLeft > 0 ? .16 * leaves * (.6 + .4 * gust) : 0, T, 1.2);   // swells in and dies away slowly
-  if (stupa > .02 && due("tink", .12, 1.5 - wind)) tinkle(.06 * stupa * (.4 + .6 * gust));
+  // every wind follows one pattern: a breath of soft breeze for a few seconds, swelling in and dying away, then stillness
+  // (shorter in windy weather). At night each breath carries a faint low moan, falling as it fades
+  const breath = (b, len, gap, moan, level) => {
+    if (b.left > 0) b.left -= dt;
+    else if ((b.wait -= dt) < 0) {
+      b.left = rand(...len); b.wait = rand(gap[0], gap[1] - (gap[1] - gap[0]) * .6 * wx.wind);
+      if (!day && level > .05) { const f = rand(...moan), o = ping(f, .01 * level, b.left + 1, 0, b.left * .45); if (o) o.frequency.linearRampToValueAtTime(f * .9, T + b.left + 1); }
+    }
+    return b.left > 0 ? 1 : 0;
+  };
+  const tree = breath(amb.breaths.banyan, [2.5, 5.5], [5, 14], [300, 420], leaves);   // through the banyan's hanging roots
+  const open = breath(amb.breaths.field, [3, 7], [6, 18], [200, 300], field);          // across the paddies, and faintly anywhere outside
+  const hill = breath(amb.breaths.hill, [2, 5], [4, 12], [260, 360], stupa);           // round the stupas on the hilltop
+  const soft = .6 + .4 * gust;
+  amb.leaves.g.gain.setTargetAtTime(.16 * leaves * soft * tree, T, 1.2);
+  amb.wind.g.gain.setTargetAtTime(((.13 * field + (out ? .02 : 0)) * open + .1 * stupa * hill) * wind, T, 1.4);
+  amb.rice.g.gain.setTargetAtTime(.025 * field * wind * open, T, 1.4);
+  // the hti bells ring as a breath passes over the hilltop, and only now and then in the stillness between
+  if (stupa > .02 && due("tink", hill ? .12 : 3, hill ? 1.2 : 9)) tinkle(.06 * stupa * (hill ? soft : .5));
   const birds = out && day && wet < .5 ? Math.max(forest, .2) : 0;
   if (birds && due("bird", 1.2, 5)) bird(.035 * birds);
   if (out && !day && due("cricket", .25, .9)) crickets(.012 * Math.max(forest, field, .35));
