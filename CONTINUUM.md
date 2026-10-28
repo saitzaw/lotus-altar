@@ -29,6 +29,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-28
+- Added a bamboo grove behind the high school and a row of houses facing the school gate across the market lane.
+  Not yet checked by eye in a browser (headless renders couldn't reach the spot).
 - Removed the stream's flowing-water sound.
 - Made every wind (banyan, fields, stupa hill) come in soft breaths with stillness between and a faint moan at night
   (`b2818d9`); quieter field and banyan wind.

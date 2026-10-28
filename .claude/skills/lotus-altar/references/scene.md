@@ -22,6 +22,8 @@
 | Forest | beyond z ≈ −98, then hills in an arc 150–190 m out |
 | Old banyan | (36.4, 65.4) |
 | Stupa hill | centre (−88, 140), top at y 15 (`HILL`) |
+| High school | x 46–98, z 111–152; gate on the market lane at x 46, z 118–126; houses face it from x ≈ 30–36 |
+| Bamboo grove (`bambooGrove`) | x 44–100, z 153–178, behind the school's back wall |
 
 Walkers may go up to `WORLD_R` (225 m) from the temple.
 

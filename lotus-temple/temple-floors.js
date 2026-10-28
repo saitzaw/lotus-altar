@@ -2819,6 +2819,39 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     flagPole(g, 69, 138.6, 9);
   }
+  // ဝါးတော, a bamboo grove behind the school, beyond its back wall: clumps of tall green culms fanning out from each root,
+  // with feathery leaves on their upper halves; a few older culms gone yellow, dry leaves on the ground between
+  function bambooGrove(g) {
+    const r = rng(7171), X0 = 46, X1 = 98, Z0 = 155, Z1 = 176, data = { tip: "The bamboo grove · ဝါးတော", toast: "A bamboo grove behind the school. The culms grow in clumps from one root, a few metres in a season; people cut them for scaffolding, fences, baskets and the walls of the huts, and dig the young shoots to eat in the rains." };
+    flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x7a6a48, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // dry leaves
+    const culmGeo = new THREE.CylinderGeometry(.045, .055, 1, 5); culmGeo.translate(0, .5, 0);
+    const leafGeo = new THREE.IcosahedronGeometry(1, 0);
+    const CULMS = [0x6e8f34, 0x7d9c3c, 0x5f8030, 0x6a8a36, 0xa89c50].map(c => new THREE.Color(c)), LEAVES = [0x4a7a2e, 0x568634, 0x3e6a28].map(c => new THREE.Color(c));
+    const NC = 1100, NL = 4400, white = { color: 0xffffff, roughness: .85 };
+    const culms = new THREE.InstancedMesh(culmGeo, std(white), NC), leaves = new THREE.InstancedMesh(leafGeo, std({ ...white, roughness: 1, flatShading: true }), NL);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = V(0, 1, 0), dir = V(0, 1, 0);
+    let nc = 0, nl = 0;
+    for (let x = X0 + 1.5; x < X1 - 1; x += 3.4) for (let z = Z0 + 1; z < Z1; z += 3.4) {
+      if (r() < .22) continue;
+      const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 8 + (r() * 9 | 0), big = .8 + r() * .4;
+      sCircle(g, cx, cz, .7);
+      for (let k = 0; k < n && nc < NC; k++) {
+        const a = r() * TAU, rr = r() * .6, lean = .04 + r() * .2 + rr * .15, h = (6 + r() * 5) * big, th = .8 + r() * .5;
+        dir.set(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
+        const bx = cx + Math.cos(a) * rr, bz = cz + Math.sin(a) * rr;
+        m4.compose(V(bx, 0, bz), q.setFromUnitVectors(up, dir), V(th, h, th)); culms.setMatrixAt(nc, m4);
+        culms.setColorAt(nc++, CULMS[r() < .1 ? 4 : (r() * 4) | 0]);
+        for (let j = 0; j < 4 && nl < NL; j++) {   // leaf tufts up the top half, drooping out from the culm
+          const f = .55 + j * .14 + r() * .05, s = .6 + r() * .5;
+          m4.compose(V(bx + dir.x * h * f + (r() - .5) * .5, dir.y * h * f, bz + dir.z * h * f + (r() - .5) * .5), q.setFromAxisAngle(up, r() * TAU), V(s * 1.1, s * .35, s * .8));
+          leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, LEAVES[(r() * 3) | 0]);
+        }
+      }
+    }
+    culms.count = nc; leaves.count = nl;
+    // always drawn: three.js r128 would cull an instanced mesh by its one base geometry at the origin
+    [culms, leaves].forEach(m => { m.castShadow = false; m.receiveShadow = true; m.frustumCulled = false; g.add(m); clickable(picks.pagoda, m, data); });
+  }
   // ဓာတ်ဆီဆိုင်, a fuel station on the town road south of the bridge: a forecourt off the road, a canopy lit underneath at night
   // over two islands of pumps, a small shop behind, and the sign on a pylon by the road
   function fuelStation(g) {
@@ -2914,11 +2947,14 @@ window.TempleFloors = function TempleFloors(ctx) {
     row(92.5, L2.z1, (c, W, D) => house(L2.x0 - SET - D / 2, c, Math.PI / 2, W, D));                    // plaza lane, both sides
     row(92.5, L2.z1, (c, W, D) => house(L2.x1 + SET + D / 2, c, -Math.PI / 2, W, D));
     row(92.5, 108, (c, W, D) => house(L3.x0 - SET - D / 2, c, Math.PI / 2, W, D));                      // market lane, west side
+    row(110.5, 151, (c, W, D) => house(L3.x0 - SET - D / 2, c, Math.PI / 2, W, D));                     // and on, facing the school gate
     row(L4.z0 + 1, L4.z1 - 4, (c, W, D) => house(L4.x0 - SET - D / 2, c, Math.PI / 2, W, D));          // west lane, both sides facing it
     row(L4.z0 + 1, L4.z1 - 4, (c, W, D) => house(L4.x1 + SET + D / 2, c, -Math.PI / 2, W, D));         // (back to back with the town-road houses)
     // gardens: shade trees and banana clumps behind and between the houses
     [[15, 96], [24, 104], [-14, 98], [-86, 30], [-86.5, 8], [-86, -12]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 3) * .1, 300 + i));
     [[14, 93], [20, 99], [26, 95], [-12, 104], [-85.5, 40], [-85.5, 19], [-86, -2], [-85.5, -20]].forEach(([x, z], i) => banana(g, x, z, 400 + i));
+    [[24, 116], [23, 131], [24.5, 146]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the houses facing the school
+    [[25, 123], [24, 139]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
     // the old banyan on the corner of the market lane and the street
     banyan(g, 36.4, 65.4);
   }
@@ -3810,6 +3846,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     hutVillage(g);
     hospital(g);
     highSchool(g);
+    bambooGrove(g);
     fuelStation(g);
     fireAndPolice(g);
     halloweenGhost(g);
