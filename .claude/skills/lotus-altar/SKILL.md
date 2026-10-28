@@ -32,6 +32,7 @@ donate (demo only), and wander a Northern Shan State town, seven-day market, stu
 | adding or moving anything in the 3D world (halls, outdoor places, clickables, performance) | [references/scene.md](references/scene.md) |
 | touching the clock, sun and moon, day/night, festivals or weather | [references/sky-and-weather.md](references/sky-and-weather.md) |
 | adding or changing sounds (chant, bells, ambience) | [references/sound.md](references/sound.md) |
+| adding anything to the outdoor world, frame loop or audio, or making the site faster | [references/optimization.md](references/optimization.md) |
 | writing code, to match the house style | [references/code-style.md](references/code-style.md) |
 | building, running, testing or deploying | [references/run-and-deploy.md](references/run-and-deploy.md) |
 
