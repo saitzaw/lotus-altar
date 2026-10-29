@@ -36,6 +36,8 @@ recently, and what's still open. Read it at the start of a session; update it at
   market, with and without rain; the road walkers weren't checked by eye.
 - Restyled the townsfolk after a reference picture: blocky hair, big heads with eyes and a smile, open cream shirts
   (square-necked blouses for women), knotted sashes, knee-length patterned sarongs, bare legs and flip-flops.
+- Then dressed them warmly, since northern Shan nights are cold: padded jackets and cardigans with long sleeves, wool
+  scarves, knitted bobble hats, towel turbans for some women, baggy Shan trousers or ankle-length longyi.
 
 ### 2026-10-28
 - Added a Kachin Baptist church past the end of the plaza lane (white hall, red roof, bell tower and spire, manau

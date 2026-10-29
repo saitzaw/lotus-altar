@@ -29,8 +29,9 @@ Fifteen low-poly people (`townsfolk` in `temple-floors.js`) are out from 6 PM to
 the seven-day market's aisles (`MARKET_WAYS`), stopping at stalls, and five walk the roads the ghost uses (`GHOST_ROADS`),
 keeping to one side. They stop and turn to a walker who comes close. When `wx.rain` passes `CONFIG.townsfolk.umbrella`
 they put up umbrellas. The main script passes both each frame with `temple.setTownsfolk(out, umbrellas)`.
-`?townsfolk=1` / `?townsfolk=0` force them out or in. They are drawn in a blocky village style (big heads, cream shirts,
-sashes, knee-length sarongs, flip-flops, two grey-haired elders), and anyone coming into view appears already in step. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
+`?townsfolk=1` / `?townsfolk=0` force them out or in. They are drawn in a blocky style (big heads with faces, two grey-haired
+elders) and dressed for a cold night in the hills: long-sleeved jackets, scarves, knitted hats or towel turbans, baggy Shan
+trousers or an ankle-length longyi, and anyone coming into view appears already in step. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
 are three shared `InstancedMesh`es.
 
 ## Weather
