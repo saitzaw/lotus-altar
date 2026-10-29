@@ -46,7 +46,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   // Halloween night (set from the main script): `out` 0–1 as the houses and village huts put their lights out at 9 pm,
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
-  // townsfolk (set from the main script): `out` from 6 pm to 6 am, `umbrellas` up while it rains (see townsfolk)
+  // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
   const FOLK = { out: false, umbrellas: false };
   const poleLights = [];   // { x, z, set(lit) } in the grounds' frame
   const lerpC = (a, b, d) => new THREE.Color(a).lerp(new THREE.Color(b), d);
@@ -2671,7 +2671,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
   }
   /* ---------- townsfolk out in the evening: ten people browsing the seven-day market's aisles and five walking the town's roads,
-     out from 6 pm to 6 am on the temple's clock; when it rains they put up umbrellas. Low-poly figures with big friendly
+     out from 6 pm until they go home at 10 pm on the temple's clock; when it rains they put up umbrellas. Low-poly figures with big friendly
      heads, wrapped up warm against the cold hill nights; they stop and turn to someone who comes close ---------- */
   // one geometry from many small parts, each coloured: [geometry, colour, x, y, z]
   function lowPoly(list) {

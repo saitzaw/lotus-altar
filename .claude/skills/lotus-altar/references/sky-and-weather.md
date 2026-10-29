@@ -25,7 +25,7 @@ The light is one `SpotLight` always in the scene (adding a light later would rec
 
 ## Townsfolk
 
-Fifteen low-poly people (`townsfolk` in `temple-floors.js`) are out from 6 PM to 6 AM ICT (`CONFIG.townsfolk`): ten browse
+Fifteen low-poly people (`townsfolk` in `temple-floors.js`) are out from 6 PM until they go home at 10 PM ICT (`CONFIG.townsfolk`), leaving the roads to the Halloween ghost: ten browse
 the seven-day market's aisles (`MARKET_WAYS`), stopping at stalls, and five walk the roads the ghost uses (`GHOST_ROADS`),
 keeping to one side. They stop and turn to a walker who comes close. When `wx.rain` passes `CONFIG.townsfolk.umbrella`
 they put up umbrellas. The main script passes both each frame with `temple.setTownsfolk(out, umbrellas)`.

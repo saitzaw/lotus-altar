@@ -46,9 +46,9 @@ const CONFIG = {
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
   halloween: { from: [10, 27], to: [11, 1], outHour: 21, untilHour: 5 },
-  // townsfolk: ten people in the seven-day market and five on the roads, out from `from` to `until` o'clock on the temple's clock;
+  // townsfolk: ten people in the seven-day market and five on the roads, out from `from` until they go home at `until` o'clock on the temple's clock;
   // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
-  townsfolk: { from: 18, until: 6, umbrella: .3 },
+  townsfolk: { from: 18, until: 22, umbrella: .3 },
   // the weather outside follows the seasons of the northern Thai hills (no live weather service): rain from May to October,
   // cool clear days and misty mornings from November to February, smoky haze from the field burning in March and April.
   // Each `spell` of hours on the temple's clock gets one kind, from that month's odds [clear, cloudy, rain, mist, haze];
@@ -1154,7 +1154,7 @@ function festNote() {
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
 }
 
-/* ---------- townsfolk: people out in the market and on the roads from 6 pm to 6 am ICT ---------- */
+/* ---------- townsfolk: people out in the market and on the roads from 6 pm until they go home at 10 pm ICT ---------- */
 const FOLK_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("townsfolk"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
 function folkNow() {
   if (FOLK_FORCE !== null) return FOLK_FORCE;
