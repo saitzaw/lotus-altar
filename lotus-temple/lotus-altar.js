@@ -49,6 +49,10 @@ const CONFIG = {
   // townsfolk: ten people in the seven-day market and five on the roads, out from `from` until they go home at `until` o'clock on the temple's clock;
   // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
   townsfolk: { from: 18, until: 22, umbrella: .3 },
+  // the beat officer: a policeman walks the town's roads and chases a visitor on foot who comes within `see` metres, at `speed`
+  // m/s (a walker does 2.6, so you can get away); within `arrest` metres you are arrested and walked to the police station, and he
+  // stays there `hold` seconds. The temple compound and the markets are safe ground. ?police=0 or ?police=1 turns him off or on
+  police: { on: true, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30 },
   // the weather outside follows the seasons of the northern Thai hills (no live weather service): rain from May to October,
   // cool clear days and misty mornings from November to February, smoky haze from the field burning in March and April.
   // Each `spell` of hours on the temple's clock gets one kind, from that month's odds [clear, cloudy, rain, mist, haze];
@@ -1164,6 +1168,24 @@ function folkNow() {
 let folkOut = folkNow();
 setInterval(() => { folkOut = folkNow(); }, 3e4);
 
+/* ---------- the beat officer: chases a visitor on foot anywhere outside the temple and the markets, and arrests one he catches ---------- */
+const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
+const POLICE_SAYS = {
+  spotted: "👮 A police officer has seen you and gives chase! Get inside the temple grounds or a market, where no one can be arrested.",
+  safe: "You made it to safe ground. The officer stops at the edge, then turns back to his beat.",
+  lost: "You have shaken off the officer. He gives up and walks back to his beat."
+};
+function policeStep() {
+  temple.setPolice({ walking: current === "pagoda" && inMarket });
+  const news = temple.policeNews(); if (!news) return;
+  if (news !== "arrested") { toast(POLICE_SAYS[news]); return; }
+  walkTween = null;
+  enterWalk([130, 48.5], [133, 40], "");
+  $("where").innerHTML = `<b lang="my">ရဲစခန်း</b>The police station`;
+  toast("🚓 Arrested! The officer walks you to the police station, takes your name and lets you go with a warning. Only a game: the temple and the markets are safe ground.");
+}
+
 /* ---------- weather: rain, cloud, mist and haze over the northern hills, picked from the date ---------- */
 const WEATHER = {   // fog: how far you see (x the usual haze), tint: the sky's colour and how much of it, rain: 0–1, wind: 0–1
   clear:  { icon: "☀", label: "Clear skies", fog: 1, tint: 0x9aa4ae, k: 0, rain: 0, wind: .5 },
@@ -1762,6 +1784,7 @@ function frame() {
   festStep(dt);
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
+  policeStep();
   ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);

@@ -27,6 +27,9 @@
 | Kachin Baptist church (`kachinChurch`) | centre (12, 128), front facing the plaza lane's end (z 107); forecourt z ≈ 108–114; three houses each side at x −1 and 24.2, z 118 / 127 / 136 |
 | Police station | (133, 36); the Hsenwi welcome board (`welcomeSign`, Shan/Burmese/English, unlit) stands on the verge at (144, 44.4), east of the police forecourt and clear of the road and pavement, facing back down the street |
 
+The beat officer's safe ground (`SAFE` in `temple-floors.js`): the compound, the seven-day market (x 43…104, z −14…47.4) and
+the daily market (x 44…100, z 61.8…102.8). Move these if those places move.
+
 Walkers may go up to `WORLD_R` (225 m) from the temple.
 
 ## Building things

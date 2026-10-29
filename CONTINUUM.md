@@ -32,6 +32,11 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-29
+- Added a beat officer (`beatOfficer` in `temple-floors.js`, `CONFIG.police`, `?police=0|1`): a policeman in uniform walks the
+  town's roads from the police station. A visitor walking outside who comes within 16 m is chased at 2.1 m/s (walkers do 2.6);
+  within 1 m they are arrested and set down at the police station, and he holds there 30 s. The temple compound and both
+  markets are safe ground (`SAFE`): he never steps in and gives up the chase. Chase, arrest and escape checked in a headless
+  simulation; the officer's look not yet checked by eye in a browser.
 - The seven-day market's string bulbs and the opera's lights now go dark at 10 PM when the townsfolk go home (they
   follow `FOLK.out`); the gambling hall stays lit for the four-animal top. Not checked by eye in a browser.
 - Sent the townsfolk home at 10 PM ICT (`CONFIG.townsfolk.until: 22`, was 6 AM), so late at night only the Halloween
