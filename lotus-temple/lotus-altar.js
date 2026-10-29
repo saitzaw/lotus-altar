@@ -1174,13 +1174,12 @@ const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.searc
 temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
 const POLICE_SAYS = {
   spotted: "👮 A police officer has seen you and gives chase! Get inside the temple grounds or a market, where no one can be arrested.",
-  safe: "You made it to safe ground. The officer stops at the edge, then turns back to his beat.",
   lost: "You have shaken off the officer. He gives up and walks back to his beat."
 };
 function policeStep() {
   temple.setPolice({ walking: current === "pagoda" && inMarket });
   const news = temple.policeNews(); if (!news) return;
-  if (news !== "arrested") { toast(POLICE_SAYS[news]); return; }
+  if (news !== "arrested") { if (POLICE_SAYS[news]) toast(POLICE_SAYS[news]); return; }   // reaching safe ground goes unannounced
   walkTween = null;
   enterWalk([130, 48.5], [133, 40], "");
   $("where").innerHTML = `<b lang="my">ရဲစခန်း</b>The police station`;
