@@ -2671,8 +2671,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
   }
   /* ---------- townsfolk out in the evening: ten people browsing the seven-day market's aisles and five walking the town's roads,
-     out from 6 pm to 6 am on the temple's clock; when it rains they put up umbrellas. Low-poly figures, men in longyi or Shan
-     trousers, women in longyi and fitted jackets; they stop and turn to someone who comes close ---------- */
+     out from 6 pm to 6 am on the temple's clock; when it rains they put up umbrellas. Low-poly figures with big friendly
+     heads, in sarongs and sashes; they stop and turn to someone who comes close ---------- */
   // one geometry from many small parts, each coloured: [geometry, colour, x, y, z]
   function lowPoly(list) {
     const pos = [], col = [], c = new THREE.Color();
@@ -2690,13 +2690,15 @@ window.TempleFloors = function TempleFloors(ctx) {
   function townsfolk(g) {
     const r = rng(1811), folkM = std({ vertexColors: true, flatShading: true, roughness: .85 });
     onDaylight(d => folkM.emissive.copy(lerpC(0x1c1814, 0x000000, d)));   // a little lift so they read under the market's bulbs
-    const SKIN = [0xc89a72, 0xb5835a, 0xd8ad86, 0xa8744e], HAIR = 0x15110e;
-    const SHIRT = [0xf2efe6, 0x9ab8d8, 0x7a2a34, 0xe0c060, 0x4a7a5a, 0xd890a8, 0xe8d8c0, 0x5a6a9a];
-    const LONGYI = [0x3a4a7a, 0x6a2a3a, 0x2f5a3a, 0x7a5a8a, 0x8a6a3a, 0x4a3a5a], TROUSERS = [0x2a2a30, 0x3a3a48, 0x4a4238];
+    const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, GREY = 0xe4e2dc, INK = 0x2a1c18, MOTIF = 0xe8dcc8;
+    const SHIRT = [0xece4d2, 0xece4d2, 0xf2ece0, 0xe2d6bc, 0xd8dcd4];
+    const SASH = [0xe8b4b4, 0x8a2a30, 0xe2d8bc, 0xe0503a, 0x2a3458, 0xe6dca0], SARONG = [0x6a2a2e, 0x5a2232, 0x7a3030, 0xd8483a, 0x2a2e48, 0x4a2a3a];
     const UMBRELLA = [0x1a1a22, 0x23305a, 0xa82a2a, 0x3a6a4a, 0xd88a3a, 0x7a3a7a].map(h => new THREE.Color(h));
-    // limbs and umbrellas, shared by everyone and drawn as one instanced mesh each, tinted per person
-    const legGeo = lowPoly([[new THREE.BoxGeometry(.11, .78, .12), 0xffffff, 0, -.39, 0], [new THREE.BoxGeometry(.11, .06, .22), 0x5a4a3a, 0, -.79, .05]]);
-    const armGeo = lowPoly([[new THREE.BoxGeometry(.08, .58, .09), 0xffffff, 0, -.29, 0]]);
+    const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+    // limbs and umbrellas, shared by everyone and drawn as one instanced mesh each, tinted with each person's skin or umbrella:
+    // a bare lower leg on a dark flip-flop, and a bare arm with its hand
+    const legGeo = lowPoly([[box(.095, .64, .1), 0xffffff, 0, -.32, 0], [box(.12, .025, .23), 0x3a2e28, 0, -.648, .035]]);
+    const armGeo = lowPoly([[box(.075, .44, .08), 0xffffff, 0, -.22, 0], [box(.08, .08, .085), 0xffffff, 0, -.47, 0]]);
     const umbGeo = lowPoly([[new THREE.ConeGeometry(.6, .2, 8, 1, true), 0xffffff, 0, 1.0, 0], [new THREE.CylinderGeometry(.012, .012, 1.0, 4), 0x9a9aa0, 0, .5, 0]]);
     umbGeo.computeBoundingSphere();
     const N = 15, legs = new THREE.InstancedMesh(legGeo, folkM, N * 2), arms = new THREE.InstancedMesh(armGeo, folkM, N * 2), umbs = new THREE.InstancedMesh(umbGeo, std({ vertexColors: true, flatShading: true, roughness: .6, side: THREE.DoubleSide }), N);
@@ -2705,35 +2707,48 @@ window.TempleFloors = function TempleFloors(ctx) {
     holder.add(limb);
     const people = [];
     for (let i = 0; i < N; i++) {
-      const woman = r() < .5, longyi = woman || r() < .6, skin = SKIN[(r() * 4) | 0], shirt = SHIRT[(r() * SHIRT.length) | 0];
-      const lower = longyi ? LONGYI[(r() * LONGYI.length) | 0] : TROUSERS[(r() * 3) | 0];
+      // village dress: a knee-length patterned sarong tied with a sash, a cream shirt (worn open by the men, a square-necked
+      // blouse on the women), flip-flops; big friendly heads with blocky hair, a bun for the women, grey hair for the elders
+      const woman = r() < .45, elder = i === 4 || i === 12, bare = !woman && !elder && r() < .15, pk = l => l[(r() * l.length) | 0];
+      const skin = pk(SKIN), shirt = pk(SHIRT), sash = pk(SASH), sarong = pk(SARONG), hair = elder ? GREY : HAIR;
       const parts = [
-        longyi ? [new THREE.CylinderGeometry(.17, woman ? .19 : .21, .64, 7), lower, 0, .56, 0] : [new THREE.CylinderGeometry(.17, .16, .16, 7), lower, 0, .84, 0],   // longyi to the ankle, or the hips of baggy Shan trousers
-        [new THREE.CylinderGeometry(woman ? .15 : .16, .17, .56, 7), shirt, 0, 1.16, 0],                                        // shirt or fitted jacket
-        [new THREE.IcosahedronGeometry(.115, 0), skin, 0, 1.56, 0],                                                              // head
-        [new THREE.SphereGeometry(.122, 7, 3, 0, TAU, 0, Math.PI / 2), HAIR, 0, 1.58, -.01]                                      // hair
+        [new THREE.CylinderGeometry(.16, .19, .38, 7), sarong, 0, .5, 0], [box(.07, .06, .012), MOTIF, .07, .44, .178], [box(.05, .05, .012), MOTIF, .1, .37, .18],   // the sarong and its printed pattern
+        [new THREE.CylinderGeometry(.168, .168, .07, 8), sash, 0, .7, 0], [box(.09, .07, .05), sash, 0, .7, .16], [box(.045, .22, .02), sash, -.025, .56, .17], [box(.045, .2, .02), sash, .025, .57, .175],   // the sash, its knot and hanging ends
+        [new THREE.CylinderGeometry(.05, .05, .07, 6), skin, 0, 1.09, 0],                                                   // neck
+        [box(.25, .27, .24), skin, 0, 1.245, 0], [box(.03, .06, .05), skin, -.135, 1.25, 0], [box(.03, .06, .05), skin, .135, 1.25, 0],   // head and ears
+        [box(.035, .045, .012), INK, -.055, 1.26, .122], [box(.035, .045, .012), INK, .055, 1.26, .122], [box(.07, .014, .01), 0x8a3a30, 0, 1.19, .122],   // eyes and smile
+        [box(.27, .07, .26), hair, 0, 1.395, -.005], [box(.27, woman ? .24 : .17, .07), hair, 0, woman ? 1.28 : 1.31, -.1]   // the crown and back of the hair
       ];
-      if (woman) parts.push([new THREE.IcosahedronGeometry(.06, 0), HAIR, 0, 1.6, -.12]);                                      // a bun
-      if (r() < .3) parts.push([new THREE.BoxGeometry(.2, .22, .08), [0x8a5a2a, 0x2a4a6a, 0xa83a3a][(r() * 3) | 0], .23, .95, 0]);   // a Shan shoulder bag
+      if (woman) parts.push(
+        [new THREE.CylinderGeometry(.145, .16, .38, 7), shirt, 0, .89, 0], [box(.12, .07, .012), skin, 0, 1.03, .147],     // the blouse with its square neck
+        [box(.025, .18, .2), hair, -.13, 1.29, -.02], [box(.025, .18, .2), hair, .13, 1.29, -.02], [new THREE.IcosahedronGeometry(.075, 0), hair, 0, 1.27, -.17]);   // hair down the sides, a low bun
+      else {
+        parts.push([new THREE.CylinderGeometry(.14, .15, .38, 6), skin, 0, .89, 0], [box(.05, .012, .01), INK, -.055, 1.3, .122], [box(.05, .012, .01), INK, .055, 1.3, .122]);   // chest and brows
+        if (!bare) parts.push([new THREE.CylinderGeometry(.155, .165, .38, 8, 1, true, .55, TAU - 1.1), shirt, 0, .89, 0]);   // the shirt, worn open
+        [-.08, 0, .08].forEach(x => parts.push([box(.08, .05 + r() * .04, .05), hair, x, 1.38, .11]));                       // a spiky fringe
+        parts.push([box(.02, .1, .2), hair, -.13, 1.33, -.02], [box(.02, .1, .2), hair, .13, 1.33, -.02]);
+      }
+      if (!bare) parts.push([box(.1, .13, .12), shirt, -.2, .99, 0], [box(.1, .13, .12), shirt, .2, .99, 0]);             // short sleeves
       const body = new THREE.Mesh(lowPoly(parts), folkM); body.castShadow = false; body.visible = false; body.userData.noCull = true; g.add(body);
       const market = i < 10, ways = market ? MARKET_WAYS : GHOST_ROADS, next = ways.nodes.map(() => []);
       ways.edges.forEach(([a, b]) => { next[a].push(b); next[b].push(a); });
       const e = ways.edges[(r() * ways.edges.length) | 0];
-      people.push({ body, market, ways, next, a: e[0], b: e[1], along: r() * 6, speed: (market ? .7 : 1.1) + r() * .35, scale: .92 + r() * .12, side: r() < .5 ? -1 : 1,
-                    skin: new THREE.Color(skin), sleeve: new THREE.Color(shirt), leg: new THREE.Color(longyi ? skin : lower), swing: longyi ? .14 : .4,
-                    umb: UMBRELLA[(r() * UMBRELLA.length) | 0], phase: r() * TAU, pause: 0, greet: 0, stopIn: 3 + r() * 8, face: 0, heading: 0, ox: 0, oz: 0, open: 0 });
+      people.push({ body, market, ways, next, a: e[0], b: e[1], along: r() * 6, speed: (market ? .7 : 1.1) * (elder ? .75 : 1) + r() * .3, scale: 1.08 + r() * .12, side: r() < .5 ? -1 : 1,
+                    skin: new THREE.Color(skin), swing: .17, umb: UMBRELLA[(r() * UMBRELLA.length) | 0], phase: r() * TAU, pause: 0, greet: 0, stopIn: 3 + r() * 8, face: 0, heading: 0, ox: 0, oz: 0, open: 0 });
     }
-    people.forEach((p, i) => { legs.setColorAt(i * 2, p.leg); legs.setColorAt(i * 2 + 1, p.leg); arms.setColorAt(i * 2, p.sleeve); arms.setColorAt(i * 2 + 1, p.sleeve); umbs.setColorAt(i, p.umb); });
+    people.forEach((p, i) => { [legs, arms].forEach(im => { im.setColorAt(i * 2, p.skin); im.setColorAt(i * 2 + 1, p.skin); }); umbs.setColorAt(i, p.umb); });
     const pick = (p, at, from) => { const opts = p.next[at].filter(n => n !== from), l = opts.length ? opts : p.next[at]; return l[(r() * l.length) | 0]; };
     const setLimb = (im, k, x, y, z, rx, rz = 0) => { limb.position.set(x, y, z); limb.rotation.set(rx, 0, rz); holder.updateMatrixWorld(true); im.setMatrixAt(k, limb.matrixWorld); };
     updaters.pagoda.push((dt, t, motion) => {
       const eye = FEST.eye;
       people.forEach((p, i) => {
-        const hide = () => { p.body.visible = false; legs.setMatrixAt(i * 2, zero); legs.setMatrixAt(i * 2 + 1, zero); arms.setMatrixAt(i * 2, zero); arms.setMatrixAt(i * 2 + 1, zero); umbs.setMatrixAt(i, zero); };
+        const hide = () => { p.seen = false; p.body.visible = false; legs.setMatrixAt(i * 2, zero); legs.setMatrixAt(i * 2 + 1, zero); arms.setMatrixAt(i * 2, zero); arms.setMatrixAt(i * 2 + 1, zero); umbs.setMatrixAt(i, zero); };
         if (!FOLK.out) return hide();
         const [ax, az] = p.ways.nodes[p.a], [bx, bz] = p.ways.nodes[p.b], len = Math.hypot(bx - ax, bz - az), dx = (bx - ax) / len, dz = (bz - az) / len;
         // keep to one side of the road (eased round corners); in the market, near the middle of the aisle
         const off = p.market ? .5 : 1.7;
+        // someone coming into view is already in place, facing their way, umbrella up if it is raining
+        if (!p.seen) { p.seen = true; p.ox = -dz * off * p.side; p.oz = dx * off * p.side; p.heading = Math.atan2(dx, dz); p.open = FOLK.umbrellas ? 1 : 0; }
         p.ox += (-dz * off * p.side - p.ox) * Math.min(1, dt * 1.5); p.oz += (dx * off * p.side - p.oz) * Math.min(1, dt * 1.5);
         const x = ax + dx * p.along + p.ox, z = az + dz * p.along + p.oz;
         const dEye = eye ? Math.hypot(eye.x - x, eye.z - z) : Infinity;
@@ -2756,10 +2771,10 @@ window.TempleFloors = function TempleFloors(ctx) {
         holder.position.copy(p.body.position); holder.rotation.y = p.heading; holder.scale.setScalar(p.scale);
         p.open += ((FOLK.umbrellas ? 1 : 0) - p.open) * Math.min(1, dt * 3);
         const up = p.open > .02;
-        setLimb(legs, i * 2, -.09, .82, 0, sw * p.swing); setLimb(legs, i * 2 + 1, .09, .82, 0, -sw * p.swing);
-        setLimb(arms, i * 2, -.21, 1.42, 0, -sw * .35, -.08);
-        setLimb(arms, i * 2 + 1, .21, 1.42, 0, -.6 * p.open + sw * .35 * (1 - p.open), .08 - .3 * p.open);   // the umbrella hand comes up
-        if (up) { limb.position.set(.08, .95, .3); limb.rotation.set(-.08, 0, 0); limb.scale.set(p.open, 1, p.open); holder.updateMatrixWorld(true); umbs.setMatrixAt(i, limb.matrixWorld); limb.scale.set(1, 1, 1); }
+        setLimb(legs, i * 2, -.075, .66, 0, sw * p.swing); setLimb(legs, i * 2 + 1, .075, .66, 0, -sw * p.swing);
+        setLimb(arms, i * 2, -.205, 1.02, 0, -sw * .4, -.1);
+        setLimb(arms, i * 2 + 1, .205, 1.02, 0, -.6 * p.open + sw * .4 * (1 - p.open), .1 - .32 * p.open);   // the umbrella hand comes up
+        if (up) { limb.position.set(.1, .64, .28); limb.rotation.set(-.08, 0, 0); limb.scale.set(p.open, 1, p.open); holder.updateMatrixWorld(true); umbs.setMatrixAt(i, limb.matrixWorld); limb.scale.set(1, 1, 1); }
         else umbs.setMatrixAt(i, zero);
       });
       legs.instanceMatrix.needsUpdate = arms.instanceMatrix.needsUpdate = umbs.instanceMatrix.needsUpdate = true;

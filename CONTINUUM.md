@@ -34,6 +34,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Added fifteen low-poly townsfolk, out from 6 PM to 6 AM ICT: ten browsing the seven-day market, five walking the roads,
   under umbrellas when it rains (`CONFIG.townsfolk`, force with `?townsfolk=1|0`). Checked in a headless render in the
   market, with and without rain; the road walkers weren't checked by eye.
+- Restyled the townsfolk after a reference picture: blocky hair, big heads with eyes and a smile, open cream shirts
+  (square-necked blouses for women), knotted sashes, knee-length patterned sarongs, bare legs and flip-flops.
 
 ### 2026-10-28
 - Added a Kachin Baptist church past the end of the plaza lane (white hall, red roof, bell tower and spire, manau
