@@ -32,6 +32,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-29
+- The seven-day market's string bulbs and the opera's lights now go dark at 10 PM when the townsfolk go home (they
+  follow `FOLK.out`); the gambling hall stays lit for the four-animal top. Not checked by eye in a browser.
 - Sent the townsfolk home at 10 PM ICT (`CONFIG.townsfolk.until: 22`, was 6 AM), so late at night only the Halloween
   ghost walks the roads. The first try left them out (the hour check only handled windows past midnight); fixed so
   `folkNow` handles both.

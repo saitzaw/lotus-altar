@@ -1688,10 +1688,20 @@ window.TempleFloors = function TempleFloors(ctx) {
     if (document.fonts && document.fonts.load) document.fonts.load('600 60px "Noto Sans Myanmar"', "ဈေး").then(() => { gateSign.needsUpdate = true; }, () => {});
     mesh(new THREE.BoxGeometry(37, .14, .14), steelM, 68, 4.95, 46.6, g);
     clickable(list, flat(mesh(new THREE.PlaneGeometry(5.6, 1.2), std({ map: gateSign, emissive: 0xffffff, emissiveMap: gateSign, emissiveIntensity: .4, roughness: .6, side: THREE.DoubleSide }), 68, 5.6, 46.7, g)), { market: true, tip: "Walk into the seven-day market" });
-    onDaylight(d => {
-      bulbs.forEach(b => b.material.opacity = .85 * (1 - d) + .1);
-      spots.forEach(s => s.material.opacity = .9 * (1 - d) + .15);
-      stageLight.intensity = 1.8 * (1 - d);
+    // the bulbs and the opera's lights burn at night while the townsfolk are out, and go dark when everyone goes home
+    let dark = 1, open = null;
+    const light = () => {
+      const k = dark * open;
+      bulbs.forEach(b => b.material.opacity = .85 * k + .1);
+      spots.forEach(s => s.material.opacity = .9 * k + .15);
+      stageLight.intensity = 1.8 * k;
+    };
+    onDaylight(d => { dark = 1 - d; if (open !== null) light(); });
+    updaters.pagoda.push(dt => {
+      const want = FOLK.out ? 1 : 0;
+      if (open === want) return;
+      open = open === null ? want : clamp(open + (want ? dt : -dt) / 3, 0, 1);   // the lights go out over a few seconds
+      light();
     });
   }
   /* ---------- the stupa hill in the front-left corner, beyond the street and the town road: a grassy hill climbed by a stair
