@@ -2839,12 +2839,25 @@ window.TempleFloors = function TempleFloors(ctx) {
     const r = rng(1291);
     let a = 16, b = 14, along = 3, x = 137, z = 54, heading = -Math.PI / 2, mode = "beat", hold = 0, stuck = 0, phase = 0;
     const pick = (at, from) => { const opts = next[at].filter(n => n !== from), l = opts.length ? opts : next[at]; return l[(r() * l.length) | 0]; };
-    const blocked = (px, pz) => walkAt(px, pz) === null || safeAt(px, pz);
-    // a step of up to `d` metres toward (tx, tz), sliding along whatever is in the way
-    const stepTo = (tx, tz, d) => {
-      const dx = tx - x, dz = tz - z, l = Math.hypot(dx, dz); if (l < 1e-3) return;
-      const k = Math.min(d, l) / l, nx = x + dx * k, nz = z + dz * k;
-      if (!blocked(nx, nz)) { x = nx; z = nz; } else if (!blocked(nx, z)) x = nx; else if (!blocked(x, nz)) z = nz;
+    // where he can stand: not in walls, trees, posts or water, not up or down more than a stair's height at once, never on safe ground
+    const free = (px, pz, h0) => { if (safeAt(px, pz)) return false; const h = walkAt(px, pz); return h !== null && (h0 === null || Math.abs(h - h0) < .45); };
+    // a step of up to `d` metres toward (tx, tz). Something in the way (looked for half a metre ahead): he turns aside, more and
+    // more, one way and then the other, and keeps to a way round for a moment so he walks round a tree or a corner instead of
+    // pressing into it. Returns the way he went, or null if he could not move
+    let detour = null;   // { a: the way round, t: seconds left on it }
+    const stepTo = (tx, tz, d, dt) => {
+      const dx = tx - x, dz = tz - z, l = Math.hypot(dx, dz); if (l < 1e-3) return null;
+      const s = Math.min(d, l), aim = Math.atan2(dx, dz), h0 = walkAt(x, z);
+      const ok = a => free(x + Math.sin(a) * Math.max(s, .5), z + Math.cos(a) * Math.max(s, .5), h0) && free(x + Math.sin(a) * s, z + Math.cos(a) * s, h0);
+      const go = a => { x += Math.sin(a) * s; z += Math.cos(a) * s; return a; };
+      if (detour && (detour.t -= dt) > 0 && !ok(aim) && ok(detour.a)) return go(detour.a);
+      if (ok(aim)) { detour = null; return go(aim); }
+      const side = detour ? Math.sign(Math.atan2(Math.sin(detour.a - aim), Math.cos(detour.a - aim))) || 1 : 1;
+      for (let k = 1; k <= 6; k++) for (const sd of [side, -side]) {
+        const a = aim + sd * k * .45;
+        if (ok(a)) { detour = { a, t: .8 }; return go(a); }
+      }
+      detour = null; return null;
     };
     const goBack = () => { mode = "back"; stuck = 0; a = nodes.reduce((best, n, i) => Math.hypot(n[0] - x, n[1] - z) < Math.hypot(nodes[best][0] - x, nodes[best][1] - z) ? i : best, 0); };
     updaters.pagoda.push((dt, t, motion) => {
@@ -2860,11 +2873,11 @@ window.TempleFloors = function TempleFloors(ctx) {
       } else if (mode === "chase") {
         if (!eye || safe || dEye > COP.see * 2) { COP.news = !eye ? null : safe ? "safe" : "lost"; goBack(); }
         else if (dEye < COP.arrest) { COP.news = "arrested"; mode = "hold"; hold = COP.hold; x = 131; z = 45.6; face = heading = 0; }
-        else { stepTo(eye.x, eye.z, COP.speed * dt); face = Math.atan2(eye.x - x, eye.z - z); run = true; }
+        else { const w = stepTo(eye.x, eye.z, COP.speed * dt, dt); face = w === null ? Math.atan2(eye.x - x, eye.z - z) : w; run = true; }
       } else if (eye && !safe && dEye < COP.see) { mode = "chase"; COP.news = "spotted"; }
       else if (mode === "back") {   // straight back to the nearest corner; if something is in the way too long, he takes another way round (unseen)
         const [nx, nz] = nodes[a];
-        stepTo(nx, nz, COP.beat * dt); face = Math.atan2(nx - x0, nz - z0);
+        const w = stepTo(nx, nz, COP.beat * dt, dt); if (w !== null) face = w;
         stuck = Math.hypot(x - x0, z - z0) < COP.beat * dt * .3 ? stuck + dt : 0;
         if (Math.hypot(nx - x, nz - z) < .3 || stuck > 4 && dEye > 30) { x = nx; z = nz; mode = "beat"; along = 0; b = pick(a, -1); }
       } else {

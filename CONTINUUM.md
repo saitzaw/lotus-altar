@@ -32,6 +32,9 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-29
+- The beat officer walks round trees, posts and buildings instead of getting stuck on them: blocked ahead (checked half a
+  metre out), he turns aside at growing angles and keeps to that way round for a moment; he also can't step up or down more
+  than a stair's height, like a walker. Checked in a headless simulation behind the fire station and behind a street tree.
 - Reaching safe ground during a police chase no longer shows a message; the officer just turns back.
 - The beat officer now comes out only after dark (`CONFIG.police.night`; the sky's Night view), like the ghost; by day there
   is no one to chase you. Checked in a headless simulation by day and by night.
