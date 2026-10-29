@@ -33,7 +33,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ### 2026-10-29
 - Sent the townsfolk home at 10 PM ICT (`CONFIG.townsfolk.until: 22`, was 6 AM), so late at night only the Halloween
-  ghost walks the roads.
+  ghost walks the roads. The first try left them out (the hour check only handled windows past midnight); fixed so
+  `folkNow` handles both.
 - Added fifteen low-poly townsfolk, out from 6 PM to 6 AM ICT: ten browsing the seven-day market, five walking the roads,
   under umbrellas when it rains (`CONFIG.townsfolk`, force with `?townsfolk=1|0`). Checked in a headless render in the
   market, with and without rain; the road walkers weren't checked by eye.

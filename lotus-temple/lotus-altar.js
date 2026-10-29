@@ -1159,7 +1159,7 @@ const FOLK_FORCE = (() => { try { const v = new URLSearchParams(location.search)
 function folkNow() {
   if (FOLK_FORCE !== null) return FOLK_FORCE;
   const { from, until } = CONFIG.townsfolk, hour = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", hourCycle: "h23" }).format(Date.now());
-  return hour >= from || hour < until;
+  return from < until ? hour >= from && hour < until : hour >= from || hour < until;   // a window that may run past midnight
 }
 let folkOut = folkNow();
 setInterval(() => { folkOut = folkNow(); }, 3e4);
