@@ -46,6 +46,9 @@ const CONFIG = {
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
   halloween: { from: [10, 27], to: [11, 1], outHour: 21, untilHour: 5 },
+  // townsfolk: ten people in the seven-day market and five on the roads, out from `from` to `until` o'clock on the temple's clock;
+  // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
+  townsfolk: { from: 18, until: 6, umbrella: .3 },
   // the weather outside follows the seasons of the northern Thai hills (no live weather service): rain from May to October,
   // cool clear days and misty mornings from November to February, smoky haze from the field burning in March and April.
   // Each `spell` of hours on the temple's clock gets one kind, from that month's odds [clear, cloudy, rain, mist, haze];
@@ -1151,6 +1154,16 @@ function festNote() {
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
 }
 
+/* ---------- townsfolk: people out in the market and on the roads from 6 pm to 6 am ICT ---------- */
+const FOLK_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("townsfolk"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+function folkNow() {
+  if (FOLK_FORCE !== null) return FOLK_FORCE;
+  const { from, until } = CONFIG.townsfolk, hour = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", hourCycle: "h23" }).format(Date.now());
+  return hour >= from || hour < until;
+}
+let folkOut = folkNow();
+setInterval(() => { folkOut = folkNow(); }, 3e4);
+
 /* ---------- weather: rain, cloud, mist and haze over the northern hills, picked from the date ---------- */
 const WEATHER = {   // fog: how far you see (x the usual haze), tint: the sky's colour and how much of it, rain: 0–1, wind: 0–1
   clear:  { icon: "☀", label: "Clear skies", fog: 1, tint: 0x9aa4ae, k: 0, rain: 0, wind: .5 },
@@ -1748,6 +1761,7 @@ function frame() {
   aimPrompt(dt);
   festStep(dt);
   weatherStep(dt);
+  temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
   ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);

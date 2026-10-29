@@ -10,6 +10,7 @@ recently, and what's still open. Read it at the start of a session; update it at
   walks the roads, first-person walkers carry a torch. Force with `?halloween=1` / `?halloween=0`.
 - Weather outside follows northern Thai seasons, picked per 3-hour spell from the date (`CONFIG.weather`, no live API):
   clear, cloudy, rain (streaks, thunder), mist, smoky haze. Force with `?weather=rain|clear|cloudy|mist|haze`.
+- Townsfolk (10 in the market, 5 on the roads) are out 6 PM – 6 AM ICT and carry umbrellas in the rain.
 - Ambient sound is synthesized in WebAudio (`ambStart`/`ambStep` in `lotus-altar.js`), placed by `temple.sounds` in
   `temple-floors.js`: stupa hti bells, temple bell and Lotus Temple hall gong, banyan leaves, forest birds/cicadas/
   crickets, wind over the paddies, rain. HUD 🔊 button mirrors the `soundOn` checkbox.
@@ -29,6 +30,11 @@ recently, and what's still open. Read it at the start of a session; update it at
   `vercel` CLI on this machine was logged out, so nothing was deployed by hand.)
 
 ## Log
+
+### 2026-10-29
+- Added fifteen low-poly townsfolk, out from 6 PM to 6 AM ICT: ten browsing the seven-day market, five walking the roads,
+  under umbrellas when it rains (`CONFIG.townsfolk`, force with `?townsfolk=1|0`). Checked in a headless render in the
+  market, with and without rain; the road walkers weren't checked by eye.
 
 ### 2026-10-28
 - Added a Kachin Baptist church past the end of the plaza lane (white hall, red roof, bell tower and spire, manau

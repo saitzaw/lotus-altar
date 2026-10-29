@@ -46,6 +46,8 @@ window.TempleFloors = function TempleFloors(ctx) {
   // Halloween night (set from the main script): `out` 0–1 as the houses and village huts put their lights out at 9 pm,
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
+  // townsfolk (set from the main script): `out` from 6 pm to 6 am, `umbrellas` up while it rains (see townsfolk)
+  const FOLK = { out: false, umbrellas: false };
   const poleLights = [];   // { x, z, set(lit) } in the grounds' frame
   const lerpC = (a, b, d) => new THREE.Color(a).lerp(new THREE.Color(b), d);
   // the real sun and moon, set from the main script: directions for the day view and the night view (temple frame:
@@ -2668,6 +2670,101 @@ window.TempleFloors = function TempleFloors(ctx) {
       FEST.ghost = { x, z };
     });
   }
+  /* ---------- townsfolk out in the evening: ten people browsing the seven-day market's aisles and five walking the town's roads,
+     out from 6 pm to 6 am on the temple's clock; when it rains they put up umbrellas. Low-poly figures, men in longyi or Shan
+     trousers, women in longyi and fitted jackets; they stop and turn to someone who comes close ---------- */
+  // one geometry from many small parts, each coloured: [geometry, colour, x, y, z]
+  function lowPoly(list) {
+    const pos = [], col = [], c = new THREE.Color();
+    list.forEach(([geo, hex, x, y, z]) => {
+      const gg = geo.index ? geo.toNonIndexed() : geo; gg.translate(x, y, z); c.set(hex);
+      const p = gg.attributes.position;
+      for (let i = 0; i < p.count; i++) { pos.push(p.getX(i), p.getY(i), p.getZ(i)); col.push(c.r, c.g, c.b); }
+    });
+    const out = new THREE.BufferGeometry();
+    out.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); out.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    out.computeVertexNormals(); return out;
+  }
+  // the market's aisles (x 52, 68, 84) and the cross-ways at their ends; the roads are the ghost's
+  const MARKET_WAYS = { nodes: [[52, 15.6], [52, 44.6], [68, 15.6], [68, 44.6], [84, 15.6], [84, 44.6]], edges: [[0, 1], [2, 3], [4, 5], [0, 2], [2, 4], [1, 3], [3, 5]] };
+  function townsfolk(g) {
+    const r = rng(1811), folkM = std({ vertexColors: true, flatShading: true, roughness: .85 });
+    onDaylight(d => folkM.emissive.copy(lerpC(0x1c1814, 0x000000, d)));   // a little lift so they read under the market's bulbs
+    const SKIN = [0xc89a72, 0xb5835a, 0xd8ad86, 0xa8744e], HAIR = 0x15110e;
+    const SHIRT = [0xf2efe6, 0x9ab8d8, 0x7a2a34, 0xe0c060, 0x4a7a5a, 0xd890a8, 0xe8d8c0, 0x5a6a9a];
+    const LONGYI = [0x3a4a7a, 0x6a2a3a, 0x2f5a3a, 0x7a5a8a, 0x8a6a3a, 0x4a3a5a], TROUSERS = [0x2a2a30, 0x3a3a48, 0x4a4238];
+    const UMBRELLA = [0x1a1a22, 0x23305a, 0xa82a2a, 0x3a6a4a, 0xd88a3a, 0x7a3a7a].map(h => new THREE.Color(h));
+    // limbs and umbrellas, shared by everyone and drawn as one instanced mesh each, tinted per person
+    const legGeo = lowPoly([[new THREE.BoxGeometry(.11, .78, .12), 0xffffff, 0, -.39, 0], [new THREE.BoxGeometry(.11, .06, .22), 0x5a4a3a, 0, -.79, .05]]);
+    const armGeo = lowPoly([[new THREE.BoxGeometry(.08, .58, .09), 0xffffff, 0, -.29, 0]]);
+    const umbGeo = lowPoly([[new THREE.ConeGeometry(.6, .2, 8, 1, true), 0xffffff, 0, 1.0, 0], [new THREE.CylinderGeometry(.012, .012, 1.0, 4), 0x9a9aa0, 0, .5, 0]]);
+    umbGeo.computeBoundingSphere();
+    const N = 15, legs = new THREE.InstancedMesh(legGeo, folkM, N * 2), arms = new THREE.InstancedMesh(armGeo, folkM, N * 2), umbs = new THREE.InstancedMesh(umbGeo, std({ vertexColors: true, flatShading: true, roughness: .6, side: THREE.DoubleSide }), N);
+    [legs, arms, umbs].forEach(im => { im.frustumCulled = false; im.castShadow = false; im.userData.noCull = true; g.add(im); });
+    const holder = new THREE.Object3D(), limb = new THREE.Object3D(), zero = new THREE.Matrix4().makeScale(0, 0, 0);
+    holder.add(limb);
+    const people = [];
+    for (let i = 0; i < N; i++) {
+      const woman = r() < .5, longyi = woman || r() < .6, skin = SKIN[(r() * 4) | 0], shirt = SHIRT[(r() * SHIRT.length) | 0];
+      const lower = longyi ? LONGYI[(r() * LONGYI.length) | 0] : TROUSERS[(r() * 3) | 0];
+      const parts = [
+        longyi ? [new THREE.CylinderGeometry(.17, woman ? .19 : .21, .64, 7), lower, 0, .56, 0] : [new THREE.CylinderGeometry(.17, .16, .16, 7), lower, 0, .84, 0],   // longyi to the ankle, or the hips of baggy Shan trousers
+        [new THREE.CylinderGeometry(woman ? .15 : .16, .17, .56, 7), shirt, 0, 1.16, 0],                                        // shirt or fitted jacket
+        [new THREE.IcosahedronGeometry(.115, 0), skin, 0, 1.56, 0],                                                              // head
+        [new THREE.SphereGeometry(.122, 7, 3, 0, TAU, 0, Math.PI / 2), HAIR, 0, 1.58, -.01]                                      // hair
+      ];
+      if (woman) parts.push([new THREE.IcosahedronGeometry(.06, 0), HAIR, 0, 1.6, -.12]);                                      // a bun
+      if (r() < .3) parts.push([new THREE.BoxGeometry(.2, .22, .08), [0x8a5a2a, 0x2a4a6a, 0xa83a3a][(r() * 3) | 0], .23, .95, 0]);   // a Shan shoulder bag
+      const body = new THREE.Mesh(lowPoly(parts), folkM); body.castShadow = false; body.visible = false; body.userData.noCull = true; g.add(body);
+      const market = i < 10, ways = market ? MARKET_WAYS : GHOST_ROADS, next = ways.nodes.map(() => []);
+      ways.edges.forEach(([a, b]) => { next[a].push(b); next[b].push(a); });
+      const e = ways.edges[(r() * ways.edges.length) | 0];
+      people.push({ body, market, ways, next, a: e[0], b: e[1], along: r() * 6, speed: (market ? .7 : 1.1) + r() * .35, scale: .92 + r() * .12, side: r() < .5 ? -1 : 1,
+                    skin: new THREE.Color(skin), sleeve: new THREE.Color(shirt), leg: new THREE.Color(longyi ? skin : lower), swing: longyi ? .14 : .4,
+                    umb: UMBRELLA[(r() * UMBRELLA.length) | 0], phase: r() * TAU, pause: 0, greet: 0, stopIn: 3 + r() * 8, face: 0, heading: 0, ox: 0, oz: 0, open: 0 });
+    }
+    people.forEach((p, i) => { legs.setColorAt(i * 2, p.leg); legs.setColorAt(i * 2 + 1, p.leg); arms.setColorAt(i * 2, p.sleeve); arms.setColorAt(i * 2 + 1, p.sleeve); umbs.setColorAt(i, p.umb); });
+    const pick = (p, at, from) => { const opts = p.next[at].filter(n => n !== from), l = opts.length ? opts : p.next[at]; return l[(r() * l.length) | 0]; };
+    const setLimb = (im, k, x, y, z, rx, rz = 0) => { limb.position.set(x, y, z); limb.rotation.set(rx, 0, rz); holder.updateMatrixWorld(true); im.setMatrixAt(k, limb.matrixWorld); };
+    updaters.pagoda.push((dt, t, motion) => {
+      const eye = FEST.eye;
+      people.forEach((p, i) => {
+        const hide = () => { p.body.visible = false; legs.setMatrixAt(i * 2, zero); legs.setMatrixAt(i * 2 + 1, zero); arms.setMatrixAt(i * 2, zero); arms.setMatrixAt(i * 2 + 1, zero); umbs.setMatrixAt(i, zero); };
+        if (!FOLK.out) return hide();
+        const [ax, az] = p.ways.nodes[p.a], [bx, bz] = p.ways.nodes[p.b], len = Math.hypot(bx - ax, bz - az), dx = (bx - ax) / len, dz = (bz - az) / len;
+        // keep to one side of the road (eased round corners); in the market, near the middle of the aisle
+        const off = p.market ? .5 : 1.7;
+        p.ox += (-dz * off * p.side - p.ox) * Math.min(1, dt * 1.5); p.oz += (dx * off * p.side - p.oz) * Math.min(1, dt * 1.5);
+        const x = ax + dx * p.along + p.ox, z = az + dz * p.along + p.oz;
+        const dEye = eye ? Math.hypot(eye.x - x, eye.z - z) : Infinity;
+        if (dEye < 2.6 && p.pause <= 0 && p.greet <= 0) { p.pause = 3; p.greet = 10; p.face = Math.atan2(eye.x - x, eye.z - z); }
+        p.greet -= dt;
+        let walking = false;
+        if (p.pause > 0) p.pause -= dt;
+        else {
+          const step = p.speed * dt; p.along += step; walking = true; p.face = Math.atan2(dx, dz);
+          if (p.along >= len) { p.along -= len; const from = p.a; p.a = p.b; p.b = pick(p, p.b, from); }
+          // browsing: now and then stop at a stall and turn to look at it
+          if (p.market && dx === 0 && (p.stopIn -= step) <= 0) { p.stopIn = 4 + r() * 9; p.pause = 2 + r() * 5; p.face = (r() < .5 ? 1 : -1) * Math.PI / 2; }
+        }
+        p.heading += Math.atan2(Math.sin(p.face - p.heading), Math.cos(p.face - p.heading)) * Math.min(1, dt * 4);
+        if (eye && Math.hypot(eye.x - x, eye.z - z) > 110) return hide();   // too far off to see
+        const w = walkAt(x, z), ground = w === null ? terrainAt(x, z) : w;
+        if (walking) p.phase += dt * p.speed * 5.5;
+        const sw = Math.sin(p.phase) * (walking ? 1 : 0) * motion, bob = Math.abs(Math.cos(p.phase)) * .025 * (walking ? 1 : 0) * motion;
+        p.body.visible = true; p.body.position.set(x, ground + bob, z); p.body.rotation.y = p.heading; p.body.scale.setScalar(p.scale);
+        holder.position.copy(p.body.position); holder.rotation.y = p.heading; holder.scale.setScalar(p.scale);
+        p.open += ((FOLK.umbrellas ? 1 : 0) - p.open) * Math.min(1, dt * 3);
+        const up = p.open > .02;
+        setLimb(legs, i * 2, -.09, .82, 0, sw * p.swing); setLimb(legs, i * 2 + 1, .09, .82, 0, -sw * p.swing);
+        setLimb(arms, i * 2, -.21, 1.42, 0, -sw * .35, -.08);
+        setLimb(arms, i * 2 + 1, .21, 1.42, 0, -.6 * p.open + sw * .35 * (1 - p.open), .08 - .3 * p.open);   // the umbrella hand comes up
+        if (up) { limb.position.set(.08, .95, .3); limb.rotation.set(-.08, 0, 0); limb.scale.set(p.open, 1, p.open); holder.updateMatrixWorld(true); umbs.setMatrixAt(i, limb.matrixWorld); limb.scale.set(1, 1, 1); }
+        else umbs.setMatrixAt(i, zero);
+      });
+      legs.instanceMatrix.needsUpdate = arms.instanceMatrix.needsUpdate = umbs.instanceMatrix.needsUpdate = true;
+    });
+  }
   /* ---------- the town's public buildings, in the plain painted concrete of Shan State towns today: the township hospital by the
      hut village, the high school south of the daily market, a fuel station on the road out past the bridge, and the fire station
      and police station side by side on the street east of the seven-day market ---------- */
@@ -3977,6 +4074,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     fireAndPolice(g);
     welcomeSign(g);
     halloweenGhost(g);
+    townsfolk(g);
     // 溪, the stream behind the compound: it winds across the land beyond the pines on the far side of the back wall,
     // between grassy banks edged with stones, with rocks, reeds and a stone slab bridge; the water flows to the east
     (function stream() {
@@ -4268,6 +4366,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     // Halloween night: `on` lets the ghost out, `out` (0–1) puts out the houses' and huts' lights; `ghost` is where it is, while out
     setHalloween({ on, out }) { FEST.on = on; if (out !== FEST.out) { FEST.out = out; dayParts.forEach(fn => fn(daylight)); } },
     get ghost() { return FEST.ghost || null; },
+    // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains
+    setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
     setCelestial(c) { Object.assign(celestial, c); celestialParts.forEach(fn => fn()); },
     openDoor(mode) { return openers[mode] ? openers[mode]() : 0; },
     dress(hall) { const list = []; sumeru(hall, 0, -1.7); hallColumns(hall); hallWalls(hall, M.wall, false); moreLanterns(hall, 1); spiralStairs(hall, 1, list); stairRoom(hall, 1, list); frontWall(hall, 1, list); return list; },

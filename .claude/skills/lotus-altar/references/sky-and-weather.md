@@ -23,6 +23,15 @@ Walking outside at night shows `#torchBtn` (and **T** toggles it). On Halloween 
 night off; `torchChoice` holds the walker's choice (null = follow the night) and resets when the walk or the night ends.
 The light is one `SpotLight` always in the scene (adding a light later would recompile every material), dark when off.
 
+## Townsfolk
+
+Fifteen low-poly people (`townsfolk` in `temple-floors.js`) are out from 6 PM to 6 AM ICT (`CONFIG.townsfolk`): ten browse
+the seven-day market's aisles (`MARKET_WAYS`), stopping at stalls, and five walk the roads the ghost uses (`GHOST_ROADS`),
+keeping to one side. They stop and turn to a walker who comes close. When `wx.rain` passes `CONFIG.townsfolk.umbrella`
+they put up umbrellas. The main script passes both each frame with `temple.setTownsfolk(out, umbrellas)`.
+`?townsfolk=1` / `?townsfolk=0` force them out or in. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
+are three shared `InstancedMesh`es.
+
 ## Weather
 
 - Follows the seasons of the northern Thai hills; no live weather API. Kinds (in `WEATHER`): `clear`, `cloudy`, `rain`,

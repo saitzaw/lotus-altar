@@ -12,7 +12,7 @@ The statue worker is fetched by URL, so serve over HTTP rather than opening the 
 ## Testing
 
 There are no automated tests. Load the page, visit the affected place, and watch the console for errors.
-Useful address flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`.
+Useful address flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`, `?townsfolk=1|0`.
 
 Headless check on this machine (snap Chromium can't write to `/tmp`, so save screenshots under `$HOME`):
 
