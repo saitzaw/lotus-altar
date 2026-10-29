@@ -5,7 +5,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Current state (2026-10-28)
 
-- Site deploys with Vercel from `lotus-temple/` (build: `bash build-dist.sh`, output `dist/`).
+- Site deploys with Vercel from `lotus-temple/` (build: `bash build-dist.sh`, output `dist/`), automatically on every push
+  to `main` (the Vercel check shows on the commit's GitHub status).
 - Halloween festival is active Oct 27 – Nov 1: houses and village huts go dark at 9 PM ICT until 5 AM, a friendly ghost
   walks the roads, first-person walkers carry a torch. Force with `?halloween=1` / `?halloween=0`.
 - Weather outside follows northern Thai seasons, picked per 3-hour spell from the date (`CONFIG.weather`, no live API):
@@ -26,8 +27,6 @@ recently, and what's still open. Read it at the start of a session; update it at
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
 - Stale comment in `lotus-altar.js` (~line 297) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
-- Confirm whether Vercel deploys automatically on push to `main` or by hand, and record it here. (On 2026-10-28 the
-  `vercel` CLI on this machine was logged out, so nothing was deployed by hand.)
 
 ## Log
 
