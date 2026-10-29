@@ -50,7 +50,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   const FOLK = { out: false, umbrellas: false };
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
-  const COP = { on: false, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
+  const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
   const poleLights = [];   // { x, z, set(lit) } in the grounds' frame
   const lerpC = (a, b, d) => new THREE.Color(a).lerp(new THREE.Color(b), d);
   // the real sun and moon, set from the main script: directions for the day view and the night view (temple frame:
@@ -2801,7 +2801,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
   }
   /* ---------- the beat officer: a township policeman walks the town's roads out of the police station. A visitor on foot who comes
-     near is chased, and one he gets within a metre of is arrested and walked back to the station. The temple compound and the two
+     near after dark is chased, and one he gets within a metre of is arrested and walked back to the station. The temple compound and the two
      markets are safe ground: he never steps in, and gives up the chase once the visitor is inside. A game only ---------- */
   const SAFE = [[-33, 33, -16, 43], [43, 104, -14, 47.4], [44, 100, 61.8, 102.8]];   // the compound, the seven-day market, the daily market
   const safeAt = (x, z) => SAFE.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
@@ -2848,8 +2848,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     };
     const goBack = () => { mode = "back"; stuck = 0; a = nodes.reduce((best, n, i) => Math.hypot(n[0] - x, n[1] - z) < Math.hypot(nodes[best][0] - x, nodes[best][1] - z) ? i : best, 0); };
     updaters.pagoda.push((dt, t, motion) => {
-      cop.visible = COP.on;
-      if (!COP.on) return;
+      const out = COP.on && (!COP.night || daylight < .5);   // with `night`, he is only out after dark
+      cop.visible = out;
+      if (!out) { if (mode === "chase") goBack(); return; }
       const eye = COP.walking ? FEST.eye : null, dEye = eye ? Math.hypot(eye.x - x, eye.z - z) : Infinity, safe = !!eye && safeAt(eye.x, eye.z);
       const x0 = x, z0 = z;
       let face = heading, run = false;
@@ -4490,7 +4491,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once
     setPolice(o) { Object.assign(COP, o); },
     policeNews() { const n = COP.news; COP.news = null; return n; },
-    get police() { return COP.on ? COP.at : null; },
+    get police() { return COP.on && (!COP.night || daylight < .5) ? COP.at : null; },
     setCelestial(c) { Object.assign(celestial, c); celestialParts.forEach(fn => fn()); },
     openDoor(mode) { return openers[mode] ? openers[mode]() : 0; },
     dress(hall) { const list = []; sumeru(hall, 0, -1.7); hallColumns(hall); hallWalls(hall, M.wall, false); moreLanterns(hall, 1); spiralStairs(hall, 1, list); stairRoom(hall, 1, list); frontWall(hall, 1, list); return list; },

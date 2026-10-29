@@ -51,8 +51,9 @@ const CONFIG = {
   townsfolk: { from: 18, until: 22, umbrella: .3 },
   // the beat officer: a policeman walks the town's roads and chases a visitor on foot who comes within `see` metres, at `speed`
   // m/s (a walker does 2.6, so you can get away); within `arrest` metres you are arrested and walked to the police station, and he
-  // stays there `hold` seconds. The temple compound and the markets are safe ground. ?police=0 or ?police=1 turns him off or on
-  police: { on: true, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30 },
+  // stays there `hold` seconds. The temple compound and the markets are safe ground. With `night` he is only out after dark
+  // (the sky's Night view). ?police=0 or ?police=1 turns him off or on
+  police: { on: true, night: true, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30 },
   // the weather outside follows the seasons of the northern Thai hills (no live weather service): rain from May to October,
   // cool clear days and misty mornings from November to February, smoky haze from the field burning in March and April.
   // Each `spell` of hours on the temple's clock gets one kind, from that month's odds [clear, cloudy, rain, mist, haze];
@@ -1168,7 +1169,7 @@ function folkNow() {
 let folkOut = folkNow();
 setInterval(() => { folkOut = folkNow(); }, 3e4);
 
-/* ---------- the beat officer: chases a visitor on foot anywhere outside the temple and the markets, and arrests one he catches ---------- */
+/* ---------- the beat officer: after dark, chases a visitor on foot anywhere outside the temple and the markets, and arrests one he catches ---------- */
 const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
 temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
 const POLICE_SAYS = {

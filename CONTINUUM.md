@@ -32,6 +32,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-10-29
+- The beat officer now comes out only after dark (`CONFIG.police.night`; the sky's Night view), like the ghost; by day there
+  is no one to chase you. Checked in a headless simulation by day and by night.
 - Added a beat officer (`beatOfficer` in `temple-floors.js`, `CONFIG.police`, `?police=0|1`): a policeman in uniform walks the
   town's roads from the police station. A visitor walking outside who comes within 16 m is chased at 2.1 m/s (walkers do 2.6);
   within 1 m they are arrested and set down at the police station, and he holds there 30 s. The temple compound and both
