@@ -226,12 +226,17 @@ window.TempleFloors = function TempleFloors(ctx) {
         mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, R - .05, .5, 0, st);
         mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, R - .05, 1.02, 0, st);
         // a guard rail round the opening, open only where the stairs arrive (around angle 0)
-        const GAP = .6, RR = 1.1;
+        // the back wall of the stair room is closer than the rail's radius, so the rail stops short of it on either side
+        const GAP = .6, RR = 1.1, WALL = Math.asin(clamp((STAIRS.z - STAIR_ROOM.z0 - .07) / RR, -1, 1));
         for (let i = 0; i < 24; i++) {
           const a = GAP + i / 23 * (TAU - 2 * GAP);
+          if (Math.sin(a) * RR > STAIRS.z - STAIR_ROOM.z0 - .07) continue;   // would stand in the wall
           mesh(new THREE.CylinderGeometry(.025, .025, .95, 6), M.lacquer, Math.cos(a) * RR, .48, -Math.sin(a) * RR, st);
         }
-        [.95, .5].forEach(y => { const r2 = mesh(new THREE.TorusGeometry(RR, y > .7 ? .04 : .025, 6, 64, TAU - 2 * GAP), y > .7 ? M.lacquer : M.trim, 0, y, 0, st); r2.rotation.x = Math.PI / 2; r2.rotation.z = GAP; });
+        [.95, .5].forEach(y => [[GAP, Math.PI + WALL], [TAU - WALL, TAU - GAP]].forEach(([a0, a1]) => {   // torus angles run the other way round
+          const r2 = mesh(new THREE.TorusGeometry(RR, y > .7 ? .04 : .025, 6, 32, a1 - a0), y > .7 ? M.lacquer : M.trim, 0, y, 0, st);
+          r2.rotation.x = Math.PI / 2; r2.rotation.z = a0;
+        }));
         [GAP, -GAP].forEach(a => { mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, Math.cos(a) * RR, .5, -Math.sin(a) * RR, st); mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, Math.cos(a) * RR, 1.02, -Math.sin(a) * RR, st); });
       }
       const below = new THREE.PointLight(0xffb070, 1.0, 4, 2); below.position.set(0, -1.2, 0); st.add(below);
