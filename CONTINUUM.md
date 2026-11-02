@@ -23,6 +23,9 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Open threads
 
+- Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
+- Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
+
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
@@ -30,6 +33,19 @@ recently, and what's still open. Read it at the start of a session; update it at
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-02
+- Commented out the beat officer (police chase): `beatOfficer(g)` in `temple-floors.js`, the police block and `policeStep()`
+  in `lotus-altar.js`. Uncomment all three to bring him back.
+- 5F is now the Thousand-Armed Guanyin Hall (千手觀音殿, figure `qianshou`): a gilded Guanyin with about 120 instanced
+  arms fanned behind her, an eye in every palm, plus the pagoda's own offerings shop (low shelves under the side windows,
+  a counter by the door). Tapping a shelf opens the Buy panel. The tea and calligraphy room is gone.
+- 6F is now the Victorious Buddha Hall (降魔殿, figure `jaya`): the earth-touching Buddha with a Shan/Burmese flame finial.
+  The wishing tree moved to the Lotus Temple hall (right of Shakyamuni) with a small Victorious Buddha seated before it.
+- Every statue hall now takes water, light, incense and fruit offerings like Guanyin's altar (`shrine` in `lotus-altar.js`,
+  saved in `state.shrines`). Floor 1's altar code was turned into shared builders and placers.
+- The stair-room door swings shut 2.6 s after it opens.
+- Checked headless: 5F, 6F and the Lotus Temple hall build without console errors, and offerings there take items from the bag.
 
 ### 2026-10-29
 - The beat officer walks round trees, posts and buildings instead of getting stuck on them: blocked ahead (checked half a

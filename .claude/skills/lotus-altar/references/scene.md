@@ -27,10 +27,21 @@
 | Kachin Baptist church (`kachinChurch`) | centre (12, 128), front facing the plaza lane's end (z 107); forecourt z ≈ 108–114; three houses each side at x −1 and 24.2, z 118 / 127 / 136 |
 | Police station | (133, 36); the Hsenwi welcome board (`welcomeSign`, Shan/Burmese/English, unlit) stands on the verge at (144, 44.4), east of the police forecourt and clear of the road and pavement, facing back down the street |
 
-The beat officer's safe ground (`SAFE` in `temple-floors.js`): the compound, the seven-day market (x 43…104, z −14…47.4) and
+The beat officer is commented out for now (`beatOfficer(g)` in `temple-floors.js`, `policeStep` in `lotus-altar.js`). His safe ground (`SAFE` in `temple-floors.js`): the compound, the seven-day market (x 43…104, z −14…47.4) and
 the daily market (x 44…100, z 61.8…102.8). Move these if those places move.
 
 Walkers may go up to `WORLD_R` (225 m) from the temple.
+
+## Altars
+
+- Every statue hall (`statueHall`: 4F Medicine Buddha, 5F Thousand-Armed Guanyin, 6F Victorious Buddha, 7F Maitreya, the
+  Lotus Temple hall's Shakyamuni) gets the same offering altar as floor 1 from `shrine(parent, key, o)` in `lotus-altar.js`:
+  seven water bowls, a fruit plate at `o.fruitX`, two stepped candle stands and the censer. Floor 1 and the shrines share the
+  builders (`buildBowls`, `buildPlate`, `buildStands`, `buildCenser`) and placers (`addWater`, `addFruit`, `addCandle`,
+  `addIncense`, each taking an altar record, `MAIN` for floor 1). Offerings come from the bag; what each shrine shows is saved
+  in `state.shrines[key]`. Keep the table front (`ALT.z + .3`) and the stands at `x = ±1.05, z = 1.95` clear in those halls.
+- The wishing tree (`wishTree`, placed by `WISH_TREE`) stands in the Lotus Temple hall, right of Shakyamuni, with a small
+  Victorious Buddha (`jaya` figure) seated before its trunk. The 5F hall is also a shop: `shopShelf` units along the side walls.
 
 ## Building things
 

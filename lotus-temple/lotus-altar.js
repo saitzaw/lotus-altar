@@ -24,18 +24,18 @@ const CONFIG = {
   // the seven floors of the pagoda, ground floor first; `statue` floors get the Look closer button
   floors: [
     { han: "觀音殿", name: "Guanyin Main Hall", statue: "guanyin", hint: "Drag to walk around Guanyin's shrine. Tap the vase, water bowls, fruit plate, candle stands or censer to place an offering from your bag (buy them at the temple shop first), the wooden fish or bell to recite, or the red cylinder to draw a fortune stick." },
-    { han: "千燈殿", name: "Hall of a Thousand Lamps", hint: "Three stepped towers of oil lamps and a wall of lit niches. Offerings are made in the main hall on the ground floor." },
+    { han: "千燈殿", name: "Hall of a Thousand Lamps", hint: "Three stepped towers of oil lamps and a wall of lit niches. Offerings are made before the statues on the other floors." },
     { han: "禪堂", name: "Meditation Hall", hint: "Rows of meditation cushions before the ensō scroll, with the wooden board that calls the hour." },
-    { han: "藥師殿", name: "Medicine Buddha Hall", statue: "medicine", hint: "The Medicine Buddha, with lapis-blue curls and the medicine jar, before the seven lamps of healing." },
-    { han: "茶室", name: "Tea and Calligraphy Room", hint: "A tea table set for guests, a calligraphy desk with brushes and ink, and ink-wash landscapes on the wall." },
-    { han: "祈願殿", name: "Wishing Tree Hall", hint: "Tap the trunk to tie a red wish ribbon on the tree." },
-    { han: "彌勒殿", name: "Maitreya Hall", statue: "maitreya", hint: "The laughing Maitreya at the top of the pagoda, with longevity peaches and gold ingots." }
+    { han: "藥師殿", name: "Medicine Buddha Hall", statue: "medicine", hint: "The Medicine Buddha, with lapis-blue curls and the medicine jar, behind the seven lamps of healing. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag." },
+    { han: "千手觀音殿", name: "Thousand-Armed Guanyin Hall", statue: "qianshou", hint: "Guanyin of the Thousand Arms, an eye in every palm to see all who suffer and a hand to reach each one. The hall is also the pagoda's shop: tap the shelves along the walls to add offerings to your basket, then offer water, light, incense or fruit at her altar." },
+    { han: "降魔殿", name: "Victorious Buddha Hall", statue: "jaya", hint: "The Victorious Buddha (Jaya Buddha), touching the earth as he did when he overcame Māra on the night of his awakening; people pray before him for success. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag." },
+    { han: "彌勒殿", name: "Maitreya Hall", statue: "maitreya", hint: "The laughing Maitreya at the top of the pagoda, with longevity peaches and gold ingots. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag." }
   ],
   // buildings beside the pagoda
   places: {
     bell: { han: "鐘樓", name: "Bell Tower", hint: "Tap the great bronze bell to swing the striking log and ring it." },
-    library: { han: "蓮華寺", name: "Lotus Temple hall", statue: "shakyamuni", hint: "The great hall of the temple: Shakyamuni Buddha on his lotus throne, with an offering table, candles and a censer before him." },
-    shop: { han: "法物流通處", name: "Temple shop", hint: "Choose offerings in the panel and buy them here, then carry them to Guanyin's altar on the pagoda's ground floor. Tap the shelves to add things to your basket. The monks' quarters are upstairs." },
+    library: { han: "蓮華寺", name: "Lotus Temple hall", statue: "shakyamuni", hint: "The great hall of the temple: Shakyamuni Buddha on his lotus throne. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag. On the right the wishing tree shades a small Victorious Buddha: tap its trunk to tie a red wish ribbon." },
+    shop: { han: "法物流通處", name: "Temple shop", hint: "Choose offerings in the panel and buy them here, then carry them to Guanyin's altar on the pagoda's ground floor or to any other statue's altar. Tap the shelves to add things to your basket. The monks' quarters are upstairs." },
     quarters: { han: "寮房", name: "Monks' dining and rest room", hint: "Where the monks take their meal before noon and rest: low tables set with alms bowls, sleeping mats with folded robes." }
   },
   layout: { censerZ: 1.95, benchZ: 2.8, censerScale: 1.6 }, // distance in front of the statue (z) for censer and bench
@@ -329,8 +329,10 @@ mesh(new THREE.TorusGeometry(.058, .007, 6, 24), M.gold, 0, 1.08, .53, extras).r
    a coarse pass for the body and a fine one for the head, where the face needs the detail. */
 const FIGURE_BOXES = {
   guanyin: { body: { min: [-1.15, .48, -.62], max: [1.15, 2.1, .95] }, head: { min: [-.6, 1.98, -.58], max: [.6, 2.98, .5] } },
+  qianshou: { body: { min: [-1.15, .48, -.62], max: [1.15, 2.1, .95] }, head: { min: [-.6, 1.98, -.58], max: [.6, 2.98, .5] } },
   medicine: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
   shakyamuni: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
+  jaya: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
   maitreya: { body: { min: [-1.5, .48, -.62], max: [1.15, 2.1, 1.1] }, head: { min: [-.5, 1.7, -.45], max: [.5, 2.5, .5] } },
   lion: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } },
   lionL: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } }
@@ -339,7 +341,7 @@ const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf8f3eb, roughness: .
 const gilt = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .55, roughness: .32, clearcoat: .35, clearcoatRoughness: .3, vertexColors: true });
 const behind = m => { const c = m.clone(); c.polygonOffset = true; c.polygonOffsetFactor = 1; c.polygonOffsetUnits = 1; return c; };
 const stone = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85, vertexColors: true });
-const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
+const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], qianshou: [behind(gilt), gilt], jaya: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
 const preparing = new Map();   // label → statues still being built
 function setPreparing() {
   const s = $("sculptStatus"); s.hidden = !preparing.size;
@@ -425,32 +427,44 @@ const vase = lathe([[0, 0], [.1, 0], [.11, .04], [.15, .14], [.13, .24], [.06, .
 vase.position.set(-1.02, ALT.y, ALT.z - .12); vase.castShadow = true; scene.add(vase); clickable(vase, "flower");
 const MOUTH = V(-1.02, ALT.y + .35, ALT.z - .12);
 
+// every altar where water, light, incense and fruit are offered is one record: the group it stands in, `st` the saved offerings
+// it shows (state.altar here, state.shrines[key] before the other statues, see shrine), and the bowls and slots built below.
+// `pick(mesh, item)` marks a part to tap for that offering
+const MAIN = { parent: scene, get st() { return state.altar; }, embers: null };
 // seven water bowls
-const bowls = [];
-for (let i = 0; i < 7; i++) {
-  const x = -.54 + i * .18, z = ALT.z + .3;
-  const b = lathe([[0, 0], [.04, 0], [.045, .01], [.07, .04], [.078, .065], [.072, .065], [.064, .04], [0, .015]], M.brass, 28);
-  b.position.set(x, ALT.y, z); b.castShadow = true; scene.add(b); clickable(b, "water");
-  const w = new THREE.Mesh(new THREE.CircleGeometry(1, 28), WATER.pure); w.rotation.x = -Math.PI / 2; w.visible = false; scene.add(w);
-  bowls.push({ x, z, w, level: 0, kind: null });
+function buildBowls(alt, pick) {
+  alt.bowls = [];
+  for (let i = 0; i < 7; i++) {
+    const x = -.54 + i * .18, z = ALT.z + .3;
+    const b = lathe([[0, 0], [.04, 0], [.045, .01], [.07, .04], [.078, .065], [.072, .065], [.064, .04], [0, .015]], M.brass, 28);
+    b.position.set(x, ALT.y, z); b.castShadow = true; alt.parent.add(b); pick(b, "water");
+    const w = new THREE.Mesh(new THREE.CircleGeometry(1, 28), WATER.pure); w.rotation.x = -Math.PI / 2; w.visible = false; alt.parent.add(w);
+    alt.bowls.push({ x, z, w, level: 0, kind: null });
+  }
 }
+buildBowls(MAIN, clickable);
+const bowls = MAIN.bowls;
 function setBowl(b, level, kind) {
   b.level = level; b.kind = kind; b.w.material = WATER[kind] || WATER.pure; b.w.visible = level > .01;
   b.w.position.set(b.x, ALT.y + .016 + .046 * level, b.z);
   b.w.scale.setScalar(.04 + .028 * level);
 }
 
-// fruit plate
-const PLATE = V(1.02, ALT.y, ALT.z - .12);
-mesh(new THREE.CylinderGeometry(.06, .09, .1, 24), M.brass, PLATE.x, PLATE.y + .05, PLATE.z);
-const plate = lathe([[0, 0], [.26, 0], [.32, .03], [.31, .035], [.25, .012], [0, .012]], M.brass, 40);
-plate.position.set(PLATE.x, PLATE.y + .1, PLATE.z); plate.castShadow = true; scene.add(plate); clickable(plate, "fruit");
-const FR = .07, PY = PLATE.y + .112 + FR;
-const fruitSlots = [V(0, 0, 0)];
-for (let i = 0; i < 6; i++) fruitSlots.push(V(Math.sin(i / 6 * TAU) * .16, 0, Math.cos(i / 6 * TAU) * .16));
-for (let i = 0; i < 3; i++) fruitSlots.push(V(Math.sin(i / 3 * TAU + .5) * .09, .11, Math.cos(i / 3 * TAU + .5) * .09));
-fruitSlots.push(V(0, .2, 0));
-fruitSlots.forEach(p => p.add(V(PLATE.x, PY, PLATE.z)));
+// fruit plate on a stem, at x along the back of the table
+const FR = .07;
+function buildPlate(alt, x, pick) {
+  const z = ALT.z - .12;
+  mesh(new THREE.CylinderGeometry(.06, .09, .1, 24), M.brass, x, ALT.y + .05, z, alt.parent);
+  const plate = lathe([[0, 0], [.26, 0], [.32, .03], [.31, .035], [.25, .012], [0, .012]], M.brass, 40);
+  plate.position.set(x, ALT.y + .1, z); plate.castShadow = true; alt.parent.add(plate); pick(plate, "fruit");
+  const slots = [V(0, 0, 0)];
+  for (let i = 0; i < 6; i++) slots.push(V(Math.sin(i / 6 * TAU) * .16, 0, Math.cos(i / 6 * TAU) * .16));
+  for (let i = 0; i < 3; i++) slots.push(V(Math.sin(i / 3 * TAU + .5) * .09, .11, Math.cos(i / 3 * TAU + .5) * .09));
+  slots.push(V(0, .2, 0));
+  alt.fruitSlots = slots.map(p => p.add(V(x, ALT.y + .112 + FR, z)));
+  alt.fruits = new Array(slots.length).fill(null);
+}
+buildPlate(MAIN, 1.02, clickable);
 
 // flames: shared flicker list
 const flames = [];
@@ -478,7 +492,6 @@ const PLAT = 0, INC_Z = CONFIG.layout.censerZ, BENCH_Z = CONFIG.layout.benchZ;
 
 // two square candle stands beside the censer, stepped like a small altar:
 // lotus lamps on the lowest step, red and white candles on the step above, a pillar candle on top
-const STAND_FLAMES = [], LAMP_SLOTS = [], CANDLE_SLOTS = [];
 const STAND_X = 1.05;
 const STEPS = [{ half: .33, top: PLAT + .18 }, { half: .23, top: PLAT + .34 }, { half: .12, top: PLAT + .5 }];
 // points around a square of half-size o, `per` to a side, going round
@@ -487,24 +500,27 @@ const squareRing = (o, per) => {
   for (let i = 0; i < per; i++) { const t = -o + 2 * o * i / per; pts.push([t, o], [o, -t], [-t, -o], [-o, t]); }
   return pts;
 };
-[-1, 1].forEach(s => {
-  const x = s * STAND_X;
-  STEPS.forEach((st, i) => {
-    const bottom = i ? STEPS[i - 1].top : PLAT, h = st.top - bottom, w = st.half * 2;
-    clickable(mesh(new THREE.BoxGeometry(w, h, w), M.lacquer, x, bottom + h / 2, INC_Z), "candle");
-    mesh(new THREE.BoxGeometry(w + .012, .018, w + .012), M.trim, x, st.top - .03, INC_Z);
+function buildStands(alt, pick) {
+  Object.assign(alt, { standFlames: [], lampSlots: [], candleSlots: [], candleObjs: {} });
+  [-1, 1].forEach(s => {
+    const x = s * STAND_X;
+    STEPS.forEach((st, i) => {
+      const bottom = i ? STEPS[i - 1].top : PLAT, h = st.top - bottom, w = st.half * 2;
+      pick(mesh(new THREE.BoxGeometry(w, h, w), M.lacquer, x, bottom + h / 2, INC_Z, alt.parent), "candle");
+      mesh(new THREE.BoxGeometry(w + .012, .018, w + .012), M.trim, x, st.top - .03, INC_Z, alt.parent);
+    });
+    const top = STEPS[2].top;
+    mesh(new THREE.CylinderGeometry(.04, .04, .32, 20), M.waxRed, x, top + .16, INC_Z, alt.parent);
+    const light = new THREE.PointLight(0xff9a3c, .9, 5, 2); light.position.set(x, top + .42, INC_Z); alt.parent.add(light);
+    alt.standFlames.push(makeFlame(V(x, top + .37, INC_Z), 1.3, light, alt.parent));
+    squareRing(.28, 3).forEach(([dx, dz]) => alt.lampSlots.push({ p: V(x + dx, STEPS[0].top, INC_Z + dz), dx, dz }));
+    squareRing(.175, 2).forEach(([dx, dz]) => alt.candleSlots.push({ p: V(x + dx, STEPS[1].top, INC_Z + dz), dx, dz }));
   });
-  const top = STEPS[2].top;
-  mesh(new THREE.CylinderGeometry(.04, .04, .32, 20), M.waxRed, x, top + .16, INC_Z);
-  const light = new THREE.PointLight(0xff9a3c, .9, 5, 2); light.position.set(x, top + .42, INC_Z); scene.add(light);
-  STAND_FLAMES.push(makeFlame(V(x, top + .37, INC_Z), 1.3, light));
-  squareRing(.28, 3).forEach(([dx, dz]) => LAMP_SLOTS.push({ p: V(x + dx, STEPS[0].top, INC_Z + dz), dx, dz }));
-  squareRing(.175, 2).forEach(([dx, dz]) => CANDLE_SLOTS.push({ p: V(x + dx, STEPS[1].top, INC_Z + dz), dx, dz }));
-});
-// fill the front of both stands first, working outwards and backwards
-[LAMP_SLOTS, CANDLE_SLOTS].forEach(list => list.sort((a, b) => (b.dz - a.dz) || (Math.abs(a.dx) - Math.abs(b.dx)) || (a.p.x - b.p.x)));
-const candleObjs = {};
-const candleSlot = key => (key[0] === "l" ? LAMP_SLOTS : CANDLE_SLOTS)[+key.slice(1)];
+  // fill the front of both stands first, working outwards and backwards
+  [alt.lampSlots, alt.candleSlots].forEach(list => list.sort((a, b) => (b.dz - a.dz) || (Math.abs(a.dx) - Math.abs(b.dx)) || (a.p.x - b.p.x)));
+}
+buildStands(MAIN, clickable);
+const candleSlot = (alt, key) => (key[0] === "l" ? alt.lampSlots : alt.candleSlots)[+key.slice(1)];
 function makeCandle(kind) {
   const g = new THREE.Group(); let top;
   if (kind === "lamp") {
@@ -526,68 +542,74 @@ function makeCandle(kind) {
   g.userData.top = top;
   return g;
 }
-function addCandle(n, kind, animated, delay = 0) {
-  const alt = state.altar; alt.next = alt.next || {};
-  const tier = kind === "lamp" ? "l" : "c", list = tier === "l" ? LAMP_SLOTS : CANDLE_SLOTS;
-  const i = (alt.next[tier] || 0) % list.length; alt.next[tier] = i + 1;
-  placeCandle(tier + i, kind, animated, delay);
+function addCandle(n, kind, animated, delay = 0, alt = MAIN) {
+  const st = alt.st; st.next = st.next || {};
+  const tier = kind === "lamp" ? "l" : "c", list = tier === "l" ? alt.lampSlots : alt.candleSlots;
+  const i = (st.next[tier] || 0) % list.length; st.next[tier] = i + 1;
+  placeCandle(tier + i, kind, animated, delay, alt);
 }
-function placeCandle(key, kind, animated, delay = 0) {
-  const slot = candleSlot(key); if (!slot) return;
-  state.altar.candles[key] = kind;
-  const g = makeCandle(kind), at0 = slot.p, x = at0.x;
+function placeCandle(key, kind, animated, delay = 0, alt = MAIN) {
+  const slot = candleSlot(alt, key); if (!slot) return;
+  alt.st.candles[key] = kind;
+  const P = alt.parent, objs = alt.candleObjs, g = makeCandle(kind), at0 = slot.p, x = at0.x;
   g.position.copy(at0);
   const wick = V(x, at0.y + g.userData.top + .015, at0.z);
-  const replace = () => { const o = candleObjs[key]; if (o) { scene.remove(o.g, o.fl.flame, o.fl.g); flames.splice(flames.indexOf(o.fl), 1); } };
-  if (!animated) { replace(); scene.add(g); const fl = makeFlame(wick, kind === "lamp" ? .8 : 1); candleObjs[key] = { g, fl }; return; }
-  const src = STAND_FLAMES[x < 0 ? 0 : 1].flame.position;
+  const replace = () => { const o = objs[key]; if (o) { P.remove(o.g, o.fl.flame, o.fl.g); flames.splice(flames.indexOf(o.fl), 1); } };
+  if (!animated) { replace(); P.add(g); const fl = makeFlame(wick, kind === "lamp" ? .8 : 1, null, P); objs[key] = { g, fl }; return; }
+  const src = alt.standFlames[x < 0 ? 0 : 1].flame.position;
   let spark, fl;
   tween(1.5, t => {
-    if (!g.parent) { replace(); scene.add(g); }
+    if (!g.parent) { replace(); P.add(g); }
     g.scale.set(1, Math.max(.001, easeOut(clamp(t / .3, 0, 1))), 1);
     if (t > .3 && t < .75) {
-      if (!spark) { spark = glowSprite(0xffc060, .12, 1); scene.add(spark); }
+      if (!spark) { spark = glowSprite(0xffc060, .12, 1); P.add(spark); }
       const e = easeInOut((t - .3) / .45);
       spark.position.lerpVectors(src, wick, e); spark.position.y += Math.sin(Math.PI * e) * .15;
     }
     if (t >= .75) {
-      if (spark) { scene.remove(spark); spark = null; }
-      if (!fl) { fl = makeFlame(wick, kind === "lamp" ? .8 : 1); candleObjs[key] = { g, fl }; }
+      if (spark) { P.remove(spark); spark = null; }
+      if (!fl) { fl = makeFlame(wick, kind === "lamp" ? .8 : 1, null, P); objs[key] = { g, fl }; }
       fl.on = easeOut((t - .75) / .25);
     }
-  }, () => sparkle(wick, 0xffc060), delay);
+  }, () => sparkle(wick, 0xffc060, P), delay);
 }
 
 // large bronze tripod censer (香爐) on a stone pedestal in front of the table
 const CS = CONFIG.layout.censerScale;
 const INCENSE = V(0, PLAT + .36, INC_Z);
-mesh(new THREE.CylinderGeometry(.3, .36, .28, 8), M.stone, 0, PLAT + .14, INC_Z);
-mesh(new THREE.CylinderGeometry(.36, .36, .06, 8), M.lacquer, 0, PLAT + .31, INC_Z);
-mesh(new THREE.CylinderGeometry(.38, .38, .02, 8), M.trim, 0, PLAT + .35, INC_Z);
-const censer = new THREE.Group(); censer.position.copy(INCENSE); censer.scale.setScalar(CS); scene.add(censer);
-for (let i = 0; i < 3; i++) {
-  const a = i / 3 * TAU + Math.PI / 3;
-  const leg = mesh(new THREE.CylinderGeometry(.018, .012, .08, 10), M.bronze, Math.sin(a) * .1, .04, Math.cos(a) * .1, censer);
-  leg.rotation.set(Math.cos(a) * .2, 0, -Math.sin(a) * .2);
+function buildCenser(alt, pick) {
+  const P = alt.parent;
+  mesh(new THREE.CylinderGeometry(.3, .36, .28, 8), M.stone, 0, PLAT + .14, INC_Z, P);
+  mesh(new THREE.CylinderGeometry(.36, .36, .06, 8), M.lacquer, 0, PLAT + .31, INC_Z, P);
+  mesh(new THREE.CylinderGeometry(.38, .38, .02, 8), M.trim, 0, PLAT + .35, INC_Z, P);
+  const censer = new THREE.Group(); censer.position.copy(INCENSE); censer.scale.setScalar(CS); P.add(censer);
+  for (let i = 0; i < 3; i++) {
+    const a = i / 3 * TAU + Math.PI / 3;
+    const leg = mesh(new THREE.CylinderGeometry(.018, .012, .08, 10), M.bronze, Math.sin(a) * .1, .04, Math.cos(a) * .1, censer);
+    leg.rotation.set(Math.cos(a) * .2, 0, -Math.sin(a) * .2);
+  }
+  // the bowl is open: its inner wall drops from the rim to a bed of ash sunk below it
+  const cBowl = lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.bronze, 40);
+  cBowl.position.y = .06; cBowl.castShadow = true; censer.add(cBowl); pick(cBowl, "incense");
+  mesh(new THREE.TorusGeometry(.168, .006, 6, 48), M.trim, 0, .16, 0, censer).rotation.x = Math.PI / 2;
+  // a gently mounded bed of ash with the stubs of burnt sticks standing in it
+  const ash = mesh(ASH_GEO, M.ash, 0, .17, 0, censer); ash.rotation.x = -Math.PI / 2; pick(ash, "incense");
+  [[.06, .03], [-.05, .06], [.02, -.08], [-.09, -.03], [.1, -.05], [-.02, .1]].forEach(([x, z], i) => {
+    const st = mesh(new THREE.CylinderGeometry(.0025, .0025, .03 + i % 3 * .012, 5), M.stickRed, x, .18, z, censer);
+    st.rotation.set((i % 2 - .5) * .3, 0, (i % 3 - 1) * .2);
+  });
+  [-1, 1].forEach(s => mesh(new THREE.TorusGeometry(.035, .009, 6, 16, Math.PI), M.bronze, s * .14, .205, 0, censer));
+  alt.incenseObjs = new Array(INCENSE_SETS.length).fill(null);
+  return censer;
 }
-// the bowl is open: its inner wall drops from the rim to a bed of ash sunk below it
-const cBowl = lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.bronze, 40);
-cBowl.position.y = .06; cBowl.castShadow = true; censer.add(cBowl); clickable(cBowl, "incense");
-mesh(new THREE.TorusGeometry(.168, .006, 6, 48), M.trim, 0, .16, 0, censer).rotation.x = Math.PI / 2;
-// a gently mounded bed of ash with the stubs of burnt sticks standing in it
-const ashGeo = new THREE.CircleGeometry(.152, 32), ap = ashGeo.attributes.position;
+const ASH_GEO = new THREE.CircleGeometry(.152, 32), ap = ASH_GEO.attributes.position;
 for (let i = 0; i < ap.count; i++) { const d = Math.hypot(ap.getX(i), ap.getY(i)) / .152; ap.setZ(i, (1 - d * d) * .014); }
-ashGeo.computeVertexNormals();
-const ash = mesh(ashGeo, M.ash, 0, .17, 0, censer); ash.rotation.x = -Math.PI / 2; clickable(ash, "incense");
-[[.06, .03], [-.05, .06], [.02, -.08], [-.09, -.03], [.1, -.05], [-.02, .1]].forEach(([x, z], i) => {
-  const st = mesh(new THREE.CylinderGeometry(.0025, .0025, .03 + i % 3 * .012, 5), M.stickRed, x, .18, z, censer);
-  st.rotation.set((i % 2 - .5) * .3, 0, (i % 3 - 1) * .2);
-});
-[-1, 1].forEach(s => mesh(new THREE.TorusGeometry(.035, .009, 6, 16, Math.PI), M.bronze, s * .14, .205, 0, censer));
+ASH_GEO.computeVertexNormals();
 const ASH_Y = INCENSE.y + .18 * CS;
 const INCENSE_SETS = [V(0, 0, .02), V(-.075, 0, .01), V(.075, 0, .01), V(-.04, 0, -.07), V(.04, 0, -.07)].map(v => v.multiplyScalar(CS));
-const incenseObjs = new Array(INCENSE_SETS.length).fill(null);
-const embers = [];
+buildCenser(MAIN, clickable);
+const embers = [];   // the glowing tips in Guanyin's censer, where the smoke rises from
+MAIN.embers = embers;
 function makeIncenseSet(kind) {
   const g = new THREE.Group(), tips = [];
   [-.012, 0, .012].forEach(dx => {
@@ -599,25 +621,25 @@ function makeIncenseSet(kind) {
   });
   return { g, tips };
 }
-function addIncense(n, kind, animated, delay = 0) {
-  const slot = n % INCENSE_SETS.length;
-  state.altar.incense[slot] = kind;
+function addIncense(n, kind, animated, delay = 0, alt = MAIN) {
+  const slot = n % INCENSE_SETS.length, P = alt.parent, objs = alt.incenseObjs, em = alt.embers;
+  alt.st.incense[slot] = kind;
   const set = makeIncenseSet(kind), home = V(INCENSE.x, ASH_Y - .05, INCENSE.z).add(INCENSE_SETS[slot]);
   set.g.scale.setScalar(1.5);
   set.g.rotation.y = (slot - 2) * .3;
   const replace = () => {
-    const o = incenseObjs[slot];
-    if (o) { scene.remove(o.g); o.tips.forEach(t => embers.splice(embers.indexOf(t), 1)); }
-    incenseObjs[slot] = set; embers.push(...set.tips);
+    const o = objs[slot];
+    if (o) { P.remove(o.g); if (em) o.tips.forEach(t => em.splice(em.indexOf(t), 1)); }
+    objs[slot] = set; if (em) em.push(...set.tips);
   };
-  if (!animated) { set.g.position.copy(home); scene.add(set.g); replace(); set.tips.forEach(t => t.material.opacity = 1); return; }
+  if (!animated) { set.g.position.copy(home); P.add(set.g); replace(); set.tips.forEach(t => t.material.opacity = 1); return; }
   tween(1.4, t => {
-    if (!set.g.parent) scene.add(set.g);
+    if (!set.g.parent) P.add(set.g);
     const e = easeOut(clamp(t / .6, 0, 1));
     set.g.position.set(home.x, home.y + (1 - e) * .7, home.z);
-    if (t > .6 && !incenseObjs.includes(set)) replace();
+    if (t > .6 && !objs.includes(set)) replace();
     set.tips.forEach(tp => tp.material.opacity = clamp((t - .6) / .4, 0, 1));
-  }, () => sparkle(V(home.x, home.y + .42, home.z), 0xffa060), delay);
+  }, () => sparkle(V(home.x, home.y + .42, home.z), 0xffa060, P), delay);
 }
 
 // fortune sticks (kau cim): a lacquered bamboo cylinder holding 100 numbered sticks
@@ -886,56 +908,55 @@ function makeFruit(type) {
   g.rotation.y = type * 1.3 + Math.random();
   return g;
 }
-const fruits = new Array(fruitSlots.length).fill(null);
-function addFruit(n, animated, delay = 0) { const slot = n % fruitSlots.length; state.altar.fruit[slot] = n % 4; placeFruit(slot, n % 4, animated, delay); }
-function placeFruit(slot, type, animated, delay = 0) {
-  const tgt = fruitSlots[slot], f = makeFruit(type);
-  const place = () => { if (fruits[slot]) scene.remove(fruits[slot]); fruits[slot] = f; };
-  if (!animated) { f.position.copy(tgt); scene.add(f); place(); return; }
+function addFruit(n, animated, delay = 0, alt = MAIN) { const slot = n % alt.fruitSlots.length; alt.st.fruit[slot] = n % 4; placeFruit(slot, n % 4, animated, delay, alt); }
+function placeFruit(slot, type, animated, delay = 0, alt = MAIN) {
+  const P = alt.parent, tgt = alt.fruitSlots[slot], f = makeFruit(type);
+  const place = () => { if (alt.fruits[slot]) P.remove(alt.fruits[slot]); alt.fruits[slot] = f; };
+  if (!animated) { f.position.copy(tgt); P.add(f); place(); return; }
   const startY = 3.2;
   tween(1.1, t => {
-    if (!f.parent) { place(); scene.add(f); }
+    if (!f.parent) { place(); P.add(f); }
     let y;
     if (t < .55) { const e = t / .55; y = startY + (tgt.y - startY) * e * e; }
     else if (t < .8) { const e = (t - .55) / .25; y = tgt.y + Math.sin(e * Math.PI) * .08; }
     else { const e = (t - .8) / .2; y = tgt.y + Math.sin(e * Math.PI) * .025; }
     f.position.set(tgt.x, y, tgt.z);
     f.rotation.x = (1 - t) * 3;
-  }, () => sparkle(tgt, 0xffc060), delay);
+  }, () => sparkle(tgt, 0xffc060, P), delay);
 }
-function addWater(n, kind, animated, delay = 0) {
-  const i = n % 7, b = bowls[i];
-  state.altar.bowls[i] = kind;
+function addWater(n, kind, animated, delay = 0, alt = MAIN) {
+  const i = n % 7, b = alt.bowls[i], P = alt.parent;
+  alt.st.bowls[i] = kind;
   if (!animated) { setBowl(b, 1, kind); return; }
   const drop = new THREE.Mesh(new THREE.SphereGeometry(.022, 12, 8), WATER[kind]); drop.scale.y = 1.6;
   let from = 0;
   tween(1.6, t => {
     if (t < .45) {
-      if (!drop.parent) scene.add(drop);
+      if (!drop.parent) P.add(drop);
       const e = t / .45; drop.position.set(b.x, 2.6 + (ALT.y + .06 - 2.6) * e * e, b.z);
     } else {
-      if (drop.parent) { scene.remove(drop); ripple(b); from = b.kind === kind ? b.level : 0; }
+      if (drop.parent) { P.remove(drop); ripple(b, P); from = b.kind === kind ? b.level : 0; }
       setBowl(b, from + (1 - from) * easeOut((t - .45) / .55), kind);
     }
-  }, () => sparkle(V(b.x, ALT.y + .08, b.z), kind === "tea" ? 0xffb070 : kind === "saffron" ? 0xffd040 : 0xbfe8ff), delay);
+  }, () => sparkle(V(b.x, ALT.y + .08, b.z), kind === "tea" ? 0xffb070 : kind === "saffron" ? 0xffd040 : 0xbfe8ff, P), delay);
 }
 
 /* ---------- effects ---------- */
 const tweens = [], bursts = [];
 let now = 0, glowBoost = 0;
 function tween(dur, fn, done, delay = 0) { tweens.push({ t0: now + delay, dur, fn, done }); }
-function sparkle(pos, color) {
+function sparkle(pos, color, parent = scene) {
   const n = 36, arr = new Float32Array(n * 3), vel = [];
   for (let i = 0; i < n; i++) { arr.set([pos.x, pos.y, pos.z], i * 3); vel.push(V((Math.random() - .5) * 1.1, Math.random() * 1.3 + .2, (Math.random() - .5) * 1.1)); }
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(arr, 3));
   const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: .07, map: glowTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-  scene.add(pts); bursts.push({ pts, vel, life: 0 });
+  parent.add(pts); bursts.push({ pts, vel, life: 0 });
   glowBoost = 1;
 }
-function ripple(b) {
+function ripple(b, parent = scene) {
   const r = new THREE.Mesh(new THREE.TorusGeometry(1, .08, 6, 32), new THREE.MeshBasicMaterial({ color: 0xdff6ff, transparent: true }));
-  r.rotation.x = Math.PI / 2; r.position.set(b.x, ALT.y + .065, b.z); scene.add(r);
-  tween(.7, t => { r.scale.setScalar(.01 + .06 * t); r.material.opacity = 1 - t; }, () => { scene.remove(r); r.geometry.dispose(); });
+  r.rotation.x = Math.PI / 2; r.position.set(b.x, ALT.y + .065, b.z); parent.add(r);
+  tween(.7, t => { r.scale.setScalar(.01 + .06 * t); r.material.opacity = 1 - t; }, () => { parent.remove(r); r.geometry.dispose(); });
 }
 
 /* ---------- initial altar ---------- */
@@ -950,10 +971,46 @@ Object.entries(A.candles).forEach(([s, k]) => {
 });
 Object.entries(A.incense).forEach(([s, k]) => addIncense(+s, k, false));
 
+/* ---------- the other statues' altars: water, light, incense and fruit, laid out like Guanyin's ---------- */
+// shrine(parent, key, o) sets out seven water bowls and a fruit plate (at o.fruitX) on a hall's offering table, and the two stepped
+// candle stands and the bronze censer before it, as in the main hall. What has been offered there is kept in state.shrines[key];
+// it returns the parts to tap, each with `offer` set to the item it takes. `before` names the statue for the messages
+if (!state.shrines) state.shrines = {};
+const shrines = {};
+const SHRINE_TIP = { water: "Add a bowl of water", fruit: "Add fruit", candle: "Light a candle", incense: "Offer incense" };
+function shrine(parent, key, o = {}) {
+  const st = state.shrines[key] = state.shrines[key] || { bowls: { 0: "pure", 1: "pure", 2: "pure" }, fruit: { 0: 0, 1: 1, 2: 2 }, candles: { c0: "red", c1: "white", l0: "lamp", l1: "lamp" }, incense: { 0: "sandal" }, n: {}, next: { c: 2, l: 2 } };
+  const alt = shrines[key] = { parent, st, embers: null, before: o.before || "the Buddha" }, hits = [];
+  const pick = (m, item) => { Object.assign(m.userData, { offer: item, tip: `${SHRINE_TIP[item]} before ${alt.before}` }); hits.push(m); return m; };
+  buildBowls(alt, pick); buildPlate(alt, o.fruitX ?? 1.02, pick); buildStands(alt, pick); buildCenser(alt, pick);
+  Object.entries(st.bowls).forEach(([s, k]) => setBowl(alt.bowls[+s], 1, k));
+  Object.entries(st.fruit).forEach(([s, k]) => placeFruit(+s, k, false, 0, alt));
+  Object.entries(st.candles).forEach(([s, k]) => placeCandle(s, k, false, 0, alt));
+  Object.entries(st.incense).forEach(([s, k]) => addIncense(+s, k, false, 0, alt));
+  return hits;
+}
+// one offering from the bag placed on the altar of hall `key`
+const SHRINE_PLACE = {
+  water: (alt, n, k) => addWater(n, k, true, 0, alt), fruit: (alt, n) => addFruit(n, true, 0, alt),
+  candle: (alt, n, k) => addCandle(n, k, true, 0, alt), incense: (alt, n, k) => addIncense(n, k, true, 0, alt)
+};
+function offerAtShrine(key, k) {
+  const alt = shrines[key]; if (!alt) return;
+  const kinds = state.bag[k] || {}, kind = Object.keys(kinds).find(x => kinds[x] > 0);
+  if (!kind) { toast(`You have no ${ITEMS[k].name.toLowerCase()} in your bag. Buy them at the temple shop on the left of the lotus pond, or on the pagoda's fifth floor.`); return; }
+  kinds[kind]--;
+  const n = alt.st.n[k] = (alt.st.n[k] ?? 2) + 1;   // the first three bowls, fruits and incense slots are already filled
+  SHRINE_PLACE[k](alt, n, kind);
+  const items = { [k]: { q: 1, k: kind } };
+  state.log.push({ t: Date.now(), items, ded: $("dedication").value.trim(), at: alt.before });
+  save(); render(); renderLog();
+  toast(`Placed ${describe(items)} before ${alt.before}.`);
+}
+
 /* ---------- the pagoda: seven floors and the view from outside ---------- */
 const temple = window.TempleFloors({
   THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus,
-  makeFlame, tone: (...a) => tone(...a), tween: (...a) => tween(...a), sculptFigure, floors: CONFIG.floors, places: CONFIG.places, reduceMotion, cull: CONFIG.cull
+  makeFlame, tone: (...a) => tone(...a), tween: (...a) => tween(...a), sculptFigure, shrine, floors: CONFIG.floors, places: CONFIG.places, reduceMotion, cull: CONFIG.cull
 });
 let current = 1;
 // the main hall gets the same festoons of lanterns and spiral staircase as the floors above
@@ -1169,22 +1226,23 @@ function folkNow() {
 let folkOut = folkNow();
 setInterval(() => { folkOut = folkNow(); }, 3e4);
 
-/* ---------- the beat officer: after dark, chases a visitor on foot anywhere outside the temple and the markets, and arrests one he catches ---------- */
-const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
-temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
-const POLICE_SAYS = {
-  spotted: "👮 A police officer has seen you and gives chase! Get inside the temple grounds or a market, where no one can be arrested.",
-  lost: "You have shaken off the officer. He gives up and walks back to his beat."
-};
-function policeStep() {
-  temple.setPolice({ walking: current === "pagoda" && inMarket });
-  const news = temple.policeNews(); if (!news) return;
-  if (news !== "arrested") { if (POLICE_SAYS[news]) toast(POLICE_SAYS[news]); return; }   // reaching safe ground goes unannounced
-  walkTween = null;
-  enterWalk([130, 48.5], [133, 40], "");
-  $("where").innerHTML = `<b lang="my">ရဲစခန်း</b>The police station`;
-  toast("🚓 Arrested! The officer walks you to the police station, takes your name and lets you go with a warning. Only a game: the temple and the markets are safe ground.");
-}
+/* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
+   temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */
+// const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+// temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
+// const POLICE_SAYS = {
+//   spotted: "👮 A police officer has seen you and gives chase! Get inside the temple grounds or a market, where no one can be arrested.",
+//   lost: "You have shaken off the officer. He gives up and walks back to his beat."
+// };
+// function policeStep() {
+//   temple.setPolice({ walking: current === "pagoda" && inMarket });
+//   const news = temple.policeNews(); if (!news) return;
+//   if (news !== "arrested") { if (POLICE_SAYS[news]) toast(POLICE_SAYS[news]); return; }   // reaching safe ground goes unannounced
+//   walkTween = null;
+//   enterWalk([130, 48.5], [133, 40], "");
+//   $("where").innerHTML = `<b lang="my">ရဲစခန်း</b>The police station`;
+//   toast("🚓 Arrested! The officer walks you to the police station, takes your name and lets you go with a warning. Only a game: the temple and the markets are safe ground.");
+// }
 
 /* ---------- weather: rain, cloud, mist and haze over the northern hills, picked from the date ---------- */
 const WEATHER = {   // fog: how far you see (x the usual haze), tint: the sky's colour and how much of it, rain: 0–1, wind: 0–1
@@ -1742,7 +1800,7 @@ function frame() {
     const a = b.pts.geometry.attributes.position;
     b.vel.forEach((v, k) => { v.y -= 1.4 * dt; a.array[k*3] += v.x * dt; a.array[k*3+1] += v.y * dt; a.array[k*3+2] += v.z * dt; });
     a.needsUpdate = true; b.pts.material.opacity = Math.max(0, 1 - b.life / 1.3);
-    if (b.life > 1.3) { scene.remove(b.pts); b.pts.geometry.dispose(); bursts.splice(i, 1); }
+    if (b.life > 1.3) { b.pts.parent.remove(b.pts); b.pts.geometry.dispose(); bursts.splice(i, 1); }
   }
   const da = dust.geometry.attributes.position;
   for (let i = 0; i < da.count; i++) {
@@ -1784,7 +1842,7 @@ function frame() {
   festStep(dt);
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
-  policeStep();
+  // policeStep();   // the beat officer is commented out
   ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);
@@ -1852,9 +1910,10 @@ function useObject(o) {
   if (!o || moving) return;
   if (o.userData.stairDoor) { ac(); if (inStairs) setView("hall"); else { const d = o.userData.open(); setTimeout(() => setView("stairs"), d * .5); } return; }
   if (o.userData.climb) { ac(); climb(o.userData.climb); return; }
-  if (o.userData.shopItem) { ac(); setQty(o.userData.shopItem, cart[o.userData.shopItem].q + 1); pulse(o.userData.shopItem); toast(`Added ${ITEMS[o.userData.shopItem].name.toLowerCase()} to your basket.`); return; }
+  if (o.userData.shopItem) { ac(); if (sheet !== "buy") openSheet("buy"); setQty(o.userData.shopItem, cart[o.userData.shopItem].q + 1); pulse(o.userData.shopItem); toast(`Added ${ITEMS[o.userData.shopItem].name.toLowerCase()} to your basket.`); return; }
   if (current !== 1) {
     ac();
+    if (o.userData.offer) { offerAtShrine(current, o.userData.offer); return; }
     const r = temple.activate(o, current, lastHit);
     if (r.fourTop) { openTopGame(); return; }
     if (r.pavilion) { sitInPavilion(); return; }
@@ -1954,7 +2013,7 @@ function renderLog() {
     const li = document.createElement("li");
     const when = new Date(r.t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     li.innerHTML = r.donate ? `<span class="when">${when} · Donation</span><span>${money(r.donate)} · ${esc(r.purpose)}${r.name ? " · from " + esc(r.name) : ""}</span>` :
-      `<span class="when">${when} · Guanyin's altar${r.example ? ' <span class="tag">Example</span>' : ""}</span>
+      `<span class="when">${when} · ${r.at ? "Before " + esc(r.at) : "Guanyin's altar"}${r.example ? ' <span class="tag">Example</span>' : ""}</span>
       <span>${esc(describe(r.items))}</span>
       ${r.ded ? `<span class="ded">For ${esc(r.ded)}</span>` : ""}`;
     ul.appendChild(li);
@@ -1993,7 +2052,7 @@ $("confirmBtn").addEventListener("click", () => {
   KEYS.forEach(k => { if (cart[k].q) { items[k] = { ...cart[k] }; const b = state.bag[k] = state.bag[k] || {}; b[cart[k].k] = (b[cart[k].k] || 0) + cart[k].q; cart[k].q = 0; } });
   save(); render();
   $("reviewView").hidden = true; $("orderView").hidden = false;
-  toast(`Bought ${describe(items)}. They are in your bag: carry them to Guanyin's altar on the pagoda's ground floor.`);
+  toast(`Bought ${describe(items)}. They are in your bag: carry them to Guanyin's altar on the pagoda's ground floor, or to the altar of any statue in the temple.`);
 });
 // 2 and 3 · placing what is in the bag on Guanyin's altar
 const PLACE = {
@@ -2023,7 +2082,7 @@ function offerOne(k) {
   PLACE[k](state.counts[k]++, kind, 0);
   const items = { [k]: { q: 1, k: kind } };
   const last = state.log[state.log.length - 1];
-  if (last && last.items && Date.now() - last.t < 6e4 && !last.example) { const it = last.items[k]; last.items[k] = it ? { q: it.q + 1, k: it.k } : items[k]; last.t = Date.now(); }
+  if (last && last.items && Date.now() - last.t < 6e4 && !last.example && !last.at) { const it = last.items[k]; last.items[k] = it ? { q: it.q + 1, k: it.k } : items[k]; last.t = Date.now(); }
   else state.log.push({ t: Date.now(), items, ded: $("dedication").value.trim() });
   save(); render(); renderLog();
   toast(`Placed ${describe(items)} on the altar.`);

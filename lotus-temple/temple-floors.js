@@ -4,7 +4,7 @@
    Each floor is built the first time someone visits it. */
 window.TempleFloors = function TempleFloors(ctx) {
   "use strict";
-  const { THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus, makeFlame, tone, tween, sculptFigure, floors: FLOORS, places: PLACES, reduceMotion } = ctx;
+  const { THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus, makeFlame, tone, tween, sculptFigure, shrine, floors: FLOORS, places: PLACES, reduceMotion } = ctx;
   const PLAT = 0, ALT = { y: 1.1, z: .75 };   // halls have a level floor; statues stand on their own pedestals
   const groups = {}, updaters = {}, picks = {}, actions = {};
   let pagoda = null, hovered = null;
@@ -273,8 +273,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       c.fillStyle = "#e8c25a"; c.font = HAN_FONT(56); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("樓梯", cw / 2, ch / 2 + 4);
     });
     flat(mesh(new THREE.PlaneGeometry(.7, .26), new THREE.MeshStandardMaterial({ map: sign, roughness: .6, emissive: 0x222222, emissiveMap: sign }), cx, DH + .45, dz, g));
-    // opening swings the door out into the hall; the caller moves on to the next floor once it is open (ms)
-    const open = () => { tween(reduceMotion ? .01 : .7, t => hinge.rotation.y = -1.7 * easeOut(t)); return reduceMotion ? 0 : 700; };
+    // opening swings the door out into the hall, and it swings shut again behind you; the caller moves on once it is open (ms)
+    let shut = 0;
+    const swing = (to, d) => { const from = hinge.rotation.y; tween(reduceMotion ? .01 : d, t => hinge.rotation.y = from + (to - from) * easeOut(t)); };
+    const open = () => { clearTimeout(shut); swing(-1.7, .7); shut = setTimeout(() => swing(0, .9), 2600); return reduceMotion ? 0 : 700; };
     Object.assign(leaf.userData, { stairDoor: true, open, tip: "Open the door to the stairs" });
     openers[n] = open;
     if (list) list.push(leaf);
@@ -754,6 +756,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     const halo = glowSprite(o.haloColor, 2.4, .25); halo.position.set(0, 2.4, -.52); st.add(halo);
     sculptFigure(o.figure, st, o.label);
     offeringTable(g, n);
+    picks[n].push(...shrine(g, n, { before: o.label, fruitX: o.fruitX }));   // water, light, incense and fruit, as before Guanyin
     updaters[n].push((dt, t, motion) => { aura.rotation.z += dt * .03 * motion; aura.material.opacity = .5 + Math.sin(t * .8) * .05; lights.back.intensity = 1.1 + Math.sin(t * .8) * .1; });
     return st;
   }
@@ -800,28 +803,17 @@ window.TempleFloors = function TempleFloors(ctx) {
     makeFlame(V(0, PLAT + .92, 1.6), 3.2, bl, g);
   }
 
-  /* ---------- 蓮華寺 the great hall beside the pond: Shakyamuni Buddha, laid out like Guanyin's hall ---------- */
+  /* ---------- 蓮華寺 the great hall beside the pond: Shakyamuni Buddha, laid out like Guanyin's hall, and the wishing tree
+     on the right with the Victorious Buddha seated beneath it ---------- */
   function library(g, n) {
     statueHall(g, n, {
       figure: "shakyamuni", label: "Shakyamuni Buddha", petal: M.gold, ring: M.gold, haloColor: 0xffe2a0, glow: 0xffc070,
       aura: auraTexture("rgba(255,240,200,.9)", "rgba(255,190,90,.4)", "rgba(255,220,150,.26)")
     });
     vaseOfLotus(g, -1.02, ALT.z - .12);
-    fruitPlate(g, 1.02, ALT.z - .12, [std({ color: 0xf0881c, roughness: .55 }), std({ color: 0xc8402e, roughness: .5 }), std({ color: 0x8ab83a, roughness: .5 })], sphereFruit);
-    // seven water bowls along the front of the table
-    for (let i = 0; i < 7; i++) {
-      const x = -.6 + i * .2, bowl = lathe([[0, 0], [.035, 0], [.06, .03], [.065, .06], [.058, .06], [0, .02]], M.brass, 18);
-      bowl.position.set(x, ALT.y, ALT.z + .3); g.add(bowl);
-      mesh(new THREE.CylinderGeometry(.056, .056, .005, 18), std({ color: 0xa8dcef, roughness: .1, metalness: .2 }), x, ALT.y + .052, ALT.z + .3, g);
-    }
-    // the bronze censer before the altar, with sticks of incense smouldering, and kneeling cushions
-    const cz = 1.95;
-    mesh(new THREE.CylinderGeometry(.42, .5, .5, 8), M.stone, 0, .25, cz, g);
-    const pot = lathe([[0, 0], [.28, .02], [.4, .14], [.44, .3], [.48, .34], [.4, .34], [.38, .22], [0, .2]], M.bronze, 32); pot.position.set(0, .5, cz); g.add(pot);
-    const potAsh = mesh(ashBed(.37), ashMat, 0, .71, cz, g); potAsh.rotation.x = -Math.PI / 2;
-    [-1, 1].forEach(sx => mesh(new THREE.TorusGeometry(.1, .025, 6, 14, Math.PI), M.bronze, sx * .44, .9, cz, g).rotation.y = Math.PI / 2);
-    [-.08, 0, .08].forEach(x => { mesh(new THREE.CylinderGeometry(.006, .006, .45, 5), std({ color: 0xb2683a, roughness: .9 }), x, .96, cz, g); const e = glowSprite(0xff5a20, .08, 1); e.position.set(x, 1.19, cz); g.add(e); });
+    // kneeling cushions before the censer
     [-.7, .7].forEach(x => mesh(new THREE.CylinderGeometry(.3, .32, .14, 32), M.cushion, x, .07, 2.9, g));
+    wishTree(g, n, WISH_TREE);
   }
 
   /* ---------- 法物流通處 inside the temple shop: shelves of offerings, a counter and the shopkeeper's lamp ---------- */
@@ -856,35 +848,38 @@ window.TempleFloors = function TempleFloors(ctx) {
     mesh(new THREE.SphereGeometry(.13, 12, 10), M.gold, 2.5, 2.15, -5.1, g);
     const lamp = new THREE.PointLight(0xffc080, 1.2, 9, 2); lamp.position.set(0, 2.6, 0); g.add(lamp);
   }
+  // a shelf unit of one kind of offering with `rows` rows of goods, labelled in Chinese; tapping it adds that offering to the basket
+  function shopShelf(g, list, key, han, x, z, ry, rows, rr, goodsCols) {
+    const sh = new THREE.Group(); sh.position.set(x, 0, z); sh.rotation.y = ry; g.add(sh);
+    const H = rows * .6 + .6;
+    mesh(new THREE.BoxGeometry(2.0, H, .1), M.lacquer, 0, H / 2, -.22, sh);
+    [-1, 1].forEach(sx => mesh(new THREE.BoxGeometry(.08, H, .5), M.lacquer, sx * 1.0, H / 2, 0, sh));
+    for (let r = 0; r <= rows; r++) mesh(new THREE.BoxGeometry(2.0, .05, .5), M.wood, 0, .3 + r * .6, 0, sh);
+    const pick = new THREE.Mesh(new THREE.BoxGeometry(2.0, H, .6), new THREE.MeshBasicMaterial({ visible: false })); pick.position.y = H / 2; sh.add(pick);
+    Object.assign(pick.userData, { shopItem: key, tip: `Add ${key === "fruit" ? "fruit" : key === "incense" ? "incense" : key + "s"} to your basket` });
+    list.push(pick);
+    for (let r = 0; r < rows; r++) for (let k = 0; k < 6; k++) {
+      const px = -.8 + k * .32, py = .33 + r * .6;
+      if (key === "flower") { const f = makeLotus(); f.userData.bloom(rr() < .5 ? 1 : .4); f.scale.setScalar(1.1); f.position.set(px, py + .05, .05); sh.add(f); }
+      else if (key === "water") { const b = lathe([[0, 0], [.05, 0], [.09, .05], [.1, .1], [.09, .1], [0, .03]], M.brass, 16); b.position.set(px, py, .05); sh.add(b); }
+      else if (key === "fruit") { const f = new THREE.Mesh(new THREE.SphereGeometry(.09, 14, 10), [goodsCols[0], goodsCols[1], goodsCols[4]][(rr() * 3) | 0]); f.position.set(px, py + .09, .05); sh.add(f); }
+      else if (key === "candle") mesh(new THREE.CylinderGeometry(.05, .05, .3, 12), rr() < .6 ? M.waxRed : M.wax, px, py + .15, .05, sh);
+      else { mesh(new THREE.BoxGeometry(.24, .32, .14), goodsCols[(rr() * 6) | 0], px, py + .16, .05, sh); }
+    }
+    const sign = writing(128, 128, (c, cw, ch) => {
+      c.fillStyle = "#16233d"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 8; c.strokeRect(5, 5, cw - 10, ch - 10);
+      c.fillStyle = "#e8c25a"; c.font = HAN_FONT(80); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(han, cw / 2, ch / 2 + 4);
+    });
+    flat(mesh(new THREE.PlaneGeometry(.5, .5), new THREE.MeshStandardMaterial({ map: sign, roughness: .6, emissive: 0x333333, emissiveMap: sign }), 0, H + .3, .02, sh));
+  }
   function shop(g, n) {
     shell(g, n, { key: 1.25 });
     const list = picks[n];
     const goodsCols = [0xc0201a, 0xd8a83a, 0x2f6a5a, 0x3a5a8a, 0xb8683a, 0xe8e2d4].map(c => std({ color: c, roughness: .6 }));
     const rr = rng(77);
     // a shelf unit against the back wall for each kind of offering, labelled in Chinese; tapping one adds it to the basket
-    const SHELVES = [["flower", "花", -4.4], ["water", "水", -2.2], ["fruit", "果", 0], ["candle", "燈", 2.2], ["incense", "香", 4.4]];
-    SHELVES.forEach(([key, han, x]) => {
-      const sh = new THREE.Group(); sh.position.set(x, 0, -4.9); g.add(sh);
-      const back = mesh(new THREE.BoxGeometry(2.0, 3.0, .1), M.lacquer, 0, 1.5, -.22, sh);
-      [-1, 1].forEach(sx => mesh(new THREE.BoxGeometry(.08, 3.0, .5), M.lacquer, sx * 1.0, 1.5, 0, sh));
-      for (let r = 0; r < 5; r++) mesh(new THREE.BoxGeometry(2.0, .05, .5), M.wood, 0, .3 + r * .6, 0, sh);
-      const pick = new THREE.Mesh(new THREE.BoxGeometry(2.0, 3.0, .6), new THREE.MeshBasicMaterial({ visible: false })); pick.position.y = 1.5; sh.add(pick);
-      Object.assign(pick.userData, { shopItem: key, tip: `Add ${key === "fruit" ? "fruit" : key === "incense" ? "incense" : key + "s"} to your basket` });
-      list.push(pick);
-      for (let r = 0; r < 4; r++) for (let k = 0; k < 6; k++) {
-        const px = -.8 + k * .32, py = .33 + r * .6;
-        if (key === "flower") { const f = makeLotus(); f.userData.bloom(rr() < .5 ? 1 : .4); f.scale.setScalar(1.1); f.position.set(px, py + .05, .05); sh.add(f); }
-        else if (key === "water") { const b = lathe([[0, 0], [.05, 0], [.09, .05], [.1, .1], [.09, .1], [0, .03]], M.brass, 16); b.position.set(px, py, .05); sh.add(b); }
-        else if (key === "fruit") { const f = new THREE.Mesh(new THREE.SphereGeometry(.09, 14, 10), [goodsCols[0], goodsCols[1], goodsCols[4]][(rr() * 3) | 0]); f.position.set(px, py + .09, .05); sh.add(f); }
-        else if (key === "candle") mesh(new THREE.CylinderGeometry(.05, .05, .3, 12), rr() < .6 ? M.waxRed : M.wax, px, py + .15, .05, sh);
-        else { mesh(new THREE.BoxGeometry(.24, .32, .14), goodsCols[(rr() * 6) | 0], px, py + .16, .05, sh); }
-      }
-      const sign = writing(128, 128, (c, cw, ch) => {
-        c.fillStyle = "#16233d"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 8; c.strokeRect(5, 5, cw - 10, ch - 10);
-        c.fillStyle = "#e8c25a"; c.font = HAN_FONT(80); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(han, cw / 2, ch / 2 + 4);
-      });
-      flat(mesh(new THREE.PlaneGeometry(.5, .5), new THREE.MeshStandardMaterial({ map: sign, roughness: .6, emissive: 0x333333, emissiveMap: sign }), 0, 3.3, .02, sh));
-    });
+    [["flower", "花", -4.4], ["water", "水", -2.2], ["fruit", "果", 0], ["candle", "燈", 2.2], ["incense", "香", 4.4]]
+      .forEach(([key, han, x]) => shopShelf(g, list, key, han, x, -4.9, 0, 4, rr, goodsCols));
     // the counter with rosaries, sutra books and a cash box, and the shop's name board above it
     mesh(new THREE.BoxGeometry(5.0, 1.0, .9), M.wood, 0, .5, -1.0, g);
     mesh(new THREE.BoxGeometry(5.1, .06, 1.0), M.trim, 0, 1.03, -1.0, g);
@@ -941,61 +936,51 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   const INC = std({ color: 0x8b3a1a, roughness: .9 });
 
-  /* ---------- 5F 茶室 Tea and Calligraphy Room ---------- */
-  function paintingTex(seed) {
-    const rnd = rng(seed);
-    return writing(256, 640, (c, w, h) => {
-      c.fillStyle = "#efe4c8"; c.fillRect(0, 0, w, h);
-      c.fillStyle = "#6b4a2a"; c.fillRect(0, 0, w, 16); c.fillRect(0, h - 16, w, 16);
-      for (let layer = 0; layer < 4; layer++) {        // ink-wash mountains, paler with distance
-        const base = 180 + layer * 95;
-        c.fillStyle = `rgba(30,32,30,${.14 + layer * .17})`; c.beginPath(); c.moveTo(16, h - 30);
-        for (let x = 16; x <= w - 16; x += 12) c.lineTo(x, base - Math.abs(Math.sin(x * .02 + seed + layer)) * (90 - layer * 12) - rnd() * 14);
-        c.lineTo(w - 16, h - 30); c.closePath(); c.fill();
+  /* ---------- 5F 千手觀音殿 the Thousand-Armed Guanyin, with the pagoda's own offerings shop along the walls ---------- */
+  // her thousand arms: rings of gilded forearms fanning out behind her from the shoulders, an eye in every palm
+  function thousandArms(st) {
+    const C = V(0, 1.75, -.5), Z = V(0, 0, 1), q = new THREE.Quaternion(), m4 = new THREE.Matrix4(), hands = [];
+    [[.95, 34, .3], [1.22, 44, .32], [1.5, 56, .34]].forEach(([r, count, len], k) => {
+      const z = C.z - k * .05;
+      for (let i = 0; i < count; i++) {
+        const a = (i + k * .5) / count * TAU, dx = Math.cos(a), dy = Math.sin(a);
+        if (C.y + dy * r < .8) continue;   // none reach down into the lotus throne
+        q.setFromAxisAngle(Z, a - Math.PI / 2);
+        const at = d => V(dx * d, C.y + dy * d, z);
+        hands.push({ arm: [at(r - len / 2), q.clone(), V(1, len, 1)], palm: [at(r + .05), q.clone(), V(.045, .07, .014)], eye: [at(r + .05).setZ(z + .013), q.clone(), V(.018, .008, .006)] });
       }
-      c.fillStyle = "rgba(30,30,30,.8)"; c.fillRect(w * .55, h - 130, 26, 4);   // a small boat
-      c.fillStyle = "#231a14"; c.font = HAN_FONT(34); c.textAlign = "center";
-      ["山", "水"].forEach((ch, i) => c.fillText(ch, w - 40, 70 + i * 40));
-      c.fillStyle = "#b3261e"; c.fillRect(w - 52, 160, 22, 22);
     });
+    const set = (geo, mat, key, shadow) => {
+      const im = new THREE.InstancedMesh(geo, mat, hands.length);
+      hands.forEach((h, i) => im.setMatrixAt(i, m4.compose(...h[key])));
+      im.castShadow = shadow; st.add(im);
+    };
+    set(new THREE.CylinderGeometry(.018, .026, 1, 8), M.gold, "arm", true);
+    set(new THREE.SphereGeometry(1, 12, 8), M.gold, "palm", true);
+    set(new THREE.SphereGeometry(1, 8, 6), std({ color: 0x1a120c, roughness: .4 }), "eye", false);
   }
-  function teaRoom(g, n) {
-    shell(g, n, { key: 1.1 });
-    const clay = std({ color: 0x7a3a22, roughness: .55 }), porcelainCup = std({ color: 0xf3efe6, roughness: .25 });
-    // tea table and seats
-    mesh(new THREE.BoxGeometry(1.8, .1, 1.0), M.wood, 0, PLAT + .42, -.4, g);
-    [[-.8, -.4], [.8, -.4], [-.8, .4], [.8, .4]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.1, .4, .1), M.wood, x, PLAT + .2, -.4 + z, g));
-    mesh(new THREE.BoxGeometry(.9, .04, .5), std({ color: 0x2a1a12, roughness: .5 }), 0, PLAT + .49, -.4, g);
-    const pot = lathe([[0, 0], [.08, 0], [.13, .04], [.14, .09], [.11, .14], [.05, .16], [0, .16]], clay, 28); pot.position.set(-.15, PLAT + .51, -.4); g.add(pot);
-    const spout = mesh(new THREE.CylinderGeometry(.012, .025, .16, 10), clay, -.03, PLAT + .6, -.4, g); spout.rotation.z = -1;
-    const handle = mesh(new THREE.TorusGeometry(.06, .013, 6, 16, Math.PI), clay, -.29, PLAT + .6, -.4, g); handle.rotation.z = Math.PI / 2;
-    mesh(new THREE.SphereGeometry(.025, 10, 8), clay, -.15, PLAT + .68, -.4, g);
-    [[.12, -.5], [.24, -.32], [.12, -.28], [.3, -.48]].forEach(([x, z]) => { const cp = lathe([[0, 0], [.025, 0], [.04, .045], [.036, .045], [0, .008]], porcelainCup, 16); cp.position.set(x, PLAT + .51, z); g.add(cp); });
-    [-1, 1].forEach(s => mesh(new THREE.CylinderGeometry(.28, .3, .1, 28), M.cushion, s * 1.3, PLAT + .05, -.4, g));
-    // calligraphy table: brushes on a rack, an ink stone and a written sheet
-    mesh(new THREE.BoxGeometry(2.6, .08, .8), M.lacquer, 2.9, PLAT + .74, -4.3, g);
-    [[-1.2, -.34], [1.2, -.34], [-1.2, .34], [1.2, .34]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.08, .72, .08), M.lacquer, 2.9 + x, PLAT + .36, -4.3 + z, g));
-    const sheet = writing(512, 256, (c, w, h) => {
-      c.fillStyle = "#f4ead2"; c.fillRect(0, 0, w, h);
-      c.fillStyle = "#1e1813"; c.font = HAN_FONT(150); c.textAlign = "center"; c.textBaseline = "middle";
-      ["茶", "禪", "一", "味"].forEach((ch, i) => c.fillText(ch, w - 64 - i * 128, h / 2));
+  function guanyinShop(g, n) {
+    const st = statueHall(g, n, {
+      figure: "qianshou", label: "the Thousand-Armed Guanyin", petal: M.lotus, ring: M.gold, haloColor: 0xffe8c0, glow: 0xffc890,
+      aura: auraTexture("rgba(255,244,220,.9)", "rgba(255,200,120,.4)", "rgba(255,230,180,.26)")
     });
-    const sh = flat(mesh(new THREE.PlaneGeometry(1.4, .7), new THREE.MeshStandardMaterial({ map: sheet, roughness: .9 }), 2.8, PLAT + .785, -4.3, g)); sh.rotation.x = -Math.PI / 2;
-    mesh(new THREE.BoxGeometry(.3, .04, .2), std({ color: 0x1a1a1c, roughness: .4 }), 3.85, PLAT + .8, -4.4, g);
-    mesh(new THREE.BoxGeometry(.5, .04, .06), M.wood, 3.9, PLAT + 1.05, -4.05, g);
-    [-.18, -.09, 0, .09, .18].forEach(dx => { mesh(new THREE.CylinderGeometry(.008, .008, .26, 6), M.bamboo, 3.9 + dx, PLAT + .9, -4.05, g); mesh(new THREE.ConeGeometry(.014, .05, 8), std({ color: 0x1a1410 }), 3.9 + dx, PLAT + .76, -4.05, g).rotation.x = Math.PI; });
-    [[-3.6, -4.05], [4.4, -4.05]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.06, .3, .06), M.wood, x > 0 ? 3.66 : 4.14, PLAT + .92, z, g));
-    // ink-wash landscape scrolls on the back wall
-    [[-.6, 1], [1.6, 2], [3.8, 3]].forEach(([x, seed]) => {
-      flat(mesh(new THREE.PlaneGeometry(.9, 2.6), new THREE.MeshStandardMaterial({ map: paintingTex(seed), roughness: .9 }), x, 3.5, -5.44, g));
-      flat(mesh(new THREE.CylinderGeometry(.03, .03, 1.05, 8), M.wood, x, 2.18, -5.4, g)).rotation.z = Math.PI / 2;
+    thousandArms(st);
+    vaseOfLotus(g, -1.02, ALT.z - .12);
+    // the shop: low shelves of offerings under the side windows, tapped to add to the basket, and a counter by the door
+    const list = picks[n], rr = rng(55);
+    const goodsCols = [0xc0201a, 0xd8a83a, 0x2f6a5a, 0x3a5a8a, 0xb8683a, 0xe8e2d4].map(c => std({ color: c, roughness: .6 }));
+    [["flower", "花", -7.2, -.8], ["water", "水", -7.2, 1.8]].forEach(([key, han, x, z]) => shopShelf(g, list, key, han, x, z, Math.PI / 2, 2, rr, goodsCols));
+    [["fruit", "果", 7.2, -3.4], ["candle", "燈", 7.2, -.8], ["incense", "香", 7.2, 1.8]].forEach(([key, han, x, z]) => shopShelf(g, list, key, han, x, z, -Math.PI / 2, 2, rr, goodsCols));
+    mesh(new THREE.BoxGeometry(3.0, 1.0, .8), M.wood, 4.4, .5, 4.9, g);
+    mesh(new THREE.BoxGeometry(3.1, .06, .9), M.trim, 4.4, 1.03, 4.9, g);
+    for (let k = 0; k < 4; k++) { const bead = mesh(new THREE.TorusGeometry(.1, .02, 6, 18), M.wood, 3.3 + k * .3, 1.07, 4.9, g); bead.rotation.x = Math.PI / 2; }
+    mesh(new THREE.BoxGeometry(.4, .22, .3), M.lacquer, 5.5, 1.17, 4.9, g);
+    const name = writing(1024, 192, (c, cw, ch) => {
+      c.fillStyle = "#2a1610"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 12; c.strokeRect(8, 8, cw - 16, ch - 16);
+      c.fillStyle = "#e8c25a"; c.font = HAN_FONT(118); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("法物流通處", cw / 2, ch / 2 + 8);
     });
-    // a pine bonsai on a stand
-    mesh(new THREE.BoxGeometry(.6, .5, .6), M.lacquer, -2.4, PLAT + .25, .6, g);
-    mesh(new THREE.BoxGeometry(.7, .14, .45), std({ color: 0x3a4a5a, roughness: .5 }), -2.4, PLAT + .57, .6, g);
-    const bark = std({ color: 0x4a3222, roughness: .9 }), pine = std({ color: 0x2f5a26, roughness: .8, flatShading: true });
-    const tr = mesh(new THREE.CylinderGeometry(.04, .07, .6, 8), bark, -2.45, PLAT + .9, .6, g); tr.rotation.z = .5;
-    [[-2.7, 1.15, .6, .28], [-2.3, 1.05, .7, .22], [-2.55, 1.32, .55, .2]].forEach(([x, y, z, r]) => { const f = mesh(new THREE.IcosahedronGeometry(r, 1), pine, x, PLAT + y, z, g); f.scale.y = .45; });
+    const board = flat(mesh(new THREE.PlaneGeometry(2.4, .45), new THREE.MeshStandardMaterial({ map: name, roughness: .6, emissive: 0x2a2a2a, emissiveMap: name }), 7.44, 4.6, -.8, g));
+    board.rotation.y = -Math.PI / 2;
   }
 
   /* ---------- 4F 藥師殿 Medicine Buddha ---------- */
@@ -1005,11 +990,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       aura: auraTexture("rgba(225,235,255,.85)", "rgba(90,130,255,.4)", "rgba(170,200,255,.24)")
     });
     vaseOfLotus(g, -1.02, ALT.z - .12);
-    fruitPlate(g, 1.02, ALT.z - .12, [std({ color: 0xf0881c, roughness: .55 }), std({ color: 0x8ab83a, roughness: .5 })], sphereFruit);
-    // the seven lamps of the Medicine Buddha (藥師七燈)
+    // the seven lamps of the Medicine Buddha (藥師七燈), behind the water bowls
     const cup = lathe([[0, 0], [.04, 0], [.06, .025], [.068, .045], [.06, .045], [0, .015]], M.brass, 20);
     for (let i = 0; i < 7; i++) {
-      const x = -.54 + i * .18, z = ALT.z + .3, c = cup.clone(); c.position.set(x, ALT.y, z); g.add(c);
+      const x = -.54 + i * .18, z = ALT.z - .3, c = cup.clone(); c.position.set(x, ALT.y, z); g.add(c);
       makeFlame(V(x, ALT.y + .075, z), .9, null, g);
     }
   }
@@ -3552,12 +3536,29 @@ window.TempleFloors = function TempleFloors(ctx) {
     };
   }
 
-  /* ---------- 6F 祈願殿 Wishing Tree ---------- */
-  function wishingTree(g, n) {
-    shell(g, n, { key: 1.25 });
+  /* ---------- 6F 降魔殿 the Victorious Buddha, and the wishing tree in the Lotus Temple hall with him seated beneath it ---------- */
+  // the Victorious Buddha (Jaya Buddha): the Buddha in the earth-touching gesture with which he overcame Māra on the night of his
+  // awakening, with the tall flame-like finial of Shan and Burmese images; people pray before him for success
+  function victoryHall(g, n) {
+    statueHall(g, n, {
+      figure: "jaya", label: "the Victorious Buddha", petal: M.gold, ring: M.gold, haloColor: 0xffe0a0, glow: 0xffb860,
+      aura: auraTexture("rgba(255,238,200,.9)", "rgba(255,160,60,.42)", "rgba(255,210,130,.28)")
+    });
+    vaseOfLotus(g, -1.02, ALT.z - .12);
+  }
+  // in the Lotus Temple hall, right of Shakyamuni: x, z of the trunk and the tree's size
+  const WISH_TREE = { x: 4.7, z: 3.3, s: .72 };
+  // the wishing tree at (x, z) scaled by s, ringed by a low fence, with a small Victorious Buddha seated on a stone before its trunk
+  function wishTree(hall, n, { x, z, s }) {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); hall.add(g);
     const list = picks[n];
     const rnd = rng(7), bark = std({ color: 0x4a3222, roughness: .9 }), leaf = std({ color: 0x2f5a26, roughness: .8, flatShading: true });
-    const TX = 0, TZ = -1.4, tips = [];
+    const TX = 0, TZ = -.5, tips = [];   // the trunk stands a little behind the middle of the fence, leaving room for the Buddha
+    const seat = new THREE.Group(); seat.position.set(0, 0, .75); g.add(seat);
+    mesh(new THREE.CylinderGeometry(.62, .7, .5, 8), M.stone, 0, .25, 0, seat);
+    const bud = new THREE.Group(); bud.position.y = .5; bud.scale.setScalar(.5); seat.add(bud);
+    throne(bud, M.gold);
+    sculptFigure("jaya", bud, "the Victorious Buddha");
     const trunk = mesh(new THREE.CylinderGeometry(.24, .4, 1.5, 16), bark, TX, PLAT + .75, TZ, g);
     clickable(list, trunk, { tip: "Hang a wish ribbon", act: "wish" });
     function branch(from, dir, len, rad, depth) {
@@ -3593,15 +3594,15 @@ window.TempleFloors = function TempleFloors(ctx) {
     // a low stone fence around the tree
     for (let i = 0; i < 20; i++) {
       const a = i / 20 * TAU;
-      mesh(new THREE.BoxGeometry(.14, .5, .14), M.stone, TX + Math.cos(a) * 2.2, PLAT + .25, TZ + Math.sin(a) * 2.2, g);
+      mesh(new THREE.BoxGeometry(.14, .5, .14), M.stone, Math.cos(a) * 2.2, PLAT + .25, Math.sin(a) * 2.2, g);
     }
-    const fence = mesh(new THREE.TorusGeometry(2.2, .05, 6, 60), M.lacquer, TX, PLAT + .45, TZ, g); fence.rotation.x = Math.PI / 2;
+    const fence = mesh(new THREE.TorusGeometry(2.2, .05, 6, 60), M.lacquer, 0, PLAT + .45, 0, g); fence.rotation.x = Math.PI / 2;
     updaters[n].push((dt, t, motion) => ribbons.forEach(r => { r.piv.rotation.z = Math.sin(t * 1.4 + r.ph) * r.amp * motion; r.piv.rotation.x = Math.sin(t * 1.1 + r.ph * 2) * r.amp * .5 * motion; }));
-    actions[n] = () => {
+    actions[n] = () => {   // the trunk's only action in its hall
       const tp = tips[(rnd() * tips.length) | 0];
       hang(V(tp.x + (rnd() - .5) * .6, tp.y - .3, tp.z + (rnd() - .5) * .6), true);
       tone(1320, null, .08, .8); tone(1980, null, .04, .6);
-      return { toast: "A red ribbon is tied to the wishing tree." };
+      return { toast: "A red ribbon is tied to the wishing tree, beneath the Victorious Buddha. May your wish succeed." };
     };
   }
 
@@ -3614,12 +3615,11 @@ window.TempleFloors = function TempleFloors(ctx) {
     // longevity peaches and oranges, and a pile of gold ingots (元寶) at the centre
     const peach = m => { const p = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(.075, 20, 14), m); b.scale.set(1, 1.05, 1); b.castShadow = true; p.add(b); const tip = new THREE.Mesh(new THREE.ConeGeometry(.03, .05, 12), m); tip.position.y = .08; p.add(tip); return p; };
     fruitPlate(g, -1.02, ALT.z - .12, [std({ color: 0xf6b7a6, roughness: .6 }), std({ color: 0xf29a8a, roughness: .6 })], peach);
-    fruitPlate(g, 1.02, ALT.z - .12, [std({ color: 0xf0881c, roughness: .55 })], sphereFruit);
     const ingot = () => { const i = new THREE.Group(); const b = new THREE.Mesh(petalGeo, M.gold); b.scale.set(.1, .045, .06); i.add(b); const k = new THREE.Mesh(new THREE.SphereGeometry(.035, 12, 8), M.gold); k.position.y = .035; i.add(k); return i; };
-    [[0, 0, 0], [-.13, 0, .05], [.13, 0, .05], [-.06, .07, .02], [.07, .07, .02], [0, .13, .03]].forEach(([x, y, z]) => { const i = ingot(); i.position.set(x, ALT.y + .05 + y, ALT.z + .15 + z); g.add(i); });
+    [[0, 0, 0], [-.13, 0, .05], [.13, 0, .05], [-.06, .07, .02], [.07, .07, .02], [0, .13, .03]].forEach(([x, y, z]) => { const i = ingot(); i.position.set(x, ALT.y + .05 + y, ALT.z - .27 + z); g.add(i); });
   }
 
-  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: teaRoom, 6: wishingTree, 7: maitreyaHall, bell: bellTower, library, shop, quarters };
+  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: guanyinShop, 6: victoryHall, 7: maitreyaHall, bell: bellTower, library, shop, quarters };
   function floor(n) {
     if (!groups[n]) {
       const g = new THREE.Group(); g.name = "floor" + n; world.add(g);
@@ -4207,7 +4207,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     welcomeSign(g);
     halloweenGhost(g);
     townsfolk(g);
-    beatOfficer(g);
+    // beatOfficer(g);   // the beat officer is commented out (see the main script)
     // 溪, the stream behind the compound: it winds across the land beyond the pines on the far side of the back wall,
     // between grassy banks edged with stones, with rocks, reeds and a stone slab bridge; the water flows to the east
     (function stream() {
@@ -4483,13 +4483,13 @@ window.TempleFloors = function TempleFloors(ctx) {
       const c = (cx, cz, r) => Math.hypot(x - cx, z - cz) < r + PAD, rc = (x0, x1, z0, z1) => x > x0 - PAD && x < x1 + PAD && z > z0 - PAD && z < z1 + PAD;
       if ([...INNER_COLUMNS, ...CORNER_COLUMNS].some(([cx, cz]) => c(cx, cz, .3))) return true;
       if (typeof mode === "number" && rc(STAIR_ROOM.x0, STAIR_ROOM.x1, STAIR_ROOM.z0, STAIR_ROOM.z1)) return true;
-      if (mode === 1 || mode === 4 || mode === 7 || mode === "library") {   // the statue on its pedestal, the offering table, the censer and the stands
-        if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || c(0, 1.95, .6)) return true;
-        if (mode === 1 && (rc(-1.4, 1.4, 1.6, 2.3) || rc(-.8, .8, 2.5, 3.1))) return true;   // candle stands and kneeling bench
+      if ([1, 4, 5, 6, 7, "library"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
+        if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || rc(-1.4, 1.4, 1.6, 2.3)) return true;
+        if (mode === 1 && rc(-.8, .8, 2.5, 3.1)) return true;   // the kneeling bench
       }
+      if (mode === "library" && c(WISH_TREE.x, WISH_TREE.z, 2.2 * WISH_TREE.s)) return true;   // the wishing tree's fence
+      if (mode === 5 && rc(2.9, 5.9, 4.5, 5.3)) return true;   // the shop counter
       if (mode === 2) return [[-2.4, -1.1], [0, -1.8], [2.4, -1.1]].some(([cx, cz]) => c(cx, cz, .8));
-      if (mode === 5) return rc(-1, 1, -.85, .05) || rc(1.6, 4.2, -4.7, -3.9) || rc(-2.7, -2.1, .3, .9);
-      if (mode === 6) return c(0, -1.4, 2.3);
       if (mode === "shop") return rc(-2.55, 2.55, -1.45, -.55) || z < -4.4;
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);

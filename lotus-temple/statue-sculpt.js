@@ -1,7 +1,9 @@
 "use strict";
 /* The temple's statues as signed distance fields (statue-local units, throne top at y = .5, facing +z),
    meshed with surface nets. Runs in a Web Worker; falls back to the main thread.
-   Figures: guanyin (1F, white porcelain), medicine (4F, Medicine Buddha), shakyamuni (the temple hall), maitreya (7F, laughing Maitreya). */
+   Figures: guanyin (1F, white porcelain), qianshou (5F, the Thousand-Armed Guanyin, gilded; her arms are built in temple-floors.js),
+   medicine (4F, Medicine Buddha), shakyamuni (the temple hall), jaya (6F and under the wishing tree, the Victorious Buddha),
+   maitreya (7F, laughing Maitreya). */
 const TAU = Math.PI * 2;
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * .25; }
@@ -136,6 +138,9 @@ function seatedBuddha(x, y, z, jar) {
 const medicine = (x, y, z) => seatedBuddha(x, y, z, true);
 // the great hall: Shakyamuni (釋迦牟尼佛) in the earth-touching gesture, right hand over the knee, left hand in the lap
 const shakyamuni = (x, y, z) => seatedBuddha(x, y, z, false);
+// the Victorious Buddha (Jaya Buddha): the same earth-touching figure, crowned with the tall flame-like finial of Shan and Burmese images
+const jayaFlame = (x, y, z) => cone(x, y, z, 0, 2.74, 0, .065, 0, 3.08, 0, .004) + .004 * Math.sin(y * 60);
+const jaya = (x, y, z) => smin(seatedBuddha(x, y, z, false), jayaFlame(x, y, z), .03);
 
 /* ---------- 8F: Maitreya (彌勒佛) as the laughing Budai, right knee raised, beads and cloth sack ---------- */
 function beads(x, y, z) {
@@ -216,12 +221,14 @@ function lion(x, y, z) {
 }
 const lionL = (x, y, z) => lion(-x, y, z);   // its partner, mirrored
 
-const FIGURES = { guanyin, medicine, shakyamuni, maitreya, lion, lionL };
+const FIGURES = { guanyin, qianshou: guanyin, medicine, shakyamuni, jaya, maitreya, lion, lionL };
 // base colour per point (multiplied by baked occlusion); guanyin keeps her plain white glaze
 const GOLD = [1, .76, .4];
 const TINT = {
   medicine: (x, y, z) => medHair(x, y, z) < .014 ? [.16, .27, .72] : medJar(x, y, z) < .01 ? [.15, .36, .82] : GOLD,
   shakyamuni: (x, y, z) => medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
+  qianshou: () => GOLD,
+  jaya: (x, y, z) => jayaFlame(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
   maitreya: (x, y, z) => beads(x, y, z) < .01 ? [.42, .22, .1] : sack(x, y, z) < .012 ? [.95, .7, .42] : GOLD,
   lion: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62],
   lionL: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62]
