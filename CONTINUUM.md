@@ -35,6 +35,10 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-11-02
+- 2F: the lit niches on the back wall are gone; oil lamps and candles stand on a free-standing three-tier rack 0.9–1.4 m in
+  front of the wall (flames no higher than 1.4 m), so no flame touches the wall.
+- 7F stairwell: the guard rail ends on posts clear of the back wall, and the flight's handrail now turns up to the opening's
+  corner post instead of ending in a newel on the top step, so the way off the stairs is clear.
 - Commented out the beat officer (police chase): `beatOfficer(g)` in `temple-floors.js`, the police block and `policeStep()`
   in `lotus-altar.js`. Uncomment all three to bring him back.
 - 5F is now the Thousand-Armed Guanyin Hall (千手觀音殿, figure `qianshou`): a gilded Guanyin with about 120 instanced

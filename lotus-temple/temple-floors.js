@@ -219,15 +219,15 @@ window.TempleFloors = function TempleFloors(ctx) {
       for (let i = 1; i <= nSteps; i++) step(-i, -i * rise + .02);
       mesh(new THREE.CylinderGeometry(.09, .11, depth, 16), M.lacquer, 0, -depth / 2, 0, st);
       if (!up) {
-        // a handrail following the outer edge of the flight up to the floor, ending in a newel post
-        const rail = [];
-        for (let i = 0; i <= 60; i++) { const k = -nSteps + i / 60 * nSteps, a = k * da; rail.push(V(Math.cos(a) * (R - .05), k * rise + .92, -Math.sin(a) * (R - .05))); }
+        // a handrail following the outer edge of the flight; near the top it turns up and out to the guard rail's corner post
+        // (angle -GAP), so the top step is clear to step off onto the floor through the opening
+        const GAP = .6, RR = 1.1, kEnd = -GAP / da, rail = [];
+        for (let i = 0; i <= 60; i++) { const k = -nSteps + i / 60 * (nSteps + kEnd), a = k * da; rail.push(V(Math.cos(a) * (R - .05), k * rise + .92, -Math.sin(a) * (R - .05))); }
+        rail.push(V(Math.cos(GAP) * 1.0, .75, Math.sin(GAP) * 1.0), V(Math.cos(GAP) * RR, .95, Math.sin(GAP) * RR));
         mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail), 120, .03, 8), M.lacquer, 0, 0, 0, st);
-        mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, R - .05, .5, 0, st);
-        mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, R - .05, 1.02, 0, st);
         // a guard rail round the opening, open only where the stairs arrive (around angle 0)
         // the back wall of the stair room is closer than the rail's radius, so the rail ends on a post either side, clear of the wall
-        const GAP = .6, RR = 1.1, CLEAR = STAIRS.z - STAIR_ROOM.z0 - .14, WALL = Math.asin(clamp(CLEAR / RR, -1, 1));
+        const CLEAR = STAIRS.z - STAIR_ROOM.z0 - .14, WALL = Math.asin(clamp(CLEAR / RR, -1, 1));
         for (let i = 0; i < 24; i++) {
           const a = GAP + i / 23 * (TAU - 2 * GAP);
           if (Math.sin(a) * RR > CLEAR - .05) continue;   // too near the wall
@@ -793,18 +793,21 @@ window.TempleFloors = function TempleFloors(ctx) {
       const light = new THREE.PointLight(0xffa04a, 1.1, 5, 2); light.position.set(cx, top + .5, cz); g.add(light);
       makeFlame(V(cx, top + .26, cz), 2.2, light, g);
     });
-    // shelves along the back wall, between the windows, set with rows of oil lamps and candles: the light comes from their flames
+    // a free-standing rack of oil lamps and candles across the back of the hall, well clear of the wall: three stepped shelves
+    // on lacquered legs, the back shelf highest, so every flame stands in the open and away from the timber and plaster
+    const RACK = { x0: -3.4, x1: 4.6, z: -4.1 }, rw = RACK.x1 - RACK.x0, rx = (RACK.x0 + RACK.x1) / 2;
     const candleGeo = new THREE.CylinderGeometry(.022, .022, .14, 10), holderGeo = new THREE.CylinderGeometry(.036, .04, .012, 12);
-    [1.3, 1.9, 2.5, 3.1].forEach((y, r) => {
-      part(new THREE.BoxGeometry(9.4, .05, .3), M.lacquer, 0, y, -5.33, g);
-      part(new THREE.BoxGeometry(9.42, .015, .02), M.trim, 0, y + .02, -5.18, g);
-      [-4.6, -2.3, 0, 2.3, 4.6].forEach(x => part(new THREE.BoxGeometry(.05, .2, .26), M.lacquer, x, y - .12, -5.35, g));
-      for (let k = 0; k < 17; k++) {
-        const x = -4.4 + k * .55, lamp = (k + r) % 2 === 0;
-        if (lamp) { part(cup.geometry, M.brass, x, y + .025, -5.3, g); flicker.push(makeFlame(V(x, y + .085, -5.3), .6, null, g)); }
+    [[.62, 0], [.92, -.26], [1.22, -.52]].forEach(([y, dz], r) => {
+      const z = RACK.z + dz;
+      part(new THREE.BoxGeometry(rw, .05, .24), M.lacquer, rx, y, z, g);
+      part(new THREE.BoxGeometry(rw + .02, .015, .02), M.trim, rx, y + .02, z + .12, g);
+      for (let x = RACK.x0 + .05; x <= RACK.x1; x += rw / 5) part(new THREE.BoxGeometry(.06, y, .06), M.lacquer, x, y / 2, z, g);
+      for (let k = 0; k < 15; k++) {
+        const x = RACK.x0 + .25 + k * (rw - .5) / 14, lamp = (k + r) % 2 === 0;
+        if (lamp) { part(cup.geometry, M.brass, x, y + .025, z, g); flicker.push(makeFlame(V(x, y + .085, z), .6, null, g)); }
         else {
-          part(holderGeo, M.brass, x, y + .031, -5.3, g); part(candleGeo, (k + r) % 4 === 1 ? M.waxRed : M.wax, x, y + .107, -5.3, g);
-          flicker.push(makeFlame(V(x, y + .195, -5.3), .7, null, g));
+          part(holderGeo, M.brass, x, y + .031, z, g); part(candleGeo, (k + r) % 4 === 1 ? M.waxRed : M.wax, x, y + .107, z, g);
+          flicker.push(makeFlame(V(x, y + .195, z), .7, null, g));
         }
       }
     });
@@ -4502,7 +4505,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       }
       if (mode === "library" && c(WISH_TREE.x, WISH_TREE.z, 2.2 * WISH_TREE.s)) return true;   // the wishing tree's fence
       if (mode === 5 && rc(2.9, 5.9, 4.5, 5.3)) return true;   // the shop counter
-      if (mode === 2) return [[-2.4, -1.1], [0, -1.8], [2.4, -1.1]].some(([cx, cz]) => c(cx, cz, .8));
+      if (mode === 2) return [[-2.4, -1.1], [0, -1.8], [2.4, -1.1]].some(([cx, cz]) => c(cx, cz, .8)) || rc(-3.4, 4.6, -4.75, -3.95);   // and the lamp rack
       if (mode === "shop") return rc(-2.55, 2.55, -1.45, -.55) || z < -4.4;
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);
