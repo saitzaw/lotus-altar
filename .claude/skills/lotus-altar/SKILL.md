@@ -16,8 +16,14 @@ donate (demo only), and wander a Northern Shan State town, seven-day market, stu
 ## Rules (always)
 
 - Payments and donations are demo only: no payment is collected, and the UI says so. Keep it that way.
-- Treat religious and cultural content with respect and accuracy: Chinese hall names (`han`), Pali terms, Myanmar script.
+- Treat religious and cultural content with respect and accuracy: Chinese hall names (`han`), Pali terms, Burmese and Shan text.
   Fortune verses are original to this shrine and the UI says they aren't the classical ones.
+- Burmese and Shan are both accepted for signs, boards and labels. Both use Myanmar script (U+1000–U+109F; Shan has its own
+  letters there, such as ၸ ၼ ႁ ႉ). Use real Unicode, never Zawgyi; render with Noto Sans Myanmar; mark HTML text `lang="my"`
+  (Burmese) or `lang="shn"` (Shan). Don't swap one language for the other, and log new Shan wording in `CONTINUUM.md` for a
+  native speaker to check.
+- Every statue hall gets Guanyin's offering altar (water, light, incense, fruit) through `shrine()` (see references/scene.md).
+- The beat officer (police chase) stays commented out unless the user asks for him back.
 - Respect `prefers-reduced-motion` (`reduceMotion`) and label buttons for screen readers.
 - Layout randomness uses the seeded `rng(seed)`, never `Math.random()`. `localStorage` is always wrapped in try/catch.
 - Don't edit `dist/` (generated, gitignored).

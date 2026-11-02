@@ -55,7 +55,13 @@ and visiting the affected place, and watch the browser console for errors.
 ## Rules
 
 - Payments and donations are demo only. Never add real payment collection.
-- Keep religious and cultural details accurate and respectful (Chinese hall names, Pali terms, Myanmar script).
+- Keep religious and cultural details accurate and respectful (Chinese hall names, Pali terms, Burmese and Shan text).
+- Burmese and Shan are both accepted for signs, boards and labels. Both are written in Myanmar script (Unicode block U+1000–U+109F;
+  Shan uses its own letters there, such as ၸ ၼ ႁ ႉ). Use real Unicode, not Zawgyi; render them with Noto Sans Myanmar; mark HTML
+  text `lang="my"` for Burmese and `lang="shn"` for Shan. Never pass Burmese off as Shan or the other way round, and note Shan
+  wording in `CONTINUUM.md` for a native speaker to check.
+- Every statue hall gets the same offering altar as Guanyin's (water, light, incense, fruit) through `shrine()`.
+- The beat officer (police chase) stays commented out unless the user asks for him back.
 - Respect `prefers-reduced-motion` and label interactive controls for screen readers.
 - Commit and push straight to `main`. Commit subjects are short, imperative and describe the change in the world.
 - After a meaningful change, update `CONTINUUM.md`.
