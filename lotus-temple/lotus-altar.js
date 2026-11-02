@@ -24,7 +24,7 @@ const CONFIG = {
   // the seven floors of the pagoda, ground floor first; `statue` floors get the Look closer button
   floors: [
     { han: "觀音殿", name: "Guanyin Main Hall", statue: "guanyin", hint: "Drag to walk around Guanyin's shrine. Tap the vase, water bowls, fruit plate, candle stands or censer to place an offering from your bag (buy them at the temple shop first), the wooden fish or bell to recite, or the red cylinder to draw a fortune stick." },
-    { han: "千燈殿", name: "Hall of a Thousand Lamps", hint: "Three stepped towers of oil lamps and a wall of lit niches. Offerings are made before the statues on the other floors." },
+    { han: "千燈殿", name: "Hall of a Thousand Lamps", hint: "Three stepped towers of oil lamps, and shelves of lamps and candles along the back wall. Offerings are made before the statues on the other floors." },
     { han: "禪堂", name: "Meditation Hall", hint: "Rows of meditation cushions before the ensō scroll, with the wooden board that calls the hour." },
     { han: "藥師殿", name: "Medicine Buddha Hall", statue: "medicine", hint: "The Medicine Buddha, with lapis-blue curls and the medicine jar, behind the seven lamps of healing. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag." },
     { han: "千手觀音殿", name: "Thousand-Armed Guanyin Hall", statue: "qianshou", hint: "Guanyin of the Thousand Arms, an eye in every palm to see all who suffer and a hand to reach each one. The hall is also the pagoda's shop: tap the shelves along the walls to add offerings to your basket, then offer water, light, incense or fruit at her altar." },

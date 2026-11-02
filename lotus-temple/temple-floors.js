@@ -226,17 +226,18 @@ window.TempleFloors = function TempleFloors(ctx) {
         mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, R - .05, .5, 0, st);
         mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, R - .05, 1.02, 0, st);
         // a guard rail round the opening, open only where the stairs arrive (around angle 0)
-        // the back wall of the stair room is closer than the rail's radius, so the rail stops short of it on either side
-        const GAP = .6, RR = 1.1, WALL = Math.asin(clamp((STAIRS.z - STAIR_ROOM.z0 - .07) / RR, -1, 1));
+        // the back wall of the stair room is closer than the rail's radius, so the rail ends on a post either side, clear of the wall
+        const GAP = .6, RR = 1.1, CLEAR = STAIRS.z - STAIR_ROOM.z0 - .14, WALL = Math.asin(clamp(CLEAR / RR, -1, 1));
         for (let i = 0; i < 24; i++) {
           const a = GAP + i / 23 * (TAU - 2 * GAP);
-          if (Math.sin(a) * RR > STAIRS.z - STAIR_ROOM.z0 - .07) continue;   // would stand in the wall
+          if (Math.sin(a) * RR > CLEAR - .05) continue;   // too near the wall
           mesh(new THREE.CylinderGeometry(.025, .025, .95, 6), M.lacquer, Math.cos(a) * RR, .48, -Math.sin(a) * RR, st);
         }
         [.95, .5].forEach(y => [[GAP, Math.PI + WALL], [TAU - WALL, TAU - GAP]].forEach(([a0, a1]) => {   // torus angles run the other way round
           const r2 = mesh(new THREE.TorusGeometry(RR, y > .7 ? .04 : .025, 6, 32, a1 - a0), y > .7 ? M.lacquer : M.trim, 0, y, 0, st);
           r2.rotation.x = Math.PI / 2; r2.rotation.z = a0;
         }));
+        [WALL, Math.PI - WALL].forEach(a => { mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, Math.cos(a) * RR, .5, -Math.sin(a) * RR, st); mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, Math.cos(a) * RR, 1.02, -Math.sin(a) * RR, st); });
         [GAP, -GAP].forEach(a => { mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 10), M.lacquer, Math.cos(a) * RR, .5, -Math.sin(a) * RR, st); mesh(new THREE.SphereGeometry(.07, 12, 8), M.trim, Math.cos(a) * RR, 1.02, -Math.sin(a) * RR, st); });
       }
       const below = new THREE.PointLight(0xffb070, 1.0, 4, 2); below.position.set(0, -1.2, 0); st.add(below);
@@ -792,15 +793,22 @@ window.TempleFloors = function TempleFloors(ctx) {
       const light = new THREE.PointLight(0xffa04a, 1.1, 5, 2); light.position.set(cx, top + .5, cz); g.add(light);
       makeFlame(V(cx, top + .26, cz), 2.2, light, g);
     });
-    // the back wall is a grid of small lit niches
-    const niche = new THREE.InstancedMesh(new THREE.BoxGeometry(.16, .2, .04), std({ color: 0x3a1a0a, emissive: 0xffa040, emissiveIntensity: .9 }), 26 * 9);
-    const glow = new THREE.InstancedMesh(new THREE.BoxGeometry(.2, .24, .02), M.trim, 26 * 9);
-    const m4 = new THREE.Matrix4(); let k = 0;
-    for (let r = 0; r < 9; r++) for (let c = 0; c < 26; c++) {
-      m4.makeTranslation(-6.25 + c * .5, 1.3 + r * .5, -5.46); niche.setMatrixAt(k, m4);
-      m4.makeTranslation(-6.25 + c * .5, 1.3 + r * .5, -5.48); glow.setMatrixAt(k++, m4);
-    }
-    g.add(glow, niche);
+    // shelves along the back wall, between the windows, set with rows of oil lamps and candles: the light comes from their flames
+    const candleGeo = new THREE.CylinderGeometry(.022, .022, .14, 10), holderGeo = new THREE.CylinderGeometry(.036, .04, .012, 12);
+    [1.3, 1.9, 2.5, 3.1].forEach((y, r) => {
+      part(new THREE.BoxGeometry(9.4, .05, .3), M.lacquer, 0, y, -5.33, g);
+      part(new THREE.BoxGeometry(9.42, .015, .02), M.trim, 0, y + .02, -5.18, g);
+      [-4.6, -2.3, 0, 2.3, 4.6].forEach(x => part(new THREE.BoxGeometry(.05, .2, .26), M.lacquer, x, y - .12, -5.35, g));
+      for (let k = 0; k < 17; k++) {
+        const x = -4.4 + k * .55, lamp = (k + r) % 2 === 0;
+        if (lamp) { part(cup.geometry, M.brass, x, y + .025, -5.3, g); flicker.push(makeFlame(V(x, y + .085, -5.3), .6, null, g)); }
+        else {
+          part(holderGeo, M.brass, x, y + .031, -5.3, g); part(candleGeo, (k + r) % 4 === 1 ? M.waxRed : M.wax, x, y + .107, -5.3, g);
+          flicker.push(makeFlame(V(x, y + .195, -5.3), .7, null, g));
+        }
+      }
+    });
+    bakeParts(g);
     // one great lotus lamp on a pedestal at the front
     mesh(new THREE.CylinderGeometry(.3, .38, .5, 8), M.stone, 0, PLAT + .25, 1.6, g);
     const big = makeLotus(); big.userData.bloom(1); big.scale.setScalar(5.5); big.position.set(0, PLAT + .52, 1.6); g.add(big);
