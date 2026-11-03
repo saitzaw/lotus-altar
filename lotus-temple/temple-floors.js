@@ -2247,7 +2247,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const put = (px, py, pz, a, b, c) => rail.setMatrixAt(k++, m4.compose(V(px, py, pz), new THREE.Quaternion(), V(a, b, c)));
       [[-1, 0], [1, 0]].forEach(([sd]) => { put(sd * (W / 2 - .05), FH + .95, 0, .08, .08, D); for (let i = 0; i <= D / .4; i++) put(sd * (W / 2 - .05), FH + .55, -D / 2 + i * .4, .05, .8, .05); });
       [-1, 1].forEach(sd => { const x0 = sd > 0 ? 1.8 : -W / 2, x1 = sd > 0 ? W / 2 : -1.8; put((x0 + x1) / 2, FH + .95, D / 2 - .05, x1 - x0, .08, .08); for (let i = 0; i <= (x1 - x0) / .4; i++) put(x0 + i * .4, FH + .55, D / 2 - .05, .05, .8, .05); });
-      put(0, FH + .95, -D / 2 + .05, W, .08, .08);
+      put(0, FH + .95, -D / 2 + .05, W, .08, .08); for (let i = 0; i <= W / .4; i++) put(-W / 2 + i * .4, FH + .55, -D / 2 + .05, .05, .8, .05);   // the back, balustered like the sides
       rail.count = k; G.add(rail);
       // a skirt roof over the front verandah, then the main roofs: twin gables on a wide hall, one gable on a small one
       const yR = FH + WH;

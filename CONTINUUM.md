@@ -53,6 +53,7 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Fixed: walkers were stuck at the top of the monastery stair. The verandah's walkable rect stopped 0.1 (local) short of its
   edge and the stair began at the edge, so that strip fell through to the ground 4.3 m below. The stair's surface now starts
   inside the verandah, and leaving the shrine hall puts you on the verandah before the doors. Checked with `walkAt` every 5 cm.
+- The monastery verandah's back railing now has balusters like the sides and front (it was a bare top rail).
 
 ### 2026-11-03 (later)
 - The Shan monastery on the stupa hill can be entered: tap its doors (or the "Kyaung" place button) for the shrine hall
