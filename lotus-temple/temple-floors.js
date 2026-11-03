@@ -2213,7 +2213,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       {   // walkable: up the white stair onto the verandah that runs round the hall; the hall's walls and the stilts block
         const n = 12, run = n * .36, SWd = MON.SWd;
         sRect(G, -IW / 2 - .4, IW / 2 + .4, -ID / 2 - .4, ID / 2 + .4);   // stop a step short of the hall walls
-        sRect(G, -SWd / 2 + .1, SWd / 2 - .1, D / 2, D / 2 + run, (lx, lz) => FH * (1 - (lz - D / 2) / run));
+        sRect(G, -SWd / 2 + .1, SWd / 2 - .1, D / 2 - .15, D / 2 + run, (lx, lz) => FH * (1 - Math.max(0, lz - D / 2) / run));   // from just inside the verandah's edge, so there is no gap at the top
         sRect(G, -W / 2 + .1, W / 2 - .1, -D / 2 + .1, D / 2 - .1, (lx, lz) => Math.abs(lx) < SWd / 2 - .1 || Math.abs(lz) < D / 2 - .35 && Math.abs(lx) < W / 2 - .35 ? FH : null);   // the verandah, with its railing round the edge
         if (y0) {   // round the building on the plinth (from the ground the verandah is too high a step, so you walk round it), kept in by the parapet
           sRect(G, -PX, -PX + .24, -PZ, PZ); sRect(G, PX - .24, PX, -PZ, PZ); sRect(G, -PX, PX, -PZ, -PZ + .24);
@@ -2293,7 +2293,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       Object.assign(board.userData, { toast: `${SHAN_NAMES.kyaung}: a Shan teak monastery on the hill of ${SHAN_NAMES.stupa}. Climb its stair to the verandah and the doors of the shrine hall, or walk round it on the paved plinth.` });
       // keep the outside camera above it
       G.updateMatrixWorld(true);
-      const ex = G.localToWorld(V(0, 0, D / 2 + .5)), look = G.localToWorld(V(0, 0, D / 2 + run + 8));   // where you come out: the stair's top step
+      const ex = G.localToWorld(V(0, 0, D / 2 - .5)), look = G.localToWorld(V(0, 0, D / 2 + run + 8));   // where you come out: on the verandah before the doors, facing the stair
       MONASTERIES.push({ G, W, D, run, foot: G.localToWorld(V(0, 0, D / 2 + run + 1.5)), door: G.localToWorld(V(0, 0, 0)), exit: [[ex.x, ex.z], [look.x, look.z]] });
       const xs = [], zs = [];
       [[-W / 2 - 1, -D / 2 - 1], [W / 2 + 1, -D / 2 - 1], [-W / 2 - 1, D / 2 + run + 1], [W / 2 + 1, D / 2 + run + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });

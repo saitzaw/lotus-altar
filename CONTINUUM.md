@@ -50,6 +50,9 @@ recently, and what's still open. Read it at the start of a session; update it at
   shrine hall's label (`shn` in `CONFIG.places.kyaung`, shown `lang="shn"` in `#where`).
 - The stupa hill's entrance pillars are taller (`GATE_H`, 3.8 m, was 2.4 m), lifting the name board and its beam well over a
   walker's head.
+- Fixed: walkers were stuck at the top of the monastery stair. The verandah's walkable rect stopped 0.1 (local) short of its
+  edge and the stair began at the edge, so that strip fell through to the ground 4.3 m below. The stair's surface now starts
+  inside the verandah, and leaving the shrine hall puts you on the verandah before the doors. Checked with `walkAt` every 5 cm.
 
 ### 2026-11-03 (later)
 - The Shan monastery on the stupa hill can be entered: tap its doors (or the "Kyaung" place button) for the shrine hall
