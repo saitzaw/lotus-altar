@@ -726,16 +726,15 @@ window.TempleFloors = function TempleFloors(ctx) {
       }
     });
   }
-  // with `cloth` (and `wax` for the two altar candles) the table is dressed another way, as in the Shan monastery
-  function offeringTable(g, n, cloth = M.cloth, wax = M.waxRed) {
+  function offeringTable(g, n) {
     mesh(new THREE.BoxGeometry(3.1, ALT.y - .04, .95), M.lacquer, 0, (ALT.y - .04) / 2, ALT.z, g);
-    mesh(new THREE.BoxGeometry(3.2, .04, 1.05), cloth, 0, ALT.y - .02, ALT.z, g);
-    mesh(new THREE.BoxGeometry(1.6, .5, .02), cloth, 0, .82, ALT.z + .53, g);
+    mesh(new THREE.BoxGeometry(3.2, .04, 1.05), M.cloth, 0, ALT.y - .02, ALT.z, g);
+    mesh(new THREE.BoxGeometry(1.6, .5, .02), M.cloth, 0, .82, ALT.z + .53, g);
     mesh(new THREE.BoxGeometry(1.6, .04, .025), M.trim, 0, .58, ALT.z + .54, g);
     [-1.45, 1.45].forEach(x => {
       const z = ALT.z - .34;
       mesh(new THREE.CylinderGeometry(.07, .09, .03, 20), M.brass, x, ALT.y + .015, z, g);
-      mesh(new THREE.CylinderGeometry(.045, .045, .3, 20), wax, x, ALT.y + .19, z, g);
+      mesh(new THREE.CylinderGeometry(.045, .045, .3, 20), M.waxRed, x, ALT.y + .19, z, g);
       const light = new THREE.PointLight(0xff9a3c, 1, 6, 2); light.position.set(x, ALT.y + .42, z); g.add(light);
       makeFlame(V(x, ALT.y + .37, z), 1.4, light, g);
     });
@@ -852,9 +851,9 @@ window.TempleFloors = function TempleFloors(ctx) {
      white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a square gilded throne
      set with glass mosaic, before a red hanging worked in gold that fills the back wall, a ring of little lights round the dark blue
      halo behind his head, white parasols and sprays of white flowers either side, a red coffered ceiling over him; the altar before
-     him is dressed the Shan way, with nothing standing on the floor before it (white cloth, candles and lamps on gilt trays, incense
-     in a little brass bowl of sand) ---------- */
-  const KYAUNG = { pillars: [-3.9, -.6, 2.7, 5.9].flatMap(z => [[-3.6, z], [3.6, z]]), hti: [[-2.3, -2.7], [2.3, -2.7]] };
+     him is the Shan way, with no table: water, fruit, lotus, candles and lamps on gilt trays, and incense in a little brass bowl of
+     sand all stand on the throne's front ledge, and long woven Shan banners hang down the side walls ---------- */
+  const KYAUNG = { pillars: [-3.9, -.6, 2.7, 5.9].flatMap(z => [[-3.6, z], [3.6, z]]), hti: [[-2.3, -2.7], [2.3, -2.7]], urns: [[-1.7, 1.55], [1.7, 1.55], [-2.75, .4], [2.75, .4]], ledge: .75 };   // ledge: the height of the throne's offering ledge
   function kyaungHall(g, n) {
     picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
     const list = picks[n], HH = 6.8;   // HH: the ceiling's height
@@ -894,20 +893,25 @@ window.TempleFloors = function TempleFloors(ctx) {
     const matM = std({ map: matT, roughness: .95 });
     const matG = new THREE.BoxGeometry(1.2, .02, .9);
     [3.4, 4.6, 5.8].forEach(z => [-1.5, 0, 1.5].forEach(x => flat(part(matG, matM, x, .01, z, g))));
-    // the throne (palin): gilded tiers, a waist of red and green glass mosaic, and on top a square seat with a band of lotus
-    // petals and a waist of little niches, its top at the statue's seat height
+    // the throne (palin), with no table before it, as in Shan image halls: a broad gilded plinth carved with niches whose front
+    // ledge (KYAUNG.ledge high, out to z = 1.05) takes the offerings, and on it the seat, a waist of red and green glass mosaic
+    // under a band of niches and a rim of lotus petals, raising the image well above the ledge
     const mosaic = canvasTex(128, (c, s2) => { c.fillStyle = "#b8893c"; c.fillRect(0, 0, s2, s2); for (let r = 0; r < 4; r++) for (let k = 0; k < 8; k++) { c.fillStyle = (r + k) % 2 ? "#1f7a4a" : "#a01818"; c.beginPath(); const cx = k * 16 + 8 + (r % 2) * 8, cy = r * 32 + 16; c.moveTo(cx, cy - 12); c.lineTo(cx + 6, cy); c.lineTo(cx, cy + 12); c.lineTo(cx - 6, cy); c.fill(); } });
     mosaic.wrapS = THREE.RepeatWrapping; mosaic.repeat.set(4, 1);
     const glass = std({ map: mosaic, roughness: .25, metalness: .3 });
     const niches = canvasTex(256, (c, s2) => { c.fillStyle = "#c99a44"; c.fillRect(0, 0, s2, s2); for (let k = 0; k < 4; k++) { const x = k * 64 + 12; c.fillStyle = "#3a1408"; c.beginPath(); c.moveTo(x, s2 - 30); c.lineTo(x, 90); c.quadraticCurveTo(x + 20, 40, x + 20, 20); c.quadraticCurveTo(x + 20, 40, x + 40, 90); c.lineTo(x + 40, s2 - 30); c.fill(); c.fillStyle = "#e8c070"; c.beginPath(); c.arc(x + 20, 150, 10, 0, TAU); c.fill(); } c.fillStyle = "#8a1a10"; c.fillRect(0, s2 - 20, s2, 20); });
     niches.wrapS = THREE.RepeatWrapping; niches.repeat.set(3, 1);
     const nicheM = std({ map: niches, roughness: .35, metalness: .5 });
-    [[3.4, .12, 3.2, 0, gold], [3.0, .16, 2.8, .12, glass], [3.3, .06, 3.1, .28, gold], [3.2, .06, 3.0, .34, red],
-     [2.7, .06, 2.3, .4, gold], [2.4, .38, 2.0, .46, nicheM], [2.7, .06, 2.3, .84, gold]].forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, -1.7, g));
+    const L = KYAUNG.ledge, PZ = (1.05 - 3.4) / 2, PD = 1.05 + 3.4;   // the plinth runs from the back (z -3.4) to the ledge's edge
+    [[4.2, .12, PD + .2, 0, gold], [4.0, L - .25, PD, .12, nicheM], [4.2, .06, PD + .2, L - .13, gold], [4.1, .04, PD + .1, L - .07, red], [4.16, .03, PD + .16, L - .03, gold]]
+      .forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, PZ, g));
+    const SZ = -1.8, seatTop = L + .5;
+    [[2.8, .2, 2.4, L, glass], [3.0, .06, 2.6, L + .2, gold], [2.6, .18, 2.2, L + .26, nicheM], [2.9, .06, 2.5, L + .44, gold]]
+      .forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, SZ, g));
     const petalRow = new THREE.SphereGeometry(.085, 8, 6, 0, TAU, 0, Math.PI / 2);   // upturned lotus petals round the seat's rim
-    for (let i = 0; i < 15; i++) [-1, 1].forEach(sd => { part(petalRow, gold, -1.26 + i * .18, .9, -1.7 + sd * 1.1, g).scale.set(1, 1.8, .45); });
-    for (let i = 0; i < 12; i++) [-1, 1].forEach(sd => { part(petalRow, gold, sd * 1.3, .9, -2.68 + i * .18, g).scale.set(.45, 1.8, 1); });
-    const st = new THREE.Group(); st.position.set(0, .4, -1.7); g.add(st);
+    for (let i = 0; i < 15; i++) [-1, 1].forEach(sd => { part(petalRow, gold, -1.26 + i * .18, seatTop + .06, SZ + sd * 1.2, g).scale.set(1, 1.8, .45); });
+    for (let i = 0; i < 13; i++) [-1, 1].forEach(sd => { part(petalRow, gold, sd * 1.4, seatTop + .06, SZ - 1.08 + i * .18, g).scale.set(.45, 1.8, 1); });
+    const st = new THREE.Group(); st.position.set(0, seatTop - .5, -1.7); g.add(st);
     sculptFigure("shan", st, "the Shan Buddha image");
     // behind him the whole back wall is a red hanging worked in gold: flying hamsa and little spired shrines in rows, under a
     // scalloped gilt border, framed in teak
@@ -952,12 +956,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       for (let i = 0; i < NB; i++) { const k = .5 + .5 * Math.sin(i * 2.4 + t * 1.6); bulbs.setColorAt(i, bc.copy(tints[i % 6]).multiplyScalar(.55 + .45 * k)); }
       bulbs.instanceColor.needsUpdate = true;
     });
-    // tall sprays of white flowers in gilt urns at the throne's front corners, green leaves under them
+    // tall sprays of white flowers in gilt urns on the floor before the throne, green leaves under them
     const urnG = new THREE.CylinderGeometry(.16, .11, .42, 16), urnLip = new THREE.TorusGeometry(.16, .025, 6, 16);
     const bloomG = new THREE.SphereGeometry(.045, 8, 6), leafG = new THREE.SphereGeometry(.1, 6, 4), stemG = new THREE.CylinderGeometry(.008, .008, 1, 4);
     const bloomM = std({ color: 0xfbf8f0, roughness: .8 }), leafM = std({ color: 0x2f6a2a, roughness: .8 }), stemM = std({ color: 0x4a7a32, roughness: .8 });
     const fr = rng(41);
-    [[-1.95, -.35], [1.95, -.35], [-1.55, -3.2], [1.55, -3.2]].forEach(([x, z]) => {
+    KYAUNG.urns.forEach(([x, z]) => {
       part(urnG, gold, x, .21, z, g); part(urnLip, gold, x, .42, z, g).rotation.x = Math.PI / 2;
       for (let k = 0; k < 7; k++) { const a = fr() * TAU, r = .1 + fr() * .1; part(leafG, leafM, x + Math.sin(a) * r, .5 + fr() * .2, z + Math.cos(a) * r, g).scale.set(1, .5, 1.6); }
       for (let k = 0; k < 9; k++) {
@@ -966,6 +970,25 @@ window.TempleFloors = function TempleFloors(ctx) {
         [0, 1, 2, 3, 4].forEach(j => part(bloomG, bloomM, top.x + (fr() - .5) * .14, top.y - j * .07, top.z + (fr() - .5) * .12, g).scale.setScalar(.7 + fr() * .5));
       }
     });
+    // long woven Shan banners (tamkhon) hanging down the side walls between the windows, each striped and patterned in its own
+    // colours, with a bamboo rod at the top and a tassel at the foot
+    const banner = (base, band, motif) => canvasTex(128, (c, s2) => {
+      c.fillStyle = base; c.fillRect(0, 0, s2, s2);
+      for (let k = 0; k < 8; k++) { const y = k * 16; c.fillStyle = band; c.fillRect(0, y, s2, 3); c.fillStyle = motif;
+        if (k % 2) { c.beginPath(); c.moveTo(64, y + 4); c.lineTo(84, y + 9); c.lineTo(64, y + 14); c.lineTo(44, y + 9); c.fill(); }
+        else for (let j = 0; j < 3; j++) c.fillRect(24 + j * 34, y + 6, 12, 6); }
+      c.fillStyle = band; c.fillRect(0, 0, 10, s2); c.fillRect(s2 - 10, 0, 10, s2);
+    });
+    const bannerMs = [["#9a1c18", "#e8c070", "#f4f0e6"], ["#f2ede0", "#9a1c18", "#2a6a3a"], ["#1f5a3a", "#e8c070", "#f2ede0"], ["#2a2a5a", "#d8a640", "#c83a2a"]]
+      .map(c => std({ map: banner(...c), roughness: .9, side: THREE.DoubleSide }));
+    const rodG = new THREE.CylinderGeometry(.015, .015, .5, 6), tasselG = new THREE.ConeGeometry(.05, .3, 6);
+    [-1, 1].forEach(sd => [-4.6, -1.2, 2.4, 5.8].forEach((z, i) => [-.3, .3].forEach((dz, j) => {
+      const h = 2.2 + ((i + j) % 3) * .35, x = sd * 7.42, zz = z + dz, m = bannerMs[(i * 2 + j + (sd > 0 ? 1 : 0)) % 4];
+      const b = flat(mesh(new THREE.PlaneGeometry(.36, h), m, x, 5.9 - h / 2, zz, g)); b.rotation.y = -sd * Math.PI / 2;
+      part(rodG, teakDark, x, 5.92, zz, g).rotation.x = Math.PI / 2;
+      part(tasselG, gold, x, 5.9 - h - .12, zz, g).rotation.x = Math.PI;
+    })));
+    bannerMs.forEach(m => { m.map.wrapT = THREE.RepeatWrapping; m.map.repeat.set(1, 2); });
     // over the image, a coffered red ceiling with gilt ribs and round lamps let into it
     const cof = canvasTex(256, (c, s2) => { c.fillStyle = "#6a1410"; c.fillRect(0, 0, s2, s2); c.strokeStyle = "#d8a640"; c.lineWidth = 10; for (let k = 0; k <= 4; k++) { c.beginPath(); c.moveTo(k * 64, 0); c.lineTo(k * 64, s2); c.moveTo(0, k * 64); c.lineTo(s2, k * 64); c.stroke(); } c.lineWidth = 3; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { c.beginPath(); c.arc(32 + i * 64, 32 + j * 64, 18, 0, TAU); c.stroke(); } });
     cof.wrapS = cof.wrapT = THREE.RepeatWrapping; cof.repeat.set(3, 2);
@@ -982,8 +1005,10 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     bakeParts(g);
     // the offering table, and the altar: a vase for lotus, the seven water bowls, candle stands, fruit and incense
-    offeringTable(g, n, white, M.wax);
-    list.push(...shrine(g, n, { before: "the Buddha image", vaseX: -1.02, shan: true }));
+    // the altar's offerings stand on the plinth's ledge: shrine() lays them out at the table height ALT.y, so it builds them in a
+    // group lowered and drawn back to the ledge
+    const ledge = new THREE.Group(); ledge.position.set(0, L - ALT.y, -.25); g.add(ledge);
+    list.push(...shrine(ledge, n, { before: "the Buddha image", vaseX: -1.02, shan: true }));
     // the doors out to the verandah, in the front wall behind the visitor
     const D0 = new THREE.Group(); D0.position.set(0, 0, 7.45); D0.rotation.y = Math.PI; g.add(D0);
     [-1, 1].forEach(sd => {
@@ -5055,7 +5080,8 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (mode !== "church" && [...INNER_COLUMNS, ...CORNER_COLUMNS].some(([cx, cz]) => c(cx, cz, .3))) return true;   // the church has no columns
       if (typeof mode === "number" && rc(STAIR_ROOM.x0, STAIR_ROOM.x1, STAIR_ROOM.z0, STAIR_ROOM.z1)) return true;
       if ([1, 4, 5, 6, 7, "library", "kyaung"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
-        if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || (mode !== "kyaung" && rc(-1.4, 1.4, 1.6, 2.3))) return true;   // the Shan altar has nothing before its table
+        if (mode === "kyaung") { if (rc(-2.2, 2.2, -3.5, 1.2)) return true; }   // the Shan throne's broad plinth; no table or stands
+        else if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || rc(-1.4, 1.4, 1.6, 2.3)) return true;
         if (mode === 1 && rc(-.8, .8, 2.5, 3.1)) return true;   // the kneeling bench
       }
       if (mode === "library" && c(WISH_TREE.x, WISH_TREE.z, 2.2 * WISH_TREE.s)) return true;   // the wishing tree's fence
@@ -5065,7 +5091,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);
       if (mode === "church") return CHURCH.banks.some(([x0, x1]) => rc(x0, x1, CHURCH.rows[0] - .25, CHURCH.rows[CHURCH.rows.length - 1] + .3)) || rc(-.9, .9, -2.45, -1.85) || z < CHURCH.dais;   // the pews, the communion table, the dais
-      if (mode === "kyaung") return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, the arch
+      if (mode === "kyaung") return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || KYAUNG.urns.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, flower urns
       return false;
     },
     setDaylight(d) { daylight = d; dayParts.forEach(fn => fn(d)); },

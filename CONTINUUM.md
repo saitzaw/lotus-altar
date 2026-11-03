@@ -53,6 +53,12 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Then cleared the floor before the Shan image's table, as the site owner asked: no candle stands or censer pedestal there.
   Light offerings go on gilt trays at the table's front corners (`buildTrays`), incense in a small brass sand bowl at the
   centre back of the table (`alt.inc`); walkers can now step up to the table front. Checked in a headless render.
+- Then took the offering table out of the Shan hall altogether (a table is the Chinese way), after the site owner's second
+  photo: the image now sits high on a broad gilded plinth carved with niches, and the offerings (vase, water bowls, fruit,
+  candle trays, sand bowl) stand on the plinth's front ledge (`KYAUNG.ledge`, shrine built in a lowered `ledge` group).
+  White flower sprays stand on the floor before it; long woven Shan banners (tamkhon) hang on the side walls; "Look closer"
+  there uses its own higher view (`CONFIG.places.kyaung.closeUp`). Old saved altars keep their offerings. Not yet changed:
+  the image's own body, which in the photo is slimmer with longer ears than our sculpted figure.
 
 ### 2026-11-03 (night)
 - Added a small township football ground (`footballGround` in `temple-floors.js`) west of the road up to the hospital:
