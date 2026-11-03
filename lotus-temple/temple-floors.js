@@ -1558,8 +1558,9 @@ window.TempleFloors = function TempleFloors(ctx) {
   const LANES = [
     { x0: -22, x1: 43.25, z0: 75.25, z1: 79.75 },                // the back lane behind the houses on the street's south side
     { x0: -2.25, x1: 2.25, z0: 71.2, z1: 107 },                  // the plaza lane, south from the plaza opposite the gate
-    { x0: 38.75, x1: 43.25, z0: 60.8, z1: 152, mouth: true },    // the market lane, beside the daily market and on to the high school
-    { x0: -73, x1: -68.5, z0: -24, z1: 50, mouth: true }         // the west lane, a row back from the houses on the town road
+    { x0: 38.75, x1: 43.25, z0: 60.8, z1: 160.5, mouth: true },  // the market lane, beside the daily market, past the high school
+    { x0: -73, x1: -68.5, z0: -24, z1: 50, mouth: true },        // the west lane, a row back from the houses on the town road
+    { x0: -10, x1: 38.75, z0: 155.5, z1: 160.5 }                 // the palace lane, from the market lane's end past the Haw Kham to the hill's east stair
   ];
   const corrugated = (base, light, dark) => {
     const t = canvasTex(64, (c, sz) => {
@@ -1950,7 +1951,8 @@ window.TempleFloors = function TempleFloors(ctx) {
       r += flight; prof.push([r, yLo]);
     }
     prof.push([rBase, 0]);
-    return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61] };   // `to`: the street corner the stair faces
+    const east = [.97, .243];   // the east stair's way down, toward the lane past the Haw Kham
+    return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east };   // `to`: the street corner the stair faces
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
   const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ" };
@@ -2092,57 +2094,78 @@ window.TempleFloors = function TempleFloors(ctx) {
     pave.wrapS = pave.wrapT = THREE.RepeatWrapping; pave.repeat.set(7, 7);
     clickable(list, flat(mesh(new THREE.CircleGeometry(rTop - .6, 48), std({ map: pave, roughness: .85 }), 0, top + .04, 0, H)), tip).rotation.x = -Math.PI / 2;
     // the stair, from the foot (local z = -rBase) to the hilltop edge (local z = -rTop): flights and landings
+    // the hill's profile is the same all round, so a second stair is the same stair turned: built in a frame F whose local -z
+    // points down the stair; `ms`: the monastery whose stair joins this one's wall on the upper terrace, if any
     const SW = SW_, rise = top / (STAIR.flights * STAIR.steps), z0 = -rBase + STAIR.pad, DEEP = 1.8;
-    const treads = [], line = [[-rBase, 0], [z0, 0]];   // `line`: the walking surface, for the lamps
-    let seg = [[-rBase, 0], [z0, 0]];
-    const segs = [seg];   // the side walls, broken open across the wide terraces so paths can lead off to the monasteries
-    const ms = monasterySpot(), left = [];   // left: wall on the monastery's side only, across the upper terrace either side of its stair
-    let z = z0, y = 0;
-    for (let f = 0; f < STAIR.flights; f++) {
-      for (let i = 0; i < STAIR.steps; i++) { y += rise; treads.push({ z, y, d: STAIR.tread }); z += STAIR.tread; }
-      line.push([z, y]); seg.push([z, y]);
-      if (f < STAIR.flights - 1) {
-        const L = STAIR.landings[f];
-        treads.push({ z, y, d: L, landing: true });
-        if (L > 5) {
-          seg.push([z + 1.2, y]); seg = [[z + L - 1.2, y]]; segs.push(seg);
-          if (Math.abs(y - ms.y) < .01) left.push([[z + 1.2, y], [ms.open[0], y]], [[ms.open[1], y], [z + L - 1.2, y]]);
-        } else seg.push([z + L, y]);
-        z += L; line.push([z, y]);
-      }
-    }
-    line.push([-rTop + .5, top]); seg.push([-rTop + .5, top]);
     const stepMat = std({ color: 0xffffff, roughness: .85 }), whiteWash = std({ color: 0xf2eee4, roughness: .8 });
-    const stairs = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), stepMat, treads.length), m4 = new THREE.Matrix4(), q0 = new THREE.Quaternion(), tc = new THREE.Color();
-    treads.forEach((t, i) => {
-      stairs.setMatrixAt(i, m4.compose(V(0, t.y - DEEP / 2, t.z + t.d / 2), q0, V(SW, DEEP, t.d + .01)));
-      const k = t.landing ? .86 : .9 + ((i * 29) % 11) / 11 * .08; stairs.setColorAt(i, tc.setRGB(k, k * .97, k * .92));   // worn stone, landings darker
-    });
-    stairs.castShadow = true; stairs.receiveShadow = true; H.add(stairs); clickable(list, stairs, tip);
-    // nosing lines: a thin darker edge on every step so the treads read clearly
-    const nose = new THREE.InstancedMesh(new THREE.BoxGeometry(SW, .03, .04), std({ color: 0x9a9284, roughness: .9 }), treads.length);
-    treads.forEach((t, i) => nose.setMatrixAt(i, m4.makeTranslation(0, t.y - .01, t.z + .02))); H.add(nose);
-    // side walls that follow the flights and step level at the landings, a handrail coping on top
-    const wallShape = (pl, h, below) => {
-      const sh = new THREE.Shape();
-      pl.forEach(([zz, yy], i) => i ? sh.lineTo(zz, yy + h) : sh.moveTo(zz, yy + h));
-      for (let i = pl.length - 1; i >= 0; i--) sh.lineTo(pl[i][0], pl[i][1] - below);
-      sh.closePath(); return sh;
-    };
+    function hillStair(F, ms, tip) {
+      const treads = [], line = [[-rBase, 0], [z0, 0]];   // `line`: the walking surface, for the lamps
+      let seg = [[-rBase, 0], [z0, 0]];
+      const segs = [seg];   // the side walls, broken open across the wide terraces so paths can lead off to the monasteries
+      const left = [];   // left: wall on the monastery's side only, across the upper terrace either side of its stair
+      let z = z0, y = 0;
+      for (let f = 0; f < STAIR.flights; f++) {
+        for (let i = 0; i < STAIR.steps; i++) { y += rise; treads.push({ z, y, d: STAIR.tread }); z += STAIR.tread; }
+        line.push([z, y]); seg.push([z, y]);
+        if (f < STAIR.flights - 1) {
+          const L = STAIR.landings[f];
+          treads.push({ z, y, d: L, landing: true });
+          if (L > 5) {
+            seg.push([z + 1.2, y]); seg = [[z + L - 1.2, y]]; segs.push(seg);
+            if (ms && Math.abs(y - ms.y) < .01) left.push([[z + 1.2, y], [ms.open[0], y]], [[ms.open[1], y], [z + L - 1.2, y]]);
+          } else seg.push([z + L, y]);
+          z += L; line.push([z, y]);
+        }
+      }
+      line.push([-rTop + .5, top]); seg.push([-rTop + .5, top]);
+      const stairs = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), stepMat, treads.length), m4 = new THREE.Matrix4(), q0 = new THREE.Quaternion(), tc = new THREE.Color();
+      treads.forEach((t, i) => {
+        stairs.setMatrixAt(i, m4.compose(V(0, t.y - DEEP / 2, t.z + t.d / 2), q0, V(SW, DEEP, t.d + .01)));
+        const k = t.landing ? .86 : .9 + ((i * 29) % 11) / 11 * .08; stairs.setColorAt(i, tc.setRGB(k, k * .97, k * .92));   // worn stone, landings darker
+      });
+      stairs.castShadow = true; stairs.receiveShadow = true; F.add(stairs); clickable(list, stairs, tip);
+      // nosing lines: a thin darker edge on every step so the treads read clearly
+      const nose = new THREE.InstancedMesh(new THREE.BoxGeometry(SW, .03, .04), std({ color: 0x9a9284, roughness: .9 }), treads.length);
+      treads.forEach((t, i) => nose.setMatrixAt(i, m4.makeTranslation(0, t.y - .01, t.z + .02))); F.add(nose);
+      // side walls that follow the flights and step level at the landings, a handrail coping on top
+      const wallShape = (pl, h, below) => {
+        const sh = new THREE.Shape();
+        pl.forEach(([zz, yy], i) => i ? sh.lineTo(zz, yy + h) : sh.moveTo(zz, yy + h));
+        for (let i = pl.length - 1; i >= 0; i--) sh.lineTo(pl[i][0], pl[i][1] - below);
+        sh.closePath(); return sh;
+      };
+      [-1, 1].forEach(sd => {
+        (sd < 0 ? [...segs, ...left] : segs).forEach(pl => {
+          const wg = new THREE.ExtrudeGeometry(wallShape(pl, .95, DEEP), { depth: .36, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
+          mesh(wg, whiteWash, sd * (SW / 2 + (sd > 0 ? .36 : 0)), 0, 0, F);
+          const cg = new THREE.ExtrudeGeometry(wallShape(pl, 1.07, -.95), { depth: .5, bevelEnabled: false }); cg.rotateY(-Math.PI / 2);
+          mesh(cg, M.trim, sd * (SW / 2 + (sd > 0 ? .43 : -.07)), 0, 0, F);
+        });
+        line.forEach(([zz, yy], i) => { if (i < 2 || i % 2) return;   // a lamp post at every landing
+          const x = sd * (SW / 2 + .18);
+          mesh(new THREE.BoxGeometry(.3, .6, .3), whiteWash, x, yy + 1.3, zz, F);
+          const gl = glowSprite(0xffd8a0, 1.1, .8); gl.material.fog = false; gl.position.set(x, yy + 1.7, zz); F.add(gl);
+          onDaylight(d => gl.material.opacity = .85 * (1 - d) + .05);
+        });
+      });
+    }
+    hillStair(H, monasterySpot(), tip);
+    // the east stair, from the lane past the Haw Kham: the same stair turned to face the palace, its foot between two
+    // whitewashed pillars crowned with lotus buds, a short paved walk out to the lane
+    const E = new THREE.Group(); E.position.set(cx, 0, cz); E.rotation.y = Math.atan2(-HILL.east[0], -HILL.east[1]); g.add(E);
+    hillStair(E, null, { tip: `The east stair · up to ${SHAN_NAMES.stupa} from the Haw Kham` });
+    flat(mesh(new THREE.BoxGeometry(SW, .06, 3.4), M.stone, 0, .03, -rBase - 1.5, E));
     [-1, 1].forEach(sd => {
-      (sd < 0 ? [...segs, ...left] : segs).forEach(pl => {
-        const wg = new THREE.ExtrudeGeometry(wallShape(pl, .95, DEEP), { depth: .36, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
-        mesh(wg, whiteWash, sd * (SW / 2 + (sd > 0 ? .36 : 0)), 0, 0, H);
-        const cg = new THREE.ExtrudeGeometry(wallShape(pl, 1.07, -.95), { depth: .5, bevelEnabled: false }); cg.rotateY(-Math.PI / 2);
-        mesh(cg, M.trim, sd * (SW / 2 + (sd > 0 ? .43 : -.07)), 0, 0, H);
-      });
-      line.forEach(([zz, yy], i) => { if (i < 2 || i % 2) return;   // a lamp post at every landing
-        const x = sd * (SW / 2 + .18);
-        mesh(new THREE.BoxGeometry(.3, .6, .3), whiteWash, x, yy + 1.3, zz, H);
-        const gl = glowSprite(0xffd8a0, 1.1, .8); gl.material.fog = false; gl.position.set(x, yy + 1.7, zz); H.add(gl);
-        onDaylight(d => gl.material.opacity = .85 * (1 - d) + .05);
-      });
+      const x = sd * (SW / 2 + .7);
+      mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, E); sRect(E, x - .4, x + .4, -rBase - .6, -rBase + .2);
+      mesh(new THREE.BoxGeometry(.92, .1, .92), M.trim, x, 2.25, -rBase - .2, E);
+      const bud = mesh(new THREE.SphereGeometry(.26, 14, 10), whiteWash, x, 2.55, -rBase - .2, E); bud.scale.y = 1.35;
+      mesh(new THREE.ConeGeometry(.09, .4, 10), M.gold, x, 2.95, -rBase - .2, E);
     });
+    // in the hill's own frame, the way the east stair comes up: kept clear of stupas and pines
+    const eA = E.rotation.y - H.rotation.y, eDir = [-Math.sin(eA), -Math.cos(eA)];
+    const onEast = (x, zz, w) => x * eDir[0] + zz * eDir[1] > 0 && Math.abs(x * eDir[1] - zz * eDir[0]) < w;
+
     // the approach: a path out to the street corner, and a zebra crossing over the street
     const foot = V(cx, 0, cz).addScaledVector(dir, rBase);
     const pathLen = Math.max(3, (foot.z - 60.8) / -dir.z);
@@ -2173,6 +2196,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     for (let x = -12; x <= 12; x += 2.6) for (let zz = -12; zz <= 12; zz += 2.6) {
       if (Math.abs(x) < 2.6 && zz < 0) continue;               // the path from the stair to the main stupa
       if (Math.abs(x) < 6.2 && Math.abs(zz) < 6.2) continue;   // the main stupa's terrace
+      if (onEast(x, zz, 2.6)) continue;                         // and the path from the east stair
       if (Math.hypot(x, zz) > rTop - 1.6) continue;
       spots.push({ x, y: top, z: zz, s: .55 + r() * .35, ry: [0, Math.PI / 2][(r() * 2) | 0] });
       sCircle(H, x, zz, 1.15 * spots[spots.length - 1].s);
@@ -2231,6 +2255,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     for (let i = 0; i < 32; i++) {
       const a = i / 32 * TAU + .1, rr = rTop + 6 + (i % 4) * 8, x = Math.sin(a) * rr, zz = Math.cos(a) * rr;
       if (Math.abs(x) < 30 && zz < 0) continue;   // keep the stair and the monastery terraces clear
+      if (onEast(x, zz, 8)) continue;               // and the east stair
       { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 20) continue; }   // and the festival ground
       const t = pine(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
     }
@@ -2419,6 +2444,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const data = { tip: `${SHAN_NAMES.haw} · the Haw Kham, the saopha's palace`, toast: `${SHAN_NAMES.haw}, the Haw Kham or golden palace: the haw of Hsenwi's saopha (${SHAN_NAMES.saopha}, "lord of the sky"), the prince who ruled the Shan state from here. A teak hall on red-lacquered posts, the throne room under the gilded spire of tiered roofs, the audience stair in front. The saophas gave up their powers in 1959.` };
       // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the gate
       flat(mesh(new THREE.BoxGeometry(2 * CX, .04, 2 * CZ), gravel, 0, .025, 0, G)).receiveShadow = true;
+      flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, CZ + 2.75, G));   // the paved walk out of the gate to the palace lane
       [[-CX, CX, -CZ, -CZ], [-CX, -CX, -CZ, CZ], [CX, CX, -CZ, CZ], [-CX, -3.4, CZ, CZ], [3.4, CX, CZ, CZ]].forEach(([a, b, c, d]) => {
         const w = Math.max(b - a, .4), dd = Math.max(d - c, .4), mx = (a + b) / 2, mz = (c + d) / 2;
         mesh(new THREE.BoxGeometry(w, 2.2, dd), white, mx, 1.1, mz, G);

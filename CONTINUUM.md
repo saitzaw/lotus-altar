@@ -41,6 +41,14 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (after midnight)
+- A road and a stair for the Haw Kham: the market lane now runs on past the high school to z 160.5, and a new palace lane
+  (`LANES[4]`, lamps on poles like the other back lanes) runs west from there past the palace gate (a paved walk out of the
+  gate meets it) to a second stair up the stupa hill's east side. The east stair is the hill stair turned to face the lane
+  (`hillStair(F, ms, tip)` in `shanStupaHill`, direction `HILL.east`), with lotus-bud pillars at its foot; stupas and pines on
+  its line are left out so you can walk from its top to the main stupa. Checked headless at night from the lane, from the
+  stair's foot and from the hilltop: renders, no console errors.
+
 ### 2026-11-03 (late night)
 - Added the Haw Kham (ႁေႃၶမ်း), the saopha's palace, east of the stupa hill behind the Kachin church (`hawKham` inside
   `shanMonasteries`, compound centre (16, 182), front to the south). A teak hall on red-lacquered stilts with gilt bands,
