@@ -18,6 +18,7 @@ recently, and what's still open. Read it at the start of a session; update it at
   crickets, wind over the paddies, rain. HUD 🔊 button mirrors the `soundOn` checkbox.
 - `guanyin.glb` (the museum scan in `CONFIG.scan`) is **not in the repo**, so the floor-1 Guanyin is the sculpted SDF
   figure. `build-dist.sh` copies the scan only if it exists.
+- `CHANGELOG.md` at the repo root lists changes by day, newest first; add a line there with each meaningful change.
 - Agent docs: `AGENTS.md` (any agent) and the `lotus-altar` skill in `.claude/skills/lotus-altar/` (Claude Code): `SKILL.md`
   holds the rules and an index; details live in `references/*.md`, one file per topic.
 
