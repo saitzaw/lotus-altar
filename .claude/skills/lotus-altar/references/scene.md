@@ -26,6 +26,7 @@
 | High school | x 46–98, z 111–152; gate on the market lane at x 46, z 118–126; houses face it from x ≈ 30–36 |
 | Bamboo grove (`bambooGrove`) | x 44–100, z 153–178, behind the school's back wall |
 | Kachin Baptist church (`kachinChurch`) | centre (12, 128), front facing the plaza lane's end (z 107); forecourt z ≈ 108–114; its door leads to the `church` hall (`churchHall`: pews, dais, cross; no offering altar), and you come out on the forecourt; three houses each side at x −1 and 24.2, z 118 / 127 / 136 |
+| Haw Kham (ႁေႃၶမ်း, `hawKham`, built in `shanMonasteries`) | the saopha's palace, compound centre (16, 182), x −6…38, z 166…198, gate in the south wall facing the church; east of the stupa hill's foot, west of the bamboo grove. A teak hall on stilts (walkers climb the audience stair onto the verandah), seven-tier pyatthat, a lesser hall either side; exterior only, its doors don't open yet |
 | Police station | (133, 36); the Hsenwi welcome board (`welcomeSign`, Shan/Burmese/English, unlit) stands on the verge at (144, 44.4), east of the police forecourt and clear of the road and pavement, facing back down the street |
 
 The beat officer is commented out for now (`beatOfficer(g)` in `temple-floors.js`, `policeStep` in `lotus-altar.js`). His safe ground (`SAFE` in `temple-floors.js`): the compound, the seven-day market (x 43…104, z −14…47.4) and

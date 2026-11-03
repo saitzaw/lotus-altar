@@ -31,6 +31,7 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
+- Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
   site's owner; the boards carry the Shan names only.
 
@@ -39,6 +40,14 @@ recently, and what's still open. Read it at the start of a session; update it at
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-03 (late night)
+- Added the Haw Kham (ႁေႃၶမ်း), the saopha's palace, east of the stupa hill behind the Kachin church (`hawKham` inside
+  `shanMonasteries`, compound centre (16, 182), front to the south). A teak hall on red-lacquered stilts with gilt bands,
+  lamplit windows, carved gables and a seven-tier pyatthat over the throne room; an audience stair under a gabled porch with
+  the Shan name board; a lesser hall either side; a whitewashed wall with a gate under a little pyatthat and two lanterns.
+  Walkers can climb onto the verandah; the doors don't open yet (no interior). `pyatthat()` takes an optional `shrink`.
+  Checked headless at night from the gate and from the hill side: renders, no console errors.
 
 ### 2026-11-03 (night)
 - The Kachin Baptist church can be entered: tap its door (or the new **Church** button under the floors) for `churchHall` in
