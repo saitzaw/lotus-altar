@@ -2073,7 +2073,8 @@ window.TempleFloors = function TempleFloors(ctx) {
       spots.push({ x, y: top, z: zz, s: .55 + r() * .35, ry: [0, Math.PI / 2][(r() * 2) | 0] });
       sCircle(H, x, zz, 1.15 * spots[spots.length - 1].s);
     }
-    [-1, 1].forEach(sd => spots.push({ x: sd * (SW / 2 + .9), y: 2.4, z: -rBase - .2, s: .32, ry: 0 }));   // on the entrance pillars
+    const GATE_H = 3.8;   // the entrance pillars' height: the name board's beam rests on them, well over a walker's head
+    [-1, 1].forEach(sd => spots.push({ x: sd * (SW / 2 + .9), y: GATE_H, z: -rBase - .2, s: .32, ry: 0 }));   // on the entrance pillars
     const pm = new THREE.Matrix4(), tint = new THREE.Color();
     PARTS.forEach(([geo, mat, px, py, pz]) => {
       const im = new THREE.InstancedMesh(geo, mat, spots.length);
@@ -2085,10 +2086,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       im.castShadow = true; im.receiveShadow = true; H.add(im);
       if (mat === stone) clickable(list, im, { tip: "Shan stupas · in the style of Kakku" });
     });
-    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.9, 2.4, .9), whiteWash, sd * (SW / 2 + .9), 1.2, -rBase - .2, H));
+    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.9, GATE_H, .9), whiteWash, sd * (SW / 2 + .9), GATE_H / 2, -rBase - .2, H));
     {   // the stupa's name board over the entrance, on a gilded beam between the pillars, lettered on both faces
-      const face = shanBoardFace(SHAN_NAMES.stupa, "The main stupa · up the stair"), BW = 3.4, BH = BW * 300 / 1024, by = 2.4 + .1 + BH / 2;
-      mesh(new THREE.BoxGeometry(SW + 1.8 + .9, .2, .3), M.gold, 0, 2.5, -rBase - .2, H);
+      const face = shanBoardFace(SHAN_NAMES.stupa, "The main stupa · up the stair"), BW = 3.4, BH = BW * 300 / 1024, by = GATE_H + .1 + BH / 2;
+      mesh(new THREE.BoxGeometry(SW + 1.8 + .9, .2, .3), M.gold, 0, GATE_H + .1, -rBase - .2, H);
       clickable(list, mesh(new THREE.BoxGeometry(BW, BH, .1), [M.lacquer, M.lacquer, M.lacquer, M.lacquer, face, face], 0, by, -rBase - .2, H), { tip: `${SHAN_NAMES.stupa} · the main stupa`, toast: `${SHAN_NAMES.stupa}, the main stupa of the hill: climb the stair past the monastery ${SHAN_NAMES.kyaung} to the white-and-gold stupa among the Shan stupas at the top.` });
       mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
     }

@@ -48,6 +48,8 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Shan names (`SHAN_NAMES` in `temple-floors.js`): the main stupa ၽြႃးမုင်ႈမိူင်း, on a gold-on-red board over the hill stair's
   entrance and in the stupa's tips; the monastery ၵျွင်းၵွင်းမူးၶမ်း, on a board under its front gable, in its tips and in the
   shrine hall's label (`shn` in `CONFIG.places.kyaung`, shown `lang="shn"` in `#where`).
+- The stupa hill's entrance pillars are taller (`GATE_H`, 3.8 m, was 2.4 m), lifting the name board and its beam well over a
+  walker's head.
 
 ### 2026-11-03 (later)
 - The Shan monastery on the stupa hill can be entered: tap its doors (or the "Kyaung" place button) for the shrine hall
