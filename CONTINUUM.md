@@ -41,6 +41,10 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (morning)
+- Filled the gap in the row facing the Haw Kham: five two-storey Shan houses now, 7 m wide and evenly 2 m apart
+  (x −2.25 … 33.75), the middle one on the gate's axis. Not re-rendered; same builder and footprint line as before.
+
 ### 2026-11-03 (small hours)
 - Four traditional two-storey Shan houses face the Haw Kham across the palace lane, two either side of the way to its gate
   (`shanWoodHouse`, floors 2: a wooden storey and verandah over whitewashed brick, rusty tin hip roofs; end of

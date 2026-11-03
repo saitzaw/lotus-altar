@@ -3751,9 +3751,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     [[14, 93], [20, 99], [26, 95], [-12, 104], [-85.5, 40], [-85.5, 19], [-86, -2], [-85.5, -20]].forEach(([x, z], i) => banana(g, x, z, 400 + i));
     [[16, 143], [4, 142], [24.5, 141.5]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the church and its houses
     [[10, 142], [20, 142.5]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
-    // four traditional two-storey Shan houses facing the Haw Kham across the palace lane, two either side of the way to its gate:
+    // a row of five traditional two-storey Shan houses facing the Haw Kham across the palace lane, 2 m apart:
     // a wooden storey and verandah over a whitewashed brick ground floor, under rusty tin hip roofs
-    [-2, 7.5, 24, 33.5].forEach((x, i) => shanWoodHouse(g, x, 148.9, 0, { W: 7.5, D: 6.5, floors: 2, seed: 240 + i, roof: rustRoof }));
+    for (let i = 0; i < 5; i++) shanWoodHouse(g, -2.25 + i * 9, 148.9, 0, { W: 7, D: 6.5, floors: 2, seed: 240 + i, roof: rustRoof });
     kachinChurch(g, 12, 128);
     flat(mesh(new THREE.BoxGeometry(8, .05, 3), lane, 2, .03, 108.6, g));   // the path from the end of the plaza lane to the church
     // six houses round the church, three each side, their fronts toward it
