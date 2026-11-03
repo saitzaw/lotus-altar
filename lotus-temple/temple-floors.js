@@ -3774,8 +3774,11 @@ window.TempleFloors = function TempleFloors(ctx) {
         const k = 1 + (r() - .5) * .35 * (1 - t);
         p.setX(i, p.getX(i) * k); p.setZ(i, p.getZ(i) * k); p.setY(i, y + (r() - .5) * h * .05 * (1 - t));
       }
+      const ry = r() * TAU;
+      // none may stand on the road up to the hospital or on the hospital itself (the random numbers are still drawn, so the others keep their shapes)
+      if (Math.hypot(x - clamp(x, -130, -86), z - clamp(z, -19, 60)) < rad) { geo.dispose(); return; }
       geo.computeVertexNormals();
-      const m = mesh(geo, mat, x, h / 2 - .5, z, g); m.castShadow = false; m.rotation.y = r() * TAU;
+      const m = mesh(geo, mat, x, h / 2 - .5, z, g); m.castShadow = false; m.rotation.y = ry;
       peaks.push({ x, z, rad, h });
     }
     // two ranges along an arc behind the fields: lower, greener hills in front; taller, bluer ridges behind
