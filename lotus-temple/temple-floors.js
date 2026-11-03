@@ -2631,21 +2631,23 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.CylinderGeometry(.04, .05, 4, 6), poleM, x, 2, z, G);
       const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.0, .65, 6, 1), flagM); fl.geometry.translate(.5, 0, 0); fl.position.set(x, 3.6, z); G.add(fl); flags.push(fl);
     }
-    // the prayer-flag pole (တံခွန်တိုင်) at the centre, crowned by a golden hamsa, with a long streamer
-    mesh(new THREE.CylinderGeometry(.9, 1.1, .6, 8), std({ color: 0xf2eee4, roughness: .8 }), 0, .3, 0, G);
-    mesh(new THREE.CylinderGeometry(.08, .14, 14, 10), std({ color: 0xc02a2a, roughness: .5 }), 0, 7, 0, G);
-    const hamsa = new THREE.Group(); hamsa.position.set(0, 14.4, 0); G.add(hamsa);
+    // the prayer-flag pole (တံခွန်တိုင်) near the centre, crowned by a golden hamsa, with a long streamer; set a little downhill so
+    // there is room to walk between its plinth and the pavilion's steps
+    const FZ = 2.2;
+    mesh(new THREE.CylinderGeometry(.9, 1.1, .6, 8), std({ color: 0xf2eee4, roughness: .8 }), 0, .3, FZ, G);
+    mesh(new THREE.CylinderGeometry(.08, .14, 14, 10), std({ color: 0xc02a2a, roughness: .5 }), 0, 7, FZ, G);
+    const hamsa = new THREE.Group(); hamsa.position.set(0, 14.4, FZ); G.add(hamsa);
     mesh(new THREE.SphereGeometry(.35, 12, 8), M.gold, 0, 0, 0, hamsa).scale.set(1, .7, 1.6);
     mesh(new THREE.CylinderGeometry(.06, .1, .7, 8), M.gold, 0, .35, .45, hamsa).rotation.x = -.5;
     mesh(new THREE.ConeGeometry(.12, .3, 8), M.gold, 0, .7, .7, hamsa).rotation.x = Math.PI / 2;
     mesh(new THREE.ConeGeometry(.3, .8, 8), M.gold, 0, .15, -.6, hamsa).rotation.x = -Math.PI / 2 - .4;
     const streamer = new THREE.Mesh(new THREE.PlaneGeometry(.5, 9, 1, 12), std({ color: 0xf2e8c8, roughness: .8, side: THREE.DoubleSide }));
-    streamer.geometry.translate(0, -4.5, 0); streamer.position.set(.1, 13.6, 0); G.add(streamer);
+    streamer.geometry.translate(0, -4.5, 0); streamer.position.set(.1, 13.6, FZ); G.add(streamer);
     // the pavilion stage (မဏ္ဍပ်): teak posts, a raised floor, a two-tier gable roof like the monasteries', at the uphill side
     const teak = std({ color: 0x43200f, roughness: .7 }), roofT = corrugated("#6a3a24", "#8e5838", "#40200f"); roofT.repeat.set(6, 1);
     const roofM = std({ map: roofT, roughness: .5, metalness: .35, side: THREE.DoubleSide });
     const PZ = -R / 2 + 3.6, PW = 9, PD = 5.5;
-    sRect(G, -PW / 2, PW / 2, PZ - PD / 2, PZ + PD / 2 + 1.3); sCircle(G, 0, 0, 1.1); [-8, -4, 4, 8].forEach(x => sCircle(G, x, R / 2 - 3, 1.1));
+    sRect(G, -PW / 2, PW / 2, PZ - PD / 2, PZ + PD / 2 + 1.3); sCircle(G, 0, FZ, 1.1); [-8, -4, 4, 8].forEach(x => sCircle(G, x, R / 2 - 3, 1.1));
     mesh(new THREE.BoxGeometry(PW, 1.0, PD), teak, 0, .5, PZ, G);
     for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(2.4, 1 - i * .25, .3), teak, 0, (1 - i * .25) / 2, PZ + PD / 2 + .15 + i * .3, G);
     [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, -1]].forEach(([a, b]) => mesh(new THREE.CylinderGeometry(.13, .15, 3.6, 8), teak, a * (PW / 2 - .3), 2.8, PZ + b * (PD / 2 - .3), G));
@@ -2677,7 +2679,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     // strings of lanterns from the central pole to the corners, lit at night
     const lamps = [];
     [[-T / 2 + 1, -R / 2 + 1], [T / 2 - 1, -R / 2 + 1], [-T / 2 + 1, R / 2 - 1], [T / 2 - 1, R / 2 - 1]].forEach(([x, z]) => {
-      for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, z * t); G.add(b); lamps.push(b); }
+      for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
     updaters.pagoda.push((dt, t, motion) => {

@@ -42,6 +42,9 @@ recently, and what's still open. Read it at the start of a session; update it at
 ## Log
 
 ### 2026-11-03 (late)
+- Festival ground: the prayer-flag pole's plinth overlapped the pavilion stage's steps. The pole (with its hamsa, streamer,
+  lantern strings and walk-collision circle) now stands 2.2 m downhill of the field's centre (`FZ` in `festivalGround`),
+  leaving about 1.1 m of grass between the plinth and the bottom step.
 - Restyled the Shan monastery's shrine hall after the site owner's photo of a real Shan image hall: the Chinese-style altar
   pieces there are gone (red lacquer stepped stands with red candles, bronze tripod censer, red altar cloth, the pointed arch
   with flame points and spired canopy). Now: a red hanging worked in gold (flying hamsa, little pyatthat shrines, scalloped
