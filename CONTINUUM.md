@@ -40,6 +40,15 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (night)
+- The Kachin Baptist church can be entered: tap its door (or the new **Church** button under the floors) for `churchHall` in
+  `temple-floors.js`, place `church` in `CONFIG.places`. Inside: whitewashed walls over a teak wainscot with a manau band, four
+  pointed windows a side, two banks of pews either side of the aisle, ceiling fans (stop with reduced motion), and a dais with
+  the pulpit, choir chairs and a keyboard under a plain wooden cross on a red hanging, the communion table with Bible and
+  flowers below. No offering altar (not a statue hall). The doors behind you lead out to the forecourt (`EXIT_SPOT.church`).
+  `#where` now shows a Burmese name (`my`, `lang="my"`) as well as a Shan one. The manau texture is shared (`manauTex()`).
+  Checked headless: the hall renders, no console errors.
+
 ### 2026-11-03 (evening)
 - Walk round the Shan monastery: its plinth is now a paved terrace all round the building (parapet on the back and ends, open to
   the terrace in front), so on foot you can circle it at ground level as well as climb its stair and walk the verandah. The hill

@@ -37,7 +37,8 @@ const CONFIG = {
     library: { han: "蓮華寺", name: "Lotus Temple hall", statue: "shakyamuni", hint: "The great hall of the temple: Shakyamuni Buddha on his lotus throne. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag. On the right the wishing tree shades a small Victorious Buddha: tap its trunk to tie a red wish ribbon." },
     shop: { han: "法物流通處", name: "Temple shop", hint: "Choose offerings in the panel and buy them here, then carry them to Guanyin's altar on the pagoda's ground floor or to any other statue's altar. Tap the shelves to add things to your basket. The monks' quarters are upstairs." },
     quarters: { han: "寮房", name: "Monks' dining and rest room", hint: "Where the monks take their meal before noon and rest: low tables set with alms bowls, sleeping mats with folded robes." },
-    kyaung: { name: "Shan monastery", shn: "ၵျွင်းၵွင်းမူးၶမ်း", statue: "shan", hint: "The shrine hall of ၵျွင်းၵွင်းမူးၶမ်း, the Shan monastery on the hill of the stupa ၽြႃးမုင်ႈမိူင်း: a gilded Buddha image in the northern Shan and Lanna manner, touching the earth, with a lotus-bud finial and his robe falling from the left shoulder. Offer a lotus (puppha) at the vase, water (udaka) in the bowls and light (dīpa) on the candle stands; fruit and incense are welcome too. The teak doors behind you lead back out onto the verandah." }
+    kyaung: { name: "Shan monastery", shn: "ၵျွင်းၵွင်းမူးၶမ်း", statue: "shan", hint: "The shrine hall of ၵျွင်းၵွင်းမူးၶမ်း, the Shan monastery on the hill of the stupa ၽြႃးမုင်ႈမိူင်း: a gilded Buddha image in the northern Shan and Lanna manner, touching the earth, with a lotus-bud finial and his robe falling from the left shoulder. Offer a lotus (puppha) at the vase, water (udaka) in the bowls and light (dīpa) on the candle stands; fruit and incense are welcome too. The teak doors behind you lead back out onto the verandah." },
+    church: { name: "Kachin Baptist church", my: "ကချင်နှစ်ခြင်းအသင်းတော်", hint: "Inside the Kachin Baptist church: two banks of wooden pews either side of the aisle, ceiling fans turning under the beams, and manau patterns, the red and black diamonds of the Kachin manau dance poles, along the walls and on the pulpit. At the front a plain wooden cross hangs on a red cloth over the dais, where the choir sits; the Sunday service is in Jinghpaw and the hymns are sung in parts. The doors behind you lead back out to the forecourt." }
   },
   layout: { censerZ: 1.95, benchZ: 2.8, censerScale: 1.6 }, // distance in front of the statue (z) for censer and bench
   lanterns: { color: 0xb0180c, glow: 0xd0200a, glowStrength: .55 },
@@ -1057,7 +1058,7 @@ function applyMode(mode) {
   $("outsideBtn").textContent = out ? "Enter the main hall" : "Outside view";
   $("marketBtn").hidden = !out; $("fpBtn").hidden = !out;
   $("walkPad").hidden = false;
-  $("where").innerHTML = out ? `The pagoda · ${CONFIG.floors.length} floors` : (f.shn ? `<b lang="shn">${f.shn}</b>` : "") + esc(f.label);   // a Shan name, where the place has one
+  $("where").innerHTML = out ? `The pagoda · ${CONFIG.floors.length} floors` : (f.shn ? `<b lang="shn">${f.shn}</b>` : f.my ? `<b lang="my">${f.my}</b>` : "") + esc(f.label);   // a Shan or Burmese name, where the place has one
   $("hint").textContent = out ? "Drag to look around. Stone lions guard the gate, the path crosses the lotus pond, the Bell Tower stands on the left, the training ground lies east of the pagoda, the temple shop and monks' quarters and the lotus-viewing pavilion line the left of the pond, and the Lotus Temple hall runs along its right, with the street outside the gate a town road of modern houses along the west wall, and the seven-day market on the east side. Tap the main door, a floor or a building to go inside." : f.hint;
   document.querySelectorAll("#floors button").forEach(b => b.setAttribute("aria-current", String(b.dataset.f === String(mode))));
   tip.hidden = true;
@@ -1068,7 +1069,7 @@ function applyMode(mode) {
   if (typeof render === "function") render();
 }
 // on foot through a door: indoors you stand just inside the entrance facing the shrine; outdoors, just outside the door you came out of
-const EXIT_SPOT = { 1: [[0, 13.5], [0, 30]], library: [[14.5, 26], [0, 26]], shop: [[-18.5, 27], [0, 27]], quarters: [[-18.5, 21.6], [0, 21.6]], bell: [[-17, 5.5], [-17, 20]],
+const EXIT_SPOT = { 1: [[0, 13.5], [0, 30]], library: [[14.5, 26], [0, 26]], shop: [[-18.5, 27], [0, 27]], quarters: [[-18.5, 21.6], [0, 21.6]], bell: [[-17, 5.5], [-17, 20]], church: [[12, 112.5], [12, 100]],
                     get kyaung() { const m = temple.monasteries[0]; return m && m.exit; } };   // the monastery's verandah, looking down its stair
 function stayFirstPerson(prev) {
   if (current === "pagoda") {
@@ -1785,7 +1786,7 @@ const inHall = fn => (...a) => goTo(1, () => fn(...a));   // offerings, chanting
     const b = document.createElement("button");
     b.type = "button"; b.id = "place-" + key; b.className = nav.querySelector(".fl-place") ? "fl-place" : "fl-place first"; b.dataset.f = key;
     b.setAttribute("aria-label", pl.name); b.title = pl.name;
-    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop", kyaung: "Kyaung" }[key] || pl.name.split(" ")[0];
+    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop", kyaung: "Kyaung", church: "Church" }[key] || pl.name.split(" ")[0];
     b.addEventListener("click", () => goTo(key));
     nav.appendChild(b);
   });
