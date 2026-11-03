@@ -41,6 +41,14 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (night)
+- Added a small township football ground (`footballGround` in `temple-floors.js`) west of the road up to the hospital:
+  a 36 × 56 m grass pitch with white markings and two goals on a laterite running track, inside a 2.2 m painted wall
+  (51 × 64 m). It has a covered stand of five concrete tiers under a tin roof along the road side (walkable), three low
+  terraces against the west wall, and a gate off the road with a Burmese/English sign (မြို့နယ်အားကစားကွင်း · Township Stadium)
+  and the flag. No floodlights. The hill peaks nearby were checked and don't reach it, so the skyline is unchanged.
+  Checked in a headless render.
+
 ### 2026-11-03 (evening)
 - Hid the "Lotus Altar" title and the floor/place line (`#where`) from the top-left HUD. They are kept for screen readers
   through the same visually-hidden rule as `#hint` in `lotus-altar.css`; the buttons now sit at the top.
