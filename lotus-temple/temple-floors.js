@@ -1515,12 +1515,16 @@ window.TempleFloors = function TempleFloors(ctx) {
     outside.forEach(([x, z], i) => (i % 3 === 1 ? tree : pine)(g, x, z, .9 + (i % 4) * .08, seed++));
     // the street: a stone-paved road between kerbed pavements
     const road = std({ color: 0x2e2b28, roughness: .95 }), pave = std({ color: 0x6a645c, roughness: .9 }), kerb = std({ color: 0x8a847a, roughness: .8 });
-    flat(mesh(new THREE.BoxGeometry(245, .04, 8), road, 22.5, .02, 54, g));   // from x = -100, past the hut village's lane, to 145 past the fire and police stations
+    flat(mesh(new THREE.BoxGeometry(273, .04, 8), road, 8.5, .02, 54, g));   // from the corner at x = -128, past the hut village's lane, to 145 past the fire and police stations
+    // at its west end the street turns north and runs up beside the hut village to the hospital's forecourt
+    const HX = -124.75;
+    flat(mesh(new THREE.BoxGeometry(6.5, .04, 57.3), road, HX, .02, 21.35, g));
+    [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.2, .03, 57.3 + (sd < 0 ? 8.7 : 0)), std({ color: 0x8a7a5e, roughness: 1 }), HX + sd * 3.85, .015, 21.35 + (sd < 0 ? 4.35 : 0), g)));   // dirt verges
     // the north pavement stops either side of the town road, so the two roads meet in a proper junction
-    // (and at the mouth of the west lane)
-    const gaps = [[-100, -100], [LANES[3].x0, LANES[3].x1], [TOWN.roadX - TOWN.roadW / 2, TOWN.roadX + TOWN.roadW / 2], [145, 145]];
+    // (and at the mouths of the west lane and the hut village's lane)
+    const gaps = [[-128, HX + 3.25], [-98.5, -95.5], [LANES[3].x0, LANES[3].x1], [TOWN.roadX - TOWN.roadW / 2, TOWN.roadX + TOWN.roadW / 2], [145, 145]];
     [[48.75, 2.5, true], [59.4, 2.8, false]].forEach(([z, d, cut]) => {
-      const runs = cut ? gaps.slice(1).map((gp, i) => [gaps[i][1], gp[0]]) : [[-100, 145]];
+      const runs = cut ? gaps.slice(1).map((gp, i) => [gaps[i][1], gp[0]]) : [[-128, 145]];
       runs.forEach(([x0, x1]) => {
         mesh(new THREE.BoxGeometry(x1 - x0, .18, d), pave, (x0 + x1) / 2, .09, z, g);
         [-1, 1].forEach(e => mesh(new THREE.BoxGeometry(x1 - x0, .2, .14), kerb, (x0 + x1) / 2, .1, z + e * d / 2, g));
@@ -1530,8 +1534,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     // asphalt across the old pavement line, joining the town road to the street, with a give-way line
     flat(mesh(new THREE.BoxGeometry(TOWN.roadW, .04, 50 - TOWN.z1 + .2), std({ color: 0x2c2c2e, roughness: .95 }), TOWN.roadX, .02, (TOWN.z1 + 50) / 2, g));
     flat(mesh(new THREE.BoxGeometry(TOWN.roadW / 2 - .2, .02, .25), std({ color: 0xe8e4d8, roughness: .8 }), TOWN.roadX + TOWN.roadW / 4, .05, 49.6, g));
-    const dash = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, .02, .14), std({ color: 0xbdb6a8, roughness: .8 }), 41), m4 = new THREE.Matrix4();
-    for (let i = 0; i < 41; i++) dash.setMatrixAt(i, m4.makeTranslation(-99 + i * 6, .05, 54));
+    const dash = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, .02, .14), std({ color: 0xbdb6a8, roughness: .8 }), 53), m4 = new THREE.Matrix4();
+    for (let i = 0; i < 44; i++) dash.setMatrixAt(i, m4.makeTranslation(-119 + i * 6, .05, 54));
+    for (let i = 0; i < 9; i++) dash.setMatrixAt(44 + i, m4.makeRotationY(Math.PI / 2).setPosition(HX, .05, 46 - i * 6));   // and up the road to the hospital
     g.add(dash);
     // lamp posts and street trees along both pavements, clear of the gate
     for (let x = -60; x <= 60; x += 10) {
@@ -3036,11 +3041,11 @@ window.TempleFloors = function TempleFloors(ctx) {
   // the roads it walks, in the grounds' frame: nodes [x, z] and the stretches of road between them
   const GHOST_ROADS = {
     nodes: [[-97, 54], [-97, 6], [-70.75, 54], [-70.75, -22], [-41.5, 54], [-41.5, -24], [0, 54], [4.6, 61], [4.6, 69.5], [0, 72],
-            [0, 77.5], [0, 105], [-20, 77.5], [41, 77.5], [41, 54], [41, 150], [140, 54]],
+            [0, 77.5], [0, 105], [-20, 77.5], [41, 77.5], [41, 54], [41, 150], [140, 54], [-124.75, 54], [-124.75, -2]],
     // the street from the hut village to the fire station; the hut lane, the west lane and the town road off it; round the plaza
     // opposite the gate to the plaza lane and the back lane; the market lane
     edges: [[0, 2], [2, 4], [4, 6], [6, 14], [14, 16], [0, 1], [2, 3], [4, 5], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [10, 12], [10, 13],
-            [13, 14], [13, 15]]
+            [13, 14], [13, 15], [0, 17], [17, 18]]   // and the street's turn north to the hospital
   };
   function halloweenGhost(g) {
     const { nodes, edges } = GHOST_ROADS, next = nodes.map(() => []);
@@ -3435,7 +3440,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   // ambulance at the door; its forecourt closes the north end of the hut village's lane
   function hospital(g) {
     const X = -103, Z = -14, data = { tip: "The township hospital", toast: "The township hospital serves the town and the villages round it: an outpatient hall and wards on two floors, opening onto long open corridors where families wait. The ambulance stands ready at the porch." };
-    flat(mesh(new THREE.BoxGeometry(30, .05, 9.8), forecourt, X, .03, -2.4, g)).receiveShadow = true;
+    flat(mesh(new THREE.BoxGeometry(33.5, .05, 9.8), forecourt, X - 1.75, .03, -2.4, g)).receiveShadow = true;   // out west to meet the road up from the street
     const { h } = civic(g, X, Z, 0, { W: 26, D: 9, floors: 2, wall: civicWhite, trim: civicBlue, roof: ROOFS[2](1), corridor: 2.4, door: true, data });
     // the porch over the drive: a slab on two columns, a red cross on its fascia, the sign above
     const pz = 4.5 + 2.4 + 2.4;

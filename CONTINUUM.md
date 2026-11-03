@@ -41,6 +41,11 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (midday)
+- The street now runs on west past the hut village's lane to a corner at x −128, turns north (road at x −124.75, dirt
+  verges, dashed centre line) and meets the hospital's forecourt, widened west to x −121.5. The north pavement now also
+  breaks at the hut lane's mouth. Ghost and townsfolk walk the new stretch. Syntax-checked only; headless render stayed in the hall.
+
 ### 2026-11-03 (late morning)
 - Took the topiary trees and pink shrubs off the stupa hill's top path; the way from the stair to the main stupa is open paving.
 
