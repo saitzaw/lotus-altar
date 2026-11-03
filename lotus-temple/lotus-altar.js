@@ -37,7 +37,7 @@ const CONFIG = {
     library: { han: "蓮華寺", name: "Lotus Temple hall", statue: "shakyamuni", hint: "The great hall of the temple: Shakyamuni Buddha on his lotus throne. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag. On the right the wishing tree shades a small Victorious Buddha: tap its trunk to tie a red wish ribbon." },
     shop: { han: "法物流通處", name: "Temple shop", hint: "Choose offerings in the panel and buy them here, then carry them to Guanyin's altar on the pagoda's ground floor or to any other statue's altar. Tap the shelves to add things to your basket. The monks' quarters are upstairs." },
     quarters: { han: "寮房", name: "Monks' dining and rest room", hint: "Where the monks take their meal before noon and rest: low tables set with alms bowls, sleeping mats with folded robes." },
-    kyaung: { name: "Shan monastery", shn: "ၵျွင်းၵွင်းမူးၶမ်း", statue: "shan", hint: "The shrine hall of ၵျွင်းၵွင်းမူးၶမ်း, the Shan monastery on the hill of the stupa ၽြႃးမုင်ႈမိူင်း: a gilded Buddha image in the northern Shan and Lanna manner, touching the earth, with a lotus-bud finial and his robe falling from the left shoulder. Offer a lotus (puppha) at the vase, water (udaka) in the bowls and light (dīpa) on the candle stands; fruit and incense are welcome too. The teak doors behind you lead back out onto the verandah." },
+    kyaung: { name: "Shan monastery", shn: "ၵျွင်းၵွင်းမူးၶမ်း", statue: "shan", hint: "The shrine hall of ၵျွင်းၵွင်းမူးၶမ်း, the Shan monastery on the hill of the stupa ၽြႃးမုင်ႈမိူင်း: a gilded Buddha image in the northern Shan and Lanna manner, touching the earth, with a tall lotus-bud finial and his robe falling from the left shoulder, on a gilded throne before a red wall worked in gold with flying hamsa and little spired shrines, a ring of lights round the dark blue halo behind his head. Offer a lotus (puppha) at the vase, water (udaka) in the bowls and light (dīpa) on the gilt candle stands; incense goes in the brass bowl of sand; fruit is welcome too. The teak doors behind you lead back out onto the verandah." },
     church: { name: "Kachin Baptist church", my: "ကချင်နှစ်ခြင်းအသင်းတော်", hint: "Inside the Kachin Baptist church: two banks of wooden pews either side of the aisle, ceiling fans turning under the beams, and manau patterns, the red and black diamonds of the Kachin manau dance poles, along the walls and on the pulpit. At the front a plain wooden cross hangs on a red cloth over the dais, where the choir sits; the Sunday service is in Jinghpaw and the hymns are sung in parts. The doors behind you lead back out to the forecourt." }
   },
   layout: { censerZ: 1.95, benchZ: 2.8, censerScale: 1.6 }, // distance in front of the statue (z) for censer and bench
@@ -236,6 +236,8 @@ const M = {
   cloth: std({ color: 0x8e1f1a, roughness: .75 }),
   trim: std({ color: 0xd6a94a, metalness: .7, roughness: .4 }),
   wax: std({ color: 0xf2e2c4, roughness: .6 }),
+  sand: std({ color: 0xd9c49a, roughness: .95 }),
+  chimney: std({ color: 0xffffff, roughness: .05, metalness: .1, transparent: true, opacity: .22, depthWrite: false }),
   waxRed: std({ color: 0xb81d16, roughness: .45 }),
   lotus: std({ color: 0xf0a2b4, roughness: .55, emissive: 0x3a0e18 }),
   lotusIn: std({ color: 0xfbd6de, roughness: .55, emissive: 0x2a0c12 }),
@@ -339,7 +341,7 @@ const FIGURE_BOXES = {
   medicine: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
   shakyamuni: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
   jaya: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
-  shan: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
+  shan: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.3, .45] } },
   maitreya: { body: { min: [-1.5, .48, -.62], max: [1.15, 2.1, 1.1] }, head: { min: [-.5, 1.7, -.45], max: [.5, 2.5, .5] } },
   lion: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } },
   lionL: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } }
@@ -511,13 +513,14 @@ function buildStands(alt, pick) {
   Object.assign(alt, { standFlames: [], lampSlots: [], candleSlots: [], candleObjs: {} });
   [-1, 1].forEach(s => {
     const x = s * STAND_X;
-    STEPS.forEach((st, i) => {
+    STEPS.forEach((st, i) => {   // red lacquer banded in gold; at a Shan altar, gilt banded in white
       const bottom = i ? STEPS[i - 1].top : PLAT, h = st.top - bottom, w = st.half * 2;
-      pick(mesh(new THREE.BoxGeometry(w, h, w), M.lacquer, x, bottom + h / 2, INC_Z, alt.parent), "candle");
-      mesh(new THREE.BoxGeometry(w + .012, .018, w + .012), M.trim, x, st.top - .03, INC_Z, alt.parent);
+      pick(mesh(new THREE.BoxGeometry(w, h, w), alt.shan ? M.gold : M.lacquer, x, bottom + h / 2, INC_Z, alt.parent), "candle");
+      mesh(new THREE.BoxGeometry(w + .012, .018, w + .012), alt.shan ? M.wax : M.trim, x, st.top - .03, INC_Z, alt.parent);
     });
     const top = STEPS[2].top;
-    mesh(new THREE.CylinderGeometry(.04, .04, .32, 20), M.waxRed, x, top + .16, INC_Z, alt.parent);
+    mesh(new THREE.CylinderGeometry(.04, .04, .32, 20), alt.shan ? M.wax : M.waxRed, x, top + .16, INC_Z, alt.parent);
+    if (alt.shan) mesh(new THREE.CylinderGeometry(.075, .065, .3, 20, 1, true), M.chimney, x, top + .3, INC_Z, alt.parent);   // a glass chimney round the top candle
     const light = new THREE.PointLight(0xff9a3c, .9, 5, 2); light.position.set(x, top + .42, INC_Z); alt.parent.add(light);
     alt.standFlames.push(makeFlame(V(x, top + .37, INC_Z), 1.3, light, alt.parent));
     squareRing(.28, 3).forEach(([dx, dz]) => alt.lampSlots.push({ p: V(x + dx, STEPS[0].top, INC_Z + dz), dx, dz }));
@@ -584,28 +587,31 @@ function placeCandle(key, kind, animated, delay = 0, alt = MAIN) {
 // large bronze tripod censer (香爐) on a stone pedestal in front of the table
 const CS = CONFIG.layout.censerScale;
 const INCENSE = V(0, PLAT + .36, INC_Z);
+// at a Shan altar (alt.shan) it is a footed brass bowl of sand on a gilt stand instead
 function buildCenser(alt, pick) {
   const P = alt.parent;
-  mesh(new THREE.CylinderGeometry(.3, .36, .28, 8), M.stone, 0, PLAT + .14, INC_Z, P);
-  mesh(new THREE.CylinderGeometry(.36, .36, .06, 8), M.lacquer, 0, PLAT + .31, INC_Z, P);
+  mesh(new THREE.CylinderGeometry(.3, .36, .28, 8), alt.shan ? M.gold : M.stone, 0, PLAT + .14, INC_Z, P);
+  mesh(new THREE.CylinderGeometry(.36, .36, .06, 8), alt.shan ? M.wax : M.lacquer, 0, PLAT + .31, INC_Z, P);
   mesh(new THREE.CylinderGeometry(.38, .38, .02, 8), M.trim, 0, PLAT + .35, INC_Z, P);
   const censer = new THREE.Group(); censer.position.copy(INCENSE); censer.scale.setScalar(CS); P.add(censer);
-  for (let i = 0; i < 3; i++) {
+  if (!alt.shan) for (let i = 0; i < 3; i++) {
     const a = i / 3 * TAU + Math.PI / 3;
     const leg = mesh(new THREE.CylinderGeometry(.018, .012, .08, 10), M.bronze, Math.sin(a) * .1, .04, Math.cos(a) * .1, censer);
     leg.rotation.set(Math.cos(a) * .2, 0, -Math.sin(a) * .2);
   }
   // the bowl is open: its inner wall drops from the rim to a bed of ash sunk below it
-  const cBowl = lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.bronze, 40);
+  const cBowl = alt.shan
+    ? lathe([[0, -.06], [.11, -.06], [.11, -.045], [.05, -.025], [.045, 0], [.1, .01], [.15, .04], [.17, .09], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.brass, 40)
+    : lathe([[0, 0], [.1, 0], [.15, .03], [.17, .08], [.165, .12], [.18, .13], [.172, .14], [.156, .136], [.15, .115], [0, .1]], M.bronze, 40);
   cBowl.position.y = .06; cBowl.castShadow = true; censer.add(cBowl); pick(cBowl, "incense");
   mesh(new THREE.TorusGeometry(.168, .006, 6, 48), M.trim, 0, .16, 0, censer).rotation.x = Math.PI / 2;
-  // a gently mounded bed of ash with the stubs of burnt sticks standing in it
-  const ash = mesh(ASH_GEO, M.ash, 0, .17, 0, censer); ash.rotation.x = -Math.PI / 2; pick(ash, "incense");
+  // a gently mounded bed of ash (or sand) with the stubs of burnt sticks standing in it
+  const ash = mesh(ASH_GEO, alt.shan ? M.sand : M.ash, 0, .17, 0, censer); ash.rotation.x = -Math.PI / 2; pick(ash, "incense");
   [[.06, .03], [-.05, .06], [.02, -.08], [-.09, -.03], [.1, -.05], [-.02, .1]].forEach(([x, z], i) => {
     const st = mesh(new THREE.CylinderGeometry(.0025, .0025, .03 + i % 3 * .012, 5), M.stickRed, x, .18, z, censer);
     st.rotation.set((i % 2 - .5) * .3, 0, (i % 3 - 1) * .2);
   });
-  [-1, 1].forEach(s => mesh(new THREE.TorusGeometry(.035, .009, 6, 16, Math.PI), M.bronze, s * .14, .205, 0, censer));
+  if (!alt.shan) [-1, 1].forEach(s => mesh(new THREE.TorusGeometry(.035, .009, 6, 16, Math.PI), M.bronze, s * .14, .205, 0, censer));
   alt.incenseObjs = new Array(INCENSE_SETS.length).fill(null);
   return censer;
 }
@@ -981,6 +987,7 @@ Object.entries(A.incense).forEach(([s, k]) => addIncense(+s, k, false));
 /* ---------- the other statues' altars: water, light, incense and fruit, laid out like Guanyin's ---------- */
 // shrine(parent, key, o) sets out seven water bowls and a fruit plate (at o.fruitX) on a hall's offering table, and the two stepped
 // candle stands and the bronze censer before it, as in the main hall; with o.vaseX, also a brass vase there for flowers, lotus first.
+// With o.shan the stands are gilt with white candles in glass chimneys and the censer is a footed brass bowl of sand, as at Shan altars.
 // What has been offered there is kept in state.shrines[key];
 // it returns the parts to tap, each with `offer` set to the item it takes. `before` names the statue for the messages
 if (!state.shrines) state.shrines = {};
@@ -988,7 +995,7 @@ const shrines = {};
 const SHRINE_TIP = { flower: "Offer a lotus", water: "Add a bowl of water", fruit: "Add fruit", candle: "Light a candle", incense: "Offer incense" };
 function shrine(parent, key, o = {}) {
   const st = state.shrines[key] = state.shrines[key] || { bowls: { 0: "pure", 1: "pure", 2: "pure" }, fruit: { 0: 0, 1: 1, 2: 2 }, candles: { c0: "red", c1: "white", l0: "lamp", l1: "lamp" }, incense: { 0: "sandal" }, n: {}, next: { c: 2, l: 2 } };
-  const alt = shrines[key] = { parent, st, embers: null, before: o.before || "the Buddha" }, hits = [];
+  const alt = shrines[key] = { parent, st, embers: null, before: o.before || "the Buddha", shan: !!o.shan }, hits = [];
   const pick = (m, item) => { Object.assign(m.userData, { offer: item, tip: `${SHRINE_TIP[item]} before ${alt.before}` }); hits.push(m); return m; };
   buildBowls(alt, pick); buildPlate(alt, o.fruitX ?? 1.02, pick); buildStands(alt, pick); buildCenser(alt, pick);
   if (o.vaseX !== undefined) {

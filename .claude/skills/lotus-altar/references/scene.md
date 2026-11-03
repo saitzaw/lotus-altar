@@ -41,7 +41,7 @@ Walkers may go up to `WORLD_R` (225 m) from the temple.
   Lotus Temple hall's Shakyamuni, the Shan monastery's `shan` image) gets the same offering altar as floor 1 from `shrine(parent, key, o)` in `lotus-altar.js`:
   seven water bowls, a fruit plate at `o.fruitX`, two stepped candle stands and the censer. Floor 1 and the shrines share the
   builders (`buildBowls`, `buildPlate`, `buildStands`, `buildCenser`) and placers (`addWater`, `addFruit`, `addCandle`,
-  `addIncense`, each taking an altar record, `MAIN` for floor 1). With `o.vaseX` the shrine also gets a brass vase that takes flowers (lotus first), as in the Shan monastery.
+  `addIncense`, each taking an altar record, `MAIN` for floor 1). With `o.vaseX` the shrine also gets a brass vase that takes flowers (lotus first), as in the Shan monastery. With `o.shan` (the Shan monastery) the stands are gilt with white candles in glass chimneys and the censer is a footed brass bowl of sand instead of the Chinese tripod; `offeringTable(g, n, cloth, wax)` takes the white cloth and white altar candles there.
   Offerings come from the bag; what each shrine shows is saved
   in `state.shrines[key]`. Keep the table front (`ALT.z + .3`) and the stands at `x = ±1.05, z = 1.95` clear in those halls.
 - The wishing tree (`wishTree`, placed by `WISH_TREE`) stands in the Lotus Temple hall, right of Shakyamuni, with a small

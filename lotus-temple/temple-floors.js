@@ -726,15 +726,16 @@ window.TempleFloors = function TempleFloors(ctx) {
       }
     });
   }
-  function offeringTable(g, n) {
+  // with `cloth` (and `wax` for the two altar candles) the table is dressed another way, as in the Shan monastery
+  function offeringTable(g, n, cloth = M.cloth, wax = M.waxRed) {
     mesh(new THREE.BoxGeometry(3.1, ALT.y - .04, .95), M.lacquer, 0, (ALT.y - .04) / 2, ALT.z, g);
-    mesh(new THREE.BoxGeometry(3.2, .04, 1.05), M.cloth, 0, ALT.y - .02, ALT.z, g);
-    mesh(new THREE.BoxGeometry(1.6, .5, .02), M.cloth, 0, .82, ALT.z + .53, g);
+    mesh(new THREE.BoxGeometry(3.2, .04, 1.05), cloth, 0, ALT.y - .02, ALT.z, g);
+    mesh(new THREE.BoxGeometry(1.6, .5, .02), cloth, 0, .82, ALT.z + .53, g);
     mesh(new THREE.BoxGeometry(1.6, .04, .025), M.trim, 0, .58, ALT.z + .54, g);
     [-1.45, 1.45].forEach(x => {
       const z = ALT.z - .34;
       mesh(new THREE.CylinderGeometry(.07, .09, .03, 20), M.brass, x, ALT.y + .015, z, g);
-      mesh(new THREE.CylinderGeometry(.045, .045, .3, 20), M.waxRed, x, ALT.y + .19, z, g);
+      mesh(new THREE.CylinderGeometry(.045, .045, .3, 20), wax, x, ALT.y + .19, z, g);
       const light = new THREE.PointLight(0xff9a3c, 1, 6, 2); light.position.set(x, ALT.y + .42, z); g.add(light);
       makeFlame(V(x, ALT.y + .37, z), 1.4, light, g);
     });
@@ -848,9 +849,10 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
 
   /* ---------- ကျောင်း the shrine hall of the Shan monastery on the stupa hill: teak plank walls and floor, oval windows framed in
-     white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a gilded throne set with
-     glass mosaic, under a pointed arch with flame points and a spired canopy, white parasols either side and a ring of little lights
-     behind his head; flowers, water and light are offered at the table before him ---------- */
+     white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a square gilded throne
+     set with glass mosaic, before a red hanging worked in gold that fills the back wall, a ring of little lights round the dark blue
+     halo behind his head, white parasols and sprays of white flowers either side, a red coffered ceiling over him; the altar before
+     him is dressed the Shan way (white cloth, gilt stands with white candles, incense in a brass bowl of sand) ---------- */
   const KYAUNG = { pillars: [-3.9, -.6, 2.7, 5.9].flatMap(z => [[-3.6, z], [3.6, z]]), hti: [[-2.3, -2.7], [2.3, -2.7]] };
   function kyaungHall(g, n) {
     picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
@@ -891,40 +893,84 @@ window.TempleFloors = function TempleFloors(ctx) {
     const matM = std({ map: matT, roughness: .95 });
     const matG = new THREE.BoxGeometry(1.2, .02, .9);
     [3.4, 4.6, 5.8].forEach(z => [-1.5, 0, 1.5].forEach(x => flat(part(matG, matM, x, .01, z, g))));
-    // the throne (palin): gilded tiers, a waist of red and green glass mosaic, its top at the statue's seat height
+    // the throne (palin): gilded tiers, a waist of red and green glass mosaic, and on top a square seat with a band of lotus
+    // petals and a waist of little niches, its top at the statue's seat height
     const mosaic = canvasTex(128, (c, s2) => { c.fillStyle = "#b8893c"; c.fillRect(0, 0, s2, s2); for (let r = 0; r < 4; r++) for (let k = 0; k < 8; k++) { c.fillStyle = (r + k) % 2 ? "#1f7a4a" : "#a01818"; c.beginPath(); const cx = k * 16 + 8 + (r % 2) * 8, cy = r * 32 + 16; c.moveTo(cx, cy - 12); c.lineTo(cx + 6, cy); c.lineTo(cx, cy + 12); c.lineTo(cx - 6, cy); c.fill(); } });
     mosaic.wrapS = THREE.RepeatWrapping; mosaic.repeat.set(4, 1);
     const glass = std({ map: mosaic, roughness: .25, metalness: .3 });
-    [[3.4, .12, 3.2, 0, gold], [3.0, .16, 2.8, .12, glass], [3.3, .06, 3.1, .28, gold], [3.2, .06, 3.0, .34, red]].forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, -1.7, g));
+    const niches = canvasTex(256, (c, s2) => { c.fillStyle = "#c99a44"; c.fillRect(0, 0, s2, s2); for (let k = 0; k < 4; k++) { const x = k * 64 + 12; c.fillStyle = "#3a1408"; c.beginPath(); c.moveTo(x, s2 - 30); c.lineTo(x, 90); c.quadraticCurveTo(x + 20, 40, x + 20, 20); c.quadraticCurveTo(x + 20, 40, x + 40, 90); c.lineTo(x + 40, s2 - 30); c.fill(); c.fillStyle = "#e8c070"; c.beginPath(); c.arc(x + 20, 150, 10, 0, TAU); c.fill(); } c.fillStyle = "#8a1a10"; c.fillRect(0, s2 - 20, s2, 20); });
+    niches.wrapS = THREE.RepeatWrapping; niches.repeat.set(3, 1);
+    const nicheM = std({ map: niches, roughness: .35, metalness: .5 });
+    [[3.4, .12, 3.2, 0, gold], [3.0, .16, 2.8, .12, glass], [3.3, .06, 3.1, .28, gold], [3.2, .06, 3.0, .34, red],
+     [2.7, .06, 2.3, .4, gold], [2.4, .38, 2.0, .46, nicheM], [2.7, .06, 2.3, .84, gold]].forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, -1.7, g));
+    const petalRow = new THREE.SphereGeometry(.085, 8, 6, 0, TAU, 0, Math.PI / 2);   // upturned lotus petals round the seat's rim
+    for (let i = 0; i < 15; i++) [-1, 1].forEach(sd => { part(petalRow, gold, -1.26 + i * .18, .9, -1.7 + sd * 1.1, g).scale.set(1, 1.8, .45); });
+    for (let i = 0; i < 12; i++) [-1, 1].forEach(sd => { part(petalRow, gold, sd * 1.3, .9, -2.68 + i * .18, g).scale.set(.45, 1.8, 1); });
     const st = new THREE.Group(); st.position.set(0, .4, -1.7); g.add(st);
-    throne(st, M.gold);
     sculptFigure("shan", st, "the Shan Buddha image");
-    // behind him: a red panel in a gilded pointed arch, flame points along it, and a three-tier spired canopy above
-    const B = new THREE.Group(); B.position.set(0, .4, -3.05); g.add(B);
-    const arch = (w, top, peak) => { const sh = new THREE.Shape(); sh.moveTo(-w, 0); sh.lineTo(-w, top); sh.bezierCurveTo(-w, top + .5, -w * .25, peak - .7, 0, peak); sh.bezierCurveTo(w * .25, peak - .7, w, top + .5, w, top); sh.lineTo(w, 0); sh.closePath(); return sh; };
-    const outer = arch(1.75, 2.6, 4.4), inner = arch(1.5, 2.5, 4.05); outer.holes.push(inner);
-    mesh(new THREE.ShapeGeometry(arch(1.5, 2.5, 4.05)), red, 0, 0, 0, B);
-    mesh(new THREE.ExtrudeGeometry(outer, { depth: .1, bevelEnabled: false }), gold, 0, 0, 0, B);
-    const flameGeo = new THREE.ConeGeometry(.07, .26, 4);
-    for (let i = 0; i <= 16; i++) {   // flame points along the outside of the arch, leaning outward
-      const t = i / 16, sd = t < .5 ? -1 : 1, u = sd < 0 ? t * 2 : (1 - t) * 2, p = u < .45 ? [sd * 1.75, 1.2 + u / .45 * 1.4] : (() => { const v = (u - .45) / .55; return [sd * 1.75 * (1 - v), 2.6 + v * 1.8]; })();
-      const f = part(flameGeo, gold, p[0] + sd * .12, p[1] + .1, .05, B); f.rotation.z = -sd * (u < .45 ? .7 : .35);
-    }
-    for (let k = 0, y = 4.4, w = .5; k < 3; k++, y += .38, w *= .72) {   // the spired canopy
-      mesh(new THREE.BoxGeometry(w, .14, w), gold, 0, y + .07, .05, B);
-      const r = mesh(new THREE.ConeGeometry(w * .8, .26, 4, 1, true), gold, 0, y + .27, .05, B); r.rotation.y = Math.PI / 4;
-    }
-    mesh(new THREE.ConeGeometry(.08, .5, 8), gold, 0, 5.55, .05, B);
-    // a ring of little lights behind his head, chasing slowly round
-    const NB = 28, bulbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.035, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), NB), m4 = new THREE.Matrix4(), bc = new THREE.Color();
-    for (let i = 0; i < NB; i++) { const a = i / NB * TAU; bulbs.setMatrixAt(i, m4.makeTranslation(Math.sin(a) * .62, 2.42 + Math.cos(a) * .62, -.5)); bulbs.setColorAt(i, bc.set(0xffd27a)); }
-    st.add(bulbs);
-    const ring = mesh(new THREE.TorusGeometry(.62, .02, 6, 64), gold, 0, 2.42, -.52, st); ring.castShadow = false;
-    const halo = glowSprite(0xffe0a0, 2.2, .2); halo.position.set(0, 2.42, -.55); st.add(halo);
+    // behind him the whole back wall is a red hanging worked in gold: flying hamsa and little spired shrines in rows, under a
+    // scalloped gilt border, framed in teak
+    const wallArt = canvasTex(1024, (c, s2) => {
+      const gr = c.createRadialGradient(s2 / 2, s2 * .45, 40, s2 / 2, s2 * .5, s2 * .75); gr.addColorStop(0, "#a8201a"); gr.addColorStop(1, "#5a0c0a");
+      c.fillStyle = gr; c.fillRect(0, 0, s2, s2);
+      c.fillStyle = c.strokeStyle = "rgba(232,184,96,.9)"; c.lineWidth = 3;
+      const shrineMotif = (x, y, k) => {   // a little pyatthat: stepped roofs narrowing to a spire, on a plinth
+        c.fillRect(x - 22 * k, y, 44 * k, 8 * k); c.strokeRect(x - 14 * k, y - 30 * k, 28 * k, 30 * k);
+        for (let t = 0, w = 26 * k, yy = y - 30 * k; t < 4; t++, w *= .72, yy -= 11 * k) { c.beginPath(); c.moveTo(x - w, yy); c.lineTo(x + w, yy); c.lineTo(x + w * .6, yy - 9 * k); c.lineTo(x - w * .6, yy - 9 * k); c.fill(); }
+        c.beginPath(); c.moveTo(x - 3 * k, y - 74 * k); c.lineTo(x + 3 * k, y - 74 * k); c.lineTo(x, y - 96 * k); c.fill();
+      };
+      const hamsa = (x, y, sd) => {   // a flying sacred goose, wings raised, tail curled behind
+        c.beginPath(); c.ellipse(x, y, 20, 9, 0, 0, TAU); c.fill();
+        c.beginPath(); c.moveTo(x + sd * 16, y - 4); c.quadraticCurveTo(x + sd * 30, y - 22, x + sd * 34, y - 10); c.lineTo(x + sd * 42, y - 8); c.lineTo(x + sd * 32, y - 4); c.quadraticCurveTo(x + sd * 24, y - 10, x + sd * 16, y + 2); c.fill();
+        c.beginPath(); c.moveTo(x - sd * 4, y - 6); c.quadraticCurveTo(x - sd * 14, y - 40, x - sd * 34, y - 42); c.quadraticCurveTo(x - sd * 22, y - 24, x - sd * 16, y - 4); c.fill();
+        c.beginPath(); c.moveTo(x - sd * 18, y); c.quadraticCurveTo(x - sd * 40, y + 4, x - sd * 46, y - 14); c.quadraticCurveTo(x - sd * 38, y + 12, x - sd * 16, y + 6); c.fill();
+      };
+      for (let r = 0; r < 5; r++) for (let k = 0; k < 6; k++) {
+        const x = 85 + k * 171 + (r % 2) * 85, y = 250 + r * 160;
+        if (r % 2) hamsa(x, y - 40, k % 2 ? 1 : -1); else shrineMotif(x, y, .9);
+      }
+      c.fillStyle = "#d8a640"; c.fillRect(0, 0, s2, 40);   // the scalloped border along the top
+      for (let k = 0; k < 24; k++) { c.beginPath(); c.arc(21 + k * 42.7, 40, 21, 0, Math.PI); c.fill(); }
+      c.fillStyle = "#5a0c0a"; for (let k = 0; k < 24; k++) { c.beginPath(); c.arc(21 + k * 42.7, 42, 9, 0, Math.PI); c.fill(); }
+    });
+    wallArt.wrapS = THREE.RepeatWrapping; wallArt.repeat.set(2, 1);
+    const hanging = std({ map: wallArt, roughness: .75 });
+    flat(mesh(new THREE.PlaneGeometry(10.4, 5.6), hanging, 0, 3.4, -5.47, g));
+    [[10.8, .2, 0, 6.3], [10.8, .2, 0, .5], [.2, 6, -5.3, 3.4], [.2, 6, 5.3, 3.4]].forEach(([w, h, x, y]) => mesh(new THREE.BoxGeometry(w, h, .1), teakDark, x, y, -5.44, g));
+    // a dark blue halo behind his head, with a ring of little lights round it twinkling slowly
+    const B = new THREE.Group(); B.position.set(0, 2.42, -.56); st.add(B);
+    flat(mesh(new THREE.CircleGeometry(.72, 48), new THREE.MeshBasicMaterial({ color: 0x060c2c }), 0, 0, 0, B));
+    flat(mesh(new THREE.TorusGeometry(.74, .025, 6, 64), gold, 0, 0, .01, B));
+    const NB = 36, bulbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.03, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), NB), m4 = new THREE.Matrix4(), bc = new THREE.Color();
+    const tints = [0xfff4dc, 0x9ec8ff, 0xfff4dc, 0x8dffb0, 0xfff4dc, 0xff9a8a].map(h => new THREE.Color(h));
+    for (let i = 0; i < NB; i++) { const a = i / NB * TAU; bulbs.setMatrixAt(i, m4.makeTranslation(Math.sin(a) * .7, Math.cos(a) * .7, .03)); bulbs.setColorAt(i, tints[i % 6]); }
+    B.add(bulbs);
+    const halo = glowSprite(0xbcd0ff, 1.9, .16); halo.position.z = -.02; B.add(halo);
     updaters[n].push((dt, t, motion) => {
-      for (let i = 0; i < NB; i++) { const k = .5 + .5 * Math.sin(i / NB * TAU * 3 - t * 2 * motion); bulbs.setColorAt(i, bc.setRGB(1, .72 + .2 * k, .35 + .4 * k).multiplyScalar(.6 + .4 * k)); }
+      if (!motion) return;
+      for (let i = 0; i < NB; i++) { const k = .5 + .5 * Math.sin(i * 2.4 + t * 1.6); bulbs.setColorAt(i, bc.copy(tints[i % 6]).multiplyScalar(.55 + .45 * k)); }
       bulbs.instanceColor.needsUpdate = true;
     });
+    // tall sprays of white flowers in gilt urns at the throne's front corners, green leaves under them
+    const urnG = new THREE.CylinderGeometry(.16, .11, .42, 16), urnLip = new THREE.TorusGeometry(.16, .025, 6, 16);
+    const bloomG = new THREE.SphereGeometry(.045, 8, 6), leafG = new THREE.SphereGeometry(.1, 6, 4), stemG = new THREE.CylinderGeometry(.008, .008, 1, 4);
+    const bloomM = std({ color: 0xfbf8f0, roughness: .8 }), leafM = std({ color: 0x2f6a2a, roughness: .8 }), stemM = std({ color: 0x4a7a32, roughness: .8 });
+    const fr = rng(41);
+    [[-1.95, -.35], [1.95, -.35], [-1.55, -3.2], [1.55, -3.2]].forEach(([x, z]) => {
+      part(urnG, gold, x, .21, z, g); part(urnLip, gold, x, .42, z, g).rotation.x = Math.PI / 2;
+      for (let k = 0; k < 7; k++) { const a = fr() * TAU, r = .1 + fr() * .1; part(leafG, leafM, x + Math.sin(a) * r, .5 + fr() * .2, z + Math.cos(a) * r, g).scale.set(1, .5, 1.6); }
+      for (let k = 0; k < 9; k++) {
+        const a = fr() * TAU, r = .08 + fr() * .3, h = .5 + fr() * .9, top = V(x + Math.sin(a) * r, .45 + h, z + Math.cos(a) * r);
+        const stem = part(stemG, stemM, (x + top.x) / 2, (.45 + top.y) / 2, (z + top.z) / 2, g); stem.scale.y = h; stem.quaternion.setFromUnitVectors(V(0, 1, 0), top.clone().sub(V(x, .45, z)).normalize());
+        [0, 1, 2, 3, 4].forEach(j => part(bloomG, bloomM, top.x + (fr() - .5) * .14, top.y - j * .07, top.z + (fr() - .5) * .12, g).scale.setScalar(.7 + fr() * .5));
+      }
+    });
+    // over the image, a coffered red ceiling with gilt ribs and round lamps let into it
+    const cof = canvasTex(256, (c, s2) => { c.fillStyle = "#6a1410"; c.fillRect(0, 0, s2, s2); c.strokeStyle = "#d8a640"; c.lineWidth = 10; for (let k = 0; k <= 4; k++) { c.beginPath(); c.moveTo(k * 64, 0); c.lineTo(k * 64, s2); c.moveTo(0, k * 64); c.lineTo(s2, k * 64); c.stroke(); } c.lineWidth = 3; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { c.beginPath(); c.arc(32 + i * 64, 32 + j * 64, 18, 0, TAU); c.stroke(); } });
+    cof.wrapS = cof.wrapT = THREE.RepeatWrapping; cof.repeat.set(3, 2);
+    flat(mesh(new THREE.PlaneGeometry(7, 4.8), std({ map: cof, roughness: .6 }), 0, HH - .32, -3, g)).rotation.x = Math.PI / 2;
+    const lampM = new THREE.MeshBasicMaterial({ color: 0xfff0d0 }), lampG = new THREE.CircleGeometry(.16, 20);
+    [[-2.2, -4.3], [2.2, -4.3], [-2.2, -1.7], [2.2, -1.7]].forEach(([x, z]) => { const l = flat(mesh(lampG, lampM, x, HH - .33, z, g)); l.rotation.x = Math.PI / 2; });
     // white parasols (hti) with gold rims either side of the throne
     const canopy = std({ color: 0xf4f0e6, roughness: .7, side: THREE.DoubleSide });
     const htiG = [new THREE.CylinderGeometry(.03, .03, 3.4, 8), new THREE.CylinderGeometry(.2, .26, .14, 12), new THREE.ConeGeometry(.05, .3, 8)];
@@ -935,8 +981,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     bakeParts(g);
     // the offering table, and the altar: a vase for lotus, the seven water bowls, candle stands, fruit and incense
-    offeringTable(g, n);
-    list.push(...shrine(g, n, { before: "the Buddha image", vaseX: -1.02 }));
+    offeringTable(g, n, white, M.wax);
+    list.push(...shrine(g, n, { before: "the Buddha image", vaseX: -1.02, shan: true }));
     // the doors out to the verandah, in the front wall behind the visitor
     const D0 = new THREE.Group(); D0.position.set(0, 0, 7.45); D0.rotation.y = Math.PI; g.add(D0);
     [-1, 1].forEach(sd => {

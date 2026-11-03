@@ -41,6 +41,16 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (late)
+- Restyled the Shan monastery's shrine hall after the site owner's photo of a real Shan image hall: the Chinese-style altar
+  pieces there are gone (red lacquer stepped stands with red candles, bronze tripod censer, red altar cloth, the pointed arch
+  with flame points and spired canopy). Now: a red hanging worked in gold (flying hamsa, little pyatthat shrines, scalloped
+  gilt top) fills the back wall; a dark blue halo with a ring of twinkling multicoloured lights behind the image's head; a
+  square gilded throne with a niche band and lotus-petal rim; a taller pointed finial on the image; sprays of white flowers
+  in gilt urns; a red coffered ceiling with round lamps over the image. The altar keeps its offerings via `shrine(..., { shan:
+  true })`: white cloth, gilt stands with white candles in glass chimneys, incense in a footed brass bowl of sand. No people
+  in front of the image. Checked in a headless render (worker disabled so the statue meshes on the main thread).
+
 ### 2026-11-03 (night)
 - Added a small township football ground (`footballGround` in `temple-floors.js`) west of the road up to the hospital:
   a 36 × 56 m grass pitch with white markings and two goals on a laterite running track, inside a 2.2 m painted wall

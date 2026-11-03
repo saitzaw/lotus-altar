@@ -142,9 +142,9 @@ const shakyamuni = (x, y, z) => seatedBuddha(x, y, z, false);
 const jayaFlame = (x, y, z) => cone(x, y, z, 0, 2.74, 0, .065, 0, 3.08, 0, .004) + .004 * Math.sin(y * 60);
 const jaya = (x, y, z) => smin(seatedBuddha(x, y, z, false), jayaFlame(x, y, z), .03);
 // the Shan monastery's image, in the manner of northern Shan and Lanna (northern Thai) images: the earth-touching Buddha with a
-// jewelled band along the hairline, a lotus-bud finial on the ushnisha, and the end of the robe falling from the left shoulder
+// jewelled band along the hairline, a tall pointed lotus-bud finial on the ushnisha, and the end of the robe falling from the left shoulder
 // to the waist in a pleated flap with a notched hem
-const shanBud = (x, y, z) => smin(ell(x, y - 2.86, z, .072, .1, .072), cone(x, y, z, 0, 2.92, 0, .036, 0, 3.07, 0, .003), .03);
+const shanBud = (x, y, z) => smin(ell(x, y - 2.86, z, .072, .1, .072), cone(x, y, z, 0, 2.9, 0, .048, 0, 3.24, 0, .003), .03);
 function shanBand(x, y, z) {
   const edge = 2.505 - .38 * clamp(.24 - z, 0, .5);
   return Math.hypot((Math.hypot(x / .25, (z - .01) / .274) - 1) * .26, y - edge) - .014;
