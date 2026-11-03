@@ -141,14 +141,10 @@ const shakyamuni = (x, y, z) => seatedBuddha(x, y, z, false);
 // the Victorious Buddha (Jaya Buddha): the same earth-touching figure, crowned with the tall flame-like finial of Shan and Burmese images
 const jayaFlame = (x, y, z) => cone(x, y, z, 0, 2.74, 0, .065, 0, 3.08, 0, .004) + .004 * Math.sin(y * 60);
 const jaya = (x, y, z) => smin(seatedBuddha(x, y, z, false), jayaFlame(x, y, z), .03);
-// the Shan monastery's image, in the manner of northern Shan and Lanna (northern Thai) images: the earth-touching Buddha with a
-// jewelled band along the hairline, a tall pointed lotus-bud finial on the ushnisha, and the end of the robe falling from the left shoulder
-// to the waist in a pleated flap with a notched hem
-const shanBud = (x, y, z) => smin(ell(x, y - 2.86, z, .072, .1, .072), cone(x, y, z, 0, 2.9, 0, .048, 0, 3.24, 0, .003), .03);
-function shanBand(x, y, z) {
-  const edge = 2.505 - .38 * clamp(.24 - z, 0, .5);
-  return Math.hypot((Math.hypot(x / .25, (z - .01) / .274) - 1) * .26, y - edge) - .014;
-}
+// the Shan monastery's image, in the manner of northern Shan images: the earth-touching Buddha, bareheaded with dark curls, a
+// small gilt bud on the ushnisha, and the end of the robe falling from the left shoulder to the waist in a pleated flap with a
+// notched hem
+const shanBud = (x, y, z) => smin(ell(x, y - 2.86, z, .06, .08, .06), cone(x, y, z, 0, 2.9, 0, .03, 0, 3.02, 0, .003), .03);
 function shanFlap(x, y, z) {
   const tor = smin(ell(x, y - 1.05, z - .02, .5, .33, .33), ell(x, y - 1.48, z, .5, .44, .31), .2);
   let f = smax(tor - .022 + .003 * Math.sin(x * 120), Math.abs(x + .22) - .07, .01);
@@ -157,7 +153,7 @@ function shanFlap(x, y, z) {
   return smax(f, -z, .01);
 }
 // built mirrored (x → -x) so that, facing the visitor, his right hand touches the earth and his right shoulder is bare
-const shanR = (x, y, z) => smin(smin(seatedBuddha(x, y, z, false), shanBud(x, y, z), .03), Math.min(shanBand(x, y, z), shanFlap(x, y, z)), .006);
+const shanR = (x, y, z) => smin(smin(seatedBuddha(x, y, z, false), shanBud(x, y, z), .03), shanFlap(x, y, z), .006);
 const shan = (x, y, z) => shanR(-x, y, z);
 
 /* ---------- 8F: Maitreya (彌勒佛) as the laughing Budai, right knee raised, beads and cloth sack ---------- */
@@ -247,7 +243,7 @@ const TINT = {
   shakyamuni: (x, y, z) => medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
   qianshou: () => GOLD,
   jaya: (x, y, z) => jayaFlame(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
-  shan: (x, y, z) => { x = -x; return shanBand(x, y, z) < .01 ? [.86, .3, .16] : shanBud(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.78, .55, .28] : GOLD; },
+  shan: (x, y, z) => { x = -x; return shanBud(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .1, .14] : GOLD; },
   maitreya: (x, y, z) => beads(x, y, z) < .01 ? [.42, .22, .1] : sack(x, y, z) < .012 ? [.95, .7, .42] : GOLD,
   lion: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62],
   lionL: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62]

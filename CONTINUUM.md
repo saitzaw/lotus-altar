@@ -62,6 +62,8 @@ recently, and what's still open. Read it at the start of a session; update it at
   White flower sprays stand on the floor before it; long woven Shan banners (tamkhon) hang on the side walls; "Look closer"
   there uses its own higher view (`CONFIG.places.kyaung.closeUp`). Old saved altars keep their offerings. Not yet changed:
   the image's own body, which in the photo is slimmer with longer ears than our sculpted figure.
+- Took the jewelled band off the Shan image's hairline (it read as a hat; Shan images are bareheaded), coloured its curls
+  dark instead of pale gold, and brought the tall finial back down to a small gilt bud, after the site owner's note.
 
 ### 2026-11-03 (night)
 - Added a small township football ground (`footballGround` in `temple-floors.js`) west of the road up to the hospital:
