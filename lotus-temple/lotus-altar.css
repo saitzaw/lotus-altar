@@ -42,6 +42,7 @@ button,input{font:inherit;color:inherit}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgba(23,13,9,.72);border:1px solid var(--line);font-size:.82rem;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px)}
 .chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .where{font-size:.86rem;color:var(--gold);letter-spacing:.03em;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+.where b[lang]{font-family:"Noto Sans Myanmar",sans-serif;font-weight:600;margin-right:8px}
 .floors{position:absolute;top:16px;right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px;z-index:2}
 .floors button{position:relative;width:42px;height:34px;border-radius:8px;border:1px solid var(--line);background:rgba(23,13,9,.74);backdrop-filter:blur(6px);cursor:pointer;font-weight:600;font-size:.86rem;font-variant-numeric:tabular-nums;color:var(--text)}
 .floors button:hover{border-color:var(--gold)}

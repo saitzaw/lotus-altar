@@ -22,7 +22,7 @@
 | Forest | beyond z ≈ −98, then hills in an arc 150–190 m out |
 | Old banyan | (36.4, 65.4) |
 | Stupa hill | centre (−88, 140), top at y 15 (`HILL`) |
-| Shan monastery (`kyaung`) | on the hill's upper terrace, left of the stair (`monasterySpot()`); its stair is joined to the hill stair's landing (the hill wall is left open only there), and its door leads to the `kyaung` shrine hall (`kyaungHall`) |
+| Shan monastery (`kyaung`) | on the hill's upper terrace, left of the stair (`monasterySpot()`); its stair is joined to the hill stair's landing (the hill wall is left open only there), and its door leads to the `kyaung` shrine hall (`kyaungHall`). Walkers go up its stair onto the verandah, or round it on the paved plinth (`MON.PM` wide, parapet on the back and ends); the hill lathe is cut down to the terrace under the plinth. Shan names in `SHAN_NAMES`: the main stupa ၽြႃးမုင်ႈမိူင်း (board over the hill stair's entrance), the monastery ၵျွင်းၵွင်းမူးၶမ်း (board under its front gable) |
 | High school | x 46–98, z 111–152; gate on the market lane at x 46, z 118–126; houses face it from x ≈ 30–36 |
 | Bamboo grove (`bambooGrove`) | x 44–100, z 153–178, behind the school's back wall |
 | Kachin Baptist church (`kachinChurch`) | centre (12, 128), front facing the plaza lane's end (z 107); forecourt z ≈ 108–114; three houses each side at x −1 and 24.2, z 118 / 127 / 136 |

@@ -31,12 +31,23 @@ recently, and what's still open. Read it at the start of a session; update it at
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
+- Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
+  site's owner; the boards' English lines are descriptions, not translations.
 
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
 - Stale comment in `lotus-altar.js` (~line 297) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-03 (evening)
+- Walk round the Shan monastery: its plinth is now a paved terrace all round the building (parapet on the back and ends, open to
+  the terrace in front), so on foot you can circle it at ground level as well as climb its stair and walk the verandah. The hill
+  is cut down to the terrace under the plinth (finer hill lathe, 0.8 m profile steps, 180 segments) with a stone retaining
+  wall at the uphill end. Checked headless with `walkAt` along the approach, the verandah and the ring.
+- Shan names (`SHAN_NAMES` in `temple-floors.js`): the main stupa ၽြႃးမုင်ႈမိူင်း, on a gold-on-red board over the hill stair's
+  entrance and in the stupa's tips; the monastery ၵျွင်းၵွင်းမူးၶမ်း, on a board under its front gable, in its tips and in the
+  shrine hall's label (`shn` in `CONFIG.places.kyaung`, shown `lang="shn"` in `#where`).
 
 ### 2026-11-03 (later)
 - The Shan monastery on the stupa hill can be entered: tap its doors (or the "Kyaung" place button) for the shrine hall

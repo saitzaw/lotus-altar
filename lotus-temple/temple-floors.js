@@ -1848,6 +1848,25 @@ window.TempleFloors = function TempleFloors(ctx) {
     prof.push([rBase, 0]);
     return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61] };   // `to`: the street corner the stair faces
   })();
+  // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
+  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း" };
+  // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, a line of English beneath
+  function shanBoardFace(shan, en) {
+    const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 300;
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    const paint = () => {
+      const c = cv.getContext("2d"), W = 1024, H = 300;
+      c.fillStyle = "#5a1e12"; c.fillRect(0, 0, W, H);
+      c.strokeStyle = "#d8b25a"; c.lineWidth = 10; c.strokeRect(14, 14, W - 28, H - 28); c.lineWidth = 3; c.strokeRect(32, 32, W - 64, H - 64);
+      c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#f0cf72";
+      c.font = '600 92px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText(shan, W / 2, 128, W - 110);
+      c.font = '400 40px "Marcellus", serif'; c.fillText(en, W / 2, 232, W - 110);
+      t.needsUpdate = true;
+    };
+    paint();
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('600 92px "Noto Sans Myanmar"', shan), document.fonts.load('400 40px "Marcellus"', en)]).then(paint, () => {});
+    return std({ map: t, roughness: .6, emissive: 0x222222, emissiveMap: t });
+  }
   // the height of the land at (x, z): the hill's terraced profile, flat elsewhere
   const TALL = [];   // footprints of tall buildings outside the compound, {x0, x1, z0, z1, h}, that the outside camera stays above
   function groundAt(x, z) {
@@ -1927,7 +1946,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   const SW_ = 3.6;   // the hill stair's width
   // the monasteries on the terraces (radial width W, depth D facing the stair, scaled up by SC) and how far they stand from the stair
-  const MON = { W: 14, D: 11, SC: 1.8, run: 12 * .36, SWd: 3 };   // larger than the terraces: the plinths run out over the slope; SWd: its stair's width
+  const MON = { W: 14, D: 11, SC: 1.8, run: 12 * .36, SWd: 3, PM: 2.2 };   // larger than the terraces: the plinths run out over the slope; SWd: its stair's width, PM: the walk round it on the plinth
   MON.off = SW_ / 2 + .6 + 1.6 + MON.run * MON.SC + MON.D * MON.SC / 2;
   // the monastery on the upper terrace, left of the hill stair (local -x), facing it: its stair comes down level with the landing
   // just below the next flight and runs on between low walls into the hill stair's own wall, so the two stairs are one.
@@ -1945,7 +1964,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
-    const tip = { tip: "The stupa hill · climb the stair to the Shan stupas" };
+    const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
     // everything is built in the hill's own frame: centre at the origin, the stair coming up from local -z
     const dx = HILL.to[0] - cx, dz = HILL.to[1] - cz, dl = Math.hypot(dx, dz), dir = V(dx / dl, 0, dz / dl);
     const H = new THREE.Group(); H.position.set(cx, 0, cz); H.rotation.y = Math.atan2(-dir.x, -dir.z); g.add(H); H.updateMatrixWorld(true);
@@ -1955,8 +1974,15 @@ window.TempleFloors = function TempleFloors(ctx) {
     grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping; grassTex.repeat.set(12, 3);
     const grass = std({ map: grassTex, roughness: 1 });
     onDaylight(d => grass.color.copy(lerpC(0x3a4a34, 0xffffff, d)));
-    const prof = [[0, top + .02], [rTop - .4, top + .02], ...HILL.prof.slice(1).map(([rr, yy]) => [rr, yy - .08]), [rBase + 4, -.6]].reverse().map(([x, y]) => new THREE.Vector2(x, y));   // a little below the treads; outside in, so the faces point outward
-    const hill = mesh(new THREE.LatheGeometry(prof, 72), grass, 0, 0, 0, H); hill.castShadow = false;
+    const prof0 = [[0, top + .02], [rTop - .4, top + .02], ...HILL.prof.slice(1).map(([rr, yy]) => [rr, yy - .08]), [rBase + 4, -.6]], prof = [];   // a little below the treads
+    prof0.forEach(([rr, yy], i) => { if (!i) return prof.push([rr, yy]); const [r0, y0] = prof0[i - 1], k = Math.max(1, Math.ceil((rr - r0) / .8)); for (let j = 1; j <= k; j++) prof.push([r0 + (rr - r0) * j / k, y0 + (yy - y0) * j / k]); });   // points every 0.8 m, so the cut below is clean
+    const hillGeo = new THREE.LatheGeometry(prof.reverse().map(([x, y]) => new THREE.Vector2(x, y)), 180);   // outside in, so the faces point outward
+    {   // cut the slope back to the terrace where the monastery's plinth runs into it
+      const ms = monasterySpot(), hx = (MON.D / 2 + MON.PM) * MON.SC, hz = (MON.W / 2 + MON.PM) * MON.SC + 1, hp = hillGeo.attributes.position;
+      for (let i = 0; i < hp.count; i++) if (hp.getX(i) > ms.x - hx - 1 && hp.getX(i) < ms.x + hx + 1.5 && Math.abs(hp.getZ(i) - ms.z) < hz) hp.setY(i, Math.min(hp.getY(i), ms.y - .1));
+      hillGeo.computeVertexNormals();
+    }
+    const hill = mesh(hillGeo, grass, 0, 0, 0, H); hill.castShadow = false;
     clickable(list, hill, tip);
     const pave = canvasTex(256, (c, sz) => { c.fillStyle = "#cfc6b4"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 8; r++) for (let k = 0; k < 8; k++) { const v = 200 + ((r * 5 + k * 3) % 4) * 8; c.fillStyle = `rgb(${v},${v - 6},${v - 18})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
     pave.wrapS = pave.wrapT = THREE.RepeatWrapping; pave.repeat.set(7, 7);
@@ -2060,6 +2086,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (mat === stone) clickable(list, im, { tip: "Shan stupas · in the style of Kakku" });
     });
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.9, 2.4, .9), whiteWash, sd * (SW / 2 + .9), 1.2, -rBase - .2, H));
+    {   // the stupa's name board over the entrance, on a gilded beam between the pillars, lettered on both faces
+      const face = shanBoardFace(SHAN_NAMES.stupa, "The main stupa · up the stair"), BW = 3.4, BH = BW * 300 / 1024, by = 2.4 + .1 + BH / 2;
+      mesh(new THREE.BoxGeometry(SW + 1.8 + .9, .2, .3), M.gold, 0, 2.5, -rBase - .2, H);
+      clickable(list, mesh(new THREE.BoxGeometry(BW, BH, .1), [M.lacquer, M.lacquer, M.lacquer, M.lacquer, face, face], 0, by, -rBase - .2, H), { tip: `${SHAN_NAMES.stupa} · the main stupa`, toast: `${SHAN_NAMES.stupa}, the main stupa of the hill: climb the stair past the monastery ${SHAN_NAMES.kyaung} to the white-and-gold stupa among the Shan stupas at the top.` });
+      mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
+    }
     // the main stupa: a stepped white terrace, a white bell and a gilded spire with its hti
     const gold = M.gold, MS = new THREE.Group(); MS.position.set(0, top, 0); H.add(MS);
     // the main stupa: its body blocks; the three tiers of its terrace are surfaces you climb by the front steps
@@ -2078,7 +2110,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     [[.9, 13.1], [.68, 13.7], [.48, 14.3], [.3, 14.9]].forEach(([rr, yy]) => mesh(new THREE.ConeGeometry(rr, .6, 16, 1, true), gold, 0, yy, 0, MS));
     mesh(new THREE.CylinderGeometry(.03, .03, 1.6, 6), gold, 0, 16.0, 0, MS);
     mesh(new THREE.SphereGeometry(.16, 12, 10), std({ color: 0xfff2c0, emissive: 0xffd070, emissiveIntensity: .8 }), 0, 16.9, 0, MS);
-    MS.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, { tip: "The main stupa on the hill" }); } });
+    MS.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, { tip: `${SHAN_NAMES.stupa} · the main stupa on the hill` }); } });
     const flood = new THREE.SpotLight(0xffe0b0, 0, 40, .5, .6, 1); flood.position.set(0, 4, -16); flood.target.position.set(0, 8, 0); MS.add(flood, flood.target);
     onDaylight(d => flood.intensity = 2.4 * (1 - d));
     // topiary and flowering shrubs along the path on top, pines on the slopes clear of the stair
@@ -2158,13 +2190,34 @@ window.TempleFloors = function TempleFloors(ctx) {
     }
     function kyaung(x, z, ry, W, D, tower, parent = g, y0 = 0, sc = 1, reach = 0, edge = 0) {
       const G = new THREE.Group(); G.position.set(x, y0, z); G.rotation.y = ry; G.scale.setScalar(sc); parent.add(G);
-      if (y0) mesh(new THREE.BoxGeometry(W + 1.4, 6, D + 1.4), std({ color: 0x8c877d, roughness: .85 }), 0, -3, 0, G);   // a stone plinth levelling the slope
+      const PX = W / 2 + MON.PM, PZ = D / 2 + MON.PM;   // the plinth's half sizes
+      if (y0) {   // a stone plinth levelling the slope, paved on top as a walk round the building, a low parapet on its back and ends
+        const paveT = canvasTex(128, (c, sz) => { c.fillStyle = "#b8b0a0"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) { const v = 170 + ((r * 3 + k * 5) % 4) * 9; c.fillStyle = `rgb(${v},${v - 5},${v - 14})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
+        paveT.wrapS = paveT.wrapT = THREE.RepeatWrapping; paveT.repeat.set(PX / 1.5, PZ / 1.5);
+        const side = std({ color: 0x8c877d, roughness: .85 }), top = std({ map: paveT, roughness: .85 });
+        mesh(new THREE.BoxGeometry(2 * PX, 6, 2 * PZ), [side, side, top, side, side, side], 0, -3, 0, G);
+        [[0, -PZ + .12, 2 * PX, .24], [-PX + .12, .12, .24, 2 * PZ - .24], [PX - .12, .12, .24, 2 * PZ - .24]].forEach(([px, pz, w, d]) => {
+          mesh(new THREE.BoxGeometry(w, .5, d), white, px, .25, pz, G);
+          mesh(new THREE.BoxGeometry(w + .08, .06, d + .08), M.trim, px, .53, pz, G);
+        });
+        // beyond the uphill end, where the plinth is cut into the hill, a stone retaining wall holding the bank, its top following the slope
+        G.updateMatrixWorld(true);
+        const rw = new THREE.Shape(), xw = -PX - .55, N = 20;
+        for (let i = 0; i <= N; i++) { const lz = -PZ + 2 * PZ * i / N, w = G.localToWorld(V(xw - .3, 0, lz)), h = Math.max(.05, (terrainAt(w.x, w.z) - y0) / sc + .2); i ? rw.lineTo(lz, h) : rw.moveTo(lz, h); }
+        rw.lineTo(PZ, -.2); rw.lineTo(-PZ, -.2); rw.closePath();
+        const rg = new THREE.ExtrudeGeometry(rw, { depth: .5, bevelEnabled: false }); rg.rotateY(-Math.PI / 2);
+        mesh(rg, side, xw, 0, 0, G);
+      }
       const FH = 2.4, WH = 3.4, IW = W - 3, ID = D - 3;   // floor height, wall height, the hall inside the verandah
       {   // walkable: up the white stair onto the verandah that runs round the hall; the hall's walls and the stilts block
         const n = 12, run = n * .36, SWd = MON.SWd;
         sRect(G, -IW / 2 - .4, IW / 2 + .4, -ID / 2 - .4, ID / 2 + .4);   // stop a step short of the hall walls
         sRect(G, -SWd / 2 + .1, SWd / 2 - .1, D / 2, D / 2 + run, (lx, lz) => FH * (1 - (lz - D / 2) / run));
         sRect(G, -W / 2 + .1, W / 2 - .1, -D / 2 + .1, D / 2 - .1, (lx, lz) => Math.abs(lx) < SWd / 2 - .1 || Math.abs(lz) < D / 2 - .35 && Math.abs(lx) < W / 2 - .35 ? FH : null);   // the verandah, with its railing round the edge
+        if (y0) {   // round the building on the plinth (from the ground the verandah is too high a step, so you walk round it), kept in by the parapet
+          sRect(G, -PX, -PX + .24, -PZ, PZ); sRect(G, PX - .24, PX, -PZ, PZ); sRect(G, -PX, PX, -PZ, -PZ + .24);
+          sRect(G, -PX, PX, -PZ, PZ, 0);
+        }
       }
       // the stilts: rows of teak posts on whitewashed footings
       const posts = [];
@@ -2207,6 +2260,9 @@ window.TempleFloors = function TempleFloors(ctx) {
         }
       });
       if (tower) pyatthat(G, halls[halls.length - 1], yR + hw * .25, -ID * .1, 4.6, 5);
+      // the monastery's name board under the front gable
+      const BW = 4.4, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung, "Shan monastery · shrine hall");
+      const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], halls[0], yR + .35 + BH / 2, (ID + 2.4) / 2 + .1, G);
       // the white masonry stair down from the verandah, its walls topped with little spikes
       // with `reach`, the stair runs on at the foot as a level paved walk between low coped walls into the hill stair's wall
       const n = 12, rise = FH / n, tread = .36, SWd = MON.SWd;
@@ -2231,8 +2287,9 @@ window.TempleFloors = function TempleFloors(ctx) {
         }
       });
       if (edge) flat(mesh(new THREE.BoxGeometry(SWd, .06, edge + .1), white, 0, .03, R + edge / 2, G));   // the paved walk out to the hill stair
-      G.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, { tip: "A Shan teak monastery · ကျောင်း" }); });
-      clickable(list, door, { floor: "kyaung", tip: "Enter the shrine hall · the Shan Buddha image" });
+      G.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, { tip: `${SHAN_NAMES.kyaung} · a Shan teak monastery` }); });
+      clickable(list, door, { floor: "kyaung", tip: `Enter the shrine hall of ${SHAN_NAMES.kyaung}` });
+      Object.assign(board.userData, { toast: `${SHAN_NAMES.kyaung}: a Shan teak monastery on the hill of ${SHAN_NAMES.stupa}. Climb its stair to the verandah and the doors of the shrine hall, or walk round it on the paved plinth.` });
       // keep the outside camera above it
       G.updateMatrixWorld(true);
       const ex = G.localToWorld(V(0, 0, D / 2 + .5)), look = G.localToWorld(V(0, 0, D / 2 + run + 8));   // where you come out: the stair's top step
