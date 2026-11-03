@@ -41,6 +41,9 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (late morning)
+- Took the topiary trees and pink shrubs off the stupa hill's top path; the way from the stair to the main stupa is open paving.
+
 ### 2026-11-03 (morning)
 - Filled the gap in the row facing the Haw Kham: five two-storey Shan houses now, 7 m wide and evenly 2 m apart
   (x −2.25 … 33.75), the middle one on the gate's axis. Not re-rendered; same builder and footprint line as before.

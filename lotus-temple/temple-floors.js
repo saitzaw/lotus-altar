@@ -2242,15 +2242,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     MS.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, { tip: `${SHAN_NAMES.stupa} · the main stupa on the hill` }); } });
     const flood = new THREE.SpotLight(0xffe0b0, 0, 40, .5, .6, 1); flood.position.set(0, 4, -16); flood.target.position.set(0, 8, 0); MS.add(flood, flood.target);
     onDaylight(d => flood.intensity = 2.4 * (1 - d));
-    // topiary and flowering shrubs along the path on top, pines on the slopes clear of the stair
-    const topi = std({ color: 0x2f5a26, roughness: .9, flatShading: true }), bloom = std({ color: 0xc8405a, roughness: .8, flatShading: true });
-    for (let zz = -rTop + 1.5; zz < -7; zz += 2.2) [-1, 1].forEach(sd => {
-      const x = sd * 1.9;
-      sCircle(H, x, zz, .5);
-      mesh(new THREE.CylinderGeometry(.08, .12, 1.2, 6), bark, x, top + .6, zz, H);
-      const c = mesh(new THREE.IcosahedronGeometry(.75, 1), topi, x, top + 1.7, zz, H); c.scale.set(1, 1.25, 1);
-      mesh(new THREE.IcosahedronGeometry(.35, 0), bloom, x + sd * .7, top + .3, zz + 1.1, H);
-    });
+    // pines on the slopes clear of the stair
     let seed = 400;
     for (let i = 0; i < 32; i++) {
       const a = i / 32 * TAU + .1, rr = rTop + 6 + (i % 4) * 8, x = Math.sin(a) * rr, zz = Math.cos(a) * rr;
