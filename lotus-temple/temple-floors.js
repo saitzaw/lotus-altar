@@ -391,7 +391,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     // the view: night sky with stars and moon, a ring of dark hills, and the lights of the temple far below
     const sky = canvasTex(256, (c, sz) => {
       const l = c.createLinearGradient(0, 0, 0, sz);
-      l.addColorStop(0, "#0b0a1f"); l.addColorStop(.36, "#2a1f48"); l.addColorStop(.49, "#7a4250"); l.addColorStop(.52, "#1a1210"); l.addColorStop(1, "#0d0806");
+      l.addColorStop(0, "#000000"); l.addColorStop(.36, "#000000"); l.addColorStop(.49, "#000000"); l.addColorStop(.52, "#1a1210"); l.addColorStop(1, "#0d0806");
       c.fillStyle = l; c.fillRect(0, 0, sz, sz);
     });
     const vw = new THREE.Group(); vw.position.set(0, 0, Z0); g.add(vw); g.userData.vista = vw;   // replaced by the real grounds when they are built
@@ -3938,7 +3938,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     const list = picks[n] = picks[n] || [], sway = [];
     const sky = canvasTex(256, (c, s) => {
       const l = c.createLinearGradient(0, 0, 0, s);
-      l.addColorStop(0, "#0b0a1f"); l.addColorStop(.3, "#2a1f48"); l.addColorStop(.46, "#6a3a4a"); l.addColorStop(.5, "#120a07"); l.addColorStop(1, "#120a07");
+      l.addColorStop(0, "#000000"); l.addColorStop(.3, "#000000"); l.addColorStop(.46, "#000000"); l.addColorStop(.5, "#120a07"); l.addColorStop(1, "#120a07");
       c.fillStyle = l; c.fillRect(0, 0, s, s);
     });
     g.add(new THREE.Mesh(new THREE.SphereGeometry(26, 32, 16), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide, fog: false })));
@@ -4103,7 +4103,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     const list = picks.pagoda = [];
     const skyTex = canvasTex(256, (c, s) => {
       const l = c.createLinearGradient(0, 0, 0, s);
-      l.addColorStop(0, "#0b0a1f"); l.addColorStop(.38, "#2a1f48"); l.addColorStop(.48, "#8a4a52"); l.addColorStop(.52, "#2b1a14"); l.addColorStop(1, "#0d0806");
+      l.addColorStop(0, "#000000"); l.addColorStop(.38, "#000000"); l.addColorStop(.48, "#000000"); l.addColorStop(.52, "#2b1a14"); l.addColorStop(1, "#0d0806");
       c.fillStyle = l; c.fillRect(0, 0, s, s);
     });
     g.add(new THREE.Mesh(new THREE.SphereGeometry(220, 48, 24), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false })));

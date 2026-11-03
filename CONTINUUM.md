@@ -41,6 +41,11 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (afternoon)
+- The night sky is black: the three sky domes (pagoda grounds, bell tower, the view from the upper floors) lost their purple
+  gradient and rose horizon glow above the horizon, and the outdoor background and haze at night are black (`skyColors`).
+  Stars and moon show as before; a cloudy or rainy night still greys it faintly. Day view unchanged.
+
 ### 2026-11-03 (early afternoon)
 - Took away the westernmost foothill (about x −158, z −19, base radius 40), which stood across the new road to the hospital.
   `mountainsAndForest` now skips any peak whose base would reach the road or the hospital; the random draws still happen,

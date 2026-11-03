@@ -1331,12 +1331,12 @@ const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
 // day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit
 let daylight = 0;
 try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; } catch (e) {}
-// the sky and haze outside; on Halloween night, with the houses dark, they deepen to a near-black blue with no town glow in them
+// the sky and haze outside: black at night, under the stars and moon
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
   const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
-  world.background.copy(out ? mix(0x16122a, 0x86b8e6).lerp(new THREE.Color(0x07060f), dark) : mix(0x120a07, CONFIG.light.dayIndoor));
-  world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0).lerp(new THREE.Color(0x09080f), dark) : mix(0x120a07, CONFIG.light.dayIndoor));
+  world.background.copy(out ? mix(0x000000, 0x86b8e6) : mix(0x120a07, CONFIG.light.dayIndoor));
+  world.fog.color.copy(out ? mix(0x000000, 0xb4cce0) : mix(0x120a07, CONFIG.light.dayIndoor));
   if (out && wx.k > .001) {   // cloud, rain, mist or haze greys the sky (darker at night)
     const tint = _wxSky.copy(wx.tint).multiplyScalar(.15 + .85 * d), k = wx.k * (1 - dark);
     world.background.lerp(tint, k); world.fog.color.lerp(tint, k);
