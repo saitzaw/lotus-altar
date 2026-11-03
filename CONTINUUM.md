@@ -50,6 +50,9 @@ recently, and what's still open. Read it at the start of a session; update it at
   in gilt urns; a red coffered ceiling with round lamps over the image. The altar keeps its offerings via `shrine(..., { shan:
   true })`: white cloth, gilt stands with white candles in glass chimneys, incense in a footed brass bowl of sand. No people
   in front of the image. Checked in a headless render (worker disabled so the statue meshes on the main thread).
+- Then cleared the floor before the Shan image's table, as the site owner asked: no candle stands or censer pedestal there.
+  Light offerings go on gilt trays at the table's front corners (`buildTrays`), incense in a small brass sand bowl at the
+  centre back of the table (`alt.inc`); walkers can now step up to the table front. Checked in a headless render.
 
 ### 2026-11-03 (night)
 - Added a small township football ground (`footballGround` in `temple-floors.js`) west of the road up to the hospital:

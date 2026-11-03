@@ -852,7 +852,8 @@ window.TempleFloors = function TempleFloors(ctx) {
      white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a square gilded throne
      set with glass mosaic, before a red hanging worked in gold that fills the back wall, a ring of little lights round the dark blue
      halo behind his head, white parasols and sprays of white flowers either side, a red coffered ceiling over him; the altar before
-     him is dressed the Shan way (white cloth, gilt stands with white candles, incense in a brass bowl of sand) ---------- */
+     him is dressed the Shan way, with nothing standing on the floor before it (white cloth, candles and lamps on gilt trays, incense
+     in a little brass bowl of sand) ---------- */
   const KYAUNG = { pillars: [-3.9, -.6, 2.7, 5.9].flatMap(z => [[-3.6, z], [3.6, z]]), hti: [[-2.3, -2.7], [2.3, -2.7]] };
   function kyaungHall(g, n) {
     picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
@@ -5054,7 +5055,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (mode !== "church" && [...INNER_COLUMNS, ...CORNER_COLUMNS].some(([cx, cz]) => c(cx, cz, .3))) return true;   // the church has no columns
       if (typeof mode === "number" && rc(STAIR_ROOM.x0, STAIR_ROOM.x1, STAIR_ROOM.z0, STAIR_ROOM.z1)) return true;
       if ([1, 4, 5, 6, 7, "library", "kyaung"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
-        if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || rc(-1.4, 1.4, 1.6, 2.3)) return true;
+        if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || (mode !== "kyaung" && rc(-1.4, 1.4, 1.6, 2.3))) return true;   // the Shan altar has nothing before its table
         if (mode === 1 && rc(-.8, .8, 2.5, 3.1)) return true;   // the kneeling bench
       }
       if (mode === "library" && c(WISH_TREE.x, WISH_TREE.z, 2.2 * WISH_TREE.s)) return true;   // the wishing tree's fence
