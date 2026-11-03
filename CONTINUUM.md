@@ -32,7 +32,7 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
-  site's owner; the boards' English lines are descriptions, not translations.
+  site's owner; the boards carry the Shan names only.
 
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
 - Stale comment in `lotus-altar.js` (~line 297) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.

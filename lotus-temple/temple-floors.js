@@ -1850,8 +1850,8 @@ window.TempleFloors = function TempleFloors(ctx) {
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
   const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း" };
-  // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, a line of English beneath
-  function shanBoardFace(shan, en) {
+  // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, with an optional line of English beneath
+  function shanBoardFace(shan, en = "") {
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 300;
     const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
     const paint = () => {
@@ -1859,12 +1859,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       c.fillStyle = "#5a1e12"; c.fillRect(0, 0, W, H);
       c.strokeStyle = "#d8b25a"; c.lineWidth = 10; c.strokeRect(14, 14, W - 28, H - 28); c.lineWidth = 3; c.strokeRect(32, 32, W - 64, H - 64);
       c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#f0cf72";
-      c.font = '600 92px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText(shan, W / 2, 128, W - 110);
-      c.font = '400 40px "Marcellus", serif'; c.fillText(en, W / 2, 232, W - 110);
+      c.font = '600 92px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText(shan, W / 2, en ? 128 : H / 2, W - 110);
+      if (en) { c.font = '400 40px "Marcellus", serif'; c.fillText(en, W / 2, 232, W - 110); }
       t.needsUpdate = true;
     };
     paint();
-    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('600 92px "Noto Sans Myanmar"', shan), document.fonts.load('400 40px "Marcellus"', en)]).then(paint, () => {});
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('600 92px "Noto Sans Myanmar"', shan), en && document.fonts.load('400 40px "Marcellus"', en)]).then(paint, () => {});
     return std({ map: t, roughness: .6, emissive: 0x222222, emissiveMap: t });
   }
   // the height of the land at (x, z): the hill's terraced profile, flat elsewhere
@@ -2088,7 +2088,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.9, GATE_H, .9), whiteWash, sd * (SW / 2 + .9), GATE_H / 2, -rBase - .2, H));
     {   // the stupa's name board over the entrance, on a gilded beam between the pillars, lettered on both faces
-      const face = shanBoardFace(SHAN_NAMES.stupa, "The main stupa · up the stair"), BW = 3.4, BH = BW * 300 / 1024, by = GATE_H + .1 + BH / 2;
+      const face = shanBoardFace(SHAN_NAMES.stupa), BW = 3.4, BH = BW * 300 / 1024, by = GATE_H + .1 + BH / 2;
       mesh(new THREE.BoxGeometry(SW + 1.8 + .9, .2, .3), M.gold, 0, GATE_H + .1, -rBase - .2, H);
       clickable(list, mesh(new THREE.BoxGeometry(BW, BH, .1), [M.lacquer, M.lacquer, M.lacquer, M.lacquer, face, face], 0, by, -rBase - .2, H), { tip: `${SHAN_NAMES.stupa} · the main stupa`, toast: `${SHAN_NAMES.stupa}, the main stupa of the hill: climb the stair past the monastery ${SHAN_NAMES.kyaung} to the white-and-gold stupa among the Shan stupas at the top.` });
       mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
@@ -2262,7 +2262,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       });
       if (tower) pyatthat(G, halls[halls.length - 1], yR + hw * .25, -ID * .1, 4.6, 5);
       // the monastery's name board under the front gable
-      const BW = 4.4, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung, "Shan monastery · shrine hall");
+      const BW = 4.4, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung);
       const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], halls[0], yR + .35 + BH / 2, (ID + 2.4) / 2 + .1, G);
       // the white masonry stair down from the verandah, its walls topped with little spikes
       // with `reach`, the stair runs on at the foot as a level paved walk between low coped walls into the hill stair's wall
