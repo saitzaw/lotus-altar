@@ -41,6 +41,10 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (evening)
+- Hid the "Lotus Altar" title and the floor/place line (`#where`) from the top-left HUD. They are kept for screen readers
+  through the same visually-hidden rule as `#hint` in `lotus-altar.css`; the buttons now sit at the top.
+
 ### 2026-11-03 (afternoon)
 - The night sky is black: the three sky domes (pagoda grounds, bell tower, the view from the upper floors) lost their purple
   gradient and rose horizon glow above the horizon, and the outdoor background and haze at night are black (`skyColors`).
