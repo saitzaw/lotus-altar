@@ -12,7 +12,7 @@ const $ = id => document.getElementById(id);
 const CONFIG = {
   storageKey: "lotus-altar-v2",                       // change to start every visitor from the sample altar
   start: "pagoda",                                    // where the page opens: "pagoda" (outside the gate) or a floor number
-  light: { exposure: .82, key: 1.5, hemisphere: .3 },
+  light: { exposure: .82, key: 1.5, hemisphere: .3, dayIndoor: 0x7a6c5a },   // dayIndoor: the haze in a hall by day
   camera: {
     full: { pos: [0, 4.2, 7.0], target: [0, 1.4, .5] },   // a wide view of the whole shrine, the bench and the fortune sticks; orbits all the way round
     closeUp: { pos: [.75, 2.95, .75], target: [0, 2.45, -1.5] },
@@ -140,6 +140,10 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = CONFIG.light.exposure;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// lamps: every point light in the world is a lamp, a candle or a fire, and by day they all go dark (lampsOn, set in applySky);
+// the flames still burn, only their light is gone. Whatever sets a point light's intensity sets it at night strength
+let lampsOn = 1;
+Object.defineProperty(THREE.PointLight.prototype, "intensity", { get() { return this._night * lampsOn; }, set(v) { this._night = v; }, configurable: true });
 
 const world = new THREE.Scene();                  // the whole pagoda: one group per floor plus the outside view
 world.background = new THREE.Color(0x120a07);
@@ -295,7 +299,7 @@ const lanternMat = std({ color: CONFIG.lanterns.color, emissive: CONFIG.lanterns
     mesh(capGeo, M.trim, 0, .32, 0, g).castShadow = false;
     mesh(capGeo, M.trim, 0, -.32, 0, g).castShadow = false;
     mesh(tasselGeo, M.stickRed, 0, -.46, 0, g).castShadow = false;
-    g.add(glowSprite(0xff7a3c, 1.4, .45));
+    g.add(g.userData.glow = glowSprite(0xff7a3c, 1.4, .45));
     lanterns.push(g);
   });
 });
@@ -1319,8 +1323,8 @@ try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; }
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
   const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
-  world.background.copy(out ? mix(0x16122a, 0x86b8e6).lerp(new THREE.Color(0x07060f), dark) : new THREE.Color(0x120a07));
-  world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0).lerp(new THREE.Color(0x09080f), dark) : new THREE.Color(0x120a07));
+  world.background.copy(out ? mix(0x16122a, 0x86b8e6).lerp(new THREE.Color(0x07060f), dark) : mix(0x120a07, CONFIG.light.dayIndoor));
+  world.fog.color.copy(out ? mix(0x241c34, 0xb4cce0).lerp(new THREE.Color(0x09080f), dark) : mix(0x120a07, CONFIG.light.dayIndoor));
   if (out && wx.k > .001) {   // cloud, rain, mist or haze greys the sky (darker at night)
     const tint = _wxSky.copy(wx.tint).multiplyScalar(.15 + .85 * d), k = wx.k * (1 - dark);
     world.background.lerp(tint, k); world.fog.color.lerp(tint, k);
@@ -1331,6 +1335,9 @@ function applySky() {
   skyColors();
   renderer.toneMappingExposure = CONFIG.light.exposure * (out ? 1 + .05 * d : 1);
   temple.setDaylight(d);
+  lampsOn = 1 - d;
+  lanternMat.emissiveIntensity = CONFIG.lanterns.glowStrength * (1 - d) + .05;
+  lanterns.forEach(l => l.userData.glow.material.opacity = .45 * (1 - d));
   const btn = $("timeBtn");
   const note = $("skyInfo");
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }

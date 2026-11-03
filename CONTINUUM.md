@@ -34,6 +34,14 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03
+- By day every lamp is out and the halls take the daylight: all point lights (lamps, candles, fires) go dark through
+  `lampsOn` (a `THREE.PointLight.prototype.intensity` accessor in `lotus-altar.js`), the halls' lanterns, lanterns'
+  halos and lamplit window panes go unlit, the pagoda floodlight and storey windows go dark, and `daylit()` turns each
+  hall's sky, key and side lights to pale daylight, with the inside windows showing day and a lighter indoor haze
+  (`CONFIG.light.dayIndoor`). Candle and butter-lamp flames still burn as offerings. Checked in headless renders of the
+  1F hall (day and night), 2F and the pagoda by day; other halls not checked by eye.
+
 ### 2026-11-02
 - 2F: the lit niches on the back wall are gone; oil lamps and candles stand on a free-standing three-tier rack 0.9–1.4 m in
   front of the wall (flames no higher than 1.4 m), so no flame touches the wall.

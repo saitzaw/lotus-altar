@@ -105,8 +105,19 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   // a light that changes between its night and day colour and strength
   function dayLight(light, night, day) {
+    light.userData.day = true;
     onDaylight(d => { light.color.copy(lerpC(night[0], day[0], d)); light.intensity = night[1] + (day[1] - night[1]) * d; if (light.groundColor && night[2] !== undefined) light.groundColor.copy(lerpC(night[2], day[2], d)); });
   }
+  // a hall by day: its lamps are out (every point light, see lampsOn in the main script) and daylight comes in through the
+  // doors and windows, so its amber sky light turns pale and bright and its key and side lights take the sun's white
+  function daylit(root) {
+    const ls = [];
+    root.traverse(l => { if (l.isLight && !l.isPointLight && !l.userData.day) ls.push(l); });
+    ls.forEach(l => l.isHemisphereLight ? dayLight(l, [l.color.getHex(), l.intensity, l.groundColor.getHex()], [0xe4ecf4, l.intensity + .6, 0x6e6252])
+      : dayLight(l, [l.color.getHex(), l.intensity], [0xfff4e4, l.intensity * 1.15]));
+  }
+  // window glass lit from inside by lamps at night, plain dark glass by day
+  const lampPane = (emissive, k) => { const m = std({ color: 0x3a1608, emissive, emissiveIntensity: k }); onDaylight(d => m.emissiveIntensity = k * (1 - d) + .04); return m; };
   // a canvas texture for signs and boards, repainted once the Chinese font has loaded
   function writing(w, h, draw) {
     const c = document.createElement("canvas"); c.width = w; c.height = h;
@@ -132,11 +143,15 @@ window.TempleFloors = function TempleFloors(ctx) {
   const floorName = m => { const f = info(m); return typeof m === "number" ? `${m}F · ${f.name}` : f.name; };
 
   /* ---------- shared pieces ---------- */
-  const winMat = std({ color: 0x0d1530, emissive: 0x34528f, emissiveIntensity: .55, roughness: .6 });
+  const winMat = std({ color: 0x0d1530, emissive: 0x34528f, emissiveIntensity: .55, roughness: .6 });   // seen from inside: the night sky, or daylight
+  onDaylight(d => { winMat.emissive.copy(lerpC(0x34528f, 0xdce8f2, d)); winMat.emissiveIntensity = .55 + .4 * d; });
   const lanternGeo = new THREE.SphereGeometry(.26, 24, 16), capGeo = new THREE.CylinderGeometry(.12, .12, .06, 16);
   const ribGeo = new THREE.TorusGeometry(.262, .006, 6, 40), tasselGeo = new THREE.CylinderGeometry(.012, .03, .22, 8);
   const lanternMat = std({ color: 0xb0180c, emissive: 0xd0200a, emissiveIntensity: .55, roughness: .55 });
   const lanternOff = std({ color: 0x5a0c06, roughness: .55 });   // a street lantern blinking out as the ghost passes
+  const lanternGlows = [];   // the halls' lanterns, unlit by day
+  const lanternGlow = (color, scale, opacity) => { const gl = glowSprite(color, scale, opacity * (1 - daylight)); gl.userData.lit = opacity; lanternGlows.push(gl); return gl; };
+  onDaylight(d => { lanternMat.emissiveIntensity = .55 * (1 - d) + .05; lanternGlows.forEach(gl => gl.material.opacity = gl.userData.lit * (1 - d)); });
   function lantern(parent, x, y, z, ceil = 6.9, scale = 1) {
     const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(scale); parent.add(g);
     flat(mesh(new THREE.CylinderGeometry(.005, .005, (ceil - y) / scale, 4), M.feature, 0, (ceil - y) / scale / 2, 0, g));
@@ -144,7 +159,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     [0, Math.PI / 3, -Math.PI / 3].forEach(r => { const rb = flat(mesh(ribGeo, M.trim, 0, 0, 0, g)); rb.rotation.y = r; rb.scale.y = 1.2; });
     flat(mesh(capGeo, M.trim, 0, .32, 0, g)); flat(mesh(capGeo, M.trim, 0, -.32, 0, g));
     flat(mesh(tasselGeo, M.stickRed, 0, -.46, 0, g));
-    g.add(glowSprite(0xff7a3c, 1.4, .45));
+    g.add(lanternGlow(0xff7a3c, 1.4, .45));
     return g;
   }
   // strings of small red lanterns hanging in a curve between two points
@@ -162,7 +177,7 @@ window.TempleFloors = function TempleFloors(ctx) {
         m4.compose(p, q, body); bodies.setMatrixAt(k, m4);
         m4.compose(p.clone().add(V(0, .32 * scale, 0)), q, cap); caps.setMatrixAt(k * 2, m4);
         m4.compose(p.clone().add(V(0, -.32 * scale, 0)), q, cap); caps.setMatrixAt(k * 2 + 1, m4);
-        const gl = glowSprite(0xff6a2a, 1.1 * scale, .42); gl.position.copy(p); parent.add(gl);
+        const gl = lanternGlow(0xff6a2a, 1.1 * scale, .42); gl.position.copy(p); parent.add(gl);
         k++;
       }
     });
@@ -319,7 +334,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   let CORRIDOR_RING = null, backdrop = 0;   // backdrop: the floor whose corridor is looking out at the real grounds
   const STOREY_Y = {};   // the walkable ring of the balcony corridor, for the walker
   const corridorDeck = std({ color: 0x5a1f14, roughness: .7 }), corridorWall = std({ color: 0xece4d4, roughness: .7 });
-  const warmPane = std({ color: 0x3a1608, emissive: 0xffa040, emissiveIntensity: .75 });
+  const warmPane = lampPane(0xffa040, .75);
   function corridor(g, list, DW, DH) {
     const Z0 = 7.5, Z1 = 10.6, W = 15, EH = 3.8, mid = (Z0 + Z1) / 2;
     // the outside of the front wall: cream plaster between red posts, with the doors and windows seen from outside
@@ -1319,8 +1334,8 @@ window.TempleFloors = function TempleFloors(ctx) {
           sCircle(g, x, z, .12);
           const arm = mesh(new THREE.BoxGeometry(.06, .06, .7), M.lacquer, x, 3.35, z + (side ? -.3 : .3), g); arm.rotation.y = ry;
           const l = flat(mesh(lanternGeo, lanternMat, x, 3.05, z + (side ? -.6 : .6), g)); l.scale.set(.75, .9, .75);
-          const gl = glowSprite(0xff7a3a, 2.2, .6); gl.position.copy(l.position); g.add(gl);
-          poleLights.push({ x, z: l.position.z, set: lit => { l.material = lit ? lanternMat : lanternOff; gl.material.opacity = lit ? .6 : 0; } });
+          const gl = lanternGlow(0xff7a3a, 2.2, .6); gl.position.copy(l.position); g.add(gl);
+          poleLights.push({ x, z: l.position.z, set: lit => { l.material = lit ? lanternMat : lanternOff; gl.material.opacity = lit ? .6 * (1 - daylight) : 0; } });
         } else (((x / 10) | 0) % 4 === 1 || ((x / 10) | 0) % 4 === -3 ? tree : pine)(g, x, z + (side ? .3 : -.3), .85, seed++);
       });
     }
@@ -3641,6 +3656,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const g = new THREE.Group(); g.name = "floor" + n; world.add(g);
       updaters[n] = updaters[n] || [];
       BUILD[n](g, n);
+      daylit(g);
       groups[n] = g;
     }
     return groups[n];
@@ -3737,7 +3753,8 @@ window.TempleFloors = function TempleFloors(ctx) {
         oct(mesh(new THREE.CylinderGeometry(r + .87, r + .87, .1, 8, 1, true), pillarRed, 0, .05, 0, st));
         const bs = new THREE.Group(); bs.position.y = .14; st.add(bs); balustrade(bs, r + .78, [], redRail);
       }
-      storeys.push({ f, winMat: winMatS, base: winMatS.emissiveIntensity });
+      const s = { f, winMat: winMatS, base: 0 }, glow = winMatS.emissiveIntensity; storeys.push(s);
+      onDaylight(d => s.base = glow * (1 - d) + .05);   // the floors' windows glow by lamplight at night, dark glass by day
       if (i === 0) for (let k = 0; k < 8; k++) { const c = k / 8 * TAU + R8; eaveCorners.push(V(Math.sin(c) * (rOut - .2), y + foot + lift - .1, Math.cos(c) * (rOut - .2))); }
       STOREY_Y[f] = y;   // the height of this storey's floor, for the view from its corridor
       y += h + .82;
@@ -3799,7 +3816,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       oct(mesh(new THREE.CylinderGeometry(RU, RU, T2 - E1 + .2, 8), pillarRed, 0, (E1 - .2 + T2) / 2, 0, b));
       const wins = [];
       for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; wins.push({ p: at(a, AU + .02, E1 + .4), ry: a, w: 1.1, h: .55, cols: 6, rows: 2 }); }
-      latticeWindows(b, wins, std({ color: 0x3a1608, emissive: 0xff9a40, emissiveIntensity: .8 }));
+      latticeWindows(b, wins, lampPane(0xff9a40, .8));
       paintedBeam(b, T2 - .25, RU + .02);
       const tex = writing(512, 160, (c, cw, ch) => {
         c.fillStyle = "#16233d"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 12; c.strokeRect(8, 8, cw - 16, ch - 16);
@@ -3878,7 +3895,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       clickable(list, front, data);
       mesh(new THREE.BoxGeometry(7.2, 4.6, .1), darkWood, 0, base + 2.3, FZ + .05, b);   // the dark timber centre bay
       doorway(b, 0, base, FZ + .12, 0, 2.8, 3.6, null, data, list);
-      latticeWindows(b, [-6.2, -3.4, 3.4, 6.2].map(x => ({ p: V(x, base + 2.0, FZ + .12), ry: 0, w: 1.5, h: 2.2 })), std({ color: 0x3a1608, emissive: 0xffa040, emissiveIntensity: .75 }));
+      latticeWindows(b, [-6.2, -3.4, 3.4, 6.2].map(x => ({ p: V(x, base + 2.0, FZ + .12), ry: 0, w: 1.5, h: 2.2 })), lampPane(0xffa040, .75));
       // the name plaque: dark lacquer, gold characters, gilt frame
       const plaqueTex = writing(768, 256, (c, cw, ch) => {
         c.fillStyle = "#2a1610"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 14; c.strokeRect(10, 10, cw - 20, ch - 20);
@@ -4071,7 +4088,7 @@ window.TempleFloors = function TempleFloors(ctx) {
         c.fillStyle = "#e8c25a"; c.font = HAN_FONT(118); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("法物流通處", cw / 2, ch / 2 + 8);
       });
       flat(mesh(new THREE.PlaneGeometry(4.2, .8), new THREE.MeshStandardMaterial({ map: signTex, roughness: .6, emissive: 0x2a2a2a, emissiveMap: signTex }), 0, base + H1 - .78, D / 2 - .13, b));
-      latticeWindows(b, [-7.6, -5.4, -2.6, 2.6, 7.6].map(x => ({ p: V(x, base + 1.7, FZ + .02), ry: 0, w: 1.4, h: 2.0 })), std({ color: 0x3a1608, emissive: 0xffa040, emissiveIntensity: .7 }));
+      latticeWindows(b, [-7.6, -5.4, -2.6, 2.6, 7.6].map(x => ({ p: V(x, base + 1.7, FZ + .02), ry: 0, w: 1.4, h: 2.0 })), lampPane(0xffa040, .7));
       const shopLight = new THREE.PointLight(0xffc080, 1.4, 9, 2); shopLight.position.set(0, base + 2.6, FZ + 1.6); b.add(shopLight);
       [-3.6, 3.6].forEach(x => lantern(b, x, base + 2.6, D / 2 - .3, base + H1 - .4, 1));
       // the skirt eave between the floors, then the monks' quarters: a balcony with a red railing and a row of lattice windows
@@ -4081,7 +4098,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const UD = D - 1.4;
       clickable(list, mesh(new THREE.BoxGeometry(W - .6, H2, UD), M.lacquer, 0, top + H2 / 2, -.7, b), data);
       const uwins = []; for (let x = -W / 2 + 1.4; x <= W / 2 - 1.3; x += 1.9) uwins.push({ p: V(x, top + 1.35, -.7 + UD / 2 + .02), ry: 0, w: 1.1, h: 1.5 });
-      latticeWindows(b, uwins, std({ color: 0x3a1608, emissive: 0xffb050, emissiveIntensity: .55 }));
+      latticeWindows(b, uwins, lampPane(0xffb050, .55));
       const roomSign = writing(256, 96, (c, cw, ch) => {
         c.fillStyle = "#16233d"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#d6a94a"; c.lineWidth = 8; c.strokeRect(5, 5, cw - 10, ch - 10);
         c.fillStyle = "#e8c25a"; c.font = HAN_FONT(56); c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("寮房", cw / 2, ch / 2 + 4);
@@ -4326,7 +4343,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.CylinderGeometry(.12, .16, h, 10), M.lacquer, x, h / 2, z, g);
       mesh(new THREE.BoxGeometry(.5, .08, .5), M.trim, x, h, z, g);
       const l = flat(mesh(lanternGeo, lanternMat, x, h + .5, z, g)); l.scale.set(1.5, 1.8, 1.5);
-      const gl = glowSprite(0xff6a2a, 3.2, .55); gl.position.set(x, h + .5, z); g.add(gl);
+      const gl = lanternGlow(0xff6a2a, 3.2, .55); gl.position.set(x, h + .5, z); g.add(gl);
       return V(x, h + .1, z);
     };
     const strings = eaveCorners.map(a => {
@@ -4359,9 +4376,9 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.BoxGeometry(.5, .2, .5), M.stone, x, .1, z, g);
       sCircle(g, x, z, .3);
       mesh(new THREE.CylinderGeometry(.09, .12, .9, 8), M.stone, x, .65, z, g);
-      mesh(new THREE.BoxGeometry(.46, .38, .46), std({ color: 0x3a1608, emissive: 0xffa040, emissiveIntensity: .9 }), x, 1.29, z, g);
+      mesh(new THREE.BoxGeometry(.46, .38, .46), lampPane(0xffa040, .9), x, 1.29, z, g);
       const cap = mesh(new THREE.ConeGeometry(.42, .3, 4), M.stone, x, 1.63, z, g); cap.rotation.y = Math.PI / 4;
-      const gl = glowSprite(0xffa050, 1.4, .6); gl.position.set(x, 1.29, z); g.add(gl);
+      const gl = lanternGlow(0xffa050, 1.4, .6); gl.position.set(x, 1.29, z); g.add(gl);
     });
     flat(mesh(new THREE.BoxGeometry(3.0, .06, 16), M.stone, -19.9, .03, 27, g));          // the shop's forecourt, meeting the road
     flat(mesh(new THREE.BoxGeometry(3.3, .06, 1.8), M.stone, -14.0, .03, 26, g));         // out to the lotus pavilion
@@ -4394,7 +4411,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     };
     onDaylight(lights); onCelestial(lights);
     const warm = new THREE.SpotLight(0xffb070, 1.6, 70, .5, .7, 1); warm.position.set(14, 4, 24); warm.target.position.set(0, 10, 0); g.add(warm, warm.target);
-    dayLight(warm, [0xffb070, 1.6], [0xffb070, .4]);
+    dayLight(warm, [0xffb070, 1.6], [0xffb070, 0]);   // the floodlight is off by day
     const door = new THREE.PointLight(0xffa050, 2, 14, 2); door.position.set(0, DECK + 2.5, 8); g.add(door);
     updaters.pagoda.push((dt, t) => storeys.forEach(s => s.winMat.emissiveIntensity = s.base * (hovered && hovered.userData.floor === s.f ? 2.2 : 1) + Math.sin(t * 1.3 + s.f) * .05));
     bakeParts(g);
@@ -4523,7 +4540,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     get police() { return COP.on && (!COP.night || daylight < .5) ? COP.at : null; },
     setCelestial(c) { Object.assign(celestial, c); celestialParts.forEach(fn => fn()); },
     openDoor(mode) { return openers[mode] ? openers[mode]() : 0; },
-    dress(hall) { const list = []; sumeru(hall, 0, -1.7); hallColumns(hall); hallWalls(hall, M.wall, false); moreLanterns(hall, 1); spiralStairs(hall, 1, list); stairRoom(hall, 1, list); frontWall(hall, 1, list); return list; },
+    dress(hall) { const list = []; daylit(hall); sumeru(hall, 0, -1.7); hallColumns(hall); hallWalls(hall, M.wall, false); moreLanterns(hall, 1); spiralStairs(hall, 1, list); stairRoom(hall, 1, list); frontWall(hall, 1, list); return list; },
     hover(obj) { hovered = obj; },
     activate(obj, mode, point) {
       if (obj.userData.coinPond && pondCoinThrow) {

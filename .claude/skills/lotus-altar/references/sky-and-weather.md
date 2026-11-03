@@ -11,6 +11,11 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 - `daylight` (0 night, 1 day) is the visitor's Day/Night toggle, saved in `localStorage` `lotus-altar-daylight`.
 - `skyColors()` sets the sky and fog colour outside; `applySky()` also sets exposure, calls `temple.setDaylight(d)` and
   refreshes the HUD lines.
+- By day every lamp is out. `lampsOn` (`1 - daylight`) scales every `PointLight` through an `intensity` accessor on the
+  prototype, so code that sets a point light's intensity sets its night strength. Lamplit glass (`lampPane()`), the
+  lanterns' `lanternMat` and their halos (`lanternGlow()`) go dark too. Each hall gets `daylit(group)` when it is built
+  (and the main hall in `dress()`): its hemisphere, key and side lights ease to pale daylight. Indoors the background and
+  fog go from lamplit dark to `CONFIG.light.dayIndoor`.
 
 ## Halloween
 
