@@ -847,6 +847,112 @@ window.TempleFloors = function TempleFloors(ctx) {
     wishTree(g, n, WISH_TREE);
   }
 
+  /* ---------- ကျောင်း the shrine hall of the Shan monastery on the stupa hill: teak plank walls and floor, oval windows framed in
+     white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a gilded throne set with
+     glass mosaic, under a pointed arch with flame points and a spired canopy, white parasols either side and a ring of little lights
+     behind his head; flowers, water and light are offered at the table before him ---------- */
+  const KYAUNG = { pillars: [-3.9, -.6, 2.7, 5.9].flatMap(z => [[-3.6, z], [3.6, z]]), hti: [[-2.3, -2.7], [2.3, -2.7]] };
+  function kyaungHall(g, n) {
+    picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
+    const list = picks[n], HH = 6.8;   // HH: the ceiling's height
+    const planks = (base, line, sz, across) => canvasTex(128, (c, s2) => {
+      c.fillStyle = base; c.fillRect(0, 0, s2, s2);
+      for (let k = 0; k < s2; k += sz) { c.fillStyle = line; across ? c.fillRect(0, k, s2, 2) : c.fillRect(k, 0, 2, s2); c.fillStyle = "rgba(140,80,40,.12)"; across ? c.fillRect(0, k + 4, s2, 3) : c.fillRect(k + 4, 0, 3, s2); }
+    });
+    const wallT = planks("#4a2412", "rgba(15,6,2,.6)", 12, false); wallT.wrapS = wallT.wrapT = THREE.RepeatWrapping; wallT.repeat.set(5, 2);
+    const floorT = planks("#7a4422", "rgba(30,12,4,.55)", 16, true); floorT.wrapS = floorT.wrapT = THREE.RepeatWrapping; floorT.repeat.set(4, 4);
+    const teak = std({ map: wallT, roughness: .7 }), teakDark = std({ color: 0x2e140a, roughness: .6 }), floorM = std({ map: floorT, roughness: .45 });
+    const red = std({ color: 0x8a1a10, roughness: .45 }), white = std({ color: 0xf4f0e6, roughness: .6 }), gold = M.gold;
+    // floor, walls and a coffered teak ceiling on beams
+    flat(mesh(new THREE.PlaneGeometry(15, 13), floorM, 0, 0, 1, g)).rotation.x = -Math.PI / 2;
+    flat(mesh(new THREE.PlaneGeometry(15, HH), teak, 0, HH / 2, -5.5, g));
+    flat(mesh(new THREE.PlaneGeometry(15, HH), teak, 0, HH / 2, 7.5, g)).rotation.y = Math.PI;
+    [-1, 1].forEach(sd => { flat(mesh(new THREE.PlaneGeometry(13, HH), teak, sd * 7.5, HH / 2, 1, g)).rotation.y = -sd * Math.PI / 2; });
+    flat(mesh(new THREE.PlaneGeometry(15, 13), teakDark, 0, HH, 1, g)).rotation.x = Math.PI / 2;
+    const beamX = new THREE.BoxGeometry(15, .3, .26), beamZ = new THREE.BoxGeometry(.26, .3, 13);
+    [-3.9, -.6, 2.7, 5.9].forEach(z => part(beamX, teakDark, 0, HH - .15, z, g));
+    [-3.6, 3.6].forEach(x => part(beamZ, teakDark, x, HH - .15, 1, g));
+    // oval windows framed in white along the side walls: daylight by day, the dark hill at night
+    const pane = std({ color: 0x120a06, roughness: .4, emissive: 0xdde8f2, emissiveIntensity: 0 });
+    onDaylight(d => pane.emissiveIntensity = .9 * d + .02);
+    [-1, 1].forEach(sd => [-3, .6, 4.2].forEach(z => {
+      const o = new THREE.Group(); o.position.set(sd * 7.48, 2.6, z); o.rotation.y = -sd * Math.PI / 2; g.add(o);
+      mesh(new THREE.CircleGeometry(.5, 24), pane, 0, 0, .01, o).scale.y = 1.5;
+      mesh(new THREE.TorusGeometry(.5, .08, 6, 24), white, 0, 0, .03, o).scale.y = 1.5;
+    }));
+    // the pillars: red lacquer, gold bands, white footings
+    const footG = new THREE.BoxGeometry(.6, .2, .6), shaftG = new THREE.CylinderGeometry(.2, .22, HH - .2, 16), bandG = new THREE.CylinderGeometry(.235, .235, .16, 16);
+    KYAUNG.pillars.forEach(([x, z]) => {
+      part(footG, white, x, .1, z, g); part(shaftG, red, x, HH / 2 + .05, z, g);
+      [.45, 2.2, HH - .5].forEach(y => part(bandG, gold, x, y, z, g));
+    });
+    // woven mats on the floor before the image, for sitting and bowing
+    const matT = canvasTex(64, (c, s2) => { c.fillStyle = "#c8a868"; c.fillRect(0, 0, s2, s2); c.fillStyle = "rgba(90,60,20,.35)"; for (let k = 0; k < s2; k += 4) { c.fillRect(k, 0, 1, s2); c.fillRect(0, k + 2, s2, 1); } c.strokeStyle = "#7a2a18"; c.lineWidth = 4; c.strokeRect(2, 2, s2 - 4, s2 - 4); });
+    const matM = std({ map: matT, roughness: .95 });
+    const matG = new THREE.BoxGeometry(1.2, .02, .9);
+    [3.4, 4.6, 5.8].forEach(z => [-1.5, 0, 1.5].forEach(x => flat(part(matG, matM, x, .01, z, g))));
+    // the throne (palin): gilded tiers, a waist of red and green glass mosaic, its top at the statue's seat height
+    const mosaic = canvasTex(128, (c, s2) => { c.fillStyle = "#b8893c"; c.fillRect(0, 0, s2, s2); for (let r = 0; r < 4; r++) for (let k = 0; k < 8; k++) { c.fillStyle = (r + k) % 2 ? "#1f7a4a" : "#a01818"; c.beginPath(); const cx = k * 16 + 8 + (r % 2) * 8, cy = r * 32 + 16; c.moveTo(cx, cy - 12); c.lineTo(cx + 6, cy); c.lineTo(cx, cy + 12); c.lineTo(cx - 6, cy); c.fill(); } });
+    mosaic.wrapS = THREE.RepeatWrapping; mosaic.repeat.set(4, 1);
+    const glass = std({ map: mosaic, roughness: .25, metalness: .3 });
+    [[3.4, .12, 3.2, 0, gold], [3.0, .16, 2.8, .12, glass], [3.3, .06, 3.1, .28, gold], [3.2, .06, 3.0, .34, red]].forEach(([w, h, d, y, m]) => mesh(new THREE.BoxGeometry(w, h, d), m, 0, y + h / 2, -1.7, g));
+    const st = new THREE.Group(); st.position.set(0, .4, -1.7); g.add(st);
+    throne(st, M.gold);
+    sculptFigure("shan", st, "the Shan Buddha image");
+    // behind him: a red panel in a gilded pointed arch, flame points along it, and a three-tier spired canopy above
+    const B = new THREE.Group(); B.position.set(0, .4, -3.05); g.add(B);
+    const arch = (w, top, peak) => { const sh = new THREE.Shape(); sh.moveTo(-w, 0); sh.lineTo(-w, top); sh.bezierCurveTo(-w, top + .5, -w * .25, peak - .7, 0, peak); sh.bezierCurveTo(w * .25, peak - .7, w, top + .5, w, top); sh.lineTo(w, 0); sh.closePath(); return sh; };
+    const outer = arch(1.75, 2.6, 4.4), inner = arch(1.5, 2.5, 4.05); outer.holes.push(inner);
+    mesh(new THREE.ShapeGeometry(arch(1.5, 2.5, 4.05)), red, 0, 0, 0, B);
+    mesh(new THREE.ExtrudeGeometry(outer, { depth: .1, bevelEnabled: false }), gold, 0, 0, 0, B);
+    const flameGeo = new THREE.ConeGeometry(.07, .26, 4);
+    for (let i = 0; i <= 16; i++) {   // flame points along the outside of the arch, leaning outward
+      const t = i / 16, sd = t < .5 ? -1 : 1, u = sd < 0 ? t * 2 : (1 - t) * 2, p = u < .45 ? [sd * 1.75, 1.2 + u / .45 * 1.4] : (() => { const v = (u - .45) / .55; return [sd * 1.75 * (1 - v), 2.6 + v * 1.8]; })();
+      const f = part(flameGeo, gold, p[0] + sd * .12, p[1] + .1, .05, B); f.rotation.z = -sd * (u < .45 ? .7 : .35);
+    }
+    for (let k = 0, y = 4.4, w = .5; k < 3; k++, y += .38, w *= .72) {   // the spired canopy
+      mesh(new THREE.BoxGeometry(w, .14, w), gold, 0, y + .07, .05, B);
+      const r = mesh(new THREE.ConeGeometry(w * .8, .26, 4, 1, true), gold, 0, y + .27, .05, B); r.rotation.y = Math.PI / 4;
+    }
+    mesh(new THREE.ConeGeometry(.08, .5, 8), gold, 0, 5.55, .05, B);
+    // a ring of little lights behind his head, chasing slowly round
+    const NB = 28, bulbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.035, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), NB), m4 = new THREE.Matrix4(), bc = new THREE.Color();
+    for (let i = 0; i < NB; i++) { const a = i / NB * TAU; bulbs.setMatrixAt(i, m4.makeTranslation(Math.sin(a) * .62, 2.42 + Math.cos(a) * .62, -.5)); bulbs.setColorAt(i, bc.set(0xffd27a)); }
+    st.add(bulbs);
+    const ring = mesh(new THREE.TorusGeometry(.62, .02, 6, 64), gold, 0, 2.42, -.52, st); ring.castShadow = false;
+    const halo = glowSprite(0xffe0a0, 2.2, .2); halo.position.set(0, 2.42, -.55); st.add(halo);
+    updaters[n].push((dt, t, motion) => {
+      for (let i = 0; i < NB; i++) { const k = .5 + .5 * Math.sin(i / NB * TAU * 3 - t * 2 * motion); bulbs.setColorAt(i, bc.setRGB(1, .72 + .2 * k, .35 + .4 * k).multiplyScalar(.6 + .4 * k)); }
+      bulbs.instanceColor.needsUpdate = true;
+    });
+    // white parasols (hti) with gold rims either side of the throne
+    const canopy = std({ color: 0xf4f0e6, roughness: .7, side: THREE.DoubleSide });
+    const htiG = [new THREE.CylinderGeometry(.03, .03, 3.4, 8), new THREE.CylinderGeometry(.2, .26, .14, 12), new THREE.ConeGeometry(.05, .3, 8)];
+    const tiers = [[.62, 3.3], [.44, 3.7]].map(([r, y]) => [new THREE.ConeGeometry(r, .26, 20, 1, true), new THREE.TorusGeometry(r, .018, 6, 24), y]);
+    KYAUNG.hti.forEach(([x, z]) => {
+      part(htiG[0], gold, x, 1.7, z, g); part(htiG[1], gold, x, .07, z, g); part(htiG[2], gold, x, 4.0, z, g);
+      tiers.forEach(([cone, rim, y]) => { part(cone, canopy, x, y, z, g); part(rim, gold, x, y - .13, z, g).rotation.x = Math.PI / 2; });
+    });
+    bakeParts(g);
+    // the offering table, and the altar: a vase for lotus, the seven water bowls, candle stands, fruit and incense
+    offeringTable(g, n);
+    list.push(...shrine(g, n, { before: "the Buddha image", vaseX: -1.02 }));
+    // the doors out to the verandah, in the front wall behind the visitor
+    const D0 = new THREE.Group(); D0.position.set(0, 0, 7.45); D0.rotation.y = Math.PI; g.add(D0);
+    [-1, 1].forEach(sd => {
+      clickable(list, mesh(new THREE.BoxGeometry(.98, 2.5, .08), teakDark, sd * .5, 1.25, 0, D0), { floor: "pagoda", tip: "Go back out onto the verandah" });
+      mesh(new THREE.BoxGeometry(.12, 2.7, .14), gold, sd * 1.06, 1.35, 0, D0);
+    });
+    mesh(new THREE.BoxGeometry(2.3, .14, .14), gold, 0, 2.7, 0, D0);
+    const ped = mesh(new THREE.ConeGeometry(1.1, .8, 4), gold, 0, 3.2, 0, D0); ped.rotation.y = Math.PI / 4; ped.scale.z = .1;
+    // lights: warm lamplight, the key on the image from the front, a glow behind the throne, cool light from the windows
+    g.add(new THREE.HemisphereLight(0xffd9a8, 0x2a1208, .36));
+    const key = new THREE.SpotLight(0xffd6a0, 1.5, 24, .6, .6, 1); key.position.set(2.4, 5.6, 5.5); key.target.position.set(0, 1.8, -1.6); g.add(key, key.target);
+    key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
+    const back = new THREE.PointLight(0xffb060, 1.1, 7, 2); back.position.set(0, 2.8, -2.8); g.add(back);
+    const side = new THREE.DirectionalLight(0x6f86d8, .3); side.position.set(-6, 4, -1); g.add(side);
+  }
+
   /* ---------- 法物流通處 inside the temple shop: shelves of offerings, a counter and the shopkeeper's lamp ---------- */
   /* ---------- the monks' dining and rest room beside the shop: low tables set with alms bowls, cushions, sleeping mats ---------- */
   function quarters(g, n) {
@@ -1821,8 +1927,16 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   const SW_ = 3.6;   // the hill stair's width
   // the monasteries on the terraces (radial width W, depth D facing the stair, scaled up by SC) and how far they stand from the stair
-  const MON = { W: 14, D: 11, SC: 1.8, run: 12 * .36 };   // larger than the terraces: the plinths run out over the slope
+  const MON = { W: 14, D: 11, SC: 1.8, run: 12 * .36, SWd: 3 };   // larger than the terraces: the plinths run out over the slope; SWd: its stair's width
   MON.off = SW_ / 2 + .6 + 1.6 + MON.run * MON.SC + MON.D * MON.SC / 2;
+  // the monastery on the upper terrace, left of the hill stair (local -x), facing it: its stair comes down level with the landing
+  // just below the next flight and runs on between low walls into the hill stair's own wall, so the two stairs are one.
+  // `open`: the gap left in the hill stair's wall (local z), `reach`: the level walk from its stair's foot to that wall, in its own units
+  function monasterySpot() {
+    const t = HILL.terraces[0], half = (MON.SWd / 2 + .4) * MON.SC, z = -t.r0 - 1.2 - half - .4;
+    const footX = MON.off - (MON.D / 2 + MON.run) * MON.SC, wallX = SW_ / 2 + .36;
+    return { x: -MON.off, z, y: t.y, open: [z - MON.SWd / 2 * MON.SC, z + MON.SWd / 2 * MON.SC], reach: (footX - wallX) / MON.SC, edge: (footX - SW_ / 2) / MON.SC };
+  }
   // the festival ground: an open field on the upper terrace across the stair from the monastery (local +x), in front of it
   function festivalSpot() {
     const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2;
@@ -1852,6 +1966,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     const treads = [], line = [[-rBase, 0], [z0, 0]];   // `line`: the walking surface, for the lamps
     let seg = [[-rBase, 0], [z0, 0]];
     const segs = [seg];   // the side walls, broken open across the wide terraces so paths can lead off to the monasteries
+    const ms = monasterySpot(), left = [];   // left: wall on the monastery's side only, across the upper terrace either side of its stair
     let z = z0, y = 0;
     for (let f = 0; f < STAIR.flights; f++) {
       for (let i = 0; i < STAIR.steps; i++) { y += rise; treads.push({ z, y, d: STAIR.tread }); z += STAIR.tread; }
@@ -1859,7 +1974,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (f < STAIR.flights - 1) {
         const L = STAIR.landings[f];
         treads.push({ z, y, d: L, landing: true });
-        if (L > 5) { seg.push([z + 1.2, y]); seg = [[z + L - 1.2, y]]; segs.push(seg); } else seg.push([z + L, y]);
+        if (L > 5) {
+          seg.push([z + 1.2, y]); seg = [[z + L - 1.2, y]]; segs.push(seg);
+          if (Math.abs(y - ms.y) < .01) left.push([[z + 1.2, y], [ms.open[0], y]], [[ms.open[1], y], [z + L - 1.2, y]]);
+        } else seg.push([z + L, y]);
         z += L; line.push([z, y]);
       }
     }
@@ -1882,7 +2000,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       sh.closePath(); return sh;
     };
     [-1, 1].forEach(sd => {
-      segs.forEach(pl => {
+      (sd < 0 ? [...segs, ...left] : segs).forEach(pl => {
         const wg = new THREE.ExtrudeGeometry(wallShape(pl, .95, DEEP), { depth: .36, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
         mesh(wg, whiteWash, sd * (SW / 2 + (sd > 0 ? .36 : 0)), 0, 0, H);
         const cg = new THREE.ExtrudeGeometry(wallShape(pl, 1.07, -.95), { depth: .5, bevelEnabled: false }); cg.rotateY(-Math.PI / 2);
@@ -2038,12 +2156,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.ConeGeometry(.28, 2.6, 8), M.gold, cx, y + 1.7, cz, G);
       mesh(new THREE.CylinderGeometry(.015, .015, 1.0, 4), M.gold, cx, y + 3.4, cz, G);
     }
-    function kyaung(x, z, ry, W, D, tower, parent = g, y0 = 0, sc = 1) {
+    function kyaung(x, z, ry, W, D, tower, parent = g, y0 = 0, sc = 1, reach = 0, edge = 0) {
       const G = new THREE.Group(); G.position.set(x, y0, z); G.rotation.y = ry; G.scale.setScalar(sc); parent.add(G);
       if (y0) mesh(new THREE.BoxGeometry(W + 1.4, 6, D + 1.4), std({ color: 0x8c877d, roughness: .85 }), 0, -3, 0, G);   // a stone plinth levelling the slope
       const FH = 2.4, WH = 3.4, IW = W - 3, ID = D - 3;   // floor height, wall height, the hall inside the verandah
       {   // walkable: up the white stair onto the verandah that runs round the hall; the hall's walls and the stilts block
-        const n = 12, run = n * .36, SWd = 3.0;
+        const n = 12, run = n * .36, SWd = MON.SWd;
         sRect(G, -IW / 2 - .4, IW / 2 + .4, -ID / 2 - .4, ID / 2 + .4);   // stop a step short of the hall walls
         sRect(G, -SWd / 2 + .1, SWd / 2 - .1, D / 2, D / 2 + run, (lx, lz) => FH * (1 - (lz - D / 2) / run));
         sRect(G, -W / 2 + .1, W / 2 - .1, -D / 2 + .1, D / 2 - .1, (lx, lz) => Math.abs(lx) < SWd / 2 - .1 || Math.abs(lz) < D / 2 - .35 && Math.abs(lx) < W / 2 - .35 ? FH : null);   // the verandah, with its railing round the edge
@@ -2064,7 +2182,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       };
       const nF = Math.max(3, Math.round(IW / 2.6)); for (let i = 0; i < nF; i++) { const wx = -IW / 2 + (i + .5) * IW / nF; if (Math.abs(wx) > .9) oval(wx, ID / 2, 0); }
       const nS = Math.max(2, Math.round(ID / 2.6)); for (let i = 0; i < nS; i++) [-1, 1].forEach(sd => oval(sd * IW / 2, -ID / 2 + (i + .5) * ID / nS, sd * Math.PI / 2));
-      mesh(new THREE.BoxGeometry(1.4, 2.4, .1), teakDark, 0, FH + 1.2, ID / 2 + .03, G);   // the door
+      // the doors into the shrine hall: two teak leaves in a gilded frame under a carved pointed pediment
+      const door = mesh(new THREE.BoxGeometry(1.4, 2.4, .1), teakDark, 0, FH + 1.2, ID / 2 + .03, G);
+      mesh(new THREE.BoxGeometry(.02, 2.3, .02), M.gold, 0, FH + 1.2, ID / 2 + .09, G);
+      [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.1, 2.5, .14), M.gold, sd * .75, FH + 1.25, ID / 2 + .05, G));
+      mesh(new THREE.BoxGeometry(1.6, .1, .14), M.gold, 0, FH + 2.45, ID / 2 + .05, G);
+      const ped = mesh(new THREE.ConeGeometry(.85, .7, 4), M.gold, 0, FH + 2.85, ID / 2 + .05, G); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
       // the verandah railing round the platform edge, open where the stair arrives
       const rail = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), teakDark, 400); let k = 0;
       const put = (px, py, pz, a, b, c) => rail.setMatrixAt(k++, m4.compose(V(px, py, pz), new THREE.Quaternion(), V(a, b, c)));
@@ -2085,31 +2208,43 @@ window.TempleFloors = function TempleFloors(ctx) {
       });
       if (tower) pyatthat(G, halls[halls.length - 1], yR + hw * .25, -ID * .1, 4.6, 5);
       // the white masonry stair down from the verandah, its walls topped with little spikes
-      const n = 12, rise = FH / n, tread = .36, SWd = 3.0;
+      // with `reach`, the stair runs on at the foot as a level paved walk between low coped walls into the hill stair's wall
+      const n = 12, rise = FH / n, tread = .36, SWd = MON.SWd;
       for (let i = 0; i < n; i++) { const y1 = FH - i * rise; mesh(new THREE.BoxGeometry(SWd, y1, tread), white, 0, y1 / 2, D / 2 + i * tread + tread / 2, G); }
-      const run = n * tread, wall = new THREE.Shape(); wall.moveTo(D / 2 - .2, 0); wall.lineTo(D / 2 - .2, FH + .9); wall.lineTo(D / 2 + run, .9); wall.lineTo(D / 2 + run + .4, .9); wall.lineTo(D / 2 + run + .4, 0); wall.closePath();
+      const run = n * tread, R = D / 2 + run, wall = new THREE.Shape(); wall.moveTo(D / 2 - .2, 0); wall.lineTo(D / 2 - .2, FH + .9); wall.lineTo(R, .9); wall.lineTo(R, 0); wall.closePath();
+      const LOW = .95 / sc, NW = .6;   // the low walls match the hill stair's walls; NW: the newels' size
       [-1, 1].forEach(sd => {
         const wg = new THREE.ExtrudeGeometry(wall, { depth: .4, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
+        const wx = sd * (SWd / 2 + .2);
         mesh(wg, white, sd * (SWd / 2 + (sd > 0 ? .4 : 0)), 0, 0, G);
-        for (let i = 0; i <= 10; i++) { const t = i / 10, zz = D / 2 - .2 + t * (run + .6), yy = t < run / (run + .6) ? FH + .9 - (FH) * (t * (run + .6) / run) : .9; const c = mesh(new THREE.ConeGeometry(.16, .55, 4), white, sd * (SWd / 2 + .2), yy + .27, zz, G); c.rotation.y = Math.PI / 4; }
+        for (let i = 0; i <= 8; i++) { const t = i / 8, c = mesh(new THREE.ConeGeometry(.16, .55, 4), white, wx, FH + .9 - FH * t + .27, D / 2 - .2 + t * (run + .2), G); c.rotation.y = Math.PI / 4; }
+        // a newel at the foot of each wall, crowned with a lotus bud
+        mesh(new THREE.BoxGeometry(NW, 1.25, NW), white, wx, .62, R + NW / 2, G);
+        mesh(new THREE.BoxGeometry(NW + .12, .1, NW + .12), M.trim, wx, 1.28, R + NW / 2, G);
+        mesh(new THREE.CylinderGeometry(.16, .22, .2, 12), white, wx, 1.43, R + NW / 2, G);
+        const bud = mesh(new THREE.SphereGeometry(.2, 14, 10), white, wx, 1.68, R + NW / 2, G); bud.scale.y = 1.35;
+        mesh(new THREE.ConeGeometry(.07, .3, 10), M.gold, wx, 2.0, R + NW / 2, G);
+        if (reach > NW) {
+          const len = reach - NW + .02, zm = R + NW + len / 2;
+          mesh(new THREE.BoxGeometry(.4, LOW, len), white, wx, LOW / 2, zm, G);
+          mesh(new THREE.BoxGeometry(.5 / sc + .02, .12 / sc, len), M.trim, wx, LOW + .06 / sc, zm, G);
+        }
       });
-      G.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "A Shan teak monastery · ကျောင်း" }); });
+      if (edge) flat(mesh(new THREE.BoxGeometry(SWd, .06, edge + .1), white, 0, .03, R + edge / 2, G));   // the paved walk out to the hill stair
+      G.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, { tip: "A Shan teak monastery · ကျောင်း" }); });
+      clickable(list, door, { floor: "kyaung", tip: "Enter the shrine hall · the Shan Buddha image" });
       // keep the outside camera above it
       G.updateMatrixWorld(true);
-      MONASTERIES.push({ G, W, D, run, foot: G.localToWorld(V(0, 0, D / 2 + run + 1.5)), door: G.localToWorld(V(0, 0, 0)) });
+      const ex = G.localToWorld(V(0, 0, D / 2 + .5)), look = G.localToWorld(V(0, 0, D / 2 + run + 8));   // where you come out: the stair's top step
+      MONASTERIES.push({ G, W, D, run, foot: G.localToWorld(V(0, 0, D / 2 + run + 1.5)), door: G.localToWorld(V(0, 0, 0)), exit: [[ex.x, ex.z], [look.x, look.z]] });
       const xs = [], zs = [];
       [[-W / 2 - 1, -D / 2 - 1], [W / 2 + 1, -D / 2 - 1], [-W / 2 - 1, D / 2 + run + 1], [W / 2 + 1, D / 2 + run + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
       TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: y0 + (tower ? 22 : 14) * sc });
     }
-    // the monasteries stand on the hill itself, on the two wide terraces of the stair: a pair on each terrace, one either side of
-    // the stair and both facing it, so each pair faces the other across the stair on the way up to the stupas
-    const H = HILL.group, { W: Wm, D: Dm, SC, run, off } = MON;
     // a single monastery, on the upper terrace to the right of the stair (as seen from its foot), facing the stair, with its pyatthat;
-    // the rest of the hill is left open for later buildings
-    const t = HILL.terraces[0], sd = -1;
-    const rm = (t.r0 + t.r1) / 2, zc = -Math.sqrt(rm * rm - off * off), footX = off - (Dm / 2 + run) * SC;
-    kyaung(sd * off, zc, -sd * Math.PI / 2, Wm, Dm, true, H, t.y, SC);
-    flat(mesh(new THREE.BoxGeometry(footX - HILL.stairW / 2 + .4, .05, 2.6), M.stone, sd * (HILL.stairW / 2 + (footX - HILL.stairW / 2) / 2), t.y + .03, zc, H));   // a path from the landing
+    // its stair is joined to the hill stair's landing (see monasterySpot). The rest of the hill is left open for later buildings
+    const H = HILL.group, ms = monasterySpot();
+    kyaung(ms.x, ms.z, Math.PI / 2, MON.W, MON.D, true, H, ms.y, MON.SC, ms.reach, ms.edge);
     festivalGround(H);
   }
   /* ---------- the festival ground (ပွဲခင်း) in front of the monastery, across the stair: a level grass plain held up by a stone retaining
@@ -3650,7 +3785,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     [[0, 0, 0], [-.13, 0, .05], [.13, 0, .05], [-.06, .07, .02], [.07, .07, .02], [0, .13, .03]].forEach(([x, y, z]) => { const i = ingot(); i.position.set(x, ALT.y + .05 + y, ALT.z - .27 + z); g.add(i); });
   }
 
-  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: guanyinShop, 6: victoryHall, 7: maitreyaHall, bell: bellTower, library, shop, quarters };
+  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: guanyinShop, 6: victoryHall, 7: maitreyaHall, bell: bellTower, library, shop, quarters, kyaung: kyaungHall };
   function floor(n) {
     if (!groups[n]) {
       const g = new THREE.Group(); g.name = "floor" + n; world.add(g);
@@ -4516,7 +4651,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const c = (cx, cz, r) => Math.hypot(x - cx, z - cz) < r + PAD, rc = (x0, x1, z0, z1) => x > x0 - PAD && x < x1 + PAD && z > z0 - PAD && z < z1 + PAD;
       if ([...INNER_COLUMNS, ...CORNER_COLUMNS].some(([cx, cz]) => c(cx, cz, .3))) return true;
       if (typeof mode === "number" && rc(STAIR_ROOM.x0, STAIR_ROOM.x1, STAIR_ROOM.z0, STAIR_ROOM.z1)) return true;
-      if ([1, 4, 5, 6, 7, "library"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
+      if ([1, 4, 5, 6, 7, "library", "kyaung"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
         if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || rc(-1.4, 1.4, 1.6, 2.3)) return true;
         if (mode === 1 && rc(-.8, .8, 2.5, 3.1)) return true;   // the kneeling bench
       }
@@ -4526,6 +4661,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       if (mode === "shop") return rc(-2.55, 2.55, -1.45, -.55) || z < -4.4;
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);
+      if (mode === "kyaung") return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, the arch
       return false;
     },
     setDaylight(d) { daylight = d; dayParts.forEach(fn => fn(d)); },

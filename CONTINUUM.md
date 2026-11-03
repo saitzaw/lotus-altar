@@ -23,6 +23,10 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Open threads
 
+- The shared seated Buddha body (`seatedBuddha` in `statue-sculpt.js`, used by Shakyamuni, the Medicine Buddha and the Victorious
+  Buddha) is mirrored: seen from the front, the earth-touching hand and the robed shoulder are on the wrong sides. The Shan image
+  is built mirrored to be correct; decide whether to flip the others too.
+
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
@@ -33,6 +37,19 @@ recently, and what's still open. Read it at the start of a session; update it at
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-03 (later)
+- The Shan monastery on the stupa hill can be entered: tap its doors (or the "Kyaung" place button) for the shrine hall
+  (`kyaung`, `kyaungHall` in `temple-floors.js`): teak walls and floor, oval windows, red pillars banded in gold, woven mats,
+  and a gilded Buddha image in the northern Shan / Lanna manner (figure `shan`: earth-touching, lotus-bud finial, jewelled
+  hairline band, pleated robe flap from the left shoulder) on a glass-mosaic throne under a pointed gilded arch with a spired
+  canopy, white parasols and a chasing ring of lights behind his head. Its altar is `shrine()` plus a vase: lotus, water and light
+  (and fruit, incense) from the bag. `shrine()` now takes `o.vaseX` for a flower vase; floor 1's flower code was generalised.
+- The monastery's stair is joined to the hill stair: the monastery moved a little downhill (`monasterySpot()`) so its stair meets
+  the upper terrace's landing just below the next flight, ends in lotus-bud newels and low coped walls that run into the hill
+  stair's wall, which is now closed on that side except for the opening. Walking out of the hall puts you on its top step.
+- Checked headless: the hall builds without console errors and takes lotus, water and lamp offerings; the stair junction renders.
+  The new statue was checked with an offline raymarch only (headless can't finish statues); look at it in a browser.
 
 ### 2026-11-03
 - By day every lamp is out and the halls take the daylight: all point lights (lamps, candles, fires) go dark through

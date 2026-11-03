@@ -36,7 +36,8 @@ const CONFIG = {
     bell: { han: "鐘樓", name: "Bell Tower", hint: "Tap the great bronze bell to swing the striking log and ring it." },
     library: { han: "蓮華寺", name: "Lotus Temple hall", statue: "shakyamuni", hint: "The great hall of the temple: Shakyamuni Buddha on his lotus throne. Tap the water bowls, fruit plate, candle stands or censer to make an offering from your bag. On the right the wishing tree shades a small Victorious Buddha: tap its trunk to tie a red wish ribbon." },
     shop: { han: "法物流通處", name: "Temple shop", hint: "Choose offerings in the panel and buy them here, then carry them to Guanyin's altar on the pagoda's ground floor or to any other statue's altar. Tap the shelves to add things to your basket. The monks' quarters are upstairs." },
-    quarters: { han: "寮房", name: "Monks' dining and rest room", hint: "Where the monks take their meal before noon and rest: low tables set with alms bowls, sleeping mats with folded robes." }
+    quarters: { han: "寮房", name: "Monks' dining and rest room", hint: "Where the monks take their meal before noon and rest: low tables set with alms bowls, sleeping mats with folded robes." },
+    kyaung: { name: "Shan monastery", statue: "shan", hint: "The shrine hall of the Shan monastery on the stupa hill: a gilded Buddha image in the northern Shan and Lanna manner, touching the earth, with a lotus-bud finial and his robe falling from the left shoulder. Offer a lotus (puppha) at the vase, water (udaka) in the bowls and light (dīpa) on the candle stands; fruit and incense are welcome too. The teak doors behind you lead back out onto the verandah." }
   },
   layout: { censerZ: 1.95, benchZ: 2.8, censerScale: 1.6 }, // distance in front of the statue (z) for censer and bench
   lanterns: { color: 0xb0180c, glow: 0xd0200a, glowStrength: .55 },
@@ -337,6 +338,7 @@ const FIGURE_BOXES = {
   medicine: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
   shakyamuni: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 2.86, .45] } },
   jaya: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
+  shan: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
   maitreya: { body: { min: [-1.5, .48, -.62], max: [1.15, 2.1, 1.1] }, head: { min: [-.5, 1.7, -.45], max: [.5, 2.5, .5] } },
   lion: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } },
   lionL: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } }
@@ -345,7 +347,7 @@ const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf8f3eb, roughness: .
 const gilt = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .55, roughness: .32, clearcoat: .35, clearcoatRoughness: .3, vertexColors: true });
 const behind = m => { const c = m.clone(); c.polygonOffset = true; c.polygonOffsetFactor = 1; c.polygonOffsetUnits = 1; return c; };
 const stone = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85, vertexColors: true });
-const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], qianshou: [behind(gilt), gilt], jaya: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
+const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], qianshou: [behind(gilt), gilt], jaya: [behind(gilt), gilt], shan: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
 const preparing = new Map();   // label → statues still being built
 function setPreparing() {
   const s = $("sculptStatus"); s.hidden = !preparing.size;
@@ -869,34 +871,34 @@ function makeJasmine() {
 const FLOWER_MAKERS = { lotus: makeLotus, rose: makeRose, jasmine: makeJasmine };
 const FLOWER_SLOTS = 11;
 const flowerOrder = [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10];
-const flowers = new Array(FLOWER_SLOTS).fill(null);
-function flowerTarget(slot) {
+const flowers = MAIN.flowers = new Array(FLOWER_SLOTS).fill(null); MAIN.mouth = MOUTH;
+function flowerTarget(slot, mouth = MOUTH) {
   const a = (slot / (FLOWER_SLOTS - 1) - .5) * 1.7;
-  return V(MOUTH.x + Math.sin(a) * .24, MOUTH.y + .2 + Math.cos(a) * .16 + (slot % 2) * .05, MOUTH.z + ((slot % 3) - 1) * .07);
+  return V(mouth.x + Math.sin(a) * .24, mouth.y + .2 + Math.cos(a) * .16 + (slot % 2) * .05, mouth.z + ((slot % 3) - 1) * .07);
 }
-function addFlower(n, kind, animated, delay) { const slot = flowerOrder[n % FLOWER_SLOTS]; state.altar.flowers[slot] = kind; placeFlower(slot, kind, animated, delay); }
-function placeFlower(slot, kind, animated, delay = 0) {
-  const headObj = (FLOWER_MAKERS[kind] || makeLotus)();
-  const tgt = flowerTarget(slot);
-  const d = new THREE.Vector3().subVectors(tgt, MOUTH);
+function addFlower(n, kind, animated, delay, alt = MAIN) { const slot = flowerOrder[n % FLOWER_SLOTS]; alt.st.flowers[slot] = kind; placeFlower(slot, kind, animated, delay, alt); }
+function placeFlower(slot, kind, animated, delay = 0, alt = MAIN) {
+  const P = alt.parent, mouth = alt.mouth, headObj = (FLOWER_MAKERS[kind] || makeLotus)();
+  const tgt = flowerTarget(slot, mouth);
+  const d = new THREE.Vector3().subVectors(tgt, mouth);
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(.006, .008, 1, 6), M.stem);
-  stem.geometry.translate(0, .5, 0); stem.position.copy(MOUTH); stem.quaternion.setFromUnitVectors(V(0, 1, 0), d.clone().normalize());
+  stem.geometry.translate(0, .5, 0); stem.position.copy(mouth); stem.quaternion.setFromUnitVectors(V(0, 1, 0), d.clone().normalize());
   const len = d.length();
   headObj.quaternion.copy(stem.quaternion);
-  const place = () => { const old = flowers[slot]; if (old) scene.remove(old.head, old.stem); flowers[slot] = { head: headObj, stem }; };
-  if (!animated) { stem.scale.y = len; headObj.position.copy(tgt); headObj.userData.bloom(1); scene.add(stem, headObj); place(); return; }
+  const place = () => { const old = alt.flowers[slot]; if (old) P.remove(old.head, old.stem); alt.flowers[slot] = { head: headObj, stem }; };
+  if (!animated) { stem.scale.y = len; headObj.position.copy(tgt); headObj.userData.bloom(1); P.add(stem, headObj); place(); return; }
   const start = V(tgt.x * .3, 3.6, 3.6), ctrl = V(tgt.x * .6, 3.4, 1.6);
   stem.scale.y = .0001; headObj.userData.bloom(0);
   tween(1.9, t => {
-    if (!headObj.parent) scene.add(headObj);
+    if (!headObj.parent) P.add(headObj);
     const e = easeInOut(clamp(t / .75, 0, 1)), u = 1 - e;
     headObj.position.set(u*u*start.x + 2*u*e*ctrl.x + e*e*tgt.x, u*u*start.y + 2*u*e*ctrl.y + e*e*tgt.y, u*u*start.z + 2*u*e*ctrl.z + e*e*tgt.z);
     if (t >= .72) {
-      if (!stem.parent) { scene.add(stem); place(); }
+      if (!stem.parent) { P.add(stem); place(); }
       stem.scale.y = Math.max(.0001, len * easeOut((t - .72) / .28));
     }
     headObj.userData.bloom(easeOut(clamp((t - .6) / .4, 0, 1)));
-  }, () => sparkle(tgt, kind === "rose" ? 0xff7090 : kind === "jasmine" ? 0xffffff : 0xffb0c4), delay);
+  }, () => sparkle(tgt, kind === "rose" ? 0xff7090 : kind === "jasmine" ? 0xffffff : 0xffb0c4, P), delay);
 }
 
 /* ---------- fruit and water ---------- */
@@ -977,16 +979,23 @@ Object.entries(A.incense).forEach(([s, k]) => addIncense(+s, k, false));
 
 /* ---------- the other statues' altars: water, light, incense and fruit, laid out like Guanyin's ---------- */
 // shrine(parent, key, o) sets out seven water bowls and a fruit plate (at o.fruitX) on a hall's offering table, and the two stepped
-// candle stands and the bronze censer before it, as in the main hall. What has been offered there is kept in state.shrines[key];
+// candle stands and the bronze censer before it, as in the main hall; with o.vaseX, also a brass vase there for flowers, lotus first.
+// What has been offered there is kept in state.shrines[key];
 // it returns the parts to tap, each with `offer` set to the item it takes. `before` names the statue for the messages
 if (!state.shrines) state.shrines = {};
 const shrines = {};
-const SHRINE_TIP = { water: "Add a bowl of water", fruit: "Add fruit", candle: "Light a candle", incense: "Offer incense" };
+const SHRINE_TIP = { flower: "Offer a lotus", water: "Add a bowl of water", fruit: "Add fruit", candle: "Light a candle", incense: "Offer incense" };
 function shrine(parent, key, o = {}) {
   const st = state.shrines[key] = state.shrines[key] || { bowls: { 0: "pure", 1: "pure", 2: "pure" }, fruit: { 0: 0, 1: 1, 2: 2 }, candles: { c0: "red", c1: "white", l0: "lamp", l1: "lamp" }, incense: { 0: "sandal" }, n: {}, next: { c: 2, l: 2 } };
   const alt = shrines[key] = { parent, st, embers: null, before: o.before || "the Buddha" }, hits = [];
   const pick = (m, item) => { Object.assign(m.userData, { offer: item, tip: `${SHRINE_TIP[item]} before ${alt.before}` }); hits.push(m); return m; };
   buildBowls(alt, pick); buildPlate(alt, o.fruitX ?? 1.02, pick); buildStands(alt, pick); buildCenser(alt, pick);
+  if (o.vaseX !== undefined) {
+    const v = vase.clone(); v.position.set(o.vaseX, ALT.y, ALT.z - .12); parent.add(v); pick(v, "flower");
+    Object.assign(alt, { mouth: V(o.vaseX, MOUTH.y, MOUTH.z), flowers: new Array(FLOWER_SLOTS).fill(null) });
+    st.flowers = st.flowers || { 5: "lotus", 4: "lotus", 6: "lotus" };
+    Object.entries(st.flowers).forEach(([s, k]) => placeFlower(+s, k, false, 0, alt));
+  }
   Object.entries(st.bowls).forEach(([s, k]) => setBowl(alt.bowls[+s], 1, k));
   Object.entries(st.fruit).forEach(([s, k]) => placeFruit(+s, k, false, 0, alt));
   Object.entries(st.candles).forEach(([s, k]) => placeCandle(s, k, false, 0, alt));
@@ -995,12 +1004,13 @@ function shrine(parent, key, o = {}) {
 }
 // one offering from the bag placed on the altar of hall `key`
 const SHRINE_PLACE = {
+  flower: (alt, n, k) => addFlower(n, k, true, 0, alt),
   water: (alt, n, k) => addWater(n, k, true, 0, alt), fruit: (alt, n) => addFruit(n, true, 0, alt),
   candle: (alt, n, k) => addCandle(n, k, true, 0, alt), incense: (alt, n, k) => addIncense(n, k, true, 0, alt)
 };
 function offerAtShrine(key, k) {
   const alt = shrines[key]; if (!alt) return;
-  const kinds = state.bag[k] || {}, kind = Object.keys(kinds).find(x => kinds[x] > 0);
+  const kinds = state.bag[k] || {}, kind = k === "flower" && kinds.lotus > 0 ? "lotus" : Object.keys(kinds).find(x => kinds[x] > 0);   // a lotus if you have one
   if (!kind) { toast(`You have no ${ITEMS[k].name.toLowerCase()} in your bag. Buy them at the temple shop on the left of the lotus pond, or on the pagoda's fifth floor.`); return; }
   kinds[kind]--;
   const n = alt.st.n[k] = (alt.st.n[k] ?? 2) + 1;   // the first three bowls, fruits and incense slots are already filled
@@ -1058,7 +1068,8 @@ function applyMode(mode) {
   if (typeof render === "function") render();
 }
 // on foot through a door: indoors you stand just inside the entrance facing the shrine; outdoors, just outside the door you came out of
-const EXIT_SPOT = { 1: [[0, 13.5], [0, 30]], library: [[14.5, 26], [0, 26]], shop: [[-18.5, 27], [0, 27]], quarters: [[-18.5, 21.6], [0, 21.6]], bell: [[-17, 5.5], [-17, 20]] };
+const EXIT_SPOT = { 1: [[0, 13.5], [0, 30]], library: [[14.5, 26], [0, 26]], shop: [[-18.5, 27], [0, 27]], quarters: [[-18.5, 21.6], [0, 21.6]], bell: [[-17, 5.5], [-17, 20]],
+                    get kyaung() { const m = temple.monasteries[0]; return m && m.exit; } };   // the monastery's verandah, looking down its stair
 function stayFirstPerson(prev) {
   if (current === "pagoda") {
     const [at, look] = EXIT_SPOT[typeof prev === "number" ? 1 : prev] || EXIT_SPOT[1];
@@ -1774,7 +1785,7 @@ const inHall = fn => (...a) => goTo(1, () => fn(...a));   // offerings, chanting
     const b = document.createElement("button");
     b.type = "button"; b.id = "place-" + key; b.className = nav.querySelector(".fl-place") ? "fl-place" : "fl-place first"; b.dataset.f = key;
     b.setAttribute("aria-label", pl.name); b.title = pl.name;
-    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop" }[key] || pl.name.split(" ")[0];
+    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop", kyaung: "Kyaung" }[key] || pl.name.split(" ")[0];
     b.addEventListener("click", () => goTo(key));
     nav.appendChild(b);
   });

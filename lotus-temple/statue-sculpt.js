@@ -3,7 +3,7 @@
    meshed with surface nets. Runs in a Web Worker; falls back to the main thread.
    Figures: guanyin (1F, white porcelain), qianshou (5F, the Thousand-Armed Guanyin, gilded; her arms are built in temple-floors.js),
    medicine (4F, Medicine Buddha), shakyamuni (the temple hall), jaya (6F and under the wishing tree, the Victorious Buddha),
-   maitreya (7F, laughing Maitreya). */
+   maitreya (7F, laughing Maitreya), shan (the Shan monastery on the stupa hill). */
 const TAU = Math.PI * 2;
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * .25; }
@@ -141,6 +141,24 @@ const shakyamuni = (x, y, z) => seatedBuddha(x, y, z, false);
 // the Victorious Buddha (Jaya Buddha): the same earth-touching figure, crowned with the tall flame-like finial of Shan and Burmese images
 const jayaFlame = (x, y, z) => cone(x, y, z, 0, 2.74, 0, .065, 0, 3.08, 0, .004) + .004 * Math.sin(y * 60);
 const jaya = (x, y, z) => smin(seatedBuddha(x, y, z, false), jayaFlame(x, y, z), .03);
+// the Shan monastery's image, in the manner of northern Shan and Lanna (northern Thai) images: the earth-touching Buddha with a
+// jewelled band along the hairline, a lotus-bud finial on the ushnisha, and the end of the robe falling from the left shoulder
+// to the waist in a pleated flap with a notched hem
+const shanBud = (x, y, z) => smin(ell(x, y - 2.86, z, .072, .1, .072), cone(x, y, z, 0, 2.92, 0, .036, 0, 3.07, 0, .003), .03);
+function shanBand(x, y, z) {
+  const edge = 2.505 - .38 * clamp(.24 - z, 0, .5);
+  return Math.hypot((Math.hypot(x / .25, (z - .01) / .274) - 1) * .26, y - edge) - .014;
+}
+function shanFlap(x, y, z) {
+  const tor = smin(ell(x, y - 1.05, z - .02, .5, .33, .33), ell(x, y - 1.48, z, .5, .44, .31), .2);
+  let f = smax(tor - .022 + .003 * Math.sin(x * 120), Math.abs(x + .22) - .07, .01);
+  f = smax(f, y - 1.84, .01);
+  f = smax(f, 1.08 + .035 * Math.abs(Math.sin((x + .22) * 45)) - y, .008);   // the notched hem
+  return smax(f, -z, .01);
+}
+// built mirrored (x → -x) so that, facing the visitor, his right hand touches the earth and his right shoulder is bare
+const shanR = (x, y, z) => smin(smin(seatedBuddha(x, y, z, false), shanBud(x, y, z), .03), Math.min(shanBand(x, y, z), shanFlap(x, y, z)), .006);
+const shan = (x, y, z) => shanR(-x, y, z);
 
 /* ---------- 8F: Maitreya (彌勒佛) as the laughing Budai, right knee raised, beads and cloth sack ---------- */
 function beads(x, y, z) {
@@ -221,7 +239,7 @@ function lion(x, y, z) {
 }
 const lionL = (x, y, z) => lion(-x, y, z);   // its partner, mirrored
 
-const FIGURES = { guanyin, qianshou: guanyin, medicine, shakyamuni, jaya, maitreya, lion, lionL };
+const FIGURES = { guanyin, qianshou: guanyin, medicine, shakyamuni, jaya, shan, maitreya, lion, lionL };
 // base colour per point (multiplied by baked occlusion); guanyin keeps her plain white glaze
 const GOLD = [1, .76, .4];
 const TINT = {
@@ -229,6 +247,7 @@ const TINT = {
   shakyamuni: (x, y, z) => medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
   qianshou: () => GOLD,
   jaya: (x, y, z) => jayaFlame(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
+  shan: (x, y, z) => { x = -x; return shanBand(x, y, z) < .01 ? [.86, .3, .16] : shanBud(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.78, .55, .28] : GOLD; },
   maitreya: (x, y, z) => beads(x, y, z) < .01 ? [.42, .22, .1] : sack(x, y, z) < .012 ? [.95, .7, .42] : GOLD,
   lion: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62],
   lionL: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62]
