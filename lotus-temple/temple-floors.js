@@ -3742,14 +3742,18 @@ window.TempleFloors = function TempleFloors(ctx) {
     row(92.5, L2.z1, (c, W, D) => house(L2.x0 - SET - D / 2, c, Math.PI / 2, W, D));                    // plaza lane, both sides
     row(92.5, L2.z1, (c, W, D) => house(L2.x1 + SET + D / 2, c, -Math.PI / 2, W, D));
     row(92.5, 108, (c, W, D) => house(L3.x0 - SET - D / 2, c, Math.PI / 2, W, D));                      // market lane, west side
-    row(110.5, 151, (c, W, D) => house(L3.x0 - SET - D / 2, c, Math.PI / 2, W, D));                     // and on, facing the school gate
+    row(110.5, 143, (c, W, D) => house(L3.x0 - SET - D / 2, c, Math.PI / 2, W, D));                     // and on, facing the school gate
+    seq++;   // the last house there gave way to the houses facing the Haw Kham; the rest of the town's houses stay as they were
     row(L4.z0 + 1, L4.z1 - 4, (c, W, D) => house(L4.x0 - SET - D / 2, c, Math.PI / 2, W, D));          // west lane, both sides facing it
     row(L4.z0 + 1, L4.z1 - 4, (c, W, D) => house(L4.x1 + SET + D / 2, c, -Math.PI / 2, W, D));         // (back to back with the town-road houses)
     // gardens: shade trees and banana clumps behind and between the houses
     [[15, 96], [24, 104], [-14, 98], [-86, 30], [-86.5, 8], [-86, -12]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 3) * .1, 300 + i));
     [[14, 93], [20, 99], [26, 95], [-12, 104], [-85.5, 40], [-85.5, 19], [-86, -2], [-85.5, -20]].forEach(([x, z], i) => banana(g, x, z, 400 + i));
-    [[16, 143], [4, 144], [24.5, 146.5]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the church and its houses
-    [[10, 145.5], [20, 145]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
+    [[16, 143], [4, 142], [24.5, 141.5]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the church and its houses
+    [[10, 142], [20, 142.5]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
+    // four traditional two-storey Shan houses facing the Haw Kham across the palace lane, two either side of the way to its gate:
+    // a wooden storey and verandah over a whitewashed brick ground floor, under rusty tin hip roofs
+    [-2, 7.5, 24, 33.5].forEach((x, i) => shanWoodHouse(g, x, 148.9, 0, { W: 7.5, D: 6.5, floors: 2, seed: 240 + i, roof: rustRoof }));
     kachinChurch(g, 12, 128);
     flat(mesh(new THREE.BoxGeometry(8, .05, 3), lane, 2, .03, 108.6, g));   // the path from the end of the plaza lane to the church
     // six houses round the church, three each side, their fronts toward it

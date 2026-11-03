@@ -41,6 +41,13 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-03 (small hours)
+- Four traditional two-storey Shan houses face the Haw Kham across the palace lane, two either side of the way to its gate
+  (`shanWoodHouse`, floors 2: a wooden storey and verandah over whitewashed brick, rusty tin hip roofs; end of
+  `backStreets`). To make room, the last house on the market lane by the school gate is gone (the row now ends at z 143; `seq`
+  is bumped so every other house keeps its look), and the garden trees and bananas behind the church moved back a few metres.
+  Checked headless at night from the lane and from behind the church: renders, no console errors.
+
 ### 2026-11-03 (after midnight)
 - A road and a stair for the Haw Kham: the market lane now runs on past the high school to z 160.5, and a new palace lane
   (`LANES[4]`, lamps on poles like the other back lanes) runs west from there past the palace gate (a paved walk out of the
