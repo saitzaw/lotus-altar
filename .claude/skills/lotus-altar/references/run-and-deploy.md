@@ -24,7 +24,8 @@ chromium --headless=new --no-sandbox --use-angle=swiftshader --enable-unsafe-swi
 
 The page opens in the floor-1 hall; to test outside, serve a throwaway copy of `dist/index.html` with a script that
 clicks `#outsideBtn` and then `#fpBtn`, and delete it afterwards. Software rendering is slow (a minute or more per
-shot), and headless can't play audio.
+shot), and headless can't play audio. Plain screenshots of outdoor spots often come back blank; `MEMORY.md` at the repo
+root has a method that works (render inside the page and log the image).
 
 ## Deploy
 

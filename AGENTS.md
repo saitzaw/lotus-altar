@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Instructions for AI coding agents working in this repo. Claude Code users get the fuller version as the
-`lotus-altar` skill in `.claude/skills/lotus-altar/` (`SKILL.md` plus topic files in `references/`); session-to-session state lives in `CONTINUUM.md`.
+`lotus-altar` skill in `.claude/skills/lotus-altar/` (`SKILL.md` plus topic files in `references/`); session-to-session state lives in `CONTINUUM.md`, and lessons learned the hard way (gotchas, headless testing) in `MEMORY.md`.
 
 ## Project
 
@@ -64,4 +64,4 @@ and visiting the affected place, and watch the browser console for errors.
 - The beat officer (police chase) stays commented out unless the user asks for him back.
 - Respect `prefers-reduced-motion` and label interactive controls for screen readers.
 - Commit and push straight to `main`. Commit subjects are short, imperative and describe the change in the world.
-- After a meaningful change, update `CONTINUUM.md`.
+- After a meaningful change, update `CONTINUUM.md`. When you learn a lasting gotcha, add it to `MEMORY.md`.

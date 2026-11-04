@@ -12,6 +12,7 @@ donate (demo only), and wander a Northern Shan State town, seven-day market, stu
 - **Repo:** `/home/alex/MyProjects/lotus-altar`, everything lives in `lotus-temple/`
 - **Stack:** plain HTML/CSS/JS, no bundler, no npm, no ES modules. Three.js **r128** as a global `THREE`; use only r128 APIs.
 - **State between sessions:** read `CONTINUUM.md` at the start, add a log entry after a meaningful change.
+- **Lessons learned:** read `MEMORY.md` (gotchas, how to get a headless render of an outdoor spot); add a lesson when you learn one.
 
 ## Rules (always)
 
