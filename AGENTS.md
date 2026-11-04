@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Instructions for AI coding agents working in this repo. Claude Code users get the fuller version as the
-`lotus-altar` skill in `.claude/skills/lotus-altar/` (`SKILL.md` plus topic files in `references/`); session-to-session state lives in `CONTINUUM.md`, and lessons learned the hard way (gotchas, headless testing) in `MEMORY.md`.
+`lotus-altar` skill in `.claude/skills/lotus-altar/` (`SKILL.md` plus topic files in `references/`); session-to-session state lives in `CONTINUUM.md` (older log entries in `CONTINUUM-archive.md`, not needed at the start), and lessons learned the hard way (gotchas, headless testing) in `MEMORY.md`.
 
 ## Project
 
