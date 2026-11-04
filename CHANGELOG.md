@@ -6,6 +6,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-04
 
 ### Added
+- A row of houses across the road from the township football ground, so that side of the road isn't empty.
+- A bamboo fence with a gate round each hut's yard in the village in front of the hospital.
 - A waterfall where the stream rises, west of the fields behind the hospital: it falls off a rock cliff into a boulder-ringed pool, with spray and its own sound.
 
 ### Removed

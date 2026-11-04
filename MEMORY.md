@@ -31,7 +31,8 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 3. Force day before the page loads, with a script placed before the three.js tag:
    `localStorage.setItem("lotus-altar-daylight","1")`.
 4. Drive the test by counting `requestAnimationFrame` frames, not with timers. At frame ~4 call `__t.enterWalk([x,z],[lx,lz],"t")`.
-   At frame ~5–7, set `camera.position` and `camera.lookAt` yourself, call `renderer.render(world, camera)`, then in the same
+   At frame ~5–7, set `camera.position` and `camera.lookAt` yourself, call `temple.cull(camera, 800)` (expose it on `__t`; else
+   the town's distance culling still matches the old view and only the instanced windows show, floating), then `renderer.render(world, camera)`, then in the same
    task `console.log("IMG"+renderer.domElement.toDataURL("image/jpeg",.85))`. Later frames may never arrive within the budget.
 5. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
    redirect comes out empty with snap Chromium. Base64-decode the `IMG` line to a `.jpg` and look at it. One run takes about

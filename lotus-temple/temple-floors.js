@@ -3211,10 +3211,45 @@ window.TempleFloors = function TempleFloors(ctx) {
     flat(mesh(new THREE.BoxGeometry(3, .04, Z1 - Z0), dirt, X, .03, (Z0 + Z1) / 2, g)).receiveShadow = true;
     [[X - 6.2, 40, Math.PI / 2], [X - 6.2, 30, Math.PI / 2], [X - 6.6, 19, Math.PI / 2], [X - 6.2, 8.5, Math.PI / 2],
      [X + 6.2, 36, -Math.PI / 2], [X + 6.4, 24.5, -Math.PI / 2], [X + 6.2, 15, -Math.PI / 2]]
-      .forEach(([x, z, ry], i) => villageHut(g, x, z, ry, { W: 4.4 + (i % 3) * .4, D: 3.8 + (i % 2) * .5, seed: 600 + i }));
+      .forEach(([x, z, ry], i) => {
+        const W = 4.4 + (i % 3) * .4, D = 3.8 + (i % 2) * .5, seed = 600 + i, sd = ry > 0 ? -1 : 1;   // sd: the side of the lane it stands on
+        villageHut(g, x, z, ry, { W, D, seed });
+        // its yard, fenced from the lane edge to a little behind the hut, with the gate in front of the ladder
+        const lx = -(seed % 2 ? 1 : -1) * (W / 2 - .7), back = x + sd * (D / 2 + 1.4), front = X + sd * 1.7, hw = W / 2 + 1.3;
+        yardFence(g, Math.min(front, back), Math.max(front, back), z - hw, z + hw, sd < 0 ? "+x" : "-x", sd < 0 ? z - lx : z + lx);
+      });
     lampWires(g, [44, 30, 18, 6].map(z => villageLamp(g, X + 1.9, 0, z, Math.PI, true)));   // in the gaps between the east huts' ladders
     [[X - 4, 46], [X + 4, 45], [X - 11, 25], [X - 11.5, 36], [X + 5, 4], [X - 4, 2]].forEach(([x, z], i) => banana(g, x, z, 700 + i));
-    [[X - 12.5, 31], [X - 12, 14], [X + 2.5, 1]].forEach(([x, z], i) => tree(g, x, z, .85 + i * .08, 720 + i));
+    [[X - 12.5, 30.2], [X - 12, 21.1], [X + 2.5, 1]].forEach(([x, z], i) => tree(g, x, z, .85 + i * .08, 720 + i));   // the first two in the gaps between the road houses
+  }
+  // a village yard fence of split bamboo: posts about a metre apart carrying two rails, round the rectangle x0..x1, z0..z1, with
+  // a gate 1.4 m wide in the `side` ("+x" or "-x") centred on gz, between two taller posts
+  const fenceBamboo = std({ color: 0xa88c56, roughness: .9 }), fencePostGeo = new THREE.CylinderGeometry(.04, .05, 1, 5), fenceRailGeo = new THREE.BoxGeometry(1, .05, .05);
+  function yardFence(g, x0, x1, z0, z1, side, gz) {
+    const GW = .7, gx = side === "+x" ? x1 : x0;
+    const run = (ax, az, bx, bz) => {   // one straight run of fence on the land
+      const L = Math.hypot(bx - ax, bz - az); if (L < .1) return;
+      const n = Math.max(1, Math.round(L / 1.1)), ry = Math.atan2(bx - ax, bz - az) + Math.PI / 2;
+      for (let i = 0; i <= n; i++) { const px = ax + (bx - ax) * i / n, pz = az + (bz - az) * i / n, y = terrainAt(px, pz); part(fencePostGeo, fenceBamboo, px, y + .5, pz, g); }
+      const mx = (ax + bx) / 2, mz = (az + bz) / 2, y = terrainAt(mx, mz);
+      [.35, .8].forEach(h => { const r = part(fenceRailGeo, fenceBamboo, mx, y + h, mz, g); r.rotation.y = ry; r.scale.x = L; });
+      sRect(g, Math.min(ax, bx) - .05, Math.max(ax, bx) + .05, Math.min(az, bz) - .05, Math.max(az, bz) + .05, 1);
+    };
+    const gzc = clamp(gz, z0 + GW + .2, z1 - GW - .2), ox = side === "+x" ? x0 : x1;
+    run(x0, z0, x1, z0); run(x0, z1, x1, z1); run(ox, z0, ox, z1);
+    run(gx, z0, gx, gzc - GW); run(gx, gzc + GW, gx, z1);
+    [-GW, GW].forEach(o => { const y = terrainAt(gx, gzc + o); part(fencePostGeo, fenceBamboo, gx, y + .65, gzc + o, g).scale.set(1.4, 1.3, 1.4); });
+  }
+  // houses along the east side of the road up to the hospital, facing the football ground across it: town houses of concrete
+  // and wood, one and two storeys, with small gardens behind backing onto the hut village's yards
+  function hospitalRoadHouses(g) {
+    const KINDS = [[true, 1], [false, 2], [true, 2], [false, 1], [true, 1]], FRONT = -120;   // FRONT: the road's verge edge
+    [[5.5, 6.5, 6], [13.8, 6, 6.5], [21.8 + .6, 7, 6], [31, 6, 6.5], [38.8, 6.5, 6]].forEach(([z0, W, D], i) => {
+      const [wood, floors] = KINDS[i], seed = 760 + i, x = FRONT + D / 2 + 2.9, z = z0 + W / 2;
+      if (wood) shanWoodHouse(g, x, z, -Math.PI / 2, { W, D, floors, seed, roof: seed % 3 ? rustRoof : ROOFS[seed % 4](1) });
+      else shanHouse(g, x, z, -Math.PI / 2, { W, D, floors, shop: false, seed, wall: WALLS[(seed * 5) % WALLS.length], roof: ROOFS[seed % 4] });
+    });
+    [[-117.5, 13.1], [-117.5, 37.6]].forEach(([x, z], i) => banana(g, x, z, 780 + i));   // in the gaps between them, by the road
   }
   /* ---------- Halloween night: one small friendly ghost, round-headed and smiling with a jack-o'-lantern in its hand, drifts along
      the streets and lanes, choosing a way at random at every corner. It is never scary: it stops and waves when someone comes
@@ -4903,6 +4938,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     backStreets(g);
     hillHuts(g);
     hutVillage(g);
+    hospitalRoadHouses(g);
     hospital(g);
     footballGround(g);
     highSchool(g);

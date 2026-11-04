@@ -45,6 +45,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-04
+- Filled the east side of the road up to the hospital, facing the football ground: `hospitalRoadHouses(g)` in
+  `temple-floors.js` puts five town houses (wooden and concrete, one and two storeys) between x ≈ -120 and -110, z 5.5–45,
+  fronts on the road's verge, with two banana clumps in the gaps. Two hut-village shade trees moved into the gaps behind them.
+- Gave each of the seven village huts a fenced yard: `yardFence()` draws split-bamboo posts and two rails (as `part()`s) from the
+  lane edge to 1.4 m behind the hut, with a gate between taller posts in front of its ladder. The fences block walkers.
+  Checked both in headless renders.
 - Added a waterfall where the stream rises (`waterfall(g)` and `FALLS` in `temple-floors.js`, built after `riverCrossing`):
   a noise-pushed rock cliff west of the stream's end, its back buried in the near hill, with two bowed sheets of streaked
   water falling 11 m into a round plunge pool ringed with boulders (open to the east where the stream runs out), churning
