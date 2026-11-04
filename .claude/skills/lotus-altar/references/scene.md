@@ -18,6 +18,7 @@
 | Front street | z ≈ 54, runs x −100…145 |
 | Town road | x = −41.5 (`TOWN.roadX`), z −26…47.5 |
 | Stream | centre line `riverZ(x) = -30 + sin(.045x)·3.2 + sin(.11x + 1)·1.1`, x −110…110 |
+| Waterfall (`waterfall`, `FALLS`) | where the stream rises, at its west end: plunge pool centre (−115.5, `riverZ(−110)` ≈ −25.8), radius 5.4, ringed with boulders and open to the east; the falls drop 11 m off a rock cliff (x ≈ −129…−120, 22 m long, back buried in the near hill at (−149, −57)); behind the hospital. Pool and cliff block walkers |
 | Paddy fields | x −104…64, z −94…−42 |
 | Forest | beyond z ≈ −98, then hills in an arc 150–190 m out |
 | Old banyan | (36.4, 65.4) |

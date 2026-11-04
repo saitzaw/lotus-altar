@@ -42,6 +42,16 @@ recently, and what's still open. Read it at the start of a session; update it at
 
 ## Log
 
+### 2026-11-04
+- Added a waterfall where the stream rises (`waterfall(g)` and `FALLS` in `temple-floors.js`, built after `riverCrossing`):
+  a noise-pushed rock cliff west of the stream's end, its back buried in the near hill, with two bowed sheets of streaked
+  water falling 11 m into a round plunge pool ringed with boulders (open to the east where the stream runs out), churning
+  foam, rising spray puffs and a few pines on top. Tapping the falls gives a tip and toast (Burmese ရေတံခွန် in the tip).
+  Pool and cliff block walkers; the cliff is in `TALL`. Its roar is a new ambience bed (`amb.falls`, `temple.sounds.falls`).
+  With reduced motion the water still drifts slowly, as the stream does; the foam stops turning. Checked in a headless
+  render from beside the hospital.
+- Took the − / + zoom buttons out of the HUD (and their `zoom()` helper and `.zoom` styles); wheel and pinch zoom still work.
+
 ### 2026-11-03 (late)
 - Festival ground: the prayer-flag pole's plinth overlapped the pavilion stage's steps. The pole (with its hamsa, streamer,
   lantern strings and walk-collision circle) now stands 2.2 m downhill of the field's centre (`FZ` in `festivalGround`),

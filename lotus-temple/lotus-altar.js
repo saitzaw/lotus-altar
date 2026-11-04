@@ -1387,7 +1387,7 @@ $("timeBtn").addEventListener("click", () => {
 });
 /* ---------- the sounds outside, made on the fly in WebAudio (no recordings): wind in the banyan and over the paddies,
    birds and cicadas by day and crickets by night at the forest, the hti bells on the stupas, the temple bell
-   and the gong in the Lotus Temple hall now and then, and the rain ---------- */
+   and the gong in the Lotus Temple hall now and then, the waterfall's roar, and the rain ---------- */
 let amb = null;
 const rand = (a, b) => a + Math.random() * (b - a);
 function ambStart() {
@@ -1411,6 +1411,7 @@ function ambStart() {
     rice: bed([["highpass", 2800, .5]]),                          // the ripe rice hissing in it
     cicada: bed([["bandpass", 5200, 9]], 42),
     rain: bed([["highpass", 450, .5], ["lowpass", 4200, .5]]),
+    falls: bed([["lowpass", 1100, .6], ["highpass", 120, .5]]),   // the waterfall's steady roar into its pool
     breaths: { banyan: { left: 0, wait: rand(5, 40) }, field: { left: 0, wait: rand(10, 60) }, hill: { left: 0, wait: rand(1, 5) } },
     next: { tink: 0, bird: 2, cricket: 0, bell: rand(8, 25), gong: rand(4, 20), thunder: rand(15, 40) }
   };
@@ -1454,16 +1455,18 @@ function ambStep(dt) {
   const near = (d, r0, r1) => clamp(1 - (d - r0) / (r1 - r0), 0, 1);   // 1 within r0 metres, fading to nothing at r1
   const toRect = ([x0, x1, z0, z1]) => Math.hypot(Math.max(x0 - p.x, 0, p.x - x1), Math.max(z0 - p.z, 0, p.z - z1));
   const gust = .55 + .25 * Math.sin(now * .31) + .2 * Math.sin(now * .83 + 1), wind = (.4 + .6 * wx.wind) * gust, wet = wx.rain;
-  let leaves = 0, field = 0, forest = 0, stupa = 0;
+  let leaves = 0, field = 0, forest = 0, stupa = 0, falls = 0;
   if (out) {
     leaves = near(Math.hypot(p.x - S.banyan[0], p.z - S.banyan[1]), 5, 25);
     field = near(toRect(S.fields), 0, 25);
     forest = clamp((S.forestZ + 20 - p.z) / 25, 0, 1);   // from 20 m short of the trees to a few metres in
     stupa = near(Math.hypot(p.x - S.stupa[0], p.y - S.stupa[1], p.z - S.stupa[2]), 14, 50);
+    falls = near(Math.hypot(p.x - S.falls[0], p.z - S.falls[1]), 6, 55);
   }
   const set = (b, v) => b.g.gain.setTargetAtTime(v, T, .5);
   set(amb.cicada, day && wet < .5 && out ? .02 + .05 * forest : 0);
   set(amb.rain, .28 * wet * (out ? 1 : .35));
+  set(amb.falls, .22 * falls * falls * (1 + .5 * wet));   // louder in the rains
   amb.rain.fs[1].frequency.setTargetAtTime(out ? 4200 : 900, T, .3);   // muffled by the roof indoors
   // the one-off sounds, each on its own timer
   const due = (k, a0, a1) => (amb.next[k] -= dt) < 0 && (amb.next[k] = rand(a0, a1), true);
@@ -1517,14 +1520,6 @@ function keepInside() {
   const p = camera.position;
   p.set(clamp(p.x, -7.0, 7.0), clamp(p.y, .5, 6.5), clamp(p.z, -5.1, 7.1));
 }
-// zoom buttons, for anyone without a scroll wheel or pinch
-function zoom(f) {
-  const off = camera.position.clone().sub(controls.target), d = clamp(off.length() * f, controls.minDistance, controls.maxDistance);
-  const p0 = camera.position.clone(), p1 = controls.target.clone().add(off.setLength(d));
-  tween(reduceMotion ? .01 : .35, t => camera.position.lerpVectors(p0, p1, easeOut(t)));
-}
-$("zoomOut").addEventListener("click", () => zoom(1.35));
-$("zoomIn").addEventListener("click", () => zoom(1 / 1.35));
 /* ---------- the four-animal top (လေးကောင်ဂျင်) in the seven-day market: festival tokens only, kept in this browser ---------- */
 const TG_KEY = "lotus-altar-tokens", TG_START = 20;
 let tgTokens = TG_START, tgPick = "red", tgStake = 1, tgOpen = false, tgCam = null;

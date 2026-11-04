@@ -20,7 +20,8 @@ All sound is synthesized in WebAudio in `lotus-altar.js`; there are no audio fil
 
 - One shared 2-second noise buffer feeds filtered noise beds (`bed(filters, am)`): the banyan's breeze, the open-air
   breeze (fields, hilltop, faintly anywhere outside), rice, cicadas (beating
-  at 42 Hz), rain (muffled indoors).
+  at 42 Hz), rain (muffled indoors), the waterfall's roar (`falls`: low-passed noise, a steady bed since water doesn't
+  gust, full within 6 m of its foot and gone by 55 m, half as loud again in the rain).
 - **Every wind follows one pattern** (`breath(b, len, gap, moan, level)` in `ambStep`, state in `amb.breaths`): a soft
   breeze for a few seconds that swells in and dies away, then stillness (shorter in windy weather). At night each breath
   carries a faint low moan. Three winds: `banyan`, `field`, `hill`; the stupas' hti bells ring mostly during a hill
@@ -30,7 +31,7 @@ All sound is synthesized in WebAudio in `lotus-altar.js`; there are no audio fil
 - One-offs on their own timers (`due(name, min, max)`): stupa hti bells (`tinkle`), the Bell Tower bell (`templeBell`),
   the Lotus Temple hall gong (`gong`), birds by day, crickets at night, thunder in heavy rain.
 - Where sounds come from is `temple.sounds` in `temple-floors.js` (stupa, bell, gong, compound, banyan,
-  fields, `forestZ`). `ambStep` fades each in by distance with `near(d, r0, r1)`: full within `r0` metres,
+  fields, `forestZ`, `falls`). `ambStep` fades each in by distance with `near(d, r0, r1)`: full within `r0` metres,
   silent past `r1`.
 - Indoors only rain (muffled) and the bell and gong are heard; inside the Bell Tower or the Lotus Temple hall their own
   bell or gong plays at full loudness.

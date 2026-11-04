@@ -3,6 +3,14 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-04
+
+### Added
+- A waterfall where the stream rises, west of the fields behind the hospital: it falls off a rock cliff into a boulder-ringed pool, with spray and its own sound.
+
+### Removed
+- The zoom in / zoom out buttons. Scroll or pinch to zoom.
+
 ## 2026-11-03
 
 ### Added

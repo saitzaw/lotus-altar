@@ -171,8 +171,6 @@ button,input{font:inherit;color:inherit}
 .journey li.done b{border-color:var(--saffron);color:var(--saffron)}
 .panel:not(.in-shop) .items .step button{opacity:.55}
 #skyInfo{flex-basis:100%;color:var(--text);opacity:.85}
-.zoom{display:inline-flex;gap:4px}
-.zoom .pillbtn{width:34px;padding:5px 0;text-align:center;font-size:1rem;line-height:1.1}
 .topgame{position:absolute;right:76px;bottom:64px;width:min(340px,calc(100% - 100px));display:grid;gap:10px;padding:14px;border-radius:14px;background:rgba(23,13,9,.92);border:1px solid var(--line);backdrop-filter:blur(8px);z-index:5}
 .tg-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .topgame h3{margin:0;font-size:.95rem;letter-spacing:0;text-transform:none;color:var(--text);font-weight:500}
