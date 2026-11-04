@@ -44,6 +44,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-05
+- Put the Kachin Baptist church in its own walled compound (`churchCompound(g)` and `CHURCH_YARD` in `temple-floors.js`), as the
+  site owner asked, with a gate at the plaza lane's end under an iron arch and cross. The six town houses round the church are gone;
+  inside the wall now: the pastor's house and the house of the women church workers (sarama, whom the congregation calls sister) on
+  the west, the baptistry (a raised immersion pool under a roof) and a Sunday-school hall on the east, trees behind the church.
+  The owner asked for "Father and sister"; a Baptist church has a married pastor and no nuns, so those are the Baptist equivalents.
+  If they meant a Catholic mission instead, the church itself would need changing. To check with a Burmese speaker: the board and tip
+  wording သင်းအုပ်ဆရာအိမ် (pastor's house), ဆရာမအိမ် (women workers' house) and နှစ်ခြင်းကန် (baptistry). The hill-foot bamboo
+  now stands back from the compound's west wall. Checked in headless renders.
+
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between
   the hill and the houses on the plaza lane, round the church and facing the Haw Kham, as the site owner asked. Clumps stand on the

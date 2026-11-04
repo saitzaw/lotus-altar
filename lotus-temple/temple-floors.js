@@ -4002,6 +4002,61 @@ window.TempleFloors = function TempleFloors(ctx) {
     civicSign(c, "ကချင်နှစ်ခြင်းအသင်းတော်", "Hsenwi Kachin Baptist Church", "#f4f2ec", "#9a2a22", 3.4, 5, 1.9, PZ + 3.5);
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.1, .12), door, 5 + sd * 1.5, 1.05, PZ + 3.45, c));
   }
+  // the Kachin Baptist church's compound at the end of the plaza lane, inside a whitewashed wall with a red cap: the church in the
+  // middle, its gate on the lane under an iron arch with a cross; on the west side the pastor's house and the house of the women
+  // church workers (sarama); on the east the baptistry, a roofed open-air pool, and the Sunday-school hall; trees behind the church
+  const CHURCH_YARD = { x0: -6, x1: 28, z0: 107.6, z1: 143.6, gate: [-2.25, 2.25] };   // the wall round it (fits between the hill-foot lane, the plaza- and market-lane houses and the houses facing the Haw Kham), and the gate in its south wall
+  function churchCompound(g) {
+    const { x0, x1, z0, z1, gate } = CHURCH_YARD, cap = std({ color: 0x9a2a22, roughness: .6 }), iron = std({ color: 0x2a2a2c, roughness: .5, metalness: .6 });
+    const lane = std({ color: 0x7e7a72, roughness: .9 });
+    kachinChurch(g, 12, 128);
+    // the wall, open at the gate
+    [[x0, x1, z0, z0, gate], [x0, x1, z1, z1], [x0, x0, z0, z1], [x1, x1, z0, z1]].forEach(([a, b, c, d, gap]) => {
+      (gap ? [[a, gap[0]], [gap[1], b]] : [[a, b]]).forEach(([a, b]) => {
+        const w = Math.max(b - a, .25), dd = Math.max(d - c, .25), mx = (a + b) / 2, mz = (c + d) / 2;
+        mesh(new THREE.BoxGeometry(w, 1.6, dd), civicWhite, mx, .8, mz, g); mesh(new THREE.BoxGeometry(w + .06, .14, dd + .06), cap, mx, 1.67, mz, g);
+        sRect(g, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+      });
+    });
+    // the gate: two pillars, an iron arch over the way in with a white cross on top, the leaves folded back inside
+    gate.forEach(x => { mesh(new THREE.BoxGeometry(.6, 2.4, .6), civicWhite, x + (x < 0 ? -.3 : .3), 1.2, z0, g); mesh(new THREE.BoxGeometry(.7, .14, .7), cap, x + (x < 0 ? -.3 : .3), 2.47, z0, g); sCircle(g, x + (x < 0 ? -.3 : .3), z0, .4); });
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(gate[1] + .3, .07, 6, 24, Math.PI), iron); arch.position.set(0, 2.5, z0); arch.scale.y = .35; g.add(arch);
+    const crossM = std({ color: 0xf4f2ec, roughness: .5 });
+    mesh(new THREE.BoxGeometry(.1, .9, .1), crossM, 0, 2.5 + (gate[1] + .3) * .35 + .45, z0, g); mesh(new THREE.BoxGeometry(.55, .1, .1), crossM, 0, 2.5 + (gate[1] + .3) * .35 + .6, z0, g);
+    gate.forEach(x => { const leaf = mesh(new THREE.BoxGeometry(.06, 1.5, 2), iron, x + (x < 0 ? .2 : -.2), .85, z0 + 1.1, g); leaf.castShadow = false; });
+    // the path from the gate to the church's forecourt
+    flat(mesh(new THREE.BoxGeometry(7.6, .05, 3.6), lane, 1.55, .03, z0 + 1.8, g));
+    // the pastor's house: two storeys of wood over whitewashed brick, its verandah toward the church; and the women workers' house
+    const pastor = { tip: "The pastor's house · သင်းအုပ်ဆရာအိမ်", toast: "The pastor's house. A Baptist church has no priest: the congregation calls its own pastor, who is married and lives here beside the church with the family. People call him Sara, teacher, and come to the house for prayers, for help with a letter or a wedding, and to sit on the verandah after the service." };
+    const sarama = { tip: "The women workers' house · ဆရာမအိမ်", toast: "The house of the church's women workers, the sarama. The congregation calls them sister: they teach the Sunday school, lead the women's fellowship, visit the sick and the villages in the hills, and cook with the women for the Christmas and Easter meals." };
+    shanWoodHouse(g, -.5, 131, Math.PI / 2, { W: 7, D: 6.5, floors: 2, seed: 261, roof: ROOFS[1](1) });
+    shanHouse(g, -.6, 120, Math.PI / 2, { W: 6.5, D: 6, floors: 1, shop: false, seed: 262, wall: WALLS[3], roof: ROOFS[2] });
+    clickable(picks.pagoda, civicSign(g, "သင်းအုပ်ဆရာအိမ်", "Pastor's House", "#f4f2ec", "#9a2a22", 1.6, 5.2, 1.3, 135.6, Math.PI / 2), pastor);
+    clickable(picks.pagoda, civicSign(g, "ဆရာမအိမ်", "Women Workers' House", "#f4f2ec", "#9a2a22", 1.6, 4.4, 1.3, 115.6, Math.PI / 2), sarama);
+    [[5.2, 135.6], [4.4, 115.6]].forEach(([x, z]) => [-.7, .7].forEach(dz => mesh(new THREE.BoxGeometry(.08, 1.2, .08), iron, x, .6, z + dz, g)));
+    // the baptistry: a raised tank of blue tile, steps up over the rim at both ends, water waist deep, under a tin roof on six posts.
+    // Baptists baptise believers by immersing them, so the pastor and each new member walk down into the water together
+    const bap = { tip: "The baptistry · နှစ်ခြင်းကန်", toast: "The baptistry. Baptists baptise those old enough to choose for themselves, by immersing them: the pastor and each new member walk down the steps into the water together, and the congregation sings from the yard. Some villages still baptise in the river." };
+    const BX = 22.5, BZ = 121, TW = 2.6, TL = 5.4, TH = 1, tileM = std({ color: 0xe8f0f4, roughness: .4 }), blueTile = std({ color: 0x3a7aa8, roughness: .3 });
+    const b = new THREE.Group(); b.position.set(BX, 0, BZ); g.add(b);
+    flat(mesh(new THREE.BoxGeometry(5.2, .12, 8.6), forecourt, 0, .06, 0, b)).receiveShadow = true;
+    [[-1, 0, .2, TL], [1, 0, .2, TL], [0, -1, TW, .2], [0, 1, TW, .2]].forEach(([sx, sz, w, d]) => clickable(picks.pagoda, mesh(new THREE.BoxGeometry(w, TH, d), tileM, sx * (TW / 2 - .1), TH / 2 + .1, sz * (TL / 2 - .1), b), bap));
+    mesh(new THREE.BoxGeometry(TW - .4, .1, TL - .4), blueTile, 0, .2, 0, b);
+    const water = mesh(new THREE.BoxGeometry(TW - .4, .02, TL - .4), std({ color: 0x5ab0d0, roughness: .08, metalness: .2, transparent: true, opacity: .75, depthWrite: false }), 0, TH - .12, 0, b);
+    water.castShadow = false; clickable(picks.pagoda, water, bap);
+    [-1, 1].forEach(e => { for (let i = 0; i < 3; i++) mesh(new THREE.BoxGeometry(1.4, (i + 1) * TH / 3, .35), tileM, 0, (i + 1) * TH / 6 + .1, e * (TL / 2 + .9 - i * .32), b); });
+    sRect(b, -TW / 2, TW / 2, -TL / 2 - 1.1, TL / 2 + 1.1);
+    [-1, 1].forEach(sx => [-1, 0, 1].forEach(sz => { mesh(new THREE.BoxGeometry(.18, 3, .18), civicWhite, sx * 2.3, 1.6, sz * 3.9, b); sCircle(b, sx * 2.3, sz * 3.9, .15); }));
+    const br = tinHipRoof(4.6, 2.9, 1.3, ROOFS[1](1)); br.rotation.y = Math.PI / 2; br.position.y = 3.1; br.castShadow = br.receiveShadow = true; b.add(br);
+    mesh(new THREE.BoxGeometry(.1, 1.1, .1), crossM, TW / 2 - .1, TH + .65, 0, b); mesh(new THREE.BoxGeometry(.1, .1, .6), crossM, TW / 2 - .1, TH + .85, 0, b);   // a cross on the middle of the east rim, facing the church
+    TALL.push({ x0: BX - 3, x1: BX + 3, z0: BZ - 5, z1: BZ + 5, h: 4.6 });
+    // the Sunday-school hall, one storey, its door toward the church
+    civic(g, 22.6, 134, -Math.PI / 2, { W: 8.4, D: 5.4, floors: 1, wall: civicCream, trim: civicRed, roof: ROOFS[1](1), door: true,
+      data: { tip: "The Sunday-school hall", toast: "The church's hall. The children have Sunday school here before the service, the youth fellowship meets in the evenings, and at Christmas the tables are set out for the meal." } });
+    // shade trees and banana clumps behind the church
+    [[16, 140.4], [4, 140.6], [25, 140]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));
+    [[10, 140.8], [20, 140.6]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
+  }
   function backStreets(g) {
     const lane = std({ color: 0x7e7a72, roughness: .9 }), drain = std({ color: 0x3a3632, roughness: .9 });
     const inLane = (x, z, skip) => LANES.some((l, i) => i !== skip && x > l.x0 - .5 && x < l.x1 + .5 && z > l.z0 - .5 && z < l.z1 + .5);
@@ -4048,16 +4103,10 @@ window.TempleFloors = function TempleFloors(ctx) {
     // gardens: shade trees and banana clumps behind and between the houses
     [[15, 96], [24, 104], [-14, 98], [-86, 30], [-86.5, 8], [-86, -12]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 3) * .1, 300 + i));
     [[14, 93], [20, 99], [26, 95], [-12, 104], [-85.5, 40], [-85.5, 19], [-86, -2], [-85.5, -20]].forEach(([x, z], i) => banana(g, x, z, 400 + i));
-    [[16, 143], [4, 142], [24.5, 141.5]].forEach(([x, z], i) => tree(g, x, z, .8 + (i % 2) * .15, 320 + i));   // behind the church and its houses
-    [[10, 142], [20, 142.5]].forEach(([x, z], i) => banana(g, x, z, 420 + i));
     // a row of five traditional two-storey Shan houses facing the Haw Kham across the palace lane, 2 m apart:
     // a wooden storey and verandah over a whitewashed brick ground floor, under rusty tin hip roofs
     for (let i = 0; i < 5; i++) shanWoodHouse(g, -2.25 + i * 9, 148.9, 0, { W: 7, D: 6.5, floors: 2, seed: 240 + i, roof: rustRoof });
-    kachinChurch(g, 12, 128);
-    flat(mesh(new THREE.BoxGeometry(8, .05, 3), lane, 2, .03, 108.6, g));   // the path from the end of the plaza lane to the church
-    // six houses round the church, three each side, their fronts toward it
-    [118, 127, 136].forEach(z => { const W = 6 + (seq % 3) * .5, D = 6.5; house(-1, z, Math.PI / 2, W, D); });
-    [118, 127, 136].forEach(z => { const W = 6 + (seq % 3) * .5, D = 6.5; house(24.2, z, -Math.PI / 2, W, D); });
+    churchCompound(g);
     // the old banyan on the corner of the market lane and the street
     banyan(g, 36.4, 65.4);
   }
