@@ -44,6 +44,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-04 (night)
+- Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between
+  the hill and the houses on the plaza lane, round the church and facing the Haw Kham, as the site owner asked. Clumps stand on the
+  bottom of the slope and the flat below it, only where no house, lane, tree or wall is within 2.6 m (read through `surfAt`), so a
+  walk stays open along the house backs. The school grove's clump drawing moved into a shared `bambooStand()`; its clumps are
+  unchanged. Checked in a headless render.
+
 ### 2026-11-04
 - Filled the east side of the road up to the hospital, facing the football ground: `hospitalRoadHouses(g)` in
   `temple-floors.js` puts five town houses (wooden and concrete, one and two storeys) between x ≈ -120 and -110, z 5.5–45,

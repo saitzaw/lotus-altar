@@ -3758,38 +3758,68 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     flagPole(g, 69, 138.6, 9);
   }
-  // ဝါးတော, a bamboo grove behind the school, beyond its back wall: clumps of tall green culms fanning out from each root,
-  // with feathery leaves on their upper halves; a few older culms gone yellow, dry leaves on the ground between
-  function bambooGrove(g) {
-    const r = rng(7171), X0 = 46, X1 = 98, Z0 = 155, Z1 = 176, data = { tip: "The bamboo grove · ဝါးတော", toast: "A bamboo grove behind the school. The culms grow in clumps from one root, a few metres in a season; people cut them for scaffolding, fences, baskets and the walls of the huts, and dig the young shoots to eat in the rains." };
-    flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x7a6a48, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // dry leaves
+  // a stand of bamboo, drawn as two instanced meshes: clump(cx, cz, big) adds a clump of tall green culms fanning out from one root,
+  // with feathery leaves on their upper halves and a few older culms gone yellow; each culm stands on the land where it roots
+  function bambooStand(g, r, data, NC, NL) {
     const culmGeo = new THREE.CylinderGeometry(.045, .055, 1, 5); culmGeo.translate(0, .5, 0);
     const leafGeo = new THREE.IcosahedronGeometry(1, 0);
     const CULMS = [0x6e8f34, 0x7d9c3c, 0x5f8030, 0x6a8a36, 0xa89c50].map(c => new THREE.Color(c)), LEAVES = [0x4a7a2e, 0x568634, 0x3e6a28].map(c => new THREE.Color(c));
-    const NC = 1100, NL = 4400, white = { color: 0xffffff, roughness: .85 };
+    const white = { color: 0xffffff, roughness: .85 };
     const culms = new THREE.InstancedMesh(culmGeo, std(white), NC), leaves = new THREE.InstancedMesh(leafGeo, std({ ...white, roughness: 1, flatShading: true }), NL);
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = V(0, 1, 0), dir = V(0, 1, 0);
     let nc = 0, nl = 0;
-    for (let x = X0 + 1.5; x < X1 - 1; x += 3.4) for (let z = Z0 + 1; z < Z1; z += 3.4) {
-      if (r() < .22) continue;
-      const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 8 + (r() * 9 | 0), big = .8 + r() * .4;
+    const clump = (cx, cz, big, n) => {
       sCircle(g, cx, cz, .7);
       for (let k = 0; k < n && nc < NC; k++) {
         const a = r() * TAU, rr = r() * .6, lean = .04 + r() * .2 + rr * .15, h = (6 + r() * 5) * big, th = .8 + r() * .5;
         dir.set(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
-        const bx = cx + Math.cos(a) * rr, bz = cz + Math.sin(a) * rr;
-        m4.compose(V(bx, 0, bz), q.setFromUnitVectors(up, dir), V(th, h, th)); culms.setMatrixAt(nc, m4);
+        const bx = cx + Math.cos(a) * rr, bz = cz + Math.sin(a) * rr, by = terrainAt(bx, bz) - .05;
+        m4.compose(V(bx, by, bz), q.setFromUnitVectors(up, dir), V(th, h, th)); culms.setMatrixAt(nc, m4);
         culms.setColorAt(nc++, CULMS[r() < .1 ? 4 : (r() * 4) | 0]);
         for (let j = 0; j < 4 && nl < NL; j++) {   // leaf tufts up the top half, drooping out from the culm
           const f = .55 + j * .14 + r() * .05, s = .6 + r() * .5;
-          m4.compose(V(bx + dir.x * h * f + (r() - .5) * .5, dir.y * h * f, bz + dir.z * h * f + (r() - .5) * .5), q.setFromAxisAngle(up, r() * TAU), V(s * 1.1, s * .35, s * .8));
+          m4.compose(V(bx + dir.x * h * f + (r() - .5) * .5, by + dir.y * h * f, bz + dir.z * h * f + (r() - .5) * .5), q.setFromAxisAngle(up, r() * TAU), V(s * 1.1, s * .35, s * .8));
           leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, LEAVES[(r() * 3) | 0]);
         }
       }
+    };
+    const done = () => {
+      culms.count = nc; leaves.count = nl;
+      // always drawn: three.js r128 would cull an instanced mesh by its one base geometry at the origin
+      [culms, leaves].forEach(m => { m.castShadow = false; m.receiveShadow = true; m.frustumCulled = false; g.add(m); clickable(picks.pagoda, m, data); });
+    };
+    return { clump, done };
+  }
+  // ဝါးတော, a bamboo grove behind the school, beyond its back wall: clumps of bamboo, dry leaves on the ground between
+  function bambooGrove(g) {
+    const r = rng(7171), X0 = 46, X1 = 98, Z0 = 155, Z1 = 176, data = { tip: "The bamboo grove · ဝါးတော", toast: "A bamboo grove behind the school. The culms grow in clumps from one root, a few metres in a season; people cut them for scaffolding, fences, baskets and the walls of the huts, and dig the young shoots to eat in the rains." };
+    flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x7a6a48, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // dry leaves
+    const stand = bambooStand(g, r, data, 1100, 4400);
+    for (let x = X0 + 1.5; x < X1 - 1; x += 3.4) for (let z = Z0 + 1; z < Z1; z += 3.4) {
+      if (r() < .22) continue;
+      const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 8 + (r() * 9 | 0), big = .8 + r() * .4;
+      stand.clump(cx, cz, big, n);
     }
-    culms.count = nc; leaves.count = nl;
-    // always drawn: three.js r128 would cull an instanced mesh by its one base geometry at the origin
-    [culms, leaves].forEach(m => { m.castShadow = false; m.receiveShadow = true; m.frustumCulled = false; g.add(m); clickable(picks.pagoda, m, data); });
+    stand.done();
+  }
+  // a band of bamboo along the stupa hill's eastern foot, between the hill and the backs of the houses on the plaza lane, round
+  // the church and facing the Haw Kham: clumps on the bottom of the slope and the flat below it, wherever no house, lane, tree or
+  // wall stands, leaving a walk clear along the house backs. Built after backStreets, so the houses' footprints can be read.
+  const FOOT_BAMBOO = { a0: -.8, a1: .15, r0: -2.5, r1: 14, step: 3.1, clear: 2.6 };   // angles round the hill (world, radians), radial band past the hill's foot (m), clump spacing, room kept from anything else
+  function hillFootBamboo(g) {
+    const r = rng(7272), F = FOOT_BAMBOO, { cx, cz, rBase } = HILL, data = { tip: "Bamboo at the hill's foot · ဝါးတော", toast: "Bamboo grows thick along the foot of the stupa hill, behind the houses. The families cut culms here for fences, baskets and roof frames, and in the rains they dig the young shoots to cook." };
+    const avoid = [[-14, 98], [-12, 104]];   // the garden tree and banana behind the plaza-lane houses
+    const taken = (x, z) => LANES.some(l => x > l.x0 - 1.5 && x < l.x1 + 1.5 && z > l.z0 - 1.5 && z < l.z1 + 1.5) || avoid.some(([ax, az]) => Math.hypot(x - ax, z - az) < 1.6) || surfAt(x, z);
+    const free = (x, z) => [0, 1.2, F.clear].every(d => d ? [...Array(10)].every((_, i) => !taken(x + Math.cos(i * TAU / 10) * d, z + Math.sin(i * TAU / 10) * d)) : !taken(x, z));
+    const stand = bambooStand(g, r, data, 700, 2800);
+    for (let rr = rBase + F.r0; rr < rBase + F.r1; rr += F.step) for (let a = F.a0; a < F.a1; a += F.step / rr) {
+      if (r() < .18) continue;
+      const x = cx + Math.cos(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4), z = cz + Math.sin(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4);
+      const n = 7 + (r() * 8 | 0), big = .75 + r() * .4;
+      if (free(x, z)) stand.clump(x, z, big, n);
+    }
+    stand.done();
+    SURF.forEach(e => e.inv = null);   // read again once the grounds are placed
   }
   // ဓာတ်ဆီဆိုင်, a fuel station on the town road south of the bridge: a forecourt off the road, a canopy lit underneath at night
   // over two islands of pumps, a small shop behind, and the sign on a pylon by the road
@@ -4943,6 +4973,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     footballGround(g);
     highSchool(g);
     bambooGrove(g);
+    hillFootBamboo(g);
     fuelStation(g);
     fireAndPolice(g);
     welcomeSign(g);
