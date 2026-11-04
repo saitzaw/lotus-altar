@@ -19,6 +19,15 @@ lesson when you learn one, and delete a lesson once it stops being true.
   so there's a gap in the ring there.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
+## The sky
+
+- "The moon is gone" usually means the real moon is below the horizon: the sky follows the real moon over the temple
+  (`CONFIG.sky`, Bangkok time), and the `#skyInfo` line says when it rises. Check with `Astro.moon(t, lat, lon).alt` in node
+  before hunting for a rendering bug. The moon sprites draw in front of the black night domes; a low moon can sit behind the
+  near hills, and the site owner chose to keep it that way (real sky, no lifting).
+- To render the night sky at another time, stub the clock in a script placed before the three.js tag:
+  `const T0 = Date.UTC(...); Date.now = () => T0;`.
+
 ## Checking a change in headless Chromium
 
 Plain `chromium --headless --screenshot` of an outdoor view usually comes back black, or shows the hall or the overview.
