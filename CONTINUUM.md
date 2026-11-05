@@ -60,6 +60,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   stair wall with a metre of grass between, instead of the slanted wedge it left when it followed the terrace's curve. Its far
   outer corner now runs about 8 m past the terrace edge, so the retaining wall is 6 m deep and an `sRect` surface keeps a walker on
   the grass there. Not checked in a render.
+- Took the long drum, the three gongs and the kinnari costume off the festival ground's pavilion stage, as the owner asked; the stage is bare.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

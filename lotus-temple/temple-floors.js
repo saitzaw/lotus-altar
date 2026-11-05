@@ -2768,13 +2768,6 @@ window.TempleFloors = function TempleFloors(ctx) {
     }));
     mesh(new THREE.BoxGeometry(PW * .62, 1.0, PD * .7), teak, 0, 5.9, PZ, G);
     mesh(new THREE.ConeGeometry(.2, 1.4, 6), M.gold, 0, 8.1, PZ, G);
-    // on the stage: the Shan long drum (ကော) on its stand, a pair of gongs, and a kinnari costume on a frame
-    const drum = mesh(new THREE.CylinderGeometry(.35, .22, 2.4, 14), std({ color: 0xc02a2a, roughness: .5 }), -2.4, 1.6, PZ, G); drum.rotation.z = Math.PI / 2 - .25;
-    [-.8, 0, .8].forEach(dx => mesh(new THREE.TorusGeometry(.3, .07, 8, 20), M.gold, dx, 2.0, PZ - 1.6, G));
-    const kin = new THREE.Group(); kin.position.set(2.4, 1.0, PZ); G.add(kin);
-    mesh(new THREE.ConeGeometry(.45, 1.4, 10), M.gold, 0, .7, 0, kin);
-    [-1, 1].forEach(sd => { const w = mesh(new THREE.ConeGeometry(.5, 1.6, 4), std({ color: 0xe8c040, roughness: .5, side: THREE.DoubleSide }), sd * .6, 1.4, -.1, kin); w.rotation.z = -sd * 1.0; w.scale.z = .15; });
-    mesh(new THREE.ConeGeometry(.2, .7, 8), M.gold, 0, 1.9, 0, kin);
     // kahtein trees (ကထိန်ပဒေသာပင်): bamboo frames hung with folded money, robes and offerings, along the downhill side
     const kah = [0xf2c230, 0xe0702a, 0xd8a840, 0xf4f0e4, 0xc02a2a].map(c => std({ color: c, roughness: .6, side: THREE.DoubleSide }));
     [-8, -4, 4, 8].forEach((x, i) => {
