@@ -67,6 +67,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   three-panel fanned wings of sequinned green with gilt rims and knobs, plus a tail fan. They circle each other slowly, bobbing,
   opening and folding their wings with their arms; with reduced motion they move at a quarter speed like the flags. Walkers
   keep out of their circle. Tip and toast in English and Burmese. Checked in a headless render.
+- Moved the kinnara pair up onto the festival pavilion's stage (circling its centre, radius 1.15 m), as the owner asked, and they
+  now dance only from 4 PM to 11 PM ICT (`CONFIG.dancers`, `temple.setDancers`, `?dancers=1|0`); otherwise they're hidden and
+  can't be clicked. Also fixed their plain green and skin colours to match the sRGB wing cloth. Checked in a headless render.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

@@ -47,7 +47,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
-  const FOLK = { out: false, umbrellas: false };
+  const FOLK = { out: false, umbrellas: false, dance: false };   // dance: the kinnara pair is on the festival stage
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
@@ -2254,9 +2254,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2, T = 26;
     return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
-  // the masked kinnara pair dancing on the festival ground, in its local frame: on the grass between the pavilion and the
-  // kahtein trees at its west end, clear of the pavilion's corner and the trees
-  const KINNARA = { x: -8, z: 1, r: 1.4, turn: .22, wing: 1.1 };   // circle centre and radius (m), turn speed (rad/s), wing fan radius (m)
+  // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
+  // floor height); they dance in the evening, see CONFIG.dancers and setDancers()
+  const KINNARA = { y: 1.0, r: 1.15, turn: .22, wing: 1.1 };   // stage floor height (m), circle radius (m), turn speed (rad/s), wing fan radius (m)
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
     const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
@@ -2790,7 +2790,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
-    const dancers = kinnaraDancers(G, list);
+    const dancers = kinnaraDancers(G, list, 0, PZ);   // on the stage's centre
     updaters.pagoda.push((dt, t, motion) => {
       dancers(dt, motion);
       flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 4 - t * 3 + i) * .08 * x * motion); } p.needsUpdate = true; });
@@ -2804,11 +2804,11 @@ window.TempleFloors = function TempleFloors(ctx) {
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: f.y + 9 });
     sRect(G, -T / 2, T / 2, -R / 2, R / 2, .05);   // a walker stays on the grass where it runs out over the slope (after the pavilion and plinths, which block)
   }
-  /* ---------- the kinnara and kinnari dance (ကိန္နရာ ကိန္နရီ အက) on the festival ground's grass beside the pavilion: a pair of half-bird
-     dancers in green and gold, masked, with great fanned wings on frames and a tail fan, circling each other and opening and folding
-     their wings. Returns the step to run each frame ---------- */
-  function kinnaraDancers(G, list) {
-    const C = KINNARA, data = { tip: "Kinnara and kinnari dancers · ကိန္နရာ ကိန္နရီ", toast: "The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
+  /* ---------- the kinnara and kinnari dance (ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
+     half-bird dancers in green and gold, masked, with great fanned wings on frames and a tail fan, circling each other and opening
+     and folding their wings. Returns the step to run each frame ---------- */
+  function kinnaraDancers(G, list, cx, cz) {
+    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ကိန္နရာ ကိန္နရီ", toast: "The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
     // the wing cloth: green satin sewn with sequins, a gilt rim and bands; drawn round the centre so the fan panels pick up rings
     const wingT = canvasTex(256, (c, s) => {
       const h = s / 2; c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
@@ -2861,16 +2861,16 @@ window.TempleFloors = function TempleFloors(ctx) {
       // a tail fan at the small of the back
       const tail = new THREE.Group(); tail.position.set(0, .9, -.18); tail.rotation.x = .5; B.add(tail);
       const tp = new THREE.Mesh(panel, wingM); tp.scale.setScalar(.6); tp.rotation.z = -Math.PI / 2 - Math.PI / 6; tail.add(tp);
-      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); } });
+      // hidden while they're off the stage, and then not clickable either
+      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
       return { D, B, arms, wings, tail, male };
     }
     const pair = [dancer(true), dancer(false)];
-    sCircle(G, C.x, C.z, C.r + .7);   // walkers keep out of the dancing circle
     let t = 0;
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
-      d.D.position.set(x, 0, z);
+      d.D.position.set(x, C.y, z);
       // they face across the circle to each other, swaying a little out of it in the steps
       d.D.rotation.y = Math.atan2(C.x - x, C.z - z) + Math.sin(t * 1.1 + i) * .5;
       const beat = t * 2.2 + i * 1.3, open = .5 + .5 * Math.sin(t * 1.2 + i * .8);
@@ -2880,7 +2880,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       d.tail.rotation.y = Math.sin(beat * .5) * .3;
     });
     pose();
-    return (dt, motion) => { t += dt * motion; pose(); };
+    return (dt, motion) => {
+      pair.forEach(d => d.D.visible = FOLK.dance);
+      if (FOLK.dance) { t += dt * motion; pose(); }
+    };
   }
   /* ---------- the far side of the front street: a row of modern Shan houses and shophouses from the foot of the stupa hill
      eastward, the view from the main gate left open, and the daily town market (ဈေး) across from the seven-day market ---------- */
@@ -5407,6 +5410,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     get ghost() { return FEST.ghost || null; },
     // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains
     setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
+    // the kinnara and kinnari dancers: on the festival stage while `on`
+    setDancers(on) { FOLK.dance = on; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once
     setPolice(o) { Object.assign(COP, o); },
     policeNews() { const n = COP.news; COP.news = null; return n; },

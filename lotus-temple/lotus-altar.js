@@ -51,6 +51,9 @@ const CONFIG = {
   // townsfolk: ten people in the seven-day market and five on the roads, out from `from` until they go home at `until` o'clock on the temple's clock;
   // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
   townsfolk: { from: 18, until: 22, umbrella: .3 },
+  // the masked kinnara and kinnari pair dance on the festival ground's stage from `from` until `until` o'clock on the temple's clock;
+  // ?dancers=1 or ?dancers=0 forces them on or off
+  dancers: { from: 16, until: 23 },
   // the beat officer: a policeman walks the town's roads and chases a visitor on foot who comes within `see` metres, at `speed`
   // m/s (a walker does 2.6, so you can get away); within `arrest` metres you are arrested and walked to the police station, and he
   // stays there `hold` seconds. The temple compound and the markets are safe ground. With `night` he is only out after dark
@@ -1254,14 +1257,17 @@ function festNote() {
 }
 
 /* ---------- townsfolk: people out in the market and on the roads from 6 pm until they go home at 10 pm ICT ---------- */
-const FOLK_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("townsfolk"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
-function folkNow() {
-  if (FOLK_FORCE !== null) return FOLK_FORCE;
-  const { from, until } = CONFIG.townsfolk, hour = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", hourCycle: "h23" }).format(Date.now());
+const forced = key => { try { const v = new URLSearchParams(location.search).get(key); return v === null ? null : v !== "0"; } catch (e) { return null; } };
+const FOLK_FORCE = forced("townsfolk"), DANCE_FORCE = forced("dancers");
+function inHours({ from, until }) {
+  const hour = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", hourCycle: "h23" }).format(Date.now());
   return from < until ? hour >= from && hour < until : hour >= from || hour < until;   // a window that may run past midnight
 }
-let folkOut = folkNow();
-setInterval(() => { folkOut = folkNow(); }, 3e4);
+const folkNow = () => FOLK_FORCE !== null ? FOLK_FORCE : inHours(CONFIG.townsfolk);
+// the kinnara dancers on the festival stage, from 4 pm to 11 pm ICT
+const danceNow = () => DANCE_FORCE !== null ? DANCE_FORCE : inHours(CONFIG.dancers);
+let folkOut = folkNow(), danceOn = danceNow();
+setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */
@@ -1877,6 +1883,7 @@ function frame() {
   festStep(dt);
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
+  temple.setDancers(danceOn);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);

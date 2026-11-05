@@ -41,6 +41,10 @@ elders) and dressed for a cold night in the hills: long-sleeved jackets, scarves
 trousers or an ankle-length longyi, and anyone coming into view appears already in step. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
 are three shared `InstancedMesh`es.
 
+The masked kinnara and kinnari pair (`kinnaraDancers` in `temple-floors.js`) dance on the festival ground's pavilion stage
+from 4 PM to 11 PM ICT (`CONFIG.dancers`). The main script passes `temple.setDancers(on)` each frame; while off they are
+hidden and can't be clicked. `?dancers=1` / `?dancers=0` force them on or off.
+
 ## Weather
 
 - Follows the seasons of the northern Thai hills; no live weather API. Kinds (in `WEATHER`): `clear`, `cloudy`, `rain`,
