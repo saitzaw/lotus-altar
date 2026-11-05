@@ -53,6 +53,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   If they meant a Catholic mission instead, the church itself would need changing. To check with a Burmese speaker: the board and tip
   wording သင်းအုပ်ဆရာအိမ် (pastor's house), ဆရာမအိမ် (women workers' house) and နှစ်ခြင်းကန် (baptistry). The hill-foot bamboo
   now stands back from the compound's west wall. Checked in headless renders.
+- Lined the stupa hill's east stair up with the palace lane: `HILL.east` is now computed to aim at the middle of the lane's west
+  end (`LANES[4]`), and the stair's paved walk runs from its foot a metre in under the lane, so the two meet with no offset. The
+  stair is radial to the hill, so it still meets the lane at about 13°. Not checked in a render (headless Chromium gave no frame).
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

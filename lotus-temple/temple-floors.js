@@ -2135,8 +2135,9 @@ window.TempleFloors = function TempleFloors(ctx) {
       r += flight; prof.push([r, yLo]);
     }
     prof.push([rBase, 0]);
-    const east = [.97, .243];   // the east stair's way down, toward the lane past the Haw Kham
-    return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east };   // `to`: the street corner the stair faces
+    // the east stair's way down, aimed at the middle of the palace lane's west end so the stair and the lane meet head on
+    const PL = LANES[4], ex = PL.x0 + 88, ez = (PL.z0 + PL.z1) / 2 - 140, el = Math.hypot(ex, ez), east = [ex / el, ez / el], eastReach = el;
+    return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east, eastReach };   // `to`: the street corner the stair faces
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
   const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ" };
@@ -2338,7 +2339,10 @@ window.TempleFloors = function TempleFloors(ctx) {
     // whitewashed pillars crowned with lotus buds, a short paved walk out to the lane
     const E = new THREE.Group(); E.position.set(cx, 0, cz); E.rotation.y = Math.atan2(-HILL.east[0], -HILL.east[1]); g.add(E);
     hillStair(E, null, { tip: `The east stair · up to ${SHAN_NAMES.stupa} from the Haw Kham` });
-    flat(mesh(new THREE.BoxGeometry(SW, .06, 3.4), M.stone, 0, .03, -rBase - 1.5, E));
+    {   // the walk from the stair's foot out to the lane, running a metre in under the lane's end so the joint is hidden
+      const a = rBase - .2, b = HILL.eastReach + 1;
+      flat(mesh(new THREE.BoxGeometry(SW, .04, b - a), M.stone, 0, .02, -(a + b) / 2, E));
+    }
     [-1, 1].forEach(sd => {
       const x = sd * (SW / 2 + .7);
       mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, E); sRect(E, x - .4, x + .4, -rBase - .6, -rBase + .2);
