@@ -56,6 +56,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Lined the stupa hill's east stair up with the palace lane: `HILL.east` is now computed to aim at the middle of the lane's west
   end (`LANES[4]`), and the stair's paved walk runs from its foot a metre in under the lane, so the two meet with no offset. The
   stair is radial to the hill, so it still meets the lane at about 13°. Not checked in a render (headless Chromium gave no frame).
+- Laid the festival ground square to the hill stair (`festivalSpot()` now has `ry: Math.PI`): its near end runs parallel to the
+  stair wall with a metre of grass between, instead of the slanted wedge it left when it followed the terrace's curve. Its far
+  outer corner now runs about 8 m past the terrace edge, so the retaining wall is 6 m deep and an `sRect` surface keeps a walker on
+  the grass there. Not checked in a render.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

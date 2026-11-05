@@ -2247,11 +2247,12 @@ window.TempleFloors = function TempleFloors(ctx) {
     const footX = MON.off - (MON.D / 2 + MON.run) * MON.SC, wallX = SW_ / 2 + .36;
     return { x: -MON.off, z, y: t.y, open: [z - MON.SWd / 2 * MON.SC, z + MON.SWd / 2 * MON.SC], reach: (footX - wallX) / MON.SC, edge: (footX - SW_ / 2) / MON.SC };
   }
-  // the festival ground: an open field on the upper terrace across the stair from the monastery (local +x), in front of it
+  // the festival ground: an open field on the upper terrace across the stair from the monastery (local +x), in front of it,
+  // laid square to the stair: its near end runs parallel to the stair wall, a strip of grass between, and its far end runs out
+  // past the terrace's curve over the slope, held up by its retaining wall
   function festivalSpot() {
-    const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2;
-    const a = (SW_ / 2 + .6 + 2 + 13) / rm;   // past the stair wall and a strip of grass, then half the field
-    return { x: Math.sin(a) * rm, z: -Math.cos(a) * rm, ry: Math.atan2(Math.sin(a), -Math.cos(a)), y: t.y, R: 16, T: 26 };
+    const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2, T = 26;
+    return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
@@ -2730,7 +2731,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     grassT.wrapS = grassT.wrapT = THREE.RepeatWrapping; grassT.repeat.set(T / 6, R / 6);
     const grass = std({ map: grassT, roughness: 1 }); onDaylight(d => grass.color.copy(lerpC(0x3a4a34, 0xffffff, d)));
     const wallM = std({ color: 0x8c877d, roughness: .85 });
-    mesh(new THREE.BoxGeometry(T, 4, R), [wallM, wallM, grass, wallM, wallM, wallM], 0, -2 + .05, 0, G);
+    mesh(new THREE.BoxGeometry(T, 6, R), [wallM, wallM, grass, wallM, wallM, wallM], 0, -3 + .05, 0, G);   // deep enough to reach the slope below its far corner
     clickable(list, G.children[G.children.length - 1], data);
     mesh(new THREE.BoxGeometry(T + .4, .25, .4), M.trim, 0, .1, R / 2, G);   // a gilt coping on the downhill edge
     // Shan flags round the edge: yellow, green and red bands with a white disc
@@ -2803,6 +2804,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     const xs = [], zs = [];
     [[-T / 2, -R / 2], [T / 2, -R / 2], [-T / 2, R / 2], [T / 2, R / 2]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: f.y + 9 });
+    sRect(G, -T / 2, T / 2, -R / 2, R / 2, .05);   // a walker stays on the grass where it runs out over the slope (after the pavilion and plinths, which block)
   }
   /* ---------- the far side of the front street: a row of modern Shan houses and shophouses from the foot of the stupa hill
      eastward, the view from the main gate left open, and the daily town market (ဈေး) across from the seven-day market ---------- */
