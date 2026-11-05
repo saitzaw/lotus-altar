@@ -2254,6 +2254,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2, T = 26;
     return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
+  // the masked kinnara pair dancing on the festival ground, in its local frame: on the grass between the pavilion and the
+  // kahtein trees at its west end, clear of the pavilion's corner and the trees
+  const KINNARA = { x: -8, z: 1, r: 1.4, turn: .22, wing: 1.1 };   // circle centre and radius (m), turn speed (rad/s), wing fan radius (m)
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
     const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
@@ -2787,7 +2790,9 @@ window.TempleFloors = function TempleFloors(ctx) {
       for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
+    const dancers = kinnaraDancers(G, list);
     updaters.pagoda.push((dt, t, motion) => {
+      dancers(dt, motion);
       flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 4 - t * 3 + i) * .08 * x * motion); } p.needsUpdate = true; });
       streamer.rotation.y = Math.sin(t * .6) * .4 * motion; streamer.rotation.z = Math.sin(t * .9) * .06 * motion;
     });
@@ -2798,6 +2803,84 @@ window.TempleFloors = function TempleFloors(ctx) {
     [[-T / 2, -R / 2], [T / 2, -R / 2], [-T / 2, R / 2], [T / 2, R / 2]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: f.y + 9 });
     sRect(G, -T / 2, T / 2, -R / 2, R / 2, .05);   // a walker stays on the grass where it runs out over the slope (after the pavilion and plinths, which block)
+  }
+  /* ---------- the kinnara and kinnari dance (ကိန္နရာ ကိန္နရီ အက) on the festival ground's grass beside the pavilion: a pair of half-bird
+     dancers in green and gold, masked, with great fanned wings on frames and a tail fan, circling each other and opening and folding
+     their wings. Returns the step to run each frame ---------- */
+  function kinnaraDancers(G, list) {
+    const C = KINNARA, data = { tip: "Kinnara and kinnari dancers · ကိန္နရာ ကိန္နရီ", toast: "The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
+    // the wing cloth: green satin sewn with sequins, a gilt rim and bands; drawn round the centre so the fan panels pick up rings
+    const wingT = canvasTex(256, (c, s) => {
+      const h = s / 2; c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
+      [[.97, .05, "#e8c040"], [.7, .035, "#e8c040"], [.42, .03, "#e8c040"]].forEach(([r, w, col]) => { c.strokeStyle = col; c.lineWidth = w * h; c.beginPath(); c.arc(h, h, r * h, 0, TAU); c.stroke(); });
+      const r = rng(77);
+      for (let ring = 0; ring < 3; ring++) for (let i = 0; i < 36; i++) { const a = i / 36 * TAU + ring, rr = (.56 + ring * .14) * h; c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][(i + ring) % 4]; c.beginPath(); c.arc(h + Math.cos(a) * rr, h + Math.sin(a) * rr, 3 + r() * 2, 0, TAU); c.fill(); }
+    });
+    const wingM = std({ map: wingT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
+    const lin = h => new THREE.Color(h).convertSRGBToLinear();   // plain colours to match the sRGB cloth textures
+    const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 }), dark = std({ color: lin(0x14552a), roughness: .5 });
+    const stripes = canvasTex(64, (c, s) => { c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s); c.fillStyle = "#e8c040"; for (let y = 4; y < s; y += 10) c.fillRect(0, y, s, 3); });
+    const skirtM = std({ map: stripes, roughness: .45, metalness: .2 });
+    const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
+    const panel = new THREE.CircleGeometry(C.wing, 14, 0, Math.PI / 3);
+    const knob = new THREE.SphereGeometry(.05, 8, 6);
+    function dancer(male) {
+      const D = new THREE.Group(), B = new THREE.Group(); D.add(B);
+      // legs: baggy green trousers on him, a long striped longyi on her; gilt anklets
+      if (male) [-1, 1].forEach(sd => mesh(new THREE.CylinderGeometry(.11, .09, .82, 10), green, sd * .1, .41, 0, B));
+      else mesh(new THREE.CylinderGeometry(.15, .21, .84, 14), skirtM, 0, .42, 0, B);
+      [-1, 1].forEach(sd => mesh(new THREE.TorusGeometry(.07, .02, 6, 12), M.gold, sd * .1, .06, 0, B).rotation.x = Math.PI / 2);
+      // a fitted green jacket with a gilt belt and collar
+      mesh(new THREE.CylinderGeometry(.16, .14, .5, 12), green, 0, 1.08, 0, B);
+      mesh(new THREE.TorusGeometry(.15, .03, 6, 16), M.gold, 0, .85, 0, B).rotation.x = Math.PI / 2;
+      mesh(new THREE.TorusGeometry(.12, .035, 6, 16), M.gold, 0, 1.32, 0, B).rotation.x = Math.PI / 2;
+      // the mask: a gilt bird face with a hooked beak, painted eyes and a green crest, under a tiered gold crown with a spire
+      const head = new THREE.Group(); head.position.y = 1.5; B.add(head);
+      mesh(new THREE.SphereGeometry(.13, 14, 10), M.gold, 0, 0, 0, head).scale.set(1, 1.1, 1.05);
+      const beak = mesh(new THREE.ConeGeometry(.045, .2, 8), M.gold, 0, -.03, .17, head); beak.rotation.x = Math.PI / 2 + .35;
+      [-1, 1].forEach(sd => { mesh(new THREE.SphereGeometry(.025, 8, 6), ink, sd * .055, .03, .115, head); mesh(new THREE.BoxGeometry(.06, .012, .01), red, sd * .055, .065, .118, head).rotation.z = sd * .3; });
+      [-1, 1].forEach(sd => { const ear = mesh(new THREE.ConeGeometry(.04, .16, 4), dark, sd * .13, .05, -.02, head); ear.rotation.z = -sd * .9; });   // green feather flaps at the sides
+      [.12, .19, .25].forEach((y, i) => mesh(new THREE.CylinderGeometry(.11 - i * .03, .13 - i * .03, .07, 12), i % 2 ? green : M.gold, 0, y, 0, head));
+      mesh(new THREE.ConeGeometry(.04, .28, 8), M.gold, 0, .42, 0, head);
+      // arms: a green sleeve and bare hand, reaching out to hold the wing frames
+      const arms = [-1, 1].map(sd => {
+        const a = new THREE.Group(); a.position.set(sd * .19, 1.28, 0); B.add(a);
+        mesh(new THREE.CylinderGeometry(.045, .04, .5, 8), green, 0, -.25, 0, a);
+        mesh(new THREE.SphereGeometry(.045, 8, 6), skin, 0, -.52, 0, a);
+        return a;
+      });
+      // the wings: three fan panels each on a frame at the shoulder blades, gilt knobs at the points
+      const wings = [-1, 1].map(sd => {
+        const w = new THREE.Group(); w.position.set(sd * .12, 1.2, -.14); B.add(w);
+        for (let k = 0; k < 3; k++) {
+          const p = new THREE.Mesh(panel, wingM); p.rotation.z = sd > 0 ? -.55 + k * .55 : Math.PI - Math.PI / 3 + .55 - k * .55; p.position.z = -k * .02; w.add(p);
+          [0, 1].forEach(e => { const a = p.rotation.z + e * Math.PI / 3; mesh(knob, M.gold, Math.cos(a) * C.wing, Math.sin(a) * C.wing, p.position.z, w); });
+        }
+        return w;
+      });
+      // a tail fan at the small of the back
+      const tail = new THREE.Group(); tail.position.set(0, .9, -.18); tail.rotation.x = .5; B.add(tail);
+      const tp = new THREE.Mesh(panel, wingM); tp.scale.setScalar(.6); tp.rotation.z = -Math.PI / 2 - Math.PI / 6; tail.add(tp);
+      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); } });
+      G.add(D);
+      return { D, B, arms, wings, tail, male };
+    }
+    const pair = [dancer(true), dancer(false)];
+    sCircle(G, C.x, C.z, C.r + .7);   // walkers keep out of the dancing circle
+    let t = 0;
+    const pose = () => pair.forEach((d, i) => {
+      const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
+      d.D.position.set(x, 0, z);
+      // they face across the circle to each other, swaying a little out of it in the steps
+      d.D.rotation.y = Math.atan2(C.x - x, C.z - z) + Math.sin(t * 1.1 + i) * .5;
+      const beat = t * 2.2 + i * 1.3, open = .5 + .5 * Math.sin(t * 1.2 + i * .8);
+      d.B.position.y = Math.abs(Math.sin(beat)) * .06; d.B.rotation.z = Math.sin(beat * .5) * .06;
+      d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (.5 - open * .6); w.rotation.y = sd * (.7 - open * .55); });
+      d.arms.forEach((ar, k) => { const sd = k ? 1 : -1; ar.rotation.z = sd * (.5 + open * 1.0); ar.rotation.x = -.5 + open * .3; });
+      d.tail.rotation.y = Math.sin(beat * .5) * .3;
+    });
+    pose();
+    return (dt, motion) => { t += dt * motion; pose(); };
   }
   /* ---------- the far side of the front street: a row of modern Shan houses and shophouses from the foot of the stupa hill
      eastward, the view from the main gate left open, and the daily town market (ဈေး) across from the seven-day market ---------- */

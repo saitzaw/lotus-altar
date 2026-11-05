@@ -61,6 +61,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   outer corner now runs about 8 m past the terrace edge, so the retaining wall is 6 m deep and an `sRect` surface keeps a walker on
   the grass there. Not checked in a render.
 - Took the long drum, the three gongs and the kinnari costume off the festival ground's pavilion stage, as the owner asked; the stage is bare.
+- Added a masked kinnara and kinnari pair (ကိန္နရာ ကိန္နရီ) dancing on the festival ground's grass west of the pavilion, after the
+  owner's photo of the dance, but in green instead of gold: `kinnaraDancers(G, list)` and `KINNARA` in `temple-floors.js`. Each
+  wears a gilt bird mask with a beak under a tiered gold crown, a green jacket (him: trousers; her: a gold-striped longyi) and
+  three-panel fanned wings of sequinned green with gilt rims and knobs, plus a tail fan. They circle each other slowly, bobbing,
+  opening and folding their wings with their arms; with reduced motion they move at a quarter speed like the flags. Walkers
+  keep out of their circle. Tip and toast in English and Burmese. Checked in a headless render.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between
