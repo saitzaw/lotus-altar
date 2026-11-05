@@ -47,7 +47,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
-  const FOLK = { out: false, umbrellas: false, dance: false };   // dance: the kinnara pair is on the festival stage
+  const FOLK = { out: false, umbrellas: false, dance: null };   // dance: who is on the festival stage, "solo", "pair" or null
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
@@ -2255,11 +2255,13 @@ window.TempleFloors = function TempleFloors(ctx) {
     return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
-  // floor height); they dance in the evening, see CONFIG.dancers and setDancers()
+  // floor height); the kinnara dances alone in the afternoon and the pair in the evening, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22, wing: 1.1 };   // stage floor height (m), circle radius (m), turn speed (rad/s), wing fan radius (m)
   // their audience: rows on arcs round the stage's centre, in front of it (the stage's front edge is 2.75 m out, its steps 4 m):
-  // seated children close in, young people standing behind; `spread` is the arc's width in radians
-  const AUDIENCE = { rows: [{ rad: 5.2, n: 10, sit: true, spread: 2.0 }, { rad: 7.0, n: 11, sit: false, spread: 1.75 }] };
+  // seated children close in, young people standing behind; `spread` is the arc's width in radians; `epic` rows come only for the
+  // afternoon solo, the opening of the epic, when the crowd is biggest
+  const AUDIENCE = { rows: [{ rad: 5.2, n: 10, sit: true, spread: 2.0 }, { rad: 7.0, n: 11, sit: false, spread: 1.75 },
+    { rad: 6.1, n: 7, sit: true, spread: 1.5, epic: true }, { rad: 8.6, n: 12, sit: false, spread: 1.9, epic: true }, { rad: 10.0, n: 8, sit: false, spread: 1.5, epic: true }] };
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
     const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
@@ -2881,21 +2883,40 @@ window.TempleFloors = function TempleFloors(ctx) {
     }
     const pair = [dancer(true), dancer(false)];
     let t = 0;
+    // the opening of the epic, in the afternoon: the kinnara alone, leaping round the stage, beating and fluttering his wings,
+    // fanning and shaking his tail feathers, swooping low between leaps, mostly turned to the crowd
+    const solo = () => {
+      const d = pair[0], hop = t * 1.15, ph = hop % 1, n = Math.floor(hop);
+      const high = n % 4 === 3 ? .55 : .28, air = 4 * ph * (1 - ph);   // every fourth leap is a big one
+      d.D.position.set(C.x + Math.sin(t * .45) * 1.9, C.y, C.z + Math.sin(t * .9) * .7);
+      d.D.rotation.y = Math.sin(t * .6) * 1.1 + (n % 8 === 7 ? ph * TAU : 0);   // a full turn in the air now and then
+      d.B.position.y = air * high;
+      d.B.rotation.x = .35 * (1 - air) - .1;   // crouched and leaning in as he lands, upright at the top of the leap
+      d.B.rotation.z = Math.sin(t * 1.3) * .12;
+      const beat = Math.sin(t * 7), flutter = Math.sin(t * 23) * .07;   // the big beats of the wings, the shimmer of the feathers
+      d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (-.2 + beat * .45 + flutter); w.rotation.y = sd * (.25 - air * .2 + Math.sin(t * 2.1 + k) * .15); w.rotation.x = flutter * 1.5; });
+      d.arms.forEach((ar, k) => { const sd = k ? 1 : -1; ar.rotation.z = sd * (1.2 - beat * .5); ar.rotation.x = -.6 + air * .4; });
+      d.tail.rotation.y = Math.sin(t * 3.5) * .55; d.tail.rotation.x = .5 + Math.sin(t * 11) * .12;
+    };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
       d.D.position.set(x, C.y, z);
       // they face across the circle to each other, swaying a little out of it in the steps
       d.D.rotation.y = Math.atan2(C.x - x, C.z - z) + Math.sin(t * 1.1 + i) * .5;
       const beat = t * 2.2 + i * 1.3, open = .5 + .5 * Math.sin(t * 1.2 + i * .8);
-      d.B.position.y = Math.abs(Math.sin(beat)) * .06; d.B.rotation.z = Math.sin(beat * .5) * .06;
-      d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (.5 - open * .6); w.rotation.y = sd * (.7 - open * .55); });
+      d.B.position.y = Math.abs(Math.sin(beat)) * .06; d.B.rotation.z = Math.sin(beat * .5) * .06; d.B.rotation.x = 0;
+      d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (.5 - open * .6); w.rotation.y = sd * (.7 - open * .55); w.rotation.x = 0; });
       d.arms.forEach((ar, k) => { const sd = k ? 1 : -1; ar.rotation.z = sd * (.5 + open * 1.0); ar.rotation.x = -.5 + open * .3; });
-      d.tail.rotation.y = Math.sin(beat * .5) * .3;
+      d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = .5;
     });
     pose();
     return (dt, motion) => {
-      pair.forEach(d => d.D.visible = FOLK.dance);
-      if (FOLK.dance) { t += dt * motion; pose(); }
+      const show = FOLK.dance;
+      pair[0].D.visible = !!show; pair[1].D.visible = show === "pair";
+      if (!show) return;
+      t += dt * motion;
+      if (show === "solo") solo();
+      else pose();
     };
   }
   /* ---------- the dancers' audience: children sitting cross-legged on the grass in a front row before the stage and young people
@@ -2932,7 +2953,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     ];
     const clear = (x, z) => keepOff.every(([kx, kz, kr]) => Math.hypot(x - kx, z - kz) > kr);
     const folk = [];
-    C.rows.forEach(({ rad, n, sit, spread }) => {
+    C.rows.forEach(({ rad, n, sit, spread, epic = false }) => {
       for (let i = 0; i < n; i++) {
         const a = (i / (n - 1) - .5) * spread + (r() - .5) * .05, rr = rad + (r() - .5) * .4, x = cx + Math.sin(a) * rr, z = cz + Math.cos(a) * rr;
         if (!clear(x, z)) continue;
@@ -2941,17 +2962,19 @@ window.TempleFloors = function TempleFloors(ctx) {
         const sc = sit ? .8 + r() * .15 : 1.0 + r() * .12;
         body.scale.setScalar(sc); body.position.set(x, 0, z); body.rotation.y = Math.atan2(cx - x, cz - z) + (r() - .5) * .3; body.castShadow = false;
         clickable(list, body, data); body.raycast = function (ray, out) { if (body.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };
-        G.add(body); folk.push({ body, sit, ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
+        G.add(body); folk.push({ body, sit, epic, ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
       }
     });
     let t = 0;
     return (dt, motion) => {
-      folk.forEach(f => f.body.visible = FOLK.dance);
-      if (!FOLK.dance) return;
+      const show = FOLK.dance, big = show === "solo";
+      folk.forEach(f => f.body.visible = !!show && (big || !f.epic));   // the extra rows come only for the solo, the epic's opening
+      if (!show) return;
       t += dt * motion;
       folk.forEach(f => {
-        // children bob and rock to the drum; everyone turns a little now and then to follow the dancers
-        f.body.position.y = f.lively ? Math.abs(Math.sin(t * 3 + f.ph)) * .04 : 0;
+        // children bob and rock to the drum; everyone turns a little now and then to follow the dancers; at the solo the young
+        // people standing bounce on their toes too
+        f.body.position.y = f.lively ? Math.abs(Math.sin(t * 3 + f.ph)) * .04 : big && !f.sit ? Math.abs(Math.sin(t * 2.3 + f.ph)) * .03 : 0;
         f.body.rotation.z = f.lively ? Math.sin(t * 1.5 + f.ph) * .06 : 0;
         f.body.rotation.y = f.ry + Math.sin(t * .3 + f.ph) * .15;
       });
@@ -5482,8 +5505,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     get ghost() { return FEST.ghost || null; },
     // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains
     setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
-    // the kinnara and kinnari dancers: on the festival stage while `on`
-    setDancers(on) { FOLK.dance = on; },
+    // the kinnara dancers on the festival stage: "solo" (the kinnara alone, a bigger crowd), "pair", or null for none
+    setDancers(show) { FOLK.dance = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once
     setPolice(o) { Object.assign(COP, o); },
     policeNews() { const n = COP.news; COP.news = null; return n; },

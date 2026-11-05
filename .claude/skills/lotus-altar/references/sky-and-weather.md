@@ -41,11 +41,14 @@ elders) and dressed for a cold night in the hills: long-sleeved jackets, scarves
 trousers or an ankle-length longyi, and anyone coming into view appears already in step. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
 are three shared `InstancedMesh`es.
 
-The masked kinnara and kinnari pair (`kinnaraDancers` in `temple-floors.js`) dance on the festival ground's pavilion stage
-from 4 PM to 11 PM ICT (`CONFIG.dancers`). The main script passes `temple.setDancers(on)` each frame; while off they are
-hidden and can't be clicked. `?dancers=1` / `?dancers=0` force them on or off.
-Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: about sixteen blocky low-poly children sitting
-cross-legged in a front arc and young people standing behind, one vertex-coloured mesh each, turned to the stage.
+The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival ground's pavilion stage twice a day on the
+temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
+epic, leaping, beating and fluttering his wings and shaking his tail; then the masked kinnara and kinnari pair from 4 to 11 PM,
+circling each other. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
+and can't be clicked. `?dancers=solo`, `?dancers=pair` (or `1`) and `?dancers=0` force one.
+Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: blocky low-poly children sitting cross-legged
+and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked
+`epic` join only for the solo, making 37.
 
 ## Weather
 

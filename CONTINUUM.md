@@ -80,6 +80,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   can't be switched off). Tip in Burmese: ပွဲကြည့်ပရိသတ်. Checked in a headless render.
 - Added the Shan name of the dance, ka nok ၵႃႈၼူၵ်ႉ ("bird dance", given by the owner), to the dancers' tip (beside the Burmese
   ကိန္နရာ ကိန္နရီ) and toast. **For a native Shan speaker to check:** ၵႃႈၼူၵ်ႉ.
+- Added the opening of the epic: from 2 to 3:45 PM ICT the kinnara (the male dancer) dances alone on the festival stage, leaping
+  round it (every fourth leap higher, a full turn in the air now and then), crouching as he lands, beating and fluttering his
+  wings and shaking his fanned tail. The crowd is biggest then: three `epic` rows join the audience, 37 people in all (16 for
+  the pair). `CONFIG.dancers` is now `{ solo: [14, 15.75], pair: [16, 23] }` in fractional hours (the clock reads minutes too);
+  `setDancers` takes "solo", "pair" or null; `?dancers=solo|pair|0`. Checked in a headless render.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between
