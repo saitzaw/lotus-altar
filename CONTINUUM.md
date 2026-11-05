@@ -78,6 +78,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   behind (jeans or a longyi), all turned to the dancers, kept clear of the flag pole and kahtein trees. Out from 4 PM to 11 PM
   with the dancers (`FOLK.dance`); hidden and unclickable otherwise. Walkers can pass through them (no collision, since solids
   can't be switched off). Tip in Burmese: ပွဲကြည့်ပရိသတ်. Checked in a headless render.
+- Added the Shan name of the dance, ka nok ၵႃႈၼူၵ်ႉ ("bird dance", given by the owner), to the dancers' tip (beside the Burmese
+  ကိန္နရာ ကိန္နရီ) and toast. **For a native Shan speaker to check:** ၵႃႈၼူၵ်ႉ.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

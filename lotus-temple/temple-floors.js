@@ -2808,11 +2808,11 @@ window.TempleFloors = function TempleFloors(ctx) {
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: f.y + 9 });
     sRect(G, -T / 2, T / 2, -R / 2, R / 2, .05);   // a walker stays on the grass where it runs out over the slope (after the pavilion and plinths, which block)
   }
-  /* ---------- the kinnara and kinnari dance (ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
+  /* ---------- the kinnara and kinnari dance, ka nok in Shan (ၵႃႈၼူၵ်ႉ, Burmese ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
      half-bird dancers in green and gold, in human-faced masks, with great fanned wings on frames and a tail fan, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
-    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ကိန္နရာ ကိန္နရီ", toast: "The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
+    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ · ကိန္နရာ ကိန္နရီ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
     // the wing cloth: green satin sewn with sequins, a gilt rim and bands; drawn round the centre so the fan panels pick up rings
     const wingT = canvasTex(256, (c, s) => {
       const h = s / 2; c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
