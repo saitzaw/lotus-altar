@@ -2257,6 +2257,9 @@ window.TempleFloors = function TempleFloors(ctx) {
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
   // floor height); they dance in the evening, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22, wing: 1.1 };   // stage floor height (m), circle radius (m), turn speed (rad/s), wing fan radius (m)
+  // their audience: rows on arcs round the stage's centre, in front of it (the stage's front edge is 2.75 m out, its steps 4 m):
+  // seated children close in, young people standing behind; `spread` is the arc's width in radians
+  const AUDIENCE = { rows: [{ rad: 5.2, n: 10, sit: true, spread: 2.0 }, { rad: 7.0, n: 11, sit: false, spread: 1.75 }] };
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
     const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
@@ -2791,8 +2794,9 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
     const dancers = kinnaraDancers(G, list, 0, PZ);   // on the stage's centre
+    const audience = festivalAudience(G, list, 0, PZ, [[0, FZ, 1.9], ...[-8, -4, 4, 8].map(x => [x, R / 2 - 3, 1.5])]);   // kept off the flag pole and the kahtein trees
     updaters.pagoda.push((dt, t, motion) => {
-      dancers(dt, motion);
+      dancers(dt, motion); audience(dt, motion);
       flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 4 - t * 3 + i) * .08 * x * motion); } p.needsUpdate = true; });
       streamer.rotation.y = Math.sin(t * .6) * .4 * motion; streamer.rotation.z = Math.sin(t * .9) * .06 * motion;
     });
@@ -2892,6 +2896,65 @@ window.TempleFloors = function TempleFloors(ctx) {
     return (dt, motion) => {
       pair.forEach(d => d.D.visible = FOLK.dance);
       if (FOLK.dance) { t += dt * motion; pose(); }
+    };
+  }
+  /* ---------- the dancers' audience: children sitting cross-legged on the grass in a front row before the stage and young people
+     standing behind them, all turned to the dancers; out while the dancers are (setDancers). Blocky low-poly figures like the
+     townsfolk, one mesh each; the children bob and rock as they watch. Returns the step to run each frame ---------- */
+  function festivalAudience(G, list, cx, cz, keepOff) {
+    const C = AUDIENCE, r = rng(4242), data = { tip: "The audience · ပွဲကြည့်ပရိသတ်", toast: "Children from the town sit right up at the front of the stage, and the young people stand behind them, to watch the kinnara and kinnari dance." };
+    const M_ = std({ vertexColors: true, flatShading: true, roughness: .85 });
+    onDaylight(d => M_.emissive.copy(lerpC(0x1c1814, 0x000000, d)));   // a little lift so they read under the lanterns
+    const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18, pk = l => l[(r() * l.length) | 0];
+    const TOP = [0xe8e4da, 0x2a6ac8, 0xd83a3a, 0xf2c230, 0x3a8a5a, 0xe88aa0, 0x2a2e48, 0x8a5ac8, 0xf08a3a], LOWER = [0x23232b, 0x2e3446, 0x4a3a2c, 0x3a5a8a];
+    const LONGYI = [0x8a2a3a, 0xd8483a, 0x2a2e48, 0x6a2a5a, 0x2f5a3a, 0x3a4a5a];
+    const box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 7) => new THREE.CylinderGeometry(a, b, h, n);
+    // a head with a face, the same for both: [parts], at height y
+    const head = (y, skin, girl, fill) => {
+      const p = [[box(.25, .27, .24), skin, 0, y, 0], [box(.035, .045, .012), INK, -.055, y + .015, .122], [box(.035, .045, .012), INK, .055, y + .015, .122],
+                 [box(.07, .014, .01), 0x8a3a30, 0, y - .055, .122], [box(.27, .07, .26), HAIR, 0, y + .15, -.005], [box(.27, girl ? .24 : .17, .07), HAIR, 0, y + (girl ? .035 : .065), -.1]];
+      if (girl) p.push([box(.025, .18, .2), HAIR, -.13, y + .045, -.02], [box(.025, .18, .2), HAIR, .13, y + .045, -.02], [box(.08, .08, .08), fill, 0, y + .1, -.15]);   // hair down, a ribbon at the back
+      else [-.08, 0, .08].forEach(x => p.push([box(.08, .05 + r() * .04, .05), HAIR, x, y + .135, .11]));   // a spiky fringe
+      return p;
+    };
+    // a child sitting cross-legged, hands in the lap
+    const sitter = (skin, top, lower, girl) => [
+      [box(.22, .1, .34), lower, -.1, .06, .08], [box(.22, .1, .34), lower, .1, .06, .08], [box(.5, .09, .12), lower, 0, .07, .24],   // folded legs, shins crossed in front
+      [cyl(.14, .16, .38), top, 0, .3, 0], [box(.08, .3, .09), top, -.19, .32, .05], [box(.08, .3, .09), top, .19, .32, .05], [box(.24, .07, .08), skin, 0, .2, .17],   // body, arms, hands in the lap
+      [cyl(.045, .045, .06, 6), skin, 0, .52, 0], ...head(.66, skin, girl, top)
+    ];
+    // a young person standing: jeans or a longyi, a shirt, arms down
+    const stander = (skin, top, lower, girl) => [
+      ...(girl ? [[cyl(.16, .18, .78), lower, 0, .39, 0]] : [[box(.12, .78, .12), lower, -.08, .39, 0], [box(.12, .78, .12), lower, .08, .39, 0]]),
+      [box(.13, .04, .22), 0x3a2e28, -.08, .02, .04], [box(.13, .04, .22), 0x3a2e28, .08, .02, .04],   // sandals
+      [cyl(.155, .165, .5), top, 0, 1.02, 0], [box(.09, .46, .095), top, -.2, 1.01, 0], [box(.09, .46, .095), top, .2, 1.01, 0],
+      [box(.07, .08, .08), skin, -.2, .74, 0], [box(.07, .08, .08), skin, .2, .74, 0], [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...head(1.45, skin, girl, top)
+    ];
+    const clear = (x, z) => keepOff.every(([kx, kz, kr]) => Math.hypot(x - kx, z - kz) > kr);
+    const folk = [];
+    C.rows.forEach(({ rad, n, sit, spread }) => {
+      for (let i = 0; i < n; i++) {
+        const a = (i / (n - 1) - .5) * spread + (r() - .5) * .05, rr = rad + (r() - .5) * .4, x = cx + Math.sin(a) * rr, z = cz + Math.cos(a) * rr;
+        if (!clear(x, z)) continue;
+        const girl = r() < .5, skin = pk(SKIN), top = pk(TOP), lower = girl && !sit ? pk(LONGYI) : pk(LOWER);
+        const body = new THREE.Mesh(lowPoly(sit ? sitter(skin, top, lower, girl) : stander(skin, top, lower, girl)), M_);
+        const sc = sit ? .8 + r() * .15 : 1.0 + r() * .12;
+        body.scale.setScalar(sc); body.position.set(x, 0, z); body.rotation.y = Math.atan2(cx - x, cz - z) + (r() - .5) * .3; body.castShadow = false;
+        clickable(list, body, data); body.raycast = function (ray, out) { if (body.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };
+        G.add(body); folk.push({ body, sit, ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
+      }
+    });
+    let t = 0;
+    return (dt, motion) => {
+      folk.forEach(f => f.body.visible = FOLK.dance);
+      if (!FOLK.dance) return;
+      t += dt * motion;
+      folk.forEach(f => {
+        // children bob and rock to the drum; everyone turns a little now and then to follow the dancers
+        f.body.position.y = f.lively ? Math.abs(Math.sin(t * 3 + f.ph)) * .04 : 0;
+        f.body.rotation.z = f.lively ? Math.sin(t * 1.5 + f.ph) * .06 : 0;
+        f.body.rotation.y = f.ry + Math.sin(t * .3 + f.ph) * .15;
+      });
     };
   }
   /* ---------- the far side of the front street: a row of modern Shan houses and shophouses from the foot of the stupa hill

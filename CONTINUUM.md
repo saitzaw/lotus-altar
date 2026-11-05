@@ -73,6 +73,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Gave the kinnara pair human-faced masks instead of bird masks, as the owner asked (the kinnara is human above, bird below): a pale
   painted face with long dark eyes, arched brows, a small nose and red lips, ears with gold ear plugs, black hair behind, the
   same tiered crown. Checked in a headless close-up.
+- Added an audience for the kinnara dance (`festivalAudience` and `AUDIENCE` in `temple-floors.js`): 16 townsfolk-style figures in two
+  arcs before the stage, children sitting cross-legged in front (several bob and rock to the drum) and young people standing
+  behind (jeans or a longyi), all turned to the dancers, kept clear of the flag pole and kahtein trees. Out from 4 PM to 11 PM
+  with the dancers (`FOLK.dance`); hidden and unclickable otherwise. Walkers can pass through them (no collision, since solids
+  can't be switched off). Tip in Burmese: ပွဲကြည့်ပရိသတ်. Checked in a headless render.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

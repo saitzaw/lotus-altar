@@ -44,6 +44,8 @@ are three shared `InstancedMesh`es.
 The masked kinnara and kinnari pair (`kinnaraDancers` in `temple-floors.js`) dance on the festival ground's pavilion stage
 from 4 PM to 11 PM ICT (`CONFIG.dancers`). The main script passes `temple.setDancers(on)` each frame; while off they are
 hidden and can't be clicked. `?dancers=1` / `?dancers=0` force them on or off.
+Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: about sixteen blocky low-poly children sitting
+cross-legged in a front arc and young people standing behind, one vertex-coloured mesh each, turned to the stage.
 
 ## Weather
 
