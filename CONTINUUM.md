@@ -70,6 +70,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Moved the kinnara pair up onto the festival pavilion's stage (circling its centre, radius 1.15 m), as the owner asked, and they
   now dance only from 4 PM to 11 PM ICT (`CONFIG.dancers`, `temple.setDancers`, `?dancers=1|0`); otherwise they're hidden and
   can't be clicked. Also fixed their plain green and skin colours to match the sRGB wing cloth. Checked in a headless render.
+- Gave the kinnara pair human-faced masks instead of bird masks, as the owner asked (the kinnara is human above, bird below): a pale
+  painted face with long dark eyes, arched brows, a small nose and red lips, ears with gold ear plugs, black hair behind, the
+  same tiered crown. Checked in a headless close-up.
 
 ### 2026-11-04 (night)
 - Added a band of bamboo along the stupa hill's eastern foot (`hillFootBamboo(g)` and `FOOT_BAMBOO` in `temple-floors.js`), between

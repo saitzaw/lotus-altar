@@ -2805,7 +2805,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     sRect(G, -T / 2, T / 2, -R / 2, R / 2, .05);   // a walker stays on the grass where it runs out over the slope (after the pavilion and plinths, which block)
   }
   /* ---------- the kinnara and kinnari dance (ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
-     half-bird dancers in green and gold, masked, with great fanned wings on frames and a tail fan, circling each other and opening
+     half-bird dancers in green and gold, in human-faced masks, with great fanned wings on frames and a tail fan, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
     const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ကိန္နရာ ကိန္နရီ", toast: "The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the drum and gongs." };
@@ -2818,9 +2818,10 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     const wingM = std({ map: wingT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
     const lin = h => new THREE.Color(h).convertSRGBToLinear();   // plain colours to match the sRGB cloth textures
-    const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 }), dark = std({ color: lin(0x14552a), roughness: .5 });
+    const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 });
     const stripes = canvasTex(64, (c, s) => { c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s); c.fillStyle = "#e8c040"; for (let y = 4; y < s; y += 10) c.fillRect(0, y, s, 3); });
     const skirtM = std({ map: stripes, roughness: .45, metalness: .2 });
+    const maskM = std({ color: lin(0xf0dcc0), roughness: .55 }), hairM = std({ color: 0x15100c, roughness: .6 });
     const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
     const panel = new THREE.CircleGeometry(C.wing, 14, 0, Math.PI / 3);
     const knob = new THREE.SphereGeometry(.05, 8, 6);
@@ -2834,12 +2835,20 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.CylinderGeometry(.16, .14, .5, 12), green, 0, 1.08, 0, B);
       mesh(new THREE.TorusGeometry(.15, .03, 6, 16), M.gold, 0, .85, 0, B).rotation.x = Math.PI / 2;
       mesh(new THREE.TorusGeometry(.12, .035, 6, 16), M.gold, 0, 1.32, 0, B).rotation.x = Math.PI / 2;
-      // the mask: a gilt bird face with a hooked beak, painted eyes and a green crest, under a tiered gold crown with a spire
+      // the mask: a human face, for the kinnara is a person above and a bird below: a pale painted face with long dark eyes, arched
+      // brows, a fine nose and red lips, ears hung with gold ear plugs, black hair at the back, under a tiered gold crown with a spire
+      mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), maskM, 0, 1.37, 0, B);   // the neck
       const head = new THREE.Group(); head.position.y = 1.5; B.add(head);
-      mesh(new THREE.SphereGeometry(.13, 14, 10), M.gold, 0, 0, 0, head).scale.set(1, 1.1, 1.05);
-      const beak = mesh(new THREE.ConeGeometry(.045, .2, 8), M.gold, 0, -.03, .17, head); beak.rotation.x = Math.PI / 2 + .35;
-      [-1, 1].forEach(sd => { mesh(new THREE.SphereGeometry(.025, 8, 6), ink, sd * .055, .03, .115, head); mesh(new THREE.BoxGeometry(.06, .012, .01), red, sd * .055, .065, .118, head).rotation.z = sd * .3; });
-      [-1, 1].forEach(sd => { const ear = mesh(new THREE.ConeGeometry(.04, .16, 4), dark, sd * .13, .05, -.02, head); ear.rotation.z = -sd * .9; });   // green feather flaps at the sides
+      mesh(new THREE.SphereGeometry(.12, 16, 12), maskM, 0, 0, 0, head).scale.set(.95, 1.15, 1);
+      mesh(new THREE.SphereGeometry(.122, 14, 10), hairM, 0, .02, -.025, head).scale.set(.97, 1.1, .95);   // hair behind the face
+      [-1, 1].forEach(sd => {
+        mesh(new THREE.SphereGeometry(.022, 10, 6), ink, sd * .045, .025, .102, head).scale.set(1.5, .55, .5);   // long dark eyes
+        const brow = mesh(new THREE.BoxGeometry(.055, .009, .008), ink, sd * .046, .058, .106, head); brow.rotation.z = -sd * .22;
+        mesh(new THREE.SphereGeometry(.03, 8, 6), maskM, sd * .118, .0, 0, head).scale.set(.45, 1, .7);   // ears
+        mesh(new THREE.CylinderGeometry(.018, .018, .02, 10), M.gold, sd * .128, -.012, .005, head).rotation.z = Math.PI / 2;   // gold ear plugs
+      });
+      const nose = mesh(new THREE.ConeGeometry(.016, .05, 6), maskM, 0, -.005, .12, head); nose.rotation.x = -Math.PI * .4;
+      mesh(new THREE.SphereGeometry(.024, 10, 6), red, 0, -.055, .105, head).scale.set(1.1, .38, .5);   // red lips
       [.12, .19, .25].forEach((y, i) => mesh(new THREE.CylinderGeometry(.11 - i * .03, .13 - i * .03, .07, 12), i % 2 ? green : M.gold, 0, y, 0, head));
       mesh(new THREE.ConeGeometry(.04, .28, 8), M.gold, 0, .42, 0, head);
       // arms: a green sleeve and bare hand, reaching out to hold the wing frames
