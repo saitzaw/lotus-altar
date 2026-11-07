@@ -33,6 +33,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Ask a Shan speaker for the Shan names of the stage gong and cymbals (labelled in Burmese, မောင်း and လင်းကွင်း, for now).
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
@@ -46,6 +47,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- Added the rest of the Shan ensemble to the kinnara stage, as the site owner asked: a gong player (front left, a bronze bossed gong
+  hung in a teak frame, struck on the boss with a red padded beater; the gong swings on its cords) and a cymbal player (back right,
+  wide brass cymbals). All three musicians are built by `musician()` inside `kinnaraDancers` and are on stage whenever the dancers
+  are. Every bar (`frame(n)`): the drum's deep stroke and the gong together (gong louder every other bar), cymbals "chap" (shut) on
+  the quarter beats and "cheng" (open, ringing) on the half, plus the drum's slap and open stroke. The solo kinnara lands on the
+  deep stroke and the gong; the evening pair now dip together on the deep strokes and open their wings over one bar and fold them
+  over the next, gong to gong, hers a breath after his. Sounds: `stageGong` (164 Hz with a slowly beating partial pair, long hum)
+  and `stageCymbals` (six square waves high-passed, plus noise) in `lotus-altar.js`, sharing the band's bus (`bandBus`) with the
+  drum; the queue is now `BAND` / `temple.takeBand()`. The solo's path narrowed to ±1.5 m to keep the wings off the gong frame.
+  **Names:** the gong and cymbals are labelled in Burmese (မောင်း, လင်းကွင်း); a Shan speaker should supply the Shan names.
+  Also fixed a garbled comment on the `FOLK` line from the earlier drum change.
 - The site owner found the solo still too aggressive and the drum not like a real ၵွင်ယၢဝ်း. The solo is now mostly gliding steps:
   `BAR` 1.6 s, each bar one figure (`hopH`): a soft knee dip, one foot lifting and set down ahead as he sways onto the other, the
   wings opening and folding once per bar (`sweep`); a light hop (0.13 m) every fourth bar and a leap (0.24 m) every eighth, no turn

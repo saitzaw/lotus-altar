@@ -33,8 +33,10 @@ All sound is synthesized in WebAudio in `lotus-altar.js`; there are no audio fil
 - Where sounds come from is `temple.sounds` in `temple-floors.js` (stupa, bell, gong, compound, banyan,
   fields, `forestZ`, `falls`). `ambStep` fades each in by distance with `near(d, r0, r1)`: full within `r0` metres,
   silent past `r1`.
-- The festival stage's long drum is not on a timer: the drummer queues each stroke as he plays (`temple.takeDrum()`, drained
-  every frame at the top of `ambStep`), and `longDrum(kind, v, t0)` voices it ("dum", "ting" or "tak", on its own bus with a short reverb), fading by distance from `sounds.stage`.
+- The festival stage's ensemble is not on a timer: each player queues his strokes as he plays (`temple.takeBand()`, drained
+  every frame at the top of `ambStep`) and they are voiced on the band's own bus with a short reverb (`bandBus`, `bandTone`,
+  `bandHiss`): `longDrum(kind, v, t0)` ("dum", "ting", "tak"), `stageGong(v, t0)` and `stageCymbals(open, v, t0)`, fading by
+  distance from `sounds.stage`.
 - Indoors only rain (muffled) and the bell and gong are heard; inside the Bell Tower or the Lotus Temple hall their own
   bell or gong plays at full loudness.
 - Tunables in `CONFIG.ambience`: `volume`, `bellEvery`, `gongEvery` (seconds between strokes), `windRest`.
