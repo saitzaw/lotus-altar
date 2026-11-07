@@ -3090,7 +3090,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     // the gongs' figure, alternating bars: the big gong on the beat with the drum's deep stroke, then three smaller ones ringing
     // through the bar; each stroke carries the gong after it, for the player to turn to
     const FIG = [[[0, 0, 1], [.25, 2, .45], [.5, 1, .6], [.75, 3, .45]], [[0, 0, .8], [.25, 4, .4], [.5, 2, .55], [.75, 1, .45]]];
-    const frame = n => [[0, "dum", 1], ...FIG[n % 2].map(([m, k, v], j, f) => [m, "gong", v, k, j + 1 < f.length ? f[j + 1][1] : FIG[(n + 1) % 2][0][1]])];
+    const frame = n => [[0, "dum", 1], ...FIG[n & 1].map(([m, k, v], j, f) => [m, "gong", v, k, j + 1 < f.length ? f[j + 1][1] : FIG[(n + 1) & 1][0][1]])];
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;

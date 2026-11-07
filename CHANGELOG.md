@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-07
 
+### Fixed
+- The site no longer goes black from 4 to 11 PM (Bangkok time) while the kinnara pair dance on the festival stage.
+
 ### Added
 - A row of five graduated gongs (မွင်း) joins the long drummer on the festival stage, played by one musician who turns from gong
   to gong; you can hear the drum and gongs near the festival ground. The kinnara lands on the drum and the big gong; in the evening

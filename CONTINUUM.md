@@ -47,6 +47,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+
+- Fixed a black screen while the kinnara pair is on stage (4–11 PM ICT): the pair's bar count starts at −1, `FIG[-1 % 2]` was
+  undefined and `frame()` threw every frame. `frame(n)` now picks the figure with `n & 1`. Earlier tests drove `hit`/`step`
+  directly, so they never ran the real loop from t = 0 in pair mode.
 - Per the site owner: the stage ensemble is now the long drum and a **row of gongs**, no cymbals (the cymbal player, `stageCymbals`
   and the "chap"/"cheng" strokes are gone), and its labels use **Shan names only**, no Burmese. The gong player (front left) stands
   inside a curved teak frame hung with five graduated bossed gongs (`GONGS`: radius and pitch, 147–247 Hz, D E G A B), turns to

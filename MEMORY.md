@@ -69,3 +69,6 @@ Traps:
   at once with no console output.
 - Don't stop the test server with `pkill -f <pattern>` when the pattern also matches your own shell command, because that
   kills the shell. Kill it by PID instead, and delete the throwaway folder afterwards.
+- JavaScript's `%` keeps the sign, so `arr[n % 2]` is `undefined` for negative `n` (a bar count that starts below zero). Use
+  `n & 1` or `((n % k) + k) % k`. An exception in the frame loop turns the whole screen black, so after touching anything
+  that runs every frame, load the page plainly (no hooks into the internals) and check it renders and logs no errors.
