@@ -58,6 +58,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
+- Per the site owner (the oh-zi mix "about 70% there"): the long drum was hard to hear and something clicked. In the clip the
+  drum carries through a row of whole-number overtones of 86.7 Hz (173, 260, 347, 434, 520 Hz… rise on every stroke), not its
+  86 Hz fundamental, which small speakers can't play anyway. `longDrum` "dum" is now 86 Hz plus overtones 2–6 and 9 (the
+  fundamental turned down), drum level .17 → .24; both stage drums are tuned alike (the off-beat strokes share the series). The
+  click was the fist-thud noise burst (2.6 kHz band-pass, 2 ms attack): removed, and the low thud eased in over 6 ms
+  (`bandHiss` takes an `attack`). Cymbals .5 → .65. Band balance of the rendered mix now within a few dB of the clip.
 - Per the site owner, the stage ensemble now plays the song of a clearer recording, **ရှမ်းအိုးစည် (YouTube aof4zp8KYXs)**; the
   earlier clip (2jsv8gcym9c) did not sound like traditional Shan music to the owner, so its two-beat song (tried the same day)
   is gone. Measured with numpy: beat 0.522 s (about 115/min) and the pattern **repeats every beat**. On the beat: the first
