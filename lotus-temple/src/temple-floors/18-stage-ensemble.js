@@ -222,14 +222,17 @@
     const band = [...drummers, gonger, cymbaler];
     // play one stroke: the player moves and the sound is queued for the ambience (the gongs' with their pitches)
     const CHORD = GONGS.map(([, f, w]) => [f, w]);   // every gong's pitch and loudness
-    const play = (kind, v, who = 0) => {
-      if (kind === "gong") { gonger.hit(); BAND.push([kind, v, CHORD]); }
-      else if (kind === "cym") { cymbaler.hit(); BAND.push([kind, v]); }
-      else { drummers[who].hit(kind, v); BAND.push([kind, v, who]); }   // the second drum a little higher
+    // each sound carries `due`, the moment (performance.now(), s) the stroke fell, so the ambience can place it exactly on the audio
+    // clock rather than on whichever frame noticed it: the rhythm keeps time however uneven the frames are
+    const play = (kind, v, who = 0, due = 0) => {
+      if (kind === "gong") { gonger.hit(); BAND.push([kind, v, CHORD, due]); }
+      else if (kind === "cym") { cymbaler.hit(); BAND.push([kind, v, 0, due]); }
+      else { drummers[who].hit(kind, v); BAND.push([kind, v, who, due]); }
       if (BAND.length > 24) BAND.shift();
     };
-    // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...]
-    const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who); }); };
+    // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...];
+    // `sec` is how many real seconds a bar count takes (slower with reduced motion)
+    const strokes = (c0, c1, marks, sec) => { const now = performance.now() / 1000; for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who, now - (c1 - n - m) * sec); }); };
     /* the song, as a recording of the Shan oh-zi ensemble plays it (ရှမ်းအိုးစည်): the same beat over and over, about 115 to the
        minute. On the beat the first drum's deep stroke and the gongs' chord, with the cymbals' lighter clash; between the beats the
        cymbals ring out, a quick tap just before, and the second drum answers with a softer deep stroke. Every fourth beat leans a
@@ -243,10 +246,11 @@
       if (!show) return;
       const d = dt * motion, q0 = t / BAR - .5, c0 = hn + ht / BAR;
       t += d;
-      if (show === "solo") { solo(d); strokes(c0, hn + ht / BAR, frame); }
+      const sec = BAR / Math.max(motion, .01);
+      if (show === "solo") { solo(d); strokes(c0, hn + ht / BAR, frame, sec); }
       else {
         pose();   // the pair dip into their knees on the deep strokes and open and fold their wings gong to gong
-        strokes(q0, t / BAR - .5, frame);
+        strokes(q0, t / BAR - .5, frame, sec);
       }
       band.forEach(b => b.step(d));
     };
