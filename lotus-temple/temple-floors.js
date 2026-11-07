@@ -2915,40 +2915,45 @@ window.TempleFloors = function TempleFloors(ctx) {
     const setArm = (r, lift, fwd, elbow, wrist, fingers) => { const sd = r.sd; r.a.rotation.z = sd * lift; r.a.rotation.x = fwd; r.elbow.rotation.z = sd * elbow; r.wrist.rotation.z = sd * wrist; r.fingers.rotation.z = sd * fingers; };
     const pair = [dancer(true), dancer(false)];
     let t = 0;
-    // the opening of the epic, in the afternoon: the kinnara alone, leaping round the stage, beating and fluttering his wings,
-    // fanning and shaking his tail feathers, mostly turned to the crowd. Each leap is a real one: he lands and sinks into his
-    // knees, springs off, tucks one leg forward and kicks the other back in the air like a bird, and comes down again; his
-    // time aloft follows from the height under gravity, and he travels only while he's off the ground
-    const GRAV = 9.8, BAR = 1.25;   // gravity (m/s²), one leap to the next (s): a bar of the long drum
-    const leapH = n => n % 4 === 3 ? .42 : .2, airT = h => Math.sqrt(8 * h / GRAV);   // every fourth leap is a big one
-    const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0;
-    let hn = 0, ht = 0;   // which leap, and the time into its bar (on the ground, then in the air)
+    // the opening of the epic, in the afternoon: the kinnara alone, gliding round the stage in soft steps, slowly opening and
+    // folding his wings, mostly turned to the crowd; a light hop every fourth bar and a leap every eighth. Each bar of the long
+    // drum is one figure: on a step he sinks a little into his knees, lifts one foot and sways onto it as he glides; on a hop he
+    // gathers into his knees, springs, and comes down into the next bar's deep stroke, his time aloft following from the
+    // height under gravity. He travels while he steps and while he's in the air, never sliding on a planted foot
+    const GRAV = 9.8, BAR = 1.6;   // gravity (m/s²), one bar of the long drum: one figure of the dance (s)
+    const hopH = n => n % 4 !== 3 ? 0 : n % 8 === 7 ? .24 : .13, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a hop every fourth bar, a leap every eighth
+    const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
+    let hn = 0, ht = 0;   // which bar, and the time into it
+    // the wings' sweep through a bar, -1 folded to 1 open: once open and closed on a step; opening as he springs, folding as he lands
+    const sweep = (n, x) => { const h = hopH(n), gd = BAR - airT(h); return !h ? -Math.cos(TAU * x / BAR) : x < gd ? -Math.cos(Math.PI * x / gd) : Math.cos(Math.PI * (x - gd) / (BAR - gd)); };
     const solo = dt => {
       const d = pair[0]; ht += dt;
       while (ht > BAR) { ht -= BAR; hn++; }
-      const h = leapH(hn), ta = airT(h), GD = BAR - ta, onG = ht < GD, u = ht / GD, ta_ = ht - GD, s = onG ? 0 : ta_ / ta;
-      const y = onG ? 0 : GRAV / 2 * ta_ * (ta - ta_);   // the arc of the leap
-      // on the ground: he sinks into the landing (as deep as the last leap was high), rises and settles, then gathers into
-      // his knees and pushes off, deeper before a big leap; in the air: the legs tucked
-      const bend = onG ? (.3 + leapH(hn - 1) * 1.1) * bump(ht, 0, .45) * .8 + (.35 + h * 1.1) * bump(ht, GD - .42, GD) + .1 * Math.sin(Math.PI * u) : 0, tuck = onG ? 0 : Math.sin(Math.PI * s);
-      const p = hn + (onG ? 0 : s * s * (3 - 2 * s));   // along his path round the stage
-      d.D.position.set(C.x + Math.sin(p * .38) * 1.9, C.y, C.z + Math.sin(p * .76) * .7);
-      d.D.rotation.y = Math.sin(p * .5) * 1.1 + (hn % 8 === 7 && !onG ? (s * s * (3 - 2 * s)) * TAU : 0);   // a full turn in the air now and then
-      d.B.position.y = y - drop(bend);
-      d.U.rotation.x = .1 + bend * .45 - tuck * .18;   // leaning into the crouch, arched back at the top of the leap
-      d.B.rotation.z = Math.sin(t * 1.3) * .08;
-      const lead = hn % 2, k = tuck * (h > .3 ? 1.2 : .85);   // the leading leg changes each leap; the big leaps split wider
+      const h = hopH(hn), ta = airT(h), GD = BAR - ta, onG = ht < GD, ta_ = ht - GD, s = onG ? 0 : ta_ / ta, u = ht / BAR;
+      const y = onG ? 0 : GRAV / 2 * ta_ * (ta - ta_);   // the arc of the hop
+      // the knees: a soft bend all the while, eased in after a landing and out before a spring, sinking into the landing
+      // (as deep as the hop was high), dipping on each step, and gathering before a spring
+      const prevH = hopH(hn - 1), easeIn = prevH ? Math.min(1, ht / .15) : 1, easeOut = h ? Math.min(1, Math.max(0, GD - ht) / .12) : 1;
+      const bend = !onG ? 0 : .1 * easeIn * easeOut + (prevH ? (.2 + prevH * 1.1) * bump(ht, 0, .55) * .8 : 0) + (h ? (.22 + h * 1.1) * bump(ht, GD - .5, GD) : .08 * bump(u, .05, .95));
+      const tuck = onG ? 0 : Math.sin(Math.PI * s);
+      const glide = h ? (onG ? 0 : smooth(s)) : smooth(u), p = hn + glide;   // along his path round the stage
+      d.D.position.set(C.x + Math.sin(p * .3) * 1.7, C.y, C.z + Math.sin(p * .6) * .6);
+      d.D.rotation.y = Math.sin(p * .4) * .9 + (hn % 16 === 5 ? smooth(u) * TAU : 0);   // now and then a slow turn on a step
+      const lead = hn % 2, lift = h ? 0 : bump(u, .12, .72);   // on a step, one foot lifts and is set down again ahead
+      d.B.position.y = y - drop(bend) + lift * .025;
+      d.B.rotation.z = (lead ? 1 : -1) * lift * .07;   // swaying onto the standing foot
+      d.U.rotation.x = .06 + bend * .3 - tuck * .08;   // leaning a little into the bend, lifting the chest at the top of a hop
+      const k = tuck * (h > .2 ? .8 : .55);   // in the air one leg reaches forward, the other draws up behind
       d.legs.forEach((l, i) => {
-        if (i === lead) setLeg(l, -bend - k * .9, 2 * bend + k * .4, k * .5);   // the front leg reaching forward, knee a little bent
-        else setLeg(l, -bend + k * .5, 2 * bend + k * 1.15, k * .6);   // the back leg kicked up behind, toes pointed
+        if (i === lead) setLeg(l, -bend - k * .8 - lift * .35, 2 * bend + k * .5 + lift * .7, k * .5 + lift * .3);
+        else setLeg(l, -bend + k * .4, 2 * bend + k * .9, k * .6);
       });
-      // the wings beat up as he springs and down as he lands, with the feathers shimmering
-      const beat = onG ? -Math.cos(Math.PI * u) : Math.cos(Math.PI * s), flutter = Math.sin(t * 23) * .07;
-      d.wings.forEach((w, i) => { const sd = i ? 1 : -1; w.rotation.z = -sd * (-.1 + beat * .45 + flutter); w.rotation.y = sd * (.25 - tuck * .2 + Math.sin(t * 2.1 + i) * .15); w.rotation.x = flutter * 1.5; });
-      // the arms sweep with the wings, the elbow and wrist following behind like a wave down a feather, the hands curled back
-      const lag = (onG ? -Math.cos(Math.PI * Math.max(0, u - .25) / .75) : Math.cos(Math.PI * Math.max(0, s - .2) / .8));
-      d.arms.forEach(r => setArm(r, 1.25 + beat * .5, -.45 + tuck * .35 - bend * .3, -lag * .35, .35 - lag * .35, .55 + Math.sin(t * 5 + r.sd) * .15));
-      d.tail.rotation.y = Math.sin(t * 3.5) * .55; d.tail.rotation.x = .5 + tuck * .35 + Math.sin(t * 11) * .08;
+      // the wings open and fold with the bar, the feathers stirring; the arms sweep with them, elbow and wrist trailing a little
+      // like a wave down a feather, the hands curled back
+      const beat = sweep(hn, ht), lag = sweep(hn, Math.max(0, ht - .15)), stir = Math.sin(t * 6) * .02;
+      d.wings.forEach((w, i) => { const sd = i ? 1 : -1; w.rotation.z = -sd * (-.05 + beat * .3 + stir); w.rotation.y = sd * (.3 - tuck * .1 + Math.sin(t * 1.2 + i) * .08); w.rotation.x = stir; });
+      d.arms.forEach(r => setArm(r, 1.05 + beat * .3, -.4 + tuck * .2 - bend * .2, -lag * .25, .3 - lag * .25, .6 + Math.sin(t * 1.5 + r.sd) * .1));
+      d.tail.rotation.y = Math.sin(t * 1.4) * .25; d.tail.rotation.x = .5 + tuck * .2 + Math.sin(t * 2.2) * .04;
     };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
@@ -2970,8 +2975,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     /* the drummer: a Shan musician at the back corner of the stage with the long drum, ၵွင်ယၢဝ်း (kawng yao): a slender drum about as long
        as he is tall, lacquered red with gilt bands, slung with its one head before him at the waist and its flared tail out behind; he
-       strikes the head with his right fist for the deep open note and slaps it with his left palm. Loose indigo Shan trousers, a white
-       jacket, a pink headcloth. The dancer keeps to his drum: a deep stroke as he lands, a light one as he settles, a slap as he springs */
+       strikes the head's centre with his right fist for the deep note, and with his left hand rings the open stroke near the rim or slaps it. Loose indigo Shan trousers, a white
+       jacket, a pink headcloth. The dancer keeps to his drum: each bar opens on the deep stroke, on which he lands from a hop; he springs from the slap */
     const drummer = (() => {
       const D = new THREE.Group(); D.position.set(C.x - 3.3, C.y, C.z - 1.5); D.rotation.y = .5; G.add(D);
       const B = new THREE.Group(); D.add(B);
@@ -3004,10 +3009,10 @@ window.TempleFloors = function TempleFloors(ctx) {
       mesh(new THREE.CircleGeometry(.15, 16), std({ color: lin(0xe8dcc0), roughness: .8 }), 0, .002, 0, drum).rotation.x = -Math.PI / 2;   // the hide head
       mesh(new THREE.TorusGeometry(.15, .015, 6, 20), M.gold, 0, -.01, 0, drum).rotation.x = Math.PI / 2;
       mesh(new THREE.ConeGeometry(.05, .22, 8), red, 0, -1.74, 0, drum).rotation.x = Math.PI;   // a red tassel at the tail
-      const dData = { tip: "Shan long drum · ၵွင်ယၢဝ်း", toast: "The kawng yao (ၵွင်ယၢဝ်း), the Shan long drum: a slender wooden drum about as long as its player is tall, slung from the shoulder and struck on its one head with the fist for the deep note and the palm for the slap. It sets the beat for the ka nok; the kinnara lands on its deep stroke and springs from its slap." };
+      const dData = { tip: "Shan long drum · ၵွင်ယၢဝ်း", toast: "The kawng yao (ၵွင်ယၢဝ်း), the Shan long drum: a slender wooden drum about as long as its player is tall, slung from the shoulder and its one head tuned with a patch of rice paste, struck with the fist in the centre for the deep, booming note, and with the hand near the rim for the ringing open note or flat for the slap. It sets the beat for the ka nok; the kinnara steps and lands on its deep stroke." };
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, dData); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       let strong = 9;
-      const hit = (kind, v) => { arms[kind].age = 0; if (v > .8) strong = 0; DRUM.push([kind, v]); if (DRUM.length > 8) DRUM.shift(); };
+      const hit = (kind, v) => { arms[kind === "dum" ? "dum" : "tak"].age = 0; if (v > .8) strong = 0; DRUM.push([kind, v]); if (DRUM.length > 8) DRUM.shift(); };
       // each hand comes down on the head in 0.07 s (the sound waits for it), then lifts and waits raised for the next stroke
       const step = dt => {
         Object.values(arms).forEach(r => {
@@ -3029,10 +3034,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       t += d;
       if (show === "solo") {
         solo(d);
-        strokes(c0, hn + ht / BAR, n => { const gd = BAR - airT(leapH(n)); return [[0, "dum", 1], [.45 / BAR, "dum", .5], [(gd - .1) / BAR, "tak", .7]]; });
+        // the deep stroke opens every bar (and meets him as he lands); on a step the slap and the ringing open stroke follow,
+        // on a hop the open stroke while he gathers and the slap as he springs
+        strokes(c0, hn + ht / BAR, n => { const h = hopH(n), gd = BAR - airT(h); return h ? [[0, "dum", 1], [gd * .45 / BAR, "ting", .45], [(gd - .08) / BAR, "tak", .7]] : [[0, "dum", 1], [.5, "tak", .55], [.75, "ting", .5]]; });
       } else {
         pose();   // the pair dip into their knees on the deep strokes
-        strokes(q0, t * 2.2 / Math.PI - .5, () => [[0, "dum", 1], [.5, "dum", .5], [.75, "tak", .6], [.875, "tak", .4]]);
+        strokes(q0, t * 2.2 / Math.PI - .5, () => [[0, "dum", 1], [.5, "ting", .5], [.75, "tak", .55], [.875, "tak", .35]]);
       }
       drummer.step(d);
     };

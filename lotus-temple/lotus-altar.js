@@ -1467,15 +1467,39 @@ function gong(v) {
   const o = ping(110, .5 * v, 8); if (o) o.frequency.exponentialRampToValueAtTime(104, audio.currentTime + 1.5);
   [[1.52, .3, 6, .15], [2.13, .22, 5, .3], [2.8, .14, 4, .45], [3.6, .09, 3, .6], [4.9, .05, 2.2, .7]].forEach(([r, p, d, s]) => ping(110 * r, p * v, d, 0, s));
 }
-// the Shan long drum on the festival stage: the fist's deep open note, sagging as it rings, or the palm's dry slap; `t0` lets
-// the sound wait for the hand to land
-function longDrum(v, slap, t0 = 0) {
-  if (!slap) { const o = ping(92, v, .7, t0, .003); if (o) o.frequency.exponentialRampToValueAtTime(62, audio.currentTime + t0 + .35); ping(185, .25 * v, .25, t0, .003); return; }
-  ping(240, .4 * v, .12, t0, .002, "triangle");
-  const a = audio, t = a.currentTime + t0, s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain();
-  s.buffer = amb.buf; fl.type = "bandpass"; fl.frequency.value = 1700; fl.Q.value = 1.2;
-  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.5 * v + .0002, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + .09);
-  s.connect(fl); fl.connect(g); g.connect(amb.out); s.start(t, Math.random()); s.stop(t + .12);
+// the Shan long drum (ၵွင်ယၢဝ်း) on the festival stage, one stroke: "dum", the fist in the head's centre, a deep boom whose pitch sags
+// as the skin relaxes, the long body humming under it; "ting", the open stroke near the rim, the rice-paste patch making it ring
+// with clear harmonics; "tak", the flat hand's muffled slap. No two strokes alike; `t0` lets the sound wait for the hand to land.
+// Its own bus with a short reverb, the pavilion roof and the open ground
+function longDrum(kind, v, t0 = 0) {
+  const a = audio, t = a.currentTime + t0, r = rand(.97, 1.03); v *= rand(.85, 1.1);
+  if (!amb.drum) {
+    const bus = a.createGain(), cv = a.createConvolver(), wet = a.createGain(), n = a.sampleRate * .9 | 0, ir = a.createBuffer(2, n, a.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (a.sampleRate * .16)) * (i < a.sampleRate * .012 ? 0 : 1); }
+    cv.buffer = ir; wet.gain.value = .22; bus.connect(amb.out); bus.connect(cv); cv.connect(wet); wet.connect(amb.out); amb.drum = bus;
+  }
+  const tone = (f0, f1, glide, peak, decay, type = "sine") => {
+    if (peak < .0005) return; const o = a.createOscillator(), g = a.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + glide);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + decay);
+    o.connect(g); g.connect(amb.drum); o.start(t); o.stop(t + decay + .05);
+  };
+  const hiss = (type, f, q, peak, decay) => {
+    const s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(); s.buffer = amb.buf; fl.type = type; fl.frequency.value = f; fl.Q.value = q;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak + .0002, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + decay);
+    s.connect(fl); fl.connect(g); g.connect(amb.drum); s.start(t, Math.random()); s.stop(t + decay + .03);
+  };
+  if (kind === "dum") {
+    tone(112 * r, 76 * r, .25, v, 1.2); tone(224 * r, 160 * r, .2, .28 * v, .5); tone(336 * r, 236 * r, .16, .1 * v, .28);   // the skin, its paste-tuned harmonics
+    tone(171 * r, 122 * r, .2, .1 * v, .2);   // and an untuned membrane mode, quick to die
+    tone(55 * r, 52 * r, .6, .4 * v, 1.5);    // the air in the long body
+    hiss("lowpass", 450, .7, .55 * v, .05); hiss("bandpass", 2600, 1, .06 * v, .015);   // the fist's thud on the skin
+  } else if (kind === "ting") {
+    tone(196 * r, 188 * r, .3, .45 * v, .7); tone(392 * r, 376 * r, .3, .22 * v, .45); tone(588 * r, 566 * r, .3, .1 * v, .3); tone(784 * r, 760 * r, .3, .04 * v, .2);
+    hiss("bandpass", 1900, 1.4, .14 * v, .025);
+  } else {
+    tone(180 * r, 135 * r, .05, .3 * v, .12); hiss("bandpass", 1100, 1.3, .55 * v, .07); hiss("highpass", 3200, .7, .12 * v, .025);
+  }
 }
 // a bulbul's call: a few quick whistled notes sliding up or down
 function bird(v) {
@@ -1543,7 +1567,7 @@ function ambStep(dt) {
   if (due("bell", b0, b1)) templeBell(current === "bell" ? 1 : .6 * inYard(Math.hypot(p.x - S.bell[0], p.z - S.bell[1])));
   if (due("gong", g0, g1)) gong(current === "library" ? 1 : .6 * inYard(Math.hypot(p.x - S.gong[0], p.z - S.gong[1])));
   // the long drum on the festival stage, stroke by stroke as the drummer plays (heard outside only)
-  if (drum.length && out) { const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80); if (v > .01) drum.forEach(([k, s]) => longDrum(.3 * v * s, k === "tak", .07)); }
+  if (drum.length && out) { const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80); if (v > .01) drum.forEach(([k, s]) => longDrum(k, .2 * v * s, .07)); }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }
 // the sound starts with the first tap or key (browsers keep audio off until then); off in a hidden tab

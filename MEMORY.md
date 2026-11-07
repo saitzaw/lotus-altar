@@ -51,6 +51,9 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
    3 minutes.
 
 Traps:
+- To hear a synthesized sound without a speaker or a user gesture, copy its function into the test page, run it on an
+  `OfflineAudioContext` (stub `audio`, `amb.out`, `amb.buf`, `rand`), encode the result as a 16-bit WAV, log it as base64 and
+  decode it to a file for the owner to play.
 - Use `--screenshot=<file>`, not `--dump-dom`: with `--dump-dom` no `CONSOLE` lines come out, so the `IMG` log is lost.
 - The test machine's clock may already be inside a timed show (e.g. the kinnara solo at 2–3:45 PM ICT), so the scene animates
   during the first frames before your script steps it; expect a phase offset, or force the switch off first.

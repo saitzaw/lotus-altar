@@ -10,6 +10,8 @@ For working notes and open questions, see `CONTINUUM.md`.
   near the festival ground.
 
 ### Changed
+- The kinnara's solo is gentler: gliding steps and slowly opening wings, with only a light hop now and then.
+- The long drum sounds more like a kawng yao: a deep booming centre stroke, a ringing open stroke and a muffled slap.
 - The kinnara's solo is slower: a leap to each bar of the drum, with time to land, settle and gather between leaps.
 - The kinnara dancer now dances with his arms and legs: knees that bend to land and spring, a leg kicked back in each leap,
   and curled-back dancer's hands. His leaps rise and fall naturally instead of floating.

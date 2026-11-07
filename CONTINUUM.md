@@ -46,6 +46,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- The site owner found the solo still too aggressive and the drum not like a real ၵွင်ယၢဝ်း. The solo is now mostly gliding steps:
+  `BAR` 1.6 s, each bar one figure (`hopH`): a soft knee dip, one foot lifting and set down ahead as he sways onto the other, the
+  wings opening and folding once per bar (`sweep`); a light hop (0.13 m) every fourth bar and a leap (0.24 m) every eighth, no turn
+  in the air (a slow full turn on a step every 16th bar). Wing beat, feather shimmer, tail shake and arm sweep all smaller and slower.
+  The drum (`longDrum(kind, v, t0)`) now has three strokes: "dum" (fist in the centre: a boom sagging 112→76 Hz with paste-tuned
+  harmonics, a quick membrane mode, a 55 Hz body hum and a thud), "ting" (open stroke near the rim, 196 Hz ringing with harmonics)
+  and "tak" (muffled slap), each varied a little, on its own bus with a short generated reverb. Still synthesized: if the owner
+  supplies recordings of real kawng yao strokes (with rights to use them), wire them in as samples instead.
 - Slowed the kinnara's solo and added a Shan long-drum player, as the site owner asked. Each leap is now one bar of the drum,
   `BAR` = 1.25 s (was about 0.75 s): on the ground he sinks into the landing, settles, then gathers and pushes off; the time aloft
   still comes from gravity. The drummer (inside `kinnaraDancers`, on stage whenever the dancers are, at the back left corner) plays
