@@ -18,8 +18,10 @@ const CONFIG = {
     closeUp: { pos: [.75, 2.95, .75], target: [0, 2.45, -1.5] },
     corridor: { pos: [0, 1.65, 8.4], target: [0, 1.6, 9.6], fov: 65 },
     stairs: { pos: [-4.6, 1.65, -2.95], target: [-6.2, 1.75, -4.45] },   // standing inside the stair room at eye height, facing the spiral
-    stairsTop: { pos: [-4.6, 1.65, -2.95], target: [-6.0, .2, -4.4] },   // on the top floor, looking down the flight that arrives there   // on the top floor, looking down the flight that arrives there   // inside the stair room, the spiral in view   // on the balcony corridor outside an upper hall, looking out
-    pagoda: { pos: [0, 27, 94], target: [0, 6, 14] }
+    stairsTop: { pos: [-4.6, 1.65, -2.95], target: [-6.0, .2, -4.4] },   // on the top floor, looking down the flight that arrives there
+    pagoda: { pos: [0, 27, 94], target: [0, 6, 14] },
+    // looking round on foot, kept gentle so walking does not make anyone dizzy
+    look: { drag: .4, settle: .3, turn: 1.0, minPitch: .6, maxPitch: 2.25 }   // drag: mouse/touch look speed (1 = half a screen turns you half round); settle: how fast the view stops after you let go (0–1); turn: arrow-key turn in rad/s; pitch limits in radians from straight up
   },
   // the seven floors of the pagoda, ground floor first; `statue` floors get the Look closer button
   floors: [
@@ -1657,13 +1659,13 @@ function setPanel(hidden) { panelHidden = hidden; if (hidden) openSheet(null); }
 const EYE = 1.65, WALK = 2.6;   // eye height and walking speed (m/s): an unhurried temple pace
 let inMarket = false, panelBefore = false, walkTween = null;
 const keys = new Set(), padMoves = new Set();
-const MARKET_LOOK = { minDistance: .05, maxDistance: .05, minPolarAngle: .45, maxPolarAngle: 2.4, minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity };
+const MARKET_LOOK = { minDistance: .05, maxDistance: .05, minPolarAngle: CONFIG.camera.look.minPitch, maxPolarAngle: CONFIG.camera.look.maxPitch, minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity };
 // stand at `pos` looking toward `at`: OrbitControls round a target a few centimetres ahead gives a look-around
 function lookFrom(pos, at) {
   const dir = at.clone().sub(pos); dir.y = 0; if (dir.lengthSq() < 1e-6) dir.set(0, 0, -1);
   camera.position.copy(pos); controls.target.copy(pos).addScaledVector(dir.normalize(), .05);
   Object.assign(controls, MARKET_LOOK, { enableZoom: false });
-  camera.fov = 65; camera.updateProjectionMatrix();   // a natural field of view on foot; the overhead views keep 42°
+  resize();   // a natural field of view on foot (see resize); the overhead views keep 42°
   controls.update();
 }
 // first person: walk the grounds at eye height, anywhere on the land; the market is one place to start
@@ -1696,7 +1698,7 @@ function walkTo(p) {
   if (!p || !inMarket || tgOpen) return;
   walkTween = { to: V(p.x, 0, p.z), speed: WALK };
 }
-const TURN = 1.6;   // radians a second at full turn
+const TURN = CONFIG.camera.look.turn * (reduceMotion ? .7 : 1);   // radians a second at full turn: about 57°/s, slow enough not to swim
 let turnVel = 0, seated = false;
 // sit on the pavilion's pond-side bench, eyes at seated height, looking out over the water
 function sitInPavilion() {
@@ -1846,8 +1848,8 @@ function resize() {
   const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
-  const base = inMarket || inCorridor ? 65 : 42;   // on foot the view is wider
-  camera.fov = camera.aspect < 1 ? Math.min(80, base + (1 - camera.aspect) * 40) : base;
+  const base = inMarket || inCorridor || inStairs ? 65 : 42;   // on foot the view is wider
+  camera.fov = camera.aspect < 1 ? Math.min(base > 42 ? 72 : 80, base + (1 - camera.aspect) * 40) : base;   // on foot a phone held upright widens a little, but not to a fish-eye that swims as you turn
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(stage); resize();
@@ -1902,6 +1904,9 @@ function frame() {
   headGlow.material.opacity = .18 + glowBoost * .3;
   backGlow.intensity = 1.2 + glowBoost * 1.2;
   lanterns.forEach((l, i) => l.rotation.z = Math.sin(now * .7 + i * 2) * .03 * motion);
+  // on foot the drag only turns the head, slowly, and stops when you let go instead of drifting on
+  const onFoot = inMarket || inCorridor || inStairs;
+  controls.rotateSpeed = onFoot ? CONFIG.camera.look.drag : 1; controls.dampingFactor = onFoot ? CONFIG.camera.look.settle : .05;
   controls.update();
   keepInside();
   walkStep(dt);
@@ -2230,7 +2235,7 @@ function setView(v, instant = false) {
         const view = current === CONFIG.floors.length ? CONFIG.camera.stairsTop : CONFIG.camera.stairs, p = V(...view.pos), t = V(...view.target);
         camera.position.copy(p); controls.target.copy(p).addScaledVector(t.sub(p).normalize(), .05);
         Object.assign(controls, STAIR_LOOK, { enableZoom: false });
-        camera.fov = 65; camera.updateProjectionMatrix(); controls.update();
+        resize(); controls.update();
         $("hint").textContent = "The stair room. Turn with the arrows or drag to look; use the Up and Down buttons, or face the stairs and press Space. Face the door and press Space to go back.";
       } else {   // back out through the door, standing just in front of it, facing into the hall
         if (!inMarket) stayFirstPerson(current);

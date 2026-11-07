@@ -45,6 +45,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- Made walking gentler after the site owner said it made them dizzy. New `CONFIG.camera.look` holds the on-foot camera: mouse
+  and touch look speed 0.4 of OrbitControls' default (was 1, so half a screen's drag turned you 180°), damping 0.3 so the view
+  stops when you let go instead of drifting for a second (was 0.05), arrow-key turning 1.0 rad/s (was 1.6, and 0.7 of that with
+  reduced motion), and looking up or down kept within about 55° (polar .6–2.25, was .45–2.4). The frame loop switches
+  `rotateSpeed`/`dampingFactor` between on-foot and overhead values. `lookFrom` and the stair room now get their field of view
+  from `resize()`, so it no longer jumps between 65° and a wider portrait value, and on foot a phone held upright widens to 72°
+  at most (was 80°). Checked headless: no console errors, and the settings take hold. Still needs the owner to try it by feel.
 - Added dragon and lion dance training (舞龍 舞獅) on the kung fu ground east of the pagoda (演武場), for the 30 days before Chinese New
   Year, as the site owner asked: `lionDragonTroupe(b, list, W, D)` inside `trainingGround` in `temple-floors.js`, switched by
   `temple.setLionDragon("dragon" | "lion" | null)` from `drillNow()` in `lotus-altar.js`. Schedule on the temple's clock
