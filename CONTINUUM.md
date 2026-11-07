@@ -61,8 +61,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Per the site owner (still clicks, "not smooth"): the clicks in the listening file were my test render clipping (fixed gain
   and clamp); the mix itself peaks below 1. In the site the stage's strokes were heard on whichever frame noticed them (up to a
   frame late, so the rhythm wobbled with the frame rate); each stroke in `BAND` now carries the moment it fell
-  (`performance.now()`), and `ambStep` schedules it exactly 0.1 s after that on the audio clock. Offered the owner real
-  samples of the instruments instead of synthesis, which needs a recording they own or have permission to use.
+  (`performance.now()`), and `ambStep` schedules it exactly 0.1 s after that on the audio clock. The owner chose to keep
+  the synthesized sound (no recorded samples) and tune it by ear; reference recording: YouTube aof4zp8KYXs.
 - Per the site owner (the oh-zi mix "about 70% there"): the long drum was hard to hear and something clicked. In the clip the
   drum carries through a row of whole-number overtones of 86.7 Hz (173, 260, 347, 434, 520 Hz… rise on every stroke), not its
   86 Hz fundamental, which small speakers can't play anyway. `longDrum` "dum" is now 86 Hz plus overtones 2–6 and 9 (the
