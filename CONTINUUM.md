@@ -44,6 +44,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-07
+- Added dragon and lion dance training (舞龍 舞獅) on the kung fu ground east of the pagoda (演武場), for the 30 days before Chinese New
+  Year, as the site owner asked: `lionDragonTroupe(b, list, W, D)` inside `trainingGround` in `temple-floors.js`, switched by
+  `temple.setLionDragon("dragon" | "lion" | null)` from `drillNow()` in `lotus-altar.js`. Schedule on the temple's clock
+  (`CONFIG.lionDragon`): dragon 6–9 AM and 9–10 PM, lion 9:30–11 AM and 6–8 PM. The owner wrote "9:30 to 11:00" for the lion
+  without AM/PM; read as morning, after the dragon. New Year dates are a table (`CONFIG.lionDragon.newYear`, 2026–2035); add years
+  before 2035 runs out. The dragon: red with gold scales, nine pole dancers in yellow practice shirts and a pearl bearer, running a
+  figure of eight while the body rolls in waves. Two southern lions (red and yellow), each two dancers, prowl in circles, blink, snap
+  their jaws and rear up every nine seconds. A drummer and a cymbal player keep time at a lion drum that stays at the platform's
+  foot all year. The HUD's `#festInfo` line names the season and hours. `?lionDragon=dragon|lion|0` forces one. Checked both in
+  headless renders. No drum sound yet.
+
 ### 2026-11-05
 - Put the Kachin Baptist church in its own walled compound (`churchCompound(g)` and `CHURCH_YARD` in `temple-floors.js`), as the
   site owner asked, with a gate at the plaza lane's end under an iron arch and cross. The six town houses round the church are gone;
@@ -144,13 +156,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ### 2026-11-03 (evening)
 - Hid the "Lotus Altar" title and the floor/place line (`#where`) from the top-left HUD. They are kept for screen readers
   through the same visually-hidden rule as `#hint` in `lotus-altar.css`; the buttons now sit at the top.
-
-### 2026-11-03 (afternoon)
-- The night sky is black: the three sky domes (pagoda grounds, bell tower, the view from the upper floors) lost their purple
-  gradient and rose horizon glow above the horizon, and the outdoor background and haze at night are black (`skyColors`).
-  Stars and moon show as before; a cloudy or rainy night still greys it faintly. Day view unchanged.
-
-### 2026-11-03 (early afternoon)
-- Took away the westernmost foothill (about x −158, z −19, base radius 40), which stood across the new road to the hospital.
-  `mountainsAndForest` now skips any peak whose base would reach the road or the hospital; the random draws still happen,
-  so every other peak keeps its shape. Syntax-checked only.

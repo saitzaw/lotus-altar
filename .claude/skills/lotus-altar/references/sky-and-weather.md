@@ -50,6 +50,16 @@ Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch:
 and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked
 `epic` join only for the solo, making 37.
 
+## Dragon and lion dance training
+
+For the `days` (30) before Chinese New Year (`CONFIG.lionDragon`; New Year dates are a table, `newYear`, 2026–2035, so add years
+before it runs out), the kung fu ground east of the pagoda holds practice (`lionDragonTroupe` inside `trainingGround` in
+`temple-floors.js`): the dragon 6–9 AM and 9–10 PM, the two lions 9:30–11 AM and 6–8 PM. `drillNow()` in the main script gives
+`{ season, newYear, show }` and passes `temple.setLionDragon("dragon" | "lion" | null)` each frame. On New Year's day itself the
+ground is quiet. The drum on its stand stays all year; the drummer and cymbal player come for both practices. While the season
+runs (and Halloween doesn't), `#festInfo` names it and the hours. `?lionDragon=dragon`, `?lionDragon=lion` or `?lionDragon=0`
+forces one.
+
 ## Weather
 
 - Follows the seasons of the northern Thai hills; no live weather API. Kinds (in `WEATHER`): `clear`, `cloudy`, `rain`,

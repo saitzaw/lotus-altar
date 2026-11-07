@@ -54,5 +54,12 @@ Traps:
 - The page may open in first-person walk mode. Clicking `#leaveMarketBtn` already takes you outside, so clicking
   `#outsideBtn` after it sends you back into the floor-1 hall.
 - Log a `window` `error` listener in the test script, or build errors go unseen.
+- If a place you aimed at comes out missing, the distance culling hid it: `temple.cull` builds its frustum from
+  `camera.matrixWorldInverse`, which only `renderer.render` refreshes, so a camera you just moved is culled with the old view.
+  Set `temple.culling = false` (expose `temple` on `__t` with a getter) before rendering, or refresh the inverse yourself.
+- To find an outdoor place's world position, look up a clickable by its tip (`world.traverse`, `userData.tip`) and use its
+  parent's `localToWorld`; the grounds' frame is not the world frame.
+- Launch each headless run with its own `--user-data-dir` under `$HOME`, one at a time: two at once, or a reused profile, can exit
+  at once with no console output.
 - Don't stop the test server with `pkill -f <pattern>` when the pattern also matches your own shell command, because that
   kills the shell. Kill it by PID instead, and delete the throwaway folder afterwards.

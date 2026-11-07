@@ -5,6 +5,16 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-03 (afternoon)
+- The night sky is black: the three sky domes (pagoda grounds, bell tower, the view from the upper floors) lost their purple
+  gradient and rose horizon glow above the horizon, and the outdoor background and haze at night are black (`skyColors`).
+  Stars and moon show as before; a cloudy or rainy night still greys it faintly. Day view unchanged.
+
+### 2026-11-03 (early afternoon)
+- Took away the westernmost foothill (about x −158, z −19, base radius 40), which stood across the new road to the hospital.
+  `mountainsAndForest` now skips any peak whose base would reach the road or the hospital; the random draws still happen,
+  so every other peak keeps its shape. Syntax-checked only.
+
 ### 2026-11-03 (midday)
 - The street now runs on west past the hut village's lane to a corner at x −128, turns north (road at x −124.75, dirt
   verges, dashed centre line) and meets the hospital's forecourt, widened west to x −121.5. The north pavement now also

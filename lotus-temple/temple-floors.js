@@ -47,7 +47,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
-  const FOLK = { out: false, umbrellas: false, dance: null };   // dance: who is on the festival stage, "solo", "pair" or null
+  const FOLK = { out: false, umbrellas: false, dance: null, drill: null };   // dance: who is on the festival stage, "solo", "pair" or null; drill: "dragon", "lion" or null on the kung fu ground
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
@@ -5184,9 +5184,197 @@ window.TempleFloors = function TempleFloors(ctx) {
         [[1.45, .4], [1.25, -.4], [.85, 0]].forEach(([y, a]) => { const arm = mesh(new THREE.CylinderGeometry(.04, .04, .5, 6), M.wood, x - .25, y, z + a * .3, b); arm.rotation.z = Math.PI / 2; arm.rotation.y = a; });
       });
       [-D / 2 + 1.3, D / 2 - 1.3].forEach(z => { mesh(new THREE.BoxGeometry(.6, .45, .4), M.stone, W / 2 - 1.2, .35, z, b); mesh(new THREE.TorusGeometry(.14, .04, 6, 12, Math.PI), M.stone, W / 2 - 1.2, .58, z, b); });
+      const troupe = lionDragonTroupe(b, list, W, D);   // dragon and lion dance practice before Chinese New Year
       updaters.pagoda.push((dt, t, motion) => {   // the banners wave
+        troupe(dt, motion);
         flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 2.5 - t * 3 + i) * .12 * x * motion); } p.needsUpdate = true; });
       });
+    }
+    /* ---------- dragon and lion dance training (舞龍 舞獅) on the kung fu ground in the weeks before Chinese New Year: the dragon
+       team (nine dancers on poles and the pearl bearer) runs the long dragon round a figure of eight, its body rolling in waves; two
+       southern lions, each worked by two dancers, prowl, shake their heads, snap their jaws and rear up; a drummer and a cymbal player
+       keep the beat. Shown only at practice hours (CONFIG.lionDragon, setLionDragon). In the ground's local frame. Returns the step ---------- */
+    function lionDragonTroupe(b, list, W, D) {
+      const T = new THREE.Group(); T.position.y = .12; b.add(T);   // on the slabs
+      const lin = h => new THREE.Color(h).convertSRGBToLinear(), mats = [];
+      const mat = o => { const m = std(o); mats.push(m); return m; };
+      const folkM = std({ vertexColors: true, flatShading: true, roughness: .85 }); mats.push(folkM);
+      onDaylight(d => mats.forEach(m => m.emissive.copy(lerpC(0x1c1814, 0x000000, d))));   // a little lift so they read at the evening practices
+      const gate = (root, data) => root.traverse(o => { if (!o.isMesh) return; o.castShadow = true; clickable(list, o, data); const rc = o.raycast; o.raycast = function (ray, out) { if (root.visible) rc.call(this, ray, out); }; });
+      // the trainees: blocky low-poly figures in the troupe's practice kit, yellow T-shirts and black kung fu trousers
+      const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18, SHIRT = 0xf2c230, PANTS = 0x1c1c22, r = rng(2027);
+      const box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, c, h, n = 7) => new THREE.CylinderGeometry(a, c, h, n);
+      const trainee = (armsUp) => {
+        const skin = SKIN[(r() * SKIN.length) | 0], y = 1.45;
+        const p = [[box(.13, .8, .13), PANTS, -.08, .4, 0], [box(.13, .8, .13), PANTS, .08, .4, 0], [box(.13, .06, .24), 0x101014, -.08, .03, .04], [box(.13, .06, .24), 0x101014, .08, .03, .04],
+                   [cyl(.155, .165, .5), SHIRT, 0, 1.02, 0], [box(.34, .07, .3), 0xc0221a, 0, .8, 0], [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0],   // a red sash
+                   [box(.25, .27, .24), skin, 0, y, 0], [box(.035, .045, .012), INK, -.055, y + .015, .122], [box(.035, .045, .012), INK, .055, y + .015, .122],
+                   [box(.07, .014, .01), 0x8a3a30, 0, y - .055, .122], [box(.27, .07, .26), HAIR, 0, y + .15, -.005], [box(.27, .17, .07), HAIR, 0, y + .065, -.1]];
+        if (armsUp === "fwd") [-1, 1].forEach(sd => p.push([box(.08, .5, .08).rotateX(-1.4), skin, sd * .19, 1.2, .22], [box(.1, .1, .12), SHIRT, sd * .19, 1.24, 0]));   // both hands out in front
+        else if (armsUp) [-1, 1].forEach(sd => p.push([box(.08, .55, .08).rotateZ(sd * .3), skin, sd * .13, 1.52, .06], [box(.1, .1, .12), SHIRT, sd * .19, 1.24, 0], [box(.08, .08, .08), skin, sd * .05, 1.79, .07]));   // both hands up on the pole
+        return new THREE.Mesh(lowPoly(p), folkM);
+      };
+
+      /* the dragon (舞龍): red with gold scales, a gold-horned head with a snapping jaw and white beard, chasing a pearl */
+      const DR = { run: 1.8, H: 2.35, A: .5, wave: 3, gap: .28, n: 44, poles: 9, apart: 1.35 };   // speed (m/s), body height and wave (m), wave speed (rad/s), segment spacing (m), segments, poles, pole spacing (m)
+      const dragon = new THREE.Group(); T.add(dragon);
+      const dData = { tip: "Dragon dance practice · 舞龍", toast: "The temple's dragon team training for Chinese New Year (春節): nine dancers on poles follow the pearl, rolling the dragon's long body in waves round the ground to the drum. They practise from 6 to 9 in the morning and from 9 to 10 at night in the weeks before the New Year, when the dragon dances through the town for good fortune." };
+      // a figure of eight over the ground, measured along its length so the body keeps its spacing
+      const NP = 400, pts = [], cum = [0];
+      for (let i = 0; i <= NP; i++) { const u = i / NP * TAU; pts.push([4.6 * Math.sin(u), 2.9 * Math.sin(2 * u) + .6]); if (i) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
+      const LEN = cum[NP];
+      const along = s => {
+        s = ((s % LEN) + LEN) % LEN; let lo = 0, hi = NP;
+        while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cum[m] <= s) lo = m; else hi = m; }
+        const f = (s - cum[lo]) / (cum[hi] - cum[lo] || 1); return [pts[lo][0] + (pts[hi][0] - pts[lo][0]) * f, pts[lo][1] + (pts[hi][1] - pts[lo][1]) * f];
+      };
+      const scaleT = canvasTex(128, (c, s) => {
+        c.fillStyle = "#b81c16"; c.fillRect(0, 0, s, s); c.strokeStyle = "#f0c040"; c.lineWidth = 3;
+        for (let y = 0; y < s + 16; y += 16) for (let x = (y / 16) % 2 ? 8 : 0; x < s + 16; x += 16) { c.beginPath(); c.arc(x, y, 8, 0, Math.PI); c.stroke(); }
+      });
+      scaleT.wrapS = scaleT.wrapT = THREE.RepeatWrapping; scaleT.repeat.set(3, 2);
+      const dRed = mat({ color: lin(0xb81c16), roughness: .5, metalness: .15 }), dScale = mat({ map: scaleT, roughness: .45, metalness: .25 });
+      const gold = mat({ color: lin(0xe8b830), roughness: .35, metalness: .7 }), white = mat({ color: 0xf2eee4, roughness: .8 }), black = mat({ color: 0x141010, roughness: .5 });
+      const body = new THREE.InstancedMesh(new THREE.SphereGeometry(.3, 12, 8), dScale, DR.n), fins = new THREE.InstancedMesh(new THREE.ConeGeometry(.07, .26, 4), gold, DR.n);
+      body.frustumCulled = fins.frustumCulled = false; dragon.add(body, fins);
+      // the head, built facing +z
+      const head = new THREE.Group(); head.rotation.order = "YXZ"; dragon.add(head);
+      mesh(box(.55, .45, .6), dRed, 0, .05, 0, head); mesh(box(.46, .24, .5), dRed, 0, -.02, .5, head); mesh(new THREE.SphereGeometry(.1, 10, 8), gold, 0, .08, .78, head);
+      mesh(box(.5, .05, .5), gold, 0, .26, .1, head);
+      const jaw = new THREE.Group(); jaw.position.set(0, -.14, .22); head.add(jaw);
+      mesh(box(.42, .08, .62).translate(0, 0, .3), dRed, 0, 0, 0, jaw); mesh(box(.36, .05, .04), white, 0, .06, .56, jaw);   // the jaw and its teeth
+      [-.12, 0, .12].forEach(x => mesh(new THREE.ConeGeometry(.06, .32, 6).rotateX(Math.PI), white, x, -.18, .35, jaw));   // the beard
+      [-1, 1].forEach(sd => {
+        mesh(new THREE.SphereGeometry(.1, 10, 8), white, sd * .2, .2, .26, head); mesh(new THREE.SphereGeometry(.05, 8, 6), black, sd * .23, .22, .34, head);
+        mesh(box(.2, .05, .08), gold, sd * .2, .33, .26, head);   // brows
+        const horn = mesh(new THREE.ConeGeometry(.05, .55, 6), gold, sd * .15, .45, -.2, head); horn.rotation.x = -.9;
+        const whisker = mesh(new THREE.CylinderGeometry(.012, .006, .7, 4), gold, sd * .35, -.02, .7, head); whisker.rotation.z = sd * 1.1; whisker.rotation.x = .4;
+        for (let i = 0; i < 3; i++) { const m = mesh(new THREE.ConeGeometry(.07, .4, 5), white, sd * (.2 + i * .05), .1 - i * .12, -.32, head); m.rotation.x = -1.2; m.rotation.z = sd * .5; }   // the mane
+      });
+      const tail = new THREE.Group(); tail.rotation.order = "YXZ"; dragon.add(tail);
+      [-.6, 0, .6].forEach(a => { const m = mesh(new THREE.ConeGeometry(.08, .55, 5), gold, 0, 0, 0, tail); m.geometry = m.geometry.clone().rotateX(-Math.PI / 2).translate(0, 0, -.3); m.rotation.y = a * .4; m.rotation.x = -a * .2; });
+      // the dancers, each with a pole up to the body, and the pearl bearer running ahead
+      const poleG = cyl(.025, .025, 1, 6).translate(0, .5, 0), poleM = mat({ color: lin(0x8a5a2a), roughness: .7 });
+      const runners = [];
+      for (let k = 0; k <= DR.poles; k++) { const man = trainee(true), pole = new THREE.Mesh(poleG, poleM); dragon.add(man, pole); runners.push({ man, pole, ph: r() * TAU }); }
+      const pearl = new THREE.Mesh(new THREE.SphereGeometry(.2, 14, 10), mat({ color: lin(0xf06030), roughness: .3, metalness: .3, emissive: 0x401000 })); dragon.add(pearl);
+      mats.pop();   // the pearl keeps its own glow
+      gate(dragon, dData);
+      const M4 = new THREE.Matrix4(), OFF = new THREE.Matrix4().makeTranslation(0, .3, 0), UP = V(0, 1, 0), pA = V(0, 0, 0), pB = V(0, 0, 0), S3 = V(1, 1, 1);
+      const yAt = (s0, s, t) => DR.H + DR.A * Math.sin(t * DR.wave - (s0 - s) * .55);
+      const dragonStep = t => {
+        const s0 = t * DR.run;
+        for (let k = 0; k < DR.n; k++) {
+          const s = s0 - k * DR.gap, [x, z] = along(s), [x2, z2] = along(s + .05), rr = k < 28 ? .3 : .3 - (k - 28) / (DR.n - 28) * .2;
+          pA.set(x, yAt(s0, s, t), z); pB.set(x2, yAt(s0, s + .05, t), z2);
+          M4.lookAt(pA, pB, UP); M4.scale(S3.set(rr / .3, rr / .3, 1.3)); M4.setPosition(pA); body.setMatrixAt(k, M4);
+          fins.setMatrixAt(k, M4.multiply(OFF));
+        }
+        body.instanceMatrix.needsUpdate = fins.instanceMatrix.needsUpdate = true;
+        const [hx, hz] = along(s0 + .25), [fx, fz] = along(s0 + .45), hy = yAt(s0, s0, t) + .1;
+        head.position.set(hx, hy, hz); head.rotation.y = Math.atan2(fx - hx, fz - hz); head.rotation.x = -.25 * Math.cos(t * DR.wave);   // nodding with the wave
+        jaw.rotation.x = .15 + .2 * Math.max(0, Math.sin(t * 2.6));
+        const sT = s0 - (DR.n - 1) * DR.gap, [tx, tz] = along(sT), [ux, uz] = along(sT + .1);
+        tail.position.set(tx, yAt(s0, sT, t), tz); tail.rotation.y = Math.atan2(ux - tx, uz - tz) + Math.sin(t * 4) * .3;
+        runners.forEach((rn, k) => {
+          // the pearl bearer (k = 0) leads, weaving; then the head pole under the head and one pole every DR.apart metres
+          const s = k === 0 ? s0 + 1.9 : k === 1 ? s0 + .1 : s0 - .3 - (k - 1) * DR.apart, [x, z] = along(s), [x2, z2] = along(s + .1);
+          const yaw = Math.atan2(x2 - x, z2 - z), side = k === 0 ? Math.sin(t * 2.2) * .5 : 0, bob = Math.abs(Math.sin(t * 9 + rn.ph)) * .07;
+          rn.man.position.set(x + Math.cos(yaw) * side, bob, z - Math.sin(yaw) * side); rn.man.rotation.y = yaw;
+          const top = k === 0 ? 2.7 + Math.sin(t * 3.1) * .35 : yAt(s0, s, t) - .2;
+          rn.pole.position.set(rn.man.position.x, 1.8 + bob, rn.man.position.z); rn.pole.scale.y = Math.max(.2, top - 1.8 - bob);
+          if (k === 0) pearl.position.set(rn.man.position.x, top + .15, rn.man.position.z);
+        });
+        pearl.rotation.y = t * 3;
+      };
+
+      /* two southern lions (醒獅), a red one and a yellow one, each two dancers under a head and a cloth body */
+      const lData = { tip: "Lion dance practice · 舞獅", toast: "Two southern lions in training for Chinese New Year, each worked by two dancers: one holds the head, blinking its eyes and snapping its jaw, and one bends under the cloth as the body and tail. They prowl, shake and rear up to the drum and cymbals in kung fu stances. Practice is from 9:30 to 11 in the morning and 6 to 8 in the evening; at New Year the lions visit the shops to pluck the green (採青) for luck." };
+      const lionsG = new THREE.Group(); T.add(lionsG);
+      const legG = box(.15, .85, .17).translate(0, -.42, 0), cuffG = box(.2, .1, .22), shoeG = box(.15, .06, .24);
+      const lion = (coat, trim, cx, dir) => {
+        const L = new THREE.Group(); L.rotation.order = "YXZ"; lionsG.add(L);
+        const coatM = mat({ color: lin(coat), roughness: .55, metalness: .1 }), trimM = mat({ color: lin(trim), roughness: .4, metalness: .5 });
+        const clothT = canvasTex(128, (c, s) => {
+          c.fillStyle = "#" + coat.toString(16).padStart(6, "0"); c.fillRect(0, 0, s, s); c.strokeStyle = "#" + trim.toString(16).padStart(6, "0"); c.lineWidth = 3;
+          for (let y = 0; y < s + 16; y += 16) for (let x = (y / 16) % 2 ? 8 : 0; x < s + 16; x += 16) { c.beginPath(); c.arc(x, y, 8, 0, Math.PI); c.stroke(); }
+        });
+        clothT.wrapS = clothT.wrapT = THREE.RepeatWrapping; clothT.repeat.set(2, 3);
+        const cloth = mesh(new THREE.CylinderGeometry(.44, .38, 1.9, 14, 1, true, Math.PI / 2, Math.PI).rotateX(Math.PI / 2), mat({ map: clothT, roughness: .6, side: THREE.DoubleSide }), 0, .85, -.3, L);
+        [-1, 1].forEach(sd => mesh(box(.07, .07, 1.9), white, sd * .41, 0, 0, cloth));   // white fur along the cloth's hems
+        const tailM = mesh(new THREE.ConeGeometry(.12, .45, 8), coatM, 0, .15, -1.05, cloth); tailM.rotation.x = -Math.PI / 2 - .5;
+        mesh(new THREE.SphereGeometry(.09, 8, 6), white, 0, .3, -1.25, cloth);
+        // the head, facing +z: a domed head with a mirror on the brow and a single horn, big blinking eyes, fur brows, a snapping jaw
+        const H = new THREE.Group(); H.position.set(0, 1.15, .75); L.add(H);
+        mesh(new THREE.SphereGeometry(.42, 16, 12), coatM, 0, .1, 0, H).scale.set(1, .85, 1.05);
+        mesh(new THREE.TorusGeometry(.4, .05, 6, 18), white, 0, .08, .16, H);
+        mesh(new THREE.CylinderGeometry(.08, .08, .02, 16), mat({ color: 0xe8eef2, roughness: .1, metalness: .95 }), 0, .34, .34, H).rotation.x = Math.PI / 2 - .6;   // the mirror
+        mesh(new THREE.ConeGeometry(.05, .18, 8), trimM, 0, .47, .18, H).rotation.x = .4;
+        mesh(box(.5, .14, .2), coatM, 0, -.05, .36, H); mesh(new THREE.SphereGeometry(.07, 8, 6), trimM, 0, .03, .47, H);
+        const eyes = [-1, 1].map(sd => {
+          const e = new THREE.Group(); e.position.set(sd * .17, .2, .34); H.add(e);
+          mesh(new THREE.SphereGeometry(.09, 10, 8), white, 0, 0, 0, e); mesh(new THREE.SphereGeometry(.045, 8, 6), black, 0, 0, .07, e);
+          mesh(box(.2, .06, .08), white, sd * .17, .31, .36, H); mesh(new THREE.ConeGeometry(.07, .16, 5), trimM, sd * .32, .38, 0, H);   // fur brows, ears
+          return e;
+        });
+        const J = new THREE.Group(); J.position.set(0, -.15, .08); H.add(J);
+        mesh(box(.46, .08, .42).translate(0, 0, .2), coatM, 0, 0, 0, J); mesh(box(.36, .04, .04), white, 0, .05, .38, J);
+        mesh(new THREE.ConeGeometry(.12, .3, 6).rotateX(Math.PI), white, 0, -.15, .3, J);   // the beard
+        // four legs: the head dancer in front, the tail dancer behind, in furry lion trousers with white cuffs
+        const legs = [[-.12, .45], [.12, .45], [-.12, -.95], [.12, -.95]].map(([x, z]) => {
+          const g = new THREE.Group(); g.position.set(x, .85, z); L.add(g);
+          mesh(legG, coatM, 0, 0, 0, g); mesh(cuffG, white, 0, -.75, 0, g); mesh(shoeG, black, 0, -.82, .04, g); return g;
+        });
+        return { L, H, J, cloth, eyes, legs, cx, dir, a: dir > 0 ? 0 : Math.PI, walk: 0 };
+      };
+      const lions = [lion(0xc0221a, 0xe8b830, -3.1, 1), lion(0xe8b020, 0xc0221a, 3.1, -1)];
+      gate(lionsG, lData);
+      const lionsStep = (dt, t) => lions.forEach((n, i) => {
+        // every nine seconds a lion stops, looks round and rears up high, then prowls on round its circle
+        const p = (t / 9 + i * .5) % 1, still = p > .6 && p < .88, rear = still ? Math.sin(Math.PI * (p - .6) / .28) : 0;
+        n.a += dt * (still ? 0 : .38) * n.dir; n.walk += dt * (still ? 0 : 6.5);
+        const R = 2.2, x = n.cx + Math.cos(n.a) * R, z = .3 + Math.sin(n.a) * R;
+        n.L.position.set(x, Math.abs(Math.sin(n.walk)) * .04, z); n.L.rotation.y = Math.atan2(-Math.sin(n.a) * n.dir, Math.cos(n.a) * n.dir);
+        n.H.position.y = 1.15 + rear * .85; n.H.position.z = .75 + rear * .1;
+        n.H.rotation.y = Math.sin(t * 1.7 + i * 2) * .35 * (1 - rear * .5); n.H.rotation.x = Math.sin(t * 2.3 + i) * .12 - rear * .35; n.H.rotation.z = Math.sin(t * 3.1 + i) * .1;
+        n.cloth.rotation.x = -rear * .28;
+        n.J.rotation.x = .1 + .3 * Math.max(0, Math.sin(t * 4.5 + i * 1.7));
+        const blink = (t * .45 + i * .3) % 1 < .04 ? .1 : 1; n.eyes.forEach(e => e.scale.y = blink);
+        n.legs.forEach((g, k) => g.rotation.x = Math.sin(n.walk + (k < 2 ? 0 : Math.PI / 2) + (k % 2) * Math.PI) * .45);
+      });
+
+      /* the big lion drum on its stand at the front of the platform, always there, and the drummer and cymbal player at practice */
+      const DX = -4.4, DZ = -D / 2 + 1.25;
+      const drumT = canvasTex(64, (c, s) => { c.fillStyle = "#e8d8b0"; c.fillRect(0, 0, s, s); c.strokeStyle = "#a83020"; c.lineWidth = 4; c.beginPath(); c.arc(s / 2, s / 2, s * .3, 0, TAU); c.stroke(); });
+      mesh(new THREE.CylinderGeometry(.42, .42, .5, 20), [mat({ color: lin(0xb81c16), roughness: .45 }), mat({ map: drumT, roughness: .7 }), mat({ map: drumT, roughness: .7 })], DX, .85, DZ, T);
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, c]) => mesh(box(.06, .6, .06), poleM, DX + a * .3, .3, DZ + c * .3, T));
+      mesh(new THREE.TorusGeometry(.42, .03, 6, 24), gold, DX, 1.07, DZ, T).rotation.x = Math.PI / 2;
+      const crew = new THREE.Group(); T.add(crew);
+      const drummer = trainee(false); drummer.position.set(DX, 0, DZ - .62); crew.add(drummer);
+      const stickArm = sd => {
+        const a = new THREE.Group(); a.position.set(DX + sd * .19, 1.25, DZ - .62); crew.add(a);
+        mesh(box(.08, .45, .08).translate(0, -.22, 0), mat({ color: lin(0xd8a47a), roughness: .7 }), 0, 0, 0, a);
+        mesh(cyl(.015, .015, .42, 5).translate(0, -.2, 0), poleM, 0, -.45, 0, a).rotation.x = -1.2;
+        return a;
+      };
+      const sticks = [stickArm(-1), stickArm(1)];
+      const cymbal = trainee("fwd"); cymbal.position.set(DX + 1.3, 0, DZ - .5); crew.add(cymbal);
+      const discG = cyl(.17, .17, .02, 16).rotateZ(Math.PI / 2), brass = mat({ color: lin(0xd0a040), roughness: .25, metalness: .85 });
+      const discs = [-1, 1].map(() => mesh(discG, brass, DX + 1.3, 1.22, DZ - .02, crew));
+      gate(crew, { tip: "The drum and cymbals · 鑼鼓", toast: "The big lion drum and the cymbals lead the practice: the dancers move to the drummer's beat, and he changes the rhythm to call each step, the prowl, the shake, the leap." });
+      const crewStep = t => {
+        sticks.forEach((a, k) => a.rotation.x = -.9 - .5 * Math.pow(.5 + .5 * Math.sin(t * TAU * 1.6 + k * Math.PI), 3));
+        const gap = .03 + .22 * Math.abs(Math.sin(t * TAU * .8)); discs.forEach((d, k) => d.position.x = DX + 1.3 + (k ? gap : -gap));
+      };
+      let t = 0;
+      return (dt, motion) => {
+        const show = FOLK.drill;
+        dragon.visible = show === "dragon"; lionsG.visible = show === "lion"; crew.visible = !!show;
+        if (!show) return;
+        t += dt * motion;
+        crewStep(t);
+        if (show === "dragon") dragonStep(t); else lionsStep(dt * motion, t);
+      };
     }
     trainingGround(21, -1, 16, 12);
     shanTown(g);
@@ -5507,6 +5695,8 @@ window.TempleFloors = function TempleFloors(ctx) {
     setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
     // the kinnara dancers on the festival stage: "solo" (the kinnara alone, a bigger crowd), "pair", or null for none
     setDancers(show) { FOLK.dance = show; },
+    // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
+    setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once
     setPolice(o) { Object.assign(COP, o); },
     policeNews() { const n = COP.news; COP.news = null; return n; },

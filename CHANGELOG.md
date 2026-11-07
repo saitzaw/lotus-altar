@@ -3,6 +3,12 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-07
+
+### Added
+- Dragon and lion dance training on the kung fu ground in the 30 days before Chinese New Year: the dragon from 6 to 9 AM and 9 to 10 PM,
+  the lions from 9:30 to 11 AM and 6 to 8 PM (Bangkok time), with a drummer and cymbal player.
+
 ## 2026-11-04
 
 ### Added

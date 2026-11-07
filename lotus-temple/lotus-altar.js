@@ -55,6 +55,11 @@ const CONFIG = {
   // kinnara alone, leaping, before the biggest crowd (the epic's opening), then the kinnara and kinnari pair in the evening;
   // ?dancers=solo, ?dancers=pair (or 1) or ?dancers=0 forces one
   dancers: { solo: [14, 15.75], pair: [16, 23] },
+  // dragon and lion dance training (舞龍 舞獅) on the kung fu ground, for the `days` before Chinese New Year (newYear: the first day of
+  // the first lunar month, [year, month, day]); hours are [from, until] on the temple's clock, 21.5 is 9:30 pm. On New Year's day itself
+  // the troupe dances in the town, so the ground is quiet. ?lionDragon=dragon, ?lionDragon=lion or ?lionDragon=0 forces one
+  lionDragon: { days: 30, dragon: [[6, 9], [21, 22]], lion: [[9.5, 11], [18, 20]],
+                newYear: [[2026, 2, 17], [2027, 2, 6], [2028, 1, 26], [2029, 2, 13], [2030, 2, 3], [2031, 1, 23], [2032, 2, 11], [2033, 1, 31], [2034, 2, 19], [2035, 2, 8]] },
   // the beat officer: a policeman walks the town's roads and chases a visitor on foot who comes within `see` metres, at `speed`
   // m/s (a walker does 2.6, so you can get away); within `arrest` metres you are arrested and walked to the police station, and he
   // stays there `hold` seconds. The temple compound and the markets are safe ground. With `night` he is only out after dark
@@ -1252,6 +1257,12 @@ $("torchBtn").addEventListener("click", flipTorch);
 document.addEventListener("keydown", e => { if (e.code === "KeyT" && !e.repeat && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) flipTorch(); });
 function festNote() {
   const el = $("festInfo"); if (!el) return;
+  if (!fest.season && drill.season) {   // the weeks of dragon and lion dance training before Chinese New Year
+    el.hidden = current !== "pagoda";
+    const ny = drill.newYear ? new Date(drill.newYear).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short" }) : "";
+    el.textContent = `🐉 Training for Chinese New Year${ny ? " (" + ny + ")" : ""} on the kung fu ground · dragon 6–9 AM and 9–10 PM · lion 9:30–11 AM and 6–8 PM ICT`;
+    return;
+  }
   el.hidden = current !== "pagoda" || !fest.season;
   el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
@@ -1272,8 +1283,17 @@ const danceNow = () => {
   const { solo, pair } = CONFIG.dancers, at = ([from, until]) => inHours({ from, until });
   return at(solo) ? "solo" : at(pair) ? "pair" : null;
 };
-let folkOut = folkNow(), danceOn = danceNow();
-setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); }, 3e4);
+// dragon and lion dance training on the kung fu ground in the weeks before Chinese New Year: { season, newYear, show: "dragon" | "lion" | null }
+const DRILL_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("lionDragon"); return v === null ? undefined : v === "0" ? null : v === "lion" ? "lion" : "dragon"; } catch (e) { return undefined; } })();
+function drillNow() {
+  const C = CONFIG.lionDragon, [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(Date.now()).split("-").map(Number);
+  const today = Date.UTC(y, m - 1, d), ny = C.newYear.map(([a, b, c]) => Date.UTC(a, b - 1, c)).find(t => t > today);   // the next New Year's day
+  const season = ny !== undefined && ny - today <= C.days * 864e5, at = w => w.some(([from, until]) => inHours({ from, until }));
+  const show = DRILL_FORCE !== undefined ? DRILL_FORCE : !season ? null : at(C.dragon) ? "dragon" : at(C.lion) ? "lion" : null;
+  return { season: season || !!show, newYear: ny, show };
+}
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow();
+setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */
@@ -1890,6 +1910,7 @@ function frame() {
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
   temple.setDancers(danceOn);
+  temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);
   temple.update(dt, now, current, motion, camera.position);
