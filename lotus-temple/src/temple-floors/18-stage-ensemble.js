@@ -233,12 +233,20 @@
     // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...];
     // `sec` is how many real seconds a bar count takes (slower with reduced motion)
     const strokes = (c0, c1, marks, sec) => { const now = performance.now() / 1000; for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who, now - (c1 - n - m) * sec); }); };
-    /* the song, as a recording of the Shan oh-zi ensemble plays it (ရှမ်းအိုးစည်): the same beat over and over, about 115 to the
-       minute. On the beat the first drum's deep stroke and the gongs' chord, with the cymbals' lighter clash; between the beats the
-       cymbals ring out, a quick tap just before, and the second drum answers with a softer deep stroke. Every fourth beat leans a
-       little harder. The dance's figure lasts three beats, so it opens and lands on the drum and the gongs */
-    const BEAT = [[0, "dum", 1, 0], [0, "gong", 1], [0, "cym", .9], [3 / 8, "cym", .4], [1 / 2, "cym", 1], [1 / 2, "dum", .55, 1]];   // one beat's strokes [where in the beat 0–1, kind, loudness, which drum]
-    const frame = n => [0, 1, 2].flatMap(i => { const lean = (3 * n + i) & 3 ? .85 : 1; return BEAT.map(([m, k, v, w]) => [(i + m) / 3, k, v * lean, w]); });   // bar n's three beats
+    /* the song, as a recording of the Shan oh-zi ensemble plays it (ရှမ်းအိုးစည်): about 115 beats to the minute, without a break.
+       On every beat the gongs' chord and a lighter cymbal clash; between the beats the cymbals ring out, a quick tap just before.
+       The long drums never play the same beat twice running for long: the first strikes every beat, and the pair fill each beat
+       with one of the drummer's figures in sixteenths (`FIGS`, counted from the recording, the commonest most often), the second
+       drum taking the half beat. Every fourth beat leans a little harder. A dance figure lasts three beats, opening on the beat */
+    const BEAT = [[0, "gong", 1], [0, "cym", .9], [3 / 8, "cym", .4], [1 / 2, "cym", 1]];   // the gongs and cymbals each beat [where in the beat 0–1, kind, loudness]
+    const FIGS = [["X...", 52], ["X.X.", 38], ["X.XX", 14], ["X..X", 12], ["XXX.", 11], ["XX..", 9], ["XXXX", 5]];   // the drums' figures in a beat, X a stroke on that sixteenth, and how often each was heard
+    const FIGW = FIGS.reduce((a, [, w]) => a + w, 0), SIX = [[1, 0], [.55, 0], [.8, 1], [.6, 1]];   // each sixteenth's loudness and which drum plays it
+    const hash = g => { let h = Math.imul(g ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return ((h ^ h >>> 16) >>> 0) / 4294967296; };   // a fixed 0–1 for each beat, so the drumming is the same every visit
+    const figure = g => { let r = hash(g) * FIGW; for (const [f, w] of FIGS) if ((r -= w) < 0) return f; return FIGS[0][0]; };
+    const frame = n => [0, 1, 2].flatMap(i => {
+      const g = 3 * n + i, lean = g & 3 ? .85 : 1, drum = [...figure(g)].flatMap((c, k) => c === "X" ? [[k / 4, "dum", SIX[k][0], SIX[k][1]]] : []);
+      return [...BEAT, ...drum].map(([m, k, v, w]) => [(i + m) / 3, k, v * lean, w]);
+    });   // bar n's three beats
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;

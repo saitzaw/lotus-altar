@@ -69,17 +69,19 @@ function bandHiss(t, type, f, q, peak, decay, attack = .002) {
   g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak + .0002, t + attack); g.gain.exponentialRampToValueAtTime(.0001, t + decay);
   s.connect(fl); fl.connect(g); g.connect(bandBus()); s.start(t, Math.random()); s.stop(t + decay + .03);
 }
-// the long drum, voiced after a recording of a Shan oh-zi ensemble: "dum", the fist in the head's centre, a deep boom on about 86 Hz
-// that the rice-paste patch tunes into a bright row of whole-number overtones (173, 260, 347 Hz and up, the ones that carry it
-// over the gongs, and on small speakers that can't play the 86 Hz itself), sagging a little as the skin relaxes, the fundamental
-// 12 dB down in about 0.3 s and the overtones sooner; "ting", the open stroke near the rim,
-// the rice-paste patch making it ring with clear harmonics; "tak", the flat hand's muffled slap. `tune` sets one drum against another (the stage's two drums are tuned alike)
+// the long drum, voiced after a recording of a Shan oh-zi ensemble, from its strokes between the beats where it plays alone:
+// "dum", the fist in the head's centre, a low note near 82 Hz under a strong body tone that the rice-paste patch sets near 265 Hz
+// and that sags to 250 as the skin relaxes (most of the stroke's sound, the part that carries), fainter modes near 200 and 325 Hz,
+// all 10 dB down in a tenth of a second; "ting", the open stroke near the rim, the rice-paste patch making it ring with clear
+// harmonics; "tak", the flat hand's muffled slap. `tune` sets one drum against another (the stage's two drums are tuned alike)
 function longDrum(kind, v, t0 = 0, tune = 1) {
   const t = audio.currentTime + t0, r = rand(.97, 1.03) * tune; v *= rand(.85, 1.1);
   if (kind === "dum") {
-    [[1, .45, 1.4], [2, .3, .8], [3, .55, .6], [4, .6, .6], [5, .3, .45], [6, .25, .35], [9, .12, .25]].forEach(([n, p, d]) => bandTone(t, 91 * n * r, 86 * n * r, .06, p * v, d, "sine", .006));   // the skin and its paste-tuned overtones
-    bandTone(t, 60 * r, 57 * r, .2, .08 * v, .5);     // the air in the long body
-    bandHiss(t, "lowpass", 400, .7, .35 * v, .06, .006);   // the fist's soft thud on the skin (eased in, so it doesn't click)
+    bandTone(t, 86 * r, 81 * r, .1, .7 * v, .8, "sine", .005);   // the low note
+    bandTone(t, 268 * r, 250 * r, .12, v, .65, "sine", .005);    // the body tone
+    bandTone(t, 202 * r, 198 * r, .1, .15 * v, .5, "sine", .005); bandTone(t, 330 * r, 324 * r, .1, .6 * v, .45, "sine", .005);
+    bandTone(t, 785 * r, 780 * r, .1, .06 * v, .25, "sine", .005);
+    bandHiss(t, "lowpass", 400, .7, .3 * v, .05, .006);   // the fist's soft thud on the skin (eased in, so it doesn't click)
   } else if (kind === "ting") {
     [[196, .45, .7], [392, .22, .45], [588, .1, .3], [784, .04, .2]].forEach(([f, p, d]) => bandTone(t, f * r, f * r * .96, .3, p * v, d));
     bandHiss(t, "bandpass", 1900, 1.4, .14 * v, .025);

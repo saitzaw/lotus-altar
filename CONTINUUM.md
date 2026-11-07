@@ -58,6 +58,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
+- Per the site owner (scores: gongs 90%, cymbals 80%, long drum 50%, rhythm 60%; "it cannot pause, use a loop"): the pause
+  was the 1 s gap and the short end of my listening file; the stage itself plays without a break during a show. The drum:
+  measured from its strokes on the quarter and three-quarter beat, where it plays alone, it is a low note near 82 Hz under a
+  strong body tone near 265 Hz sagging to 250 (most of its sound), faint modes near 200 and 325 Hz, 10 dB down in 0.1 s; the
+  overtone row of 86.7 Hz from the last entry was wrong (no 173 Hz at all). The rhythm: the drummer varies every beat; counted
+  per beat in sixteenths: X... 52, X.X. 38, X.XX 14, X..X 12, XXX. 11, XX.. 9, XXXX 5 (plus beats with no stroke on the beat,
+  left out so the drum never drops out). `FIGS` holds them; each beat picks one by a fixed hash; first drum on the beat and the
+  first sixteenth after, second drum on the half beat and the last sixteenth. Listening files are now gapless (loop with
+  `ffplay -loop 0`).
 - Per the site owner (still clicks, "not smooth"): the clicks in the listening file were my test render clipping (fixed gain
   and clamp); the mix itself peaks below 1. In the site the stage's strokes were heard on whichever frame noticed them (up to a
   frame late, so the rhythm wobbled with the frame rate); each stroke in `BAND` now carries the moment it fell
