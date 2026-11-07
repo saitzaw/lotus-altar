@@ -47,7 +47,8 @@ window.TempleFloors = function TempleFloors(ctx) {
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
-  const FOLK = { out: false, umbrellas: false, dance: null, drill: null };   // dance: who is on the festival stage, "solo", "pair" or null; drill: "dragon", "lion" or null on the kung fu ground
+  const FOLK = { out: false, umbrellas: false, dance: null, drill: null };
+  const DRUM = [], STAGE = [0, 0];   // the long drum's strokes on the festival stage waiting to be heard, [kind, loudness]; the stage's centre in the world   // dance: who is on the festival stage, "solo", "pair" or null; drill: "dragon", "lion" or null on the kung fu ground
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
@@ -2796,6 +2797,7 @@ window.TempleFloors = function TempleFloors(ctx) {
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
     const dancers = kinnaraDancers(G, list, 0, PZ);   // on the stage's centre
+    G.updateMatrixWorld(true); { const w = G.localToWorld(new THREE.Vector3(0, 0, PZ)); STAGE[0] = w.x; STAGE[1] = w.z; }
     const audience = festivalAudience(G, list, 0, PZ, [[0, FZ, 1.9], ...[-8, -4, 4, 8].map(x => [x, R / 2 - 3, 1.5])]);   // kept off the flag pole and the kahtein trees
     updaters.pagoda.push((dt, t, motion) => {
       dancers(dt, motion); audience(dt, motion);
@@ -2917,17 +2919,18 @@ window.TempleFloors = function TempleFloors(ctx) {
     // fanning and shaking his tail feathers, mostly turned to the crowd. Each leap is a real one: he lands and sinks into his
     // knees, springs off, tucks one leg forward and kicks the other back in the air like a bird, and comes down again; his
     // time aloft follows from the height under gravity, and he travels only while he's off the ground
-    const GRAV = 9.8, GROUND = .34;   // gravity (m/s²), time on the ground between leaps (s)
+    const GRAV = 9.8, BAR = 1.25;   // gravity (m/s²), one leap to the next (s): a bar of the long drum
     const leapH = n => n % 4 === 3 ? .42 : .2, airT = h => Math.sqrt(8 * h / GRAV);   // every fourth leap is a big one
-    let hn = 0, ht = 0;   // which leap, and the time into it (ground, then air)
+    const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0;
+    let hn = 0, ht = 0;   // which leap, and the time into its bar (on the ground, then in the air)
     const solo = dt => {
       const d = pair[0]; ht += dt;
-      let h = leapH(hn), ta = airT(h);
-      while (ht > GROUND + ta) { ht -= GROUND + ta; hn++; h = leapH(hn); ta = airT(h); }
-      const onG = ht < GROUND, u = ht / GROUND, ta_ = ht - GROUND, s = onG ? 0 : ta_ / ta;
+      while (ht > BAR) { ht -= BAR; hn++; }
+      const h = leapH(hn), ta = airT(h), GD = BAR - ta, onG = ht < GD, u = ht / GD, ta_ = ht - GD, s = onG ? 0 : ta_ / ta;
       const y = onG ? 0 : GRAV / 2 * ta_ * (ta - ta_);   // the arc of the leap
-      // on the ground: sinking into the landing then pushing off, deeper before a big leap; in the air: the legs tucked
-      const nextH = leapH(hn), bend = onG ? Math.sin(Math.PI * u) ** 1.3 * (.35 + nextH * 1.1) : 0, tuck = onG ? 0 : Math.sin(Math.PI * s);
+      // on the ground: he sinks into the landing (as deep as the last leap was high), rises and settles, then gathers into
+      // his knees and pushes off, deeper before a big leap; in the air: the legs tucked
+      const bend = onG ? (.3 + leapH(hn - 1) * 1.1) * bump(ht, 0, .45) * .8 + (.35 + h * 1.1) * bump(ht, GD - .42, GD) + .1 * Math.sin(Math.PI * u) : 0, tuck = onG ? 0 : Math.sin(Math.PI * s);
       const p = hn + (onG ? 0 : s * s * (3 - 2 * s));   // along his path round the stage
       d.D.position.set(C.x + Math.sin(p * .38) * 1.9, C.y, C.z + Math.sin(p * .76) * .7);
       d.D.rotation.y = Math.sin(p * .5) * 1.1 + (hn % 8 === 7 && !onG ? (s * s * (3 - 2 * s)) * TAU : 0);   // a full turn in the air now and then
@@ -2965,14 +2968,73 @@ window.TempleFloors = function TempleFloors(ctx) {
       d.arms.forEach(r => setArm(r, .5 + open, -.5 + open * .3, .25 - wave * .25, .3 - wave * .25, .6 + dip * .2));
       d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = .5;
     });
+    /* the drummer: a Shan musician at the back corner of the stage with the long drum, ၵွင်ယၢဝ်း (kawng yao): a slender drum about as long
+       as he is tall, lacquered red with gilt bands, slung with its one head before him at the waist and its flared tail out behind; he
+       strikes the head with his right fist for the deep open note and slaps it with his left palm. Loose indigo Shan trousers, a white
+       jacket, a pink headcloth. The dancer keeps to his drum: a deep stroke as he lands, a light one as he settles, a slap as he springs */
+    const drummer = (() => {
+      const D = new THREE.Group(); D.position.set(C.x - 3.3, C.y, C.z - 1.5); D.rotation.y = .5; G.add(D);
+      const B = new THREE.Group(); D.add(B);
+      const indigo = std({ color: lin(0x232a4a), roughness: .8 }), white = std({ color: lin(0xeeeae0), roughness: .7 }), pink = std({ color: lin(0xe88a8a), roughness: .7 });
+      [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.11, .15, .8, 10), indigo, sd * .11, .42, 0, B); mesh(new THREE.BoxGeometry(.09, .04, .2), skin, sd * .11, .02, .05, B); });
+      mesh(new THREE.CylinderGeometry(.17, .16, .52, 12), white, 0, 1.08, 0, B);
+      mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), skin, 0, 1.37, 0, B);
+      const hd = new THREE.Group(); hd.position.y = 1.5; B.add(hd);
+      mesh(new THREE.SphereGeometry(.115, 14, 10), skin, 0, 0, 0, hd).scale.set(.95, 1.1, 1);
+      [-1, 1].forEach(sd => mesh(new THREE.SphereGeometry(.016, 8, 6), ink, sd * .042, .02, .1, hd));
+      mesh(new THREE.CylinderGeometry(.125, .12, .1, 14), pink, 0, .08, 0, hd);   // the headcloth wound round
+      mesh(new THREE.SphereGeometry(.05, 8, 6), pink, .1, .1, -.03, hd);   // its knot over the ear
+      // arms: right (−x, he faces +z) with a fist for the open note, left with a flat palm for the slap
+      const arm = (sd, fist) => {
+        const a = new THREE.Group(); a.position.set(sd * .2, 1.28, 0); B.add(a);
+        mesh(new THREE.CylinderGeometry(.05, .045, .27, 8), white, 0, -.135, 0, a);
+        const e = new THREE.Group(); e.position.y = -.27; a.add(e);
+        mesh(new THREE.CylinderGeometry(.044, .036, .24, 8), white, 0, -.12, 0, e);
+        if (fist) mesh(new THREE.SphereGeometry(.05, 8, 6), skin, 0, -.28, 0, e);
+        else mesh(new THREE.BoxGeometry(.025, .1, .07), skin, 0, -.29, 0, e);
+        return { a, e, sd, age: 9 };
+      };
+      const arms = { dum: arm(-1, true), tak: arm(1, false) };
+      // the drum, along its own axis (−y toward the tail), its head toward his hands
+      const drumT = canvasTex(64, (c, sz) => { c.fillStyle = "#b02a22"; c.fillRect(0, 0, sz, sz); c.fillStyle = "#e8c040"; [.06, .28, .52, .78, .94].forEach(v => c.fillRect(0, v * sz, sz, 3)); c.fillStyle = "#2a8a4a"; for (let x = 3; x < sz; x += 11) c.fillRect(x, .38 * sz, 4, 7); });
+      const prof = [[.15, 0], [.15, -.05], [.12, -.15], [.07, -.35], [.055, -.6], [.05, -1.2], [.07, -1.42], [.13, -1.6], [.13, -1.64]].map(([r, y]) => new THREE.Vector2(r, y));
+      const drum = new THREE.Group(); drum.position.set(0, .95, .44); B.add(drum);   // the head just under his hands as they land
+      drum.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), new THREE.Vector3(.6, -.42, -.75).normalize());   // past his left hip, the tail low behind
+      mesh(new THREE.LatheGeometry(prof, 16), std({ map: drumT, roughness: .45, metalness: .15, side: THREE.DoubleSide }), 0, 0, 0, drum);
+      mesh(new THREE.CircleGeometry(.15, 16), std({ color: lin(0xe8dcc0), roughness: .8 }), 0, .002, 0, drum).rotation.x = -Math.PI / 2;   // the hide head
+      mesh(new THREE.TorusGeometry(.15, .015, 6, 20), M.gold, 0, -.01, 0, drum).rotation.x = Math.PI / 2;
+      mesh(new THREE.ConeGeometry(.05, .22, 8), red, 0, -1.74, 0, drum).rotation.x = Math.PI;   // a red tassel at the tail
+      const dData = { tip: "Shan long drum · ၵွင်ယၢဝ်း", toast: "The kawng yao (ၵွင်ယၢဝ်း), the Shan long drum: a slender wooden drum about as long as its player is tall, slung from the shoulder and struck on its one head with the fist for the deep note and the palm for the slap. It sets the beat for the ka nok; the kinnara lands on its deep stroke and springs from its slap." };
+      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, dData); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
+      let strong = 9;
+      const hit = (kind, v) => { arms[kind].age = 0; if (v > .8) strong = 0; DRUM.push([kind, v]); if (DRUM.length > 8) DRUM.shift(); };
+      // each hand comes down on the head in 0.07 s (the sound waits for it), then lifts and waits raised for the next stroke
+      const step = dt => {
+        Object.values(arms).forEach(r => {
+          r.age += dt; const a = r.age, up = a < .07 ? 1 - a / .07 : Math.min(1, (a - .07) / .4) ** .7, big = r.sd < 0 ? .45 : .3;
+          r.a.rotation.set(-.75 - up * big, 0, -r.sd * .3); r.e.rotation.x = -.5 - up * big * 1.2;
+        });
+        strong += dt; hd.rotation.x = .15 * Math.exp(-strong * 6);   // a nod on the deep strokes
+      };
+      return { D, hit, step };
+    })();
+    // the strokes due between drum counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, "dum" | "tak", loudness]
+    const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v]) => { if (c0 < n + m && n + m <= c1) drummer.hit(kind, v); }); };
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;
-      pair[0].D.visible = !!show; pair[1].D.visible = show === "pair";
+      pair[0].D.visible = drummer.D.visible = !!show; pair[1].D.visible = show === "pair";
       if (!show) return;
-      t += dt * motion;
-      if (show === "solo") solo(dt * motion);
-      else pose();
+      const d = dt * motion, q0 = t * 2.2 / Math.PI - .5, c0 = hn + ht / BAR;
+      t += d;
+      if (show === "solo") {
+        solo(d);
+        strokes(c0, hn + ht / BAR, n => { const gd = BAR - airT(leapH(n)); return [[0, "dum", 1], [.45 / BAR, "dum", .5], [(gd - .1) / BAR, "tak", .7]]; });
+      } else {
+        pose();   // the pair dip into their knees on the deep strokes
+        strokes(q0, t * 2.2 / Math.PI - .5, () => [[0, "dum", 1], [.5, "dum", .5], [.75, "tak", .6], [.875, "tak", .4]]);
+      }
+      drummer.step(d);
     };
   }
   /* ---------- the dancers' audience: children sitting cross-legged on the grass in a front row before the stage and young people
@@ -5718,9 +5780,10 @@ window.TempleFloors = function TempleFloors(ctx) {
     groundAt, terrainAt, walkAt, get monasteries() { return MONASTERIES; },
     // where the world makes its sounds, in the grounds' frame (the main script's ambience fades each in by distance):
     // the hti bells on the stupa hill's spires, the Bell Tower, the gong in the Lotus Temple hall, the compound's walls
-    // [x0, x1, z0, z1], the old banyan, the paddies [x0, x1, z0, z1], the forest's edge, the waterfall's foot
+    // [x0, x1, z0, z1], the festival stage, the old banyan, the paddies [x0, x1, z0, z1], the forest's edge, the waterfall's foot
     sounds: { stupa: [HILL.cx, HILL.top + 8, HILL.cz], bell: [-17, -1.5], gong: [24.5, 26], compound: [-33, 33, -16, 43],
-              banyan: [36.4, 65.4], fields: [-104, 64, -94, -42], forestZ: -98, falls: [FALLS.x - FALLS.R + 2.6, FALLS.z] },
+              stage: STAGE, banyan: [36.4, 65.4], fields: [-104, 64, -94, -42], forestZ: -98, falls: [FALLS.x - FALLS.R + 2.6, FALLS.z] },
+    takeDrum() { return DRUM.splice(0); },   // the long drum's strokes since the last call, for the ambience
     get pavilionSeat() { return PAV_SEAT; },
     get corridorRing() { return CORRIDOR_RING; },
     // inside a hall: is (x, z) taken by furniture, columns or the stair room?

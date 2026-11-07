@@ -45,7 +45,8 @@ The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival g
 temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
 epic, leaping, beating and fluttering his wings and shaking his tail (jointed legs and arms via `setLeg`/`setArm`; each leap is a
 ground crouch-and-push then a gravity arc, see the comment above `solo`); then the masked kinnara and kinnari pair from 4 to 11 PM,
-circling each other. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
+circling each other. A drummer with the Shan long drum plays at the back of the stage whenever they are on, his strokes
+keeping time with the dancer (one leap per bar, `BAR`); the strokes reach the ambience through `temple.takeDrum()`. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
 and can't be clicked. `?dancers=solo`, `?dancers=pair` (or `1`) and `?dancers=0` force one.
 Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: blocky low-poly children sitting cross-legged
 and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked

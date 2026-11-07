@@ -1467,6 +1467,16 @@ function gong(v) {
   const o = ping(110, .5 * v, 8); if (o) o.frequency.exponentialRampToValueAtTime(104, audio.currentTime + 1.5);
   [[1.52, .3, 6, .15], [2.13, .22, 5, .3], [2.8, .14, 4, .45], [3.6, .09, 3, .6], [4.9, .05, 2.2, .7]].forEach(([r, p, d, s]) => ping(110 * r, p * v, d, 0, s));
 }
+// the Shan long drum on the festival stage: the fist's deep open note, sagging as it rings, or the palm's dry slap; `t0` lets
+// the sound wait for the hand to land
+function longDrum(v, slap, t0 = 0) {
+  if (!slap) { const o = ping(92, v, .7, t0, .003); if (o) o.frequency.exponentialRampToValueAtTime(62, audio.currentTime + t0 + .35); ping(185, .25 * v, .25, t0, .003); return; }
+  ping(240, .4 * v, .12, t0, .002, "triangle");
+  const a = audio, t = a.currentTime + t0, s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain();
+  s.buffer = amb.buf; fl.type = "bandpass"; fl.frequency.value = 1700; fl.Q.value = 1.2;
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.5 * v + .0002, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + .09);
+  s.connect(fl); fl.connect(g); g.connect(amb.out); s.start(t, Math.random()); s.stop(t + .12);
+}
 // a bulbul's call: a few quick whistled notes sliding up or down
 function bird(v) {
   const base = rand(1800, 3400), n = 2 + (Math.random() * 4 | 0);
@@ -1481,6 +1491,7 @@ function thunder(v) {
   s.connect(fl); fl.connect(g); g.connect(amb.out); s.start(t, Math.random()); s.stop(t + 5.1);
 }
 function ambStep(dt) {
+  const drum = temple.takeDrum();   // taken every frame so strokes never pile up while the sound is off
   if (!amb) return;
   const a = audio, on = $("soundOn").checked, T = a.currentTime;
   amb.out.gain.setTargetAtTime(on ? CONFIG.ambience.volume : 0, T, .3);
@@ -1531,6 +1542,8 @@ function ambStep(dt) {
   const [b0, b1] = CONFIG.ambience.bellEvery, [g0, g1] = CONFIG.ambience.gongEvery, inYard = d => out ? near(d, 8, 75) : .12;
   if (due("bell", b0, b1)) templeBell(current === "bell" ? 1 : .6 * inYard(Math.hypot(p.x - S.bell[0], p.z - S.bell[1])));
   if (due("gong", g0, g1)) gong(current === "library" ? 1 : .6 * inYard(Math.hypot(p.x - S.gong[0], p.z - S.gong[1])));
+  // the long drum on the festival stage, stroke by stroke as the drummer plays (heard outside only)
+  if (drum.length && out) { const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80); if (v > .01) drum.forEach(([k, s]) => longDrum(.3 * v * s, k === "tak", .07)); }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }
 // the sound starts with the first tap or key (browsers keep audio off until then); off in a hidden tab

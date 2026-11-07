@@ -33,6 +33,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
@@ -45,6 +46,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- Slowed the kinnara's solo and added a Shan long-drum player, as the site owner asked. Each leap is now one bar of the drum,
+  `BAR` = 1.25 s (was about 0.75 s): on the ground he sinks into the landing, settles, then gathers and pushes off; the time aloft
+  still comes from gravity. The drummer (inside `kinnaraDancers`, on stage whenever the dancers are, at the back left corner) plays
+  the ၵွင်ယၢဝ်း (kawng yao): a red-lacquered long drum with gilt bands, its head at his waist and its tail low behind, struck with
+  the right fist ("dum") and slapped with the left palm ("tak"). In the solo the strokes follow the dancer: a deep stroke on the
+  landing, a light one as he settles, a slap as he springs; in the evening pair, a deep stroke on each knee dip. Strokes queue in
+  `DRUM` and the ambience plays them (`longDrum` in `lotus-altar.js`, via `temple.takeDrum()` and `sounds.stage`), heard outside
+  within 80 m. **Shan check:** ၵွင်ယၢဝ်း for the long drum (on its tip and toast); have a Shan speaker confirm the spelling.
 - Reworked the kinnara's afternoon solo (`kinnaraDancers` in `temple-floors.js`) after the site owner said the jump looked
   unnatural and asked for hands and legs. The dancers now have joints: the kinnara's legs bend at hip, knee and ankle (`setLeg`),
   both dancers' arms at shoulder, elbow and wrist, with a palm, thumb and back-bent fingers (`setArm`), and the upper body leans
