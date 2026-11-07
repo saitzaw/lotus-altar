@@ -58,6 +58,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
+- Per the site owner, the stage ensemble's reference is now **သဵင်ၵွင်တႆး ရှမ်းအိုးစည်သံ (YouTube dCmtysbXxoM)**, replacing aof4zp8KYXs.
+  Measured: about 113 beats a minute (`BAR` 1.59 s), in pairs of beats. Gongs: a chord near C3 G3 C4 G4 G5 (131, 196, 262, 394,
+  782 Hz, C4 loudest), full on every second beat and light on the half beat before it (was every beat, A–D chord). Cymbals: every
+  beat and just after each half beat (0.55 of the beat), the first beat of the pair stronger, no tap before; tone 1.06 and 1.5 kHz
+  strongest, 1.66–1.72, 3.5–4.0 kHz, a trace at 7 kHz, 12 dB down in about 0.11 s. Long drum: rings near 264 Hz (tuned to the C4
+  gong) with a fifth at 396 Hz, faint modes 133, 202, 299, 530 Hz, almost nothing below 130 Hz (the earlier 82 Hz low note is
+  gone). Drum figures per beat: X.X. 59, XXX. 50, XXXX 34, X.XX 31, X... 19, X..X 13, XX.. 11, XX.X 11 (beats without a stroke
+  on the beat left out). `PAIR`, `FIGS`, `GONGS`. Rendered mix within about 2 dB of the clip in every band.
 - Per the site owner (cymbals too harsh): `stageCymbals` now uses pure sine partials weighted as in the oh-zi recording (1.0–1.5
   kHz strongest, then 1.9, 2.4, 3.2, 3.8 kHz, a trace at 4.85 kHz) through a lowpass at 8.5 kHz, and a hiss band-passed near 3.8
   kHz instead of a 3 kHz highpass. The old triangle waves and high hiss made 4.5–6.5 kHz and 9–11 kHz about 5 dB louder than

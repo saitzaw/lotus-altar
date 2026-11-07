@@ -106,7 +106,7 @@
     // drum is one figure: on a step he sinks a little into his knees, lifts one foot and sways onto it as he glides; on a hop he
     // gathers into his knees, springs, and comes down into the next bar's deep stroke, his time aloft following from the
     // height under gravity. He travels while he steps and while he's in the air, never sliding on a planted foot
-    const GRAV = 9.8, BAR = 1.566;   // gravity (m/s²), one figure of the dance, three beats of the ensemble at about 115 a minute (s)
+    const GRAV = 9.8, BAR = 1.59;   // gravity (m/s²), one figure of the dance, three beats of the ensemble at about 113 a minute (s)
     const hopH = n => n % 4 !== 3 ? 0 : n % 8 === 7 ? .24 : .13, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a hop every fourth bar, a leap every eighth
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
     let hn = 0, ht = 0;   // which bar, and the time into it

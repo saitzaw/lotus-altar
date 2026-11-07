@@ -35,7 +35,7 @@ All sound is synthesized in WebAudio in `lotus-altar.js`; there are no audio fil
   silent past `r1`.
 - The festival stage's ensemble is not on a timer: each player queues his strokes as he plays (`temple.takeBand()`, drained
   every frame at the top of `ambStep`) and they are voiced on the band's own bus with a short reverb (`bandBus`, `bandTone`,
-  `bandHiss`): `longDrum(kind, v, t0, tune)` ("dum", "ting", "tak"; "dum" is a low note near 82 Hz under a body tone sagging 268→250 Hz, both stage drums tuned alike), `stageGong(v, f, t0, thump)` (one gong of the row, at pitch `f`; a "gong" stroke carries the whole chord, one call per gong) and
+  `bandHiss`): `longDrum(kind, v, t0, tune)` ("dum", "ting", "tak"; "dum" rings near 264 Hz, tuned to the big gong, with a fifth above; both stage drums tuned alike), `stageGong(v, f, t0, thump)` (one gong of the row, at pitch `f`; a "gong" stroke carries the whole chord, one call per gong) and
   `stageCymbals(v, t0)` (stroke "cym"), voiced after a recording of a Shan ensemble, fading by
   distance from `sounds.stage`.
 - Indoors only rain (muffled) and the bell and gong are heard; inside the Bell Tower or the Lotus Temple hall their own
