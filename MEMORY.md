@@ -54,6 +54,9 @@ Traps:
 - To hear a synthesized sound without a speaker or a user gesture, copy its function into the test page, run it on an
   `OfflineAudioContext` (stub `audio`, `amb.out`, `amb.buf`, `rand`), encode the result as a 16-bit WAV, log it as base64 and
   decode it to a file for the owner to play.
+  Under `--virtual-time-budget` the page can finish before the audio thread does, so a longer render often never resolves
+  (it looks like a hang, with no error). Keep the page really busy until it is done: a `setTimeout` chain whose callbacks each
+  spin a counted loop (`for (i < 3e7)`, not a `Date.now()` wait, which virtual time freezes), stopping once the WAV is logged.
 - Use `--screenshot=<file>`, not `--dump-dom`: with `--dump-dom` no `CONSOLE` lines come out, so the `IMG` log is lost.
 - The test machine's clock may already be inside a timed show (e.g. the kinnara solo at 2–3:45 PM ICT), so the scene animates
   during the first frames before your script steps it; expect a phase offset, or force the switch off first.

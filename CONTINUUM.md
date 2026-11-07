@@ -35,6 +35,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
+- Have a Shan speaker check ၸၢပ်ႈ (the cymbals on the festival stage; a best guess, after the Tai word chap).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
@@ -48,6 +49,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-07
 
+- Per the site owner, from a photo of a Shan gong set and a YouTube clip (ရှမ်းရိုးရာ ဓားသိုင်းအက, 2jsv8gcym9c): the gongs now
+  hang in a painted standing case like the photo's (yellow posts and rails, red dividers with yellow pompoms, blue back, red
+  crest board with gilt scrolls round the Shan flag), the player sitting cross-legged before it (`musician(..., sit)`), front
+  right. The long drum is played by **two men** (drummer at the head, a bearer carrying the tail on his shoulder), down the left
+  side. The **cymbal player is back** (back right, `stageCymbals`, tip "Cymbals · ၸၢပ်ႈ" — **Shan check**). Hands, fists and the
+  beater land by `fit()`, a small build-time pose search (all within about 6 mm). Sound and rhythm measured from the clip with
+  numpy: beat 0.53 s (112/min), so a bar is now three beats of the same `BAR` (1.6 s) and the pair's timing uses `BAR` too
+  (was 2.2 rad/s); cymbals ring on every beat (to −12 dB in about 0.33 s); the deep drum strokes and gongs fall between beats; the
+  drum's deep stroke is short and near 90–106 Hz; the gongs sit at 270, 318, 354 Hz (354 the most played), so `GONGS` is now
+  270–450 Hz. One `frame(n)` for both shows (`DRUM`, `FIG`, three `cym`). The synthesized mix measures close to the clip.
 - Fixed a black screen while the kinnara pair is on stage (4–11 PM ICT): the pair's bar count starts at −1, `FIG[-1 % 2]` was
   undefined and `frame()` threw every frame. `frame(n)` now picks the figure with `n & 1`. Earlier tests drove `hit`/`step`
   directly, so they never ran the real loop from t = 0 in pair mode.
