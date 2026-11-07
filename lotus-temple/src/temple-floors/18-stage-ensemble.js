@@ -109,7 +109,7 @@
        Shan flag. One player strikes all five at once: a yellow padded beater hangs on a red arm before each gong, all the arms
        joined by a red rod along the front; he sits on a stool at the big gong's end, holding the rod's end, and pushes it so every
        beater swings in together, and the five gongs sound as one chord */
-    const GONGS = [[.165, 270, .5], [.15, 319, .85], [.135, 355, 1], [.12, 400, .3], [.105, 450, .25]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; the lower three as in a recording of a Shan ensemble (270, 319, 355 Hz), the middle one ringing out most and 319 nearly as loud
+    const GONGS = [[.165, 217, .45], [.15, 290, 1], [.135, 433, .4], [.12, 579, .3], [.105, 868, .55]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; as in a recording of a Shan oh-zi ensemble, near A3 D4 A4 D5 A5, the D4 gong ringing out most and the smallest bright but quick to fade
     const gonger = (() => {
       const yellow = std({ color: lin(0xf0c020), roughness: .6 }), blue = std({ color: lin(0x3a8ad0), roughness: .7 }), lacq = std({ color: lin(0xd02a22), roughness: .5 }), pom = std({ color: lin(0xf4e040), roughness: .9 });
       const darkBronze = std({ color: lin(0x6a5a40), roughness: .45, metalness: .35 });
@@ -180,7 +180,7 @@
       const hand = l.e.children[l.e.children.length - 1], grip = new THREE.Vector3(), hold = k => { setPush(k); rod.updateMatrixWorld(true); return D.worldToLocal(rod.localToWorld(grip.set(x0 + .05, -.02, 0))).clone(); };
       const poses = [0, 1].map(k => { const T = hold(k); return fit(D, hand, T, (pitch, side, elbow) => { l.a.rotation.set(-pitch, 0, side); l.e.rotation.x = -elbow; }, [[.1, 2.0, .1], [-.8, .8, .1], [0, 1.8, .15]]); });
       setPush(0);
-      const info = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း), graduated from the largest and deepest to the smallest, hung in a painted case: yellow posts, red dividers, a blue back, and a crest board with gilt scrolls round the Shan flag. One player sounds all five at once: a yellow padded beater hangs on an arm before each gong, the arms joined by a rod, and he pushes the rod from his stool at the end so every beater strikes together. The gongs ring as one chord between the drum's beats, so their hum never stops under the dance. With the long drums and the cymbals they make the Shan ensemble for the ka nok." };
+      const info = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း), graduated from the largest and deepest to the smallest, hung in a painted case: yellow posts, red dividers, a blue back, and a crest board with gilt scrolls round the Shan flag. One player sounds all five at once: a yellow padded beater hangs on an arm before each gong, the arms joined by a rod, and he pushes the rod from his stool at the end so every beater strikes together. The gongs ring as one chord on every beat with the drum's deep stroke, so their hum never stops under the dance. With the long drums and the cymbals they make the Shan ensemble for the ka nok." };
       gateOn(D, info); F.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, info); o.raycast = function (ray, out) { if (F.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       let age = 9;
       const hit = () => { age = 0; gongs.forEach(o => o.swing = 0); };
@@ -208,7 +208,7 @@
         mesh(new THREE.SphereGeometry(.02, 8, 6), red, 0, .045, 0, c);   // the cloth knob he grips
         return r;
       });
-      gateOn(D, { tip: "Cymbals · ၸၢပ်ႈ", toast: "A pair of brass cymbals (ၸၢပ်ႈ) keeping the beat of the Shan ensemble: struck together on every beat and swung apart so they ring, while the long drums' deep strokes and the gongs fall between." });
+      gateOn(D, { tip: "Cymbals · ၸၢပ်ႈ", toast: "A pair of brass cymbals (ၸၢပ်ႈ) keeping the beat of the Shan ensemble: a lighter clash on the beat with the drum and the gongs, then, after a quick tap, struck together and swung apart to ring out between the beats." });
       let from = .3, to = .3, age = 9;   // how far apart the cymbals are: 0 shut, 1 wide open
       const gap = () => age < .06 ? from * (1 - age / .06) : to * Math.min(1, (age - .06) / .25) ** .6;
       const hit = () => { from = gap(); to = .8; age = 0; };
@@ -230,16 +230,12 @@
     };
     // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...]
     const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who); }); };
-    /* the song, as a recording of a Shan ensemble plays it (ရှမ်းရိုးရာ ဓားသိုင်းအက): two beats over and over, about 111 to the
-       minute. On beat one the cymbals clash loud; between the beats the first drum's deep stroke falls with the gongs' chord,
-       the second drum doubling it; on beat two the cymbals clash softer; between beat two and the next beat one the deep stroke
-       comes again, a little softer, with the gongs and a light tick of the cymbals. The dance's figure lasts three beats, so a
-       figure always opens and lands on a deep stroke and the gongs, the strong one and the softer one by turns */
-    const OFF = [   // the strokes from one off-beat to the next [where in the beat 0–1, kind, loudness, which drum], for the strong off-beat and the softer one
-      [[0, "dum", 1, 0], [0, "dum", .7, 1], [0, "gong", 1], [1 / 2, "cym", .7]],
-      [[0, "dum", .8, 0], [0, "gong", 1], [0, "cym", .35], [1 / 2, "cym", 1], [1 / 2, "tak", .3, 1]]
-    ];
-    const frame = n => [0, 1, 2].flatMap(i => OFF[(3 * n + i) & 1].map(([m, ...r]) => [(i + m) / 3, ...r]));   // bar n's three beats, off-beat first
+    /* the song, as a recording of the Shan oh-zi ensemble plays it (ရှမ်းအိုးစည်): the same beat over and over, about 115 to the
+       minute. On the beat the first drum's deep stroke and the gongs' chord, with the cymbals' lighter clash; between the beats the
+       cymbals ring out, a quick tap just before, and the second drum answers with a softer deep stroke. Every fourth beat leans a
+       little harder. The dance's figure lasts three beats, so it opens and lands on the drum and the gongs */
+    const BEAT = [[0, "dum", 1, 0], [0, "gong", 1], [0, "cym", .9], [3 / 8, "cym", .4], [1 / 2, "cym", 1], [1 / 2, "dum", .55, 1]];   // one beat's strokes [where in the beat 0–1, kind, loudness, which drum]
+    const frame = n => [0, 1, 2].flatMap(i => { const lean = (3 * n + i) & 3 ? .85 : 1; return BEAT.map(([m, k, v, w]) => [(i + m) / 3, k, v * lean, w]); });   // bar n's three beats
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;

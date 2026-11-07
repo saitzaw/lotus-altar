@@ -58,14 +58,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
-- Per the site owner, the stage ensemble now plays the **song from the clip** (ရှမ်းရိုးရာ ဓားသိုင်းအက, 2jsv8gcym9c), measured
-  again with numpy: beat 0.538 s (about 111/min; it drifts 0.46–0.59 s by hand), and the song repeats every **two beats**, not
-  three (onset autocorrelation is strongest at 1.08 s, weakest at 3 beats). Beat one: loud cymbals; between the beats: the
-  first drum's deep stroke (both drums) and the gongs' chord; beat two: softer cymbals; after it: a softer deep stroke, the
-  gongs again and a light cymbal tick. Gongs sound only on the off-beats now (was every half beat), pitches 270, 319, 355 Hz
-  with 319 nearly as loud as 355 (`GONGS` loudness .5/.85/1). Cymbals now drop 12 dB in about 0.35 s (`stageCymbals` d 1.55,
-  was 0.9, which fell in 0.2 s); the deep stroke's −12 dB in about 0.06 s already matched. The dance figure stays three beats
-  (`BAR` 1.614 s), starting on an off-beat so the kinnara always lands on a deep stroke and the gongs. Table: `OFF`, `frame(n)`.
+- Per the site owner, the stage ensemble now plays the song of a clearer recording, **ရှမ်းအိုးစည် (YouTube aof4zp8KYXs)**; the
+  earlier clip (2jsv8gcym9c) did not sound like traditional Shan music to the owner, so its two-beat song (tried the same day)
+  is gone. Measured with numpy: beat 0.522 s (about 115/min) and the pattern **repeats every beat**. On the beat: the first
+  drum's deep stroke (about 86 Hz, a second mode near 150 Hz, −12 dB in about 0.3 s), the gongs' chord and a lighter cymbal
+  clash; between the beats: the cymbals ring out (−12 dB in about 0.18 s; peaks 1.0, 1.4–1.5, 1.9, 2.4, 4.7–5.0 kHz) after a
+  quick tap an eighth of a beat before, with the second drum's softer stroke. Every fourth beat leans a little harder. The gongs
+  play no tune: one chord every beat, near A3 D4 A4 D5 A5 (217, 290, 433, 579, 868 Hz), D4 loudest, the smallest quick to fade;
+  they barely fade between beats (gong ring now about 4 s, capped for the oscillator count). `BEAT`, `frame(n)`, `GONGS`,
+  `BAR` 1.566 s (three beats a dance figure). The synthesized mix was rendered offline and measured against the clip.
 - Per the site owner (photo from the same clip): **two drummers, two long drums**, replacing the drummer-and-bearer pair. Each
   wears a tan jacket and baggy trousers (`musician(..., suit)`), his drum slung over the right shoulder with its head at his
   waist and its body down past his left leg to the tail on the ground (`DIR`); under the head a ruffled skirt in yellow, green

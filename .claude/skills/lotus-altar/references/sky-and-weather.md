@@ -48,9 +48,10 @@ ground crouch-and-push then a gravity arc, see the comment above `solo`); then t
 circling each other. A Shan ensemble plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
 (`setPush`), and cymbals (`musician(x, z, ry, cloth, sit)`, `GONGS`, `CHORD`,
-`OFF`, `frame(n)` for each bar's strokes: the song is a two-beat cycle at about 111 a minute, loud cymbals on beat one, softer on beat
-two, the deep drum and the gongs' chord on every off-beat (stronger after beat one, with a cymbal tick after beat two); a
-bar (one dance figure, `BAR` 1.614 s) is three beats starting on an off-beat, so figures alternate between the two halves; labels in
+`BEAT`, `frame(n)` for each bar's strokes, after a Shan oh-zi recording (aof4zp8KYXs): the same beat over and over at about
+115 a minute, the deep drum, the gongs' chord and a lighter cymbal clash on the beat, the cymbals ringing out between the beats
+(a quick tap just before) with the second drum's softer stroke, every fourth beat a little harder; a bar (one dance figure,
+`BAR` 1.566 s) is three beats; labels in
 Shan only), keeping time with the dancers (one figure per bar, `BAR`). Players' hands land on their instruments through `fit()`,
 a pose search run once at build time. The strokes reach the ambience through `temple.takeBand()`. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
 and can't be clicked. `?dancers=solo`, `?dancers=pair` (or `1`) and `?dancers=0` force one.
