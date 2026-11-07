@@ -6,8 +6,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-07
 
 ### Added
-- A gong player and a cymbal player join the long drummer on the festival stage, and you can hear the whole Shan ensemble
-  near the festival ground. The kinnara lands on the drum and gong; in the evening the pair open and fold their wings gong to gong.
+- A row of five graduated gongs (မွင်း) joins the long drummer on the festival stage, played by one musician who turns from gong
+  to gong; you can hear the drum and gongs near the festival ground. The kinnara lands on the drum and the big gong; in the evening
+  the pair open and fold their wings gong to gong. The stage's labels use Shan names.
 - A Shan long-drum player (kawng yao) on the festival stage, keeping the beat for the kinnara dancers; you can hear the drum
   near the festival ground.
 

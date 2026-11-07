@@ -33,7 +33,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
-- Ask a Shan speaker for the Shan names of the stage gong and cymbals (labelled in Burmese, မောင်း and လင်းကွင်း, for now).
+- Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
@@ -47,6 +47,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- Per the site owner: the stage ensemble is now the long drum and a **row of gongs**, no cymbals (the cymbal player, `stageCymbals`
+  and the "chap"/"cheng" strokes are gone), and its labels use **Shan names only**, no Burmese. The gong player (front left) stands
+  inside a curved teak frame hung with five graduated bossed gongs (`GONGS`: radius and pitch, 147–247 Hz, D E G A B), turns to
+  each gong and strikes its boss; he turns to the next gong once the beater lands, and each gong swings on its cords after its
+  stroke. The figure alternates bars (`FIG`): the big gong with the drum's deep stroke on the beat, three smaller gongs through the
+  bar. `stageGong(v, f, t0)` now takes the pitch; smaller gongs die away sooner. Labels: gongs "Gongs · မွင်း", the dancers'
+  tip now "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ" (Burmese dropped). **Shan check:** မွင်း for the gongs. The audience's tip is
+  still Burmese (ပွဲကြည့်ပရိသတ်); swap in Shan if the owner wants that too.
 - Added the rest of the Shan ensemble to the kinnara stage, as the site owner asked: a gong player (front left, a bronze bossed gong
   hung in a teak frame, struck on the boss with a red padded beater; the gong swings on its cords) and a cymbal player (back right,
   wide brass cymbals). All three musicians are built by `musician()` inside `kinnaraDancers` and are on stage whenever the dancers

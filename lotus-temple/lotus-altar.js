@@ -1467,7 +1467,7 @@ function gong(v) {
   const o = ping(110, .5 * v, 8); if (o) o.frequency.exponentialRampToValueAtTime(104, audio.currentTime + 1.5);
   [[1.52, .3, 6, .15], [2.13, .22, 5, .3], [2.8, .14, 4, .45], [3.6, .09, 3, .6], [4.9, .05, 2.2, .7]].forEach(([r, p, d, s]) => ping(110 * r, p * v, d, 0, s));
 }
-/* ---------- the Shan ensemble on the festival stage: the long drum (ၵွင်ယၢဝ်း), a bossed gong and cymbals, one stroke at a time
+/* ---------- the Shan ensemble on the festival stage: the long drum (ၵွင်ယၢဝ်း) and a row of bossed gongs (မွင်း), one stroke at a time
    as the players strike (temple.takeBand()). Their own bus with a short reverb: the pavilion roof and the open ground. No two
    strokes alike; `t0` lets each sound wait for the hand to land ---------- */
 function bandBus() {
@@ -1507,23 +1507,12 @@ function longDrum(kind, v, t0 = 0) {
     bandTone(t, 180 * r, 135 * r, .05, .3 * v, .12); bandHiss(t, "bandpass", 1100, 1.3, .55 * v, .07); bandHiss(t, "highpass", 3200, .7, .12 * v, .025);
   }
 }
-// the gong: bronze, bossed, struck with a padded beater: a soft-edged hum, its two near partials beating slowly against each
-// other, with fainter overtones, long to die away
-function stageGong(v, t0 = 0) {
-  const t = audio.currentTime + t0, r = rand(.995, 1.005); v *= rand(.9, 1.05);
-  [[164, 1, 3.4], [164 * 1.007, .55, 3.0], [164 * 2.01, .22, 1.8], [164 * 2.74, .1, 1.2], [164 * 3.93, .05, .7]].forEach(([f, p, d]) => bandTone(t, f * r, f * r * .995, d, p * v, d, "sine", .012));
+// a gong of the row: bronze, bossed, struck with a padded beater, pitch `f`: a soft-edged hum, its two near partials beating
+// slowly against each other, with fainter overtones; the smaller gongs die away sooner
+function stageGong(v, f, t0 = 0) {
+  const t = audio.currentTime + t0, r = rand(.997, 1.003), k = 147 / f; v *= rand(.9, 1.05);
+  [[1, 1, 3.4], [1.007, .55, 3.0], [2.01, .22, 1.8], [2.74, .1, 1.2], [3.93, .05, .7]].forEach(([m, p, d]) => bandTone(t, f * m * r, f * m * r * .995, d * k, p * v, d * k, "sine", .012));
   bandHiss(t, "lowpass", 300, .7, .2 * v, .06);   // the beater's soft thump
-}
-// the cymbals: a bright metallic shimmer (six square waves at clashing pitches, only their highs kept) and the hiss of the clash;
-// "chap" shut and held, so short and dry; "cheng" swung open, so it rings
-function stageCymbals(open, v, t0 = 0) {
-  const a = audio, t = a.currentTime + t0, d = open ? 1.3 : .11; v *= rand(.85, 1.1);
-  const hp = a.createBiquadFilter(), g = a.createGain(); hp.type = "highpass"; hp.frequency.value = 5200;
-  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.05 * v + .0002, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + d);
-  hp.connect(g); g.connect(bandBus());
-  [263, 400, 421, 474, 587, 845].forEach(f => { const o = a.createOscillator(); o.type = "square"; o.frequency.value = f * 1.7 * rand(.99, 1.01); o.connect(hp); o.start(t); o.stop(t + d + .05); });
-  bandHiss(t, "highpass", 4200, .7, (open ? .22 : .35) * v, open ? .9 : .08);
-  if (!open) bandHiss(t, "bandpass", 1500, 1, .18 * v, .03);   // the dull clap of the plates pressed together
 }
 // a bulbul's call: a few quick whistled notes sliding up or down
 function bird(v) {
@@ -1593,7 +1582,7 @@ function ambStep(dt) {
   // the ensemble on the festival stage, stroke by stroke as the players play (heard outside only)
   if (band.length && out) {
     const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80);
-    if (v > .01) band.forEach(([k, s]) => k === "gong" ? stageGong(.14 * v * s, .07) : k === "chap" || k === "cheng" ? stageCymbals(k === "cheng", .2 * v * s, .07) : longDrum(k, .2 * v * s, .07));
+    if (v > .01) band.forEach(([k, s, f]) => k === "gong" ? stageGong(.12 * v * s, f, .07) : longDrum(k, .2 * v * s, .07));
   }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }
