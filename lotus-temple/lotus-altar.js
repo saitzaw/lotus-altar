@@ -1492,9 +1492,9 @@ function bandHiss(t, type, f, q, peak, decay) {
 }
 // the long drum, voiced after a recording of a Shan ensemble: "dum", the fist in the head's centre, a short, deep thump (about 90
 // to 106 Hz) that sags a little as the skin relaxes and is gone in a few tenths of a second; "ting", the open stroke near the rim,
-// the rice-paste patch making it ring with clear harmonics; "tak", the flat hand's muffled slap
-function longDrum(kind, v, t0 = 0) {
-  const t = audio.currentTime + t0, r = rand(.97, 1.03); v *= rand(.85, 1.1);
+// the rice-paste patch making it ring with clear harmonics; "tak", the flat hand's muffled slap. `tune` sets one drum against another
+function longDrum(kind, v, t0 = 0, tune = 1) {
+  const t = audio.currentTime + t0, r = rand(.97, 1.03) * tune; v *= rand(.85, 1.1);
   if (kind === "dum") {
     bandTone(t, 108 * r, 89 * r, .07, v, .42); bandTone(t, 180 * r, 172 * r, .1, .2 * v, .22); bandTone(t, 270 * r, 258 * r, .08, .06 * v, .14);   // the skin, its paste-tuned harmonics
     bandTone(t, 154 * r, 146 * r, .1, .14 * v, .16);   // and an untuned membrane mode, quick to die
@@ -1592,7 +1592,7 @@ function ambStep(dt) {
   // the ensemble on the festival stage, stroke by stroke as the players play (heard outside only)
   if (band.length && out) {
     const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80);
-    if (v > .01) band.forEach(([k, s, f]) => k === "gong" ? f.forEach(([hz, w], i) => stageGong(.06 * v * s * w, hz, .07, !i)) : k === "cym" ? stageCymbals(.5 * v * s, .07) : longDrum(k, .2 * v * s, .07));
+    if (v > .01) band.forEach(([k, s, f]) => k === "gong" ? f.forEach(([hz, w], i) => stageGong(.06 * v * s * w, hz, .07, !i)) : k === "cym" ? stageCymbals(.5 * v * s, .07) : longDrum(k, .17 * v * s, .07, f ? 1.07 : 1));
   }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }

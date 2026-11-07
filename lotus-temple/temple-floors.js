@@ -2816,7 +2816,7 @@ window.TempleFloors = function TempleFloors(ctx) {
      half-bird dancers in green and gold, in human-faced masks, with great fanned wings on frames and a tail fan, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
-    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: the long drum (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
+    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
     // the wing cloth: green satin sewn with sequins, a gilt rim and bands; drawn round the centre so the fan panels pick up rings
     const wingT = canvasTex(256, (c, s) => {
       const h = s / 2; c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
@@ -2974,15 +2974,16 @@ window.TempleFloors = function TempleFloors(ctx) {
       d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = .5;
     });
     /* ---------- the ensemble at the sides of the stage, Shan musicians in loose indigo trousers, white jackets and headcloths: the
-       long drum (two men) on the left, the row of gongs and the cymbals on the right. The dancers keep to them: every bar opens
+       two long drums on the left, the row of gongs and the cymbals on the right. The dancers keep to them: every bar opens
        on the drum's deep stroke and the gongs, on which the kinnara lands from a hop ---------- */
-    const indigo = std({ color: lin(0x232a4a), roughness: .8 }), white = std({ color: lin(0xeeeae0), roughness: .7 });
+    const indigoM = std({ color: lin(0x232a4a), roughness: .8 }), whiteM = std({ color: lin(0xeeeae0), roughness: .7 });
     const bronze = std({ color: lin(0xc89a50), roughness: .35, metalness: .45 }), brass = std({ color: lin(0xe8c060), roughness: .3, metalness: .45 }), teakM = std({ color: 0x43200f, roughness: .7 });
     // a musician standing (or, with `sit`, sitting on a low white stool) at (x, z) on the stage, turned by ry, in a headcloth of
     // colour `cloth`; arm(sd) makes a jointed arm (sd −1 his right, he faces +z) whose hand the instrument fills in at the elbow
     // group's −0.28. B is all of him above the legs, so a sitting player can sway at the waist
-    const musician = (x, z, ry, cloth, sit) => {
+    const musician = (x, z, ry, cloth, sit, suit) => {
       const D = new THREE.Group(); D.position.set(x, C.y, z); D.rotation.y = ry; G.add(D);
+      const [white, indigo] = suit || [whiteM, indigoM];   // his jacket and trousers
       const B = new THREE.Group(), clothM = std({ color: lin(cloth), roughness: .7 }); D.add(B);
       if (sit) {
         B.position.y = -.4;   // down on the stool
@@ -3022,48 +3023,60 @@ window.TempleFloors = function TempleFloors(ctx) {
       return best;
     };
 
-    /* the long drum, ၵွင်ယၢဝ်း (kawng yao), down the left side of the stage, played by two men: a slender drum about as long as
-       a man is tall, lacquered red with gilt bands. The bearer in front carries its flared tail on his left shoulder, steadying
-       it by the strap; the drummer behind stands at its one head, striking the centre with his right fist for the deep note,
-       and ringing the open stroke near the rim or slapping it flat with his left hand */
-    const drummer = (() => {
-      const X = C.x - 3.6, Z = C.z - 1.75, AX = new THREE.Vector3(0, .4, 1).normalize();   // where he stands; the drum's axis, rising forward to the bearer's shoulder
-      const m = musician(X, Z, 0, 0xe88a8a), { D, B, hd } = m;
+    /* the long drums, ၵွင်ယၢဝ်း (kawng yao), at the left of the stage: two drummers side by side in tan jackets and baggy Shan
+       trousers, each with his own drum slung from the shoulder. A long drum is a slender wooden drum about as long as a man is
+       tall; its one head, blackened with a tuning patch of rice paste and ringed in gold and black, rides at his waist, and its
+       body runs down past his left leg to the flared tail on the ground behind him. Under the head it wears a skirt of ruffled
+       cloth, yellow, green and red. Each strikes the head's centre with his right fist for the deep note, and rings the open
+       stroke near the rim or slaps it flat with his left hand; the first leads, the second answers and fills in */
+    const drumT = canvasTex(64, (c, sz) => { c.fillStyle = "#6a3018"; c.fillRect(0, 0, sz, sz); c.fillStyle = "#c89040"; [.1, .5, .9].forEach(v => c.fillRect(0, v * sz, sz, 2)); });   // the oiled wooden body
+    const headT = canvasTex(128, (c, sz) => {   // the head from before: black and gold rings round a pale ring and the dark rice-paste patch
+      const ring = (r, col) => { c.fillStyle = col; c.beginPath(); c.arc(sz / 2, sz / 2, r * sz / 2, 0, TAU); c.fill(); };
+      [[1, "#1a1410"], [.9, "#d8a840"], [.8, "#1a1410"], [.72, "#d8a840"], [.66, "#c8b088"], [.5, "#2a1c14"], [.42, "#3a2a20"]].forEach(([r, col]) => ring(r, col));
+    });
+    const tanTop = std({ color: lin(0xd8a878), roughness: .8 }), tanLow = std({ color: lin(0xc89868), roughness: .85 });
+    const FRILL = [[.17, .27, .1, -.1, 0xf2c820], [.15, .25, .1, -.17, 0x2a9a3a], [.13, .23, .09, -.24, 0xd82a2a]];   // the skirt's tiers: [top radius, hem radius, depth, how far down the drum, colour]
+    const DIR = new THREE.Vector3(.45, -.58, -.68).normalize();   // from the head down to the tail, past his left leg (he faces +z)
+    const longDrummer = (x, z, ry, cloth) => {
+      const m = musician(x, z, ry, cloth, false, [tanTop, tanLow]), { D, hd } = m;
       const arms = { dum: m.arm(-1), tak: m.arm(1) };
       mesh(new THREE.SphereGeometry(.05, 8, 6), skin, 0, -.28, 0, arms.dum.e);   // a fist
       mesh(new THREE.BoxGeometry(.025, .1, .07), skin, 0, -.29, 0, arms.tak.e);   // a flat hand
-      // the drum, along its own axis (−y toward the tail), its head toward his hands
-      const drumT = canvasTex(64, (c, sz) => { c.fillStyle = "#b02a22"; c.fillRect(0, 0, sz, sz); c.fillStyle = "#e8c040"; [.06, .28, .52, .78, .94].forEach(v => c.fillRect(0, v * sz, sz, 3)); c.fillStyle = "#2a8a4a"; for (let x = 3; x < sz; x += 11) c.fillRect(x, .38 * sz, 4, 7); });
+      // the drum, along its own axis (−y toward the tail)
       const prof = [[.15, 0], [.15, -.05], [.12, -.15], [.07, -.35], [.055, -.6], [.05, -1.2], [.07, -1.42], [.13, -1.6], [.13, -1.64]].map(([r, y]) => new THREE.Vector2(r, y));
-      const drum = new THREE.Group(); drum.position.set(0, .98, .42); D.add(drum);   // the head just before his hands as they land
-      drum.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), AX);
-      mesh(new THREE.LatheGeometry(prof, 16), std({ map: drumT, roughness: .45, metalness: .15, side: THREE.DoubleSide }), 0, 0, 0, drum);
-      mesh(new THREE.CircleGeometry(.15, 16), std({ color: lin(0xe8dcc0), roughness: .8 }), 0, .002, 0, drum).rotation.x = -Math.PI / 2;   // the hide head
-      mesh(new THREE.TorusGeometry(.15, .015, 6, 20), M.gold, 0, -.01, 0, drum).rotation.x = Math.PI / 2;
-      mesh(new THREE.ConeGeometry(.05, .22, 8), red, 0, -1.74, 0, drum).rotation.x = Math.PI;   // a red tassel at the tail
-      // the bearer, a step ahead, the drum's narrow neck on his left shoulder and his left hand on the strap before his chest
-      const sh = 1.16, w = new THREE.Vector3(0, .98, .42).addScaledVector(AX, sh);   // how far along the drum his shoulder takes it; that point
-      const bm = musician(X - .2, Z + w.z - .02, 0, 0x6a9ad8), bl = bm.arm(1), br = bm.arm(-1);
-      mesh(new THREE.SphereGeometry(.045, 8, 6), skin, 0, -.28, 0, bl.e); mesh(new THREE.SphereGeometry(.045, 8, 6), skin, 0, -.28, 0, br.e);
-      bl.a.rotation.set(-.55, 0, .25); bl.e.rotation.x = -1.3; br.a.rotation.set(.1, 0, -.12); br.e.rotation.x = -.2;
-      const strap = mesh(new THREE.CylinderGeometry(.012, .012, .5, 4), std({ color: lin(0xd8b040), roughness: .8 }), -.02, w.y - .27, w.z + .07, D); strap.rotation.x = -.35;   // from the drum's neck to his hand
-      const info = { tip: "Shan long drum · ၵွင်ယၢဝ်း", toast: "The kawng yao (ၵွင်ယၢဝ်း), the Shan long drum: a slender wooden drum about as long as a man is tall, its one head tuned with a patch of rice paste. Two men play it: one carries its tail on his shoulder, and the drummer stands at the head, striking it with the fist in the centre for the deep, booming note, and with the hand near the rim for the ringing open note or flat for the slap. It leads the ensemble for the ka nok, with the row of gongs (မွင်း) and the cymbals; the kinnara steps and lands on its deep stroke." };
-      gateOn(D, info); gateOn(bm.D, info);
-      // where each hand lands: the fist just off the head's centre, the flat hand near the rim on his left
-      const hc = new THREE.Vector3(0, .98, .42);
-      [[arms.dum, hc.clone().addScaledVector(AX, -.055)], [arms.tak, hc.clone().add(new THREE.Vector3(.1, 0, 0)).addScaledVector(AX, -.02)]].forEach(([r, T]) => {
-        const tip = r.e.children[r.e.children.length - 1];
-        r.pose = fit(D, tip, T, (pitch, side, elbow) => { r.a.rotation.set(-pitch, 0, side); r.e.rotation.x = -elbow; }, [[.2, 1.8, .1], [-.6, .6, .1], [0, 1.6, .15]]);
+      const H = new THREE.Vector3(-.03, .97, .37), drum = new THREE.Group(); drum.position.copy(H); D.add(drum);
+      drum.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), DIR);
+      mesh(new THREE.LatheGeometry(prof, 16), std({ map: drumT, roughness: .5, side: THREE.DoubleSide }), 0, 0, 0, drum);
+      mesh(new THREE.CircleGeometry(.15, 24), std({ map: headT, roughness: .7 }), 0, .002, 0, drum).rotation.x = -Math.PI / 2;
+      mesh(new THREE.TorusGeometry(.15, .018, 6, 24), std({ color: lin(0x1a1410), roughness: .5 }), 0, -.01, 0, drum).rotation.x = Math.PI / 2;
+      FRILL.forEach(([r0, r1, h, y, col]) => {   // a ruffled hem: the cone's lower edge waved in and out
+        const geo = new THREE.CylinderGeometry(r0, r1, h, 32, 1, true), pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) if (pos.getY(i) < 0) { const a = Math.atan2(pos.getZ(i), pos.getX(i)), k = 1 + Math.sin(a * 9) * .08; pos.setX(i, pos.getX(i) * k); pos.setZ(i, pos.getZ(i) * k); }
+        geo.computeVertexNormals();
+        mesh(geo, std({ color: lin(col), roughness: .6, side: THREE.DoubleSide }), 0, y, 0, drum);
       });
-      let strong = 9, sway = 0;   // since the last deep stroke; the bearer's clock
+      // the sling, from the drum's neck over his right shoulder
+      D.updateMatrixWorld(true);
+      const a = D.worldToLocal(drum.localToWorld(new THREE.Vector3(0, -.32, 0))), b = new THREE.Vector3(-.12, 1.36, -.02);
+      const sling = mesh(new THREE.CylinderGeometry(.014, .014, a.distanceTo(b), 4), std({ color: lin(0xe8c040), roughness: .8 }), (a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2, D);
+      sling.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+      // where each hand lands: the fist just off the head's centre, the flat hand near the rim on his left
+      const out = DIR.clone().negate();   // the head's face, toward him and up
+      [[arms.dum, H.clone().addScaledVector(out, .055)], [arms.tak, H.clone().add(new THREE.Vector3(.1, 0, 0)).addScaledVector(out, .02)]].forEach(([r, T]) => {
+        const tip = r.e.children[r.e.children.length - 1];
+        r.pose = fit(D, tip, T, (pitch, side, elbow) => { r.a.rotation.set(-pitch, 0, side); r.e.rotation.x = -elbow; }, [[.1, 1.8, .1], [-.7, .7, .1], [0, 1.8, .15]]);
+      });
+      let strong = 9;
       const hit = (kind, v) => { arms[kind === "dum" ? "dum" : "tak"].age = 0; if (v > .8) strong = 0; };
       const step = dt => {
         Object.values(arms).forEach(r => { r.age += dt; const up = lifted(r.age) * (r.sd < 0 ? 1 : .7), [, pitch, side, elbow] = r.pose; r.a.rotation.set(-pitch + up * .35, 0, side); r.e.rotation.x = -elbow - up * .9; });
         strong += dt; hd.rotation.x = .15 * Math.exp(-strong * 6);   // a nod on the deep strokes
-        sway += dt; bm.B.rotation.z = Math.sin(sway * Math.PI / (BAR / 3)) * .02; bm.hd.rotation.y = -.25;   // the bearer rocks to the beat, glancing back
       };
-      return { D, D2: bm.D, hit, step };
-    })();
+      return { D, hit, step };
+    };
+    const drummers = [longDrummer(C.x - 3.45, C.z - 1.05, 1.0, 0xe88a8a), longDrummer(C.x - 3.45, C.z + .15, 1.0, 0xf0f0e8)];
+    const info = { tip: "Shan long drums · ၵွင်ယၢဝ်း", toast: "Two kawng yao (ၵွင်ယၢဝ်း), Shan long drums, each slung from its drummer's shoulder: a slender wooden drum about as long as a man is tall, its one head blackened with a tuning patch of rice paste, skirted under the head with ruffled cloth in yellow, green and red. The drummers strike with the fist in the centre for the deep, booming note, and with the hand near the rim for the ringing open note or flat for the slap; the first leads and the second answers. They lead the ensemble for the ka nok, with the row of gongs (မွင်း) and the cymbals; the kinnara steps and lands on their deep stroke." };
+    drummers.forEach(d => gateOn(d.D, info));
 
     /* the gongs (မွင်း), at the front right of the stage, facing the crowd: five bronze bossed gongs, graduated from the largest
        and deepest to the smallest, in a painted case as the Shan make them: a low standing case leaning a little back, yellow posts
@@ -3142,7 +3155,7 @@ window.TempleFloors = function TempleFloors(ctx) {
       const hand = l.e.children[l.e.children.length - 1], grip = new THREE.Vector3(), hold = k => { setPush(k); rod.updateMatrixWorld(true); return D.worldToLocal(rod.localToWorld(grip.set(x0 + .05, -.02, 0))).clone(); };
       const poses = [0, 1].map(k => { const T = hold(k); return fit(D, hand, T, (pitch, side, elbow) => { l.a.rotation.set(-pitch, 0, side); l.e.rotation.x = -elbow; }, [[.1, 2.0, .1], [-.8, .8, .1], [0, 1.8, .15]]); });
       setPush(0);
-      const info = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း), graduated from the largest and deepest to the smallest, hung in a painted case: yellow posts, red dividers, a blue back, and a crest board with gilt scrolls round the Shan flag. One player sounds all five at once: a yellow padded beater hangs on an arm before each gong, the arms joined by a rod, and he pushes the rod from his stool at the end so every beater strikes together. The gongs ring as one chord between the drum's beats, so their hum never stops under the dance. With the long drum and the cymbals they make the Shan ensemble for the ka nok." };
+      const info = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း), graduated from the largest and deepest to the smallest, hung in a painted case: yellow posts, red dividers, a blue back, and a crest board with gilt scrolls round the Shan flag. One player sounds all five at once: a yellow padded beater hangs on an arm before each gong, the arms joined by a rod, and he pushes the rod from his stool at the end so every beater strikes together. The gongs ring as one chord between the drum's beats, so their hum never stops under the dance. With the long drums and the cymbals they make the Shan ensemble for the ka nok." };
       gateOn(D, info); F.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, info); o.raycast = function (ray, out) { if (F.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       let age = 9;
       const hit = () => { age = 0; gongs.forEach(o => o.swing = 0); };
@@ -3170,7 +3183,7 @@ window.TempleFloors = function TempleFloors(ctx) {
         mesh(new THREE.SphereGeometry(.02, 8, 6), red, 0, .045, 0, c);   // the cloth knob he grips
         return r;
       });
-      gateOn(D, { tip: "Cymbals · ၸၢပ်ႈ", toast: "A pair of brass cymbals (ၸၢပ်ႈ) keeping the beat of the Shan ensemble: struck together on every beat and swung apart so they ring, while the long drum's deep strokes and the gongs fall between." });
+      gateOn(D, { tip: "Cymbals · ၸၢပ်ႈ", toast: "A pair of brass cymbals (ၸၢပ်ႈ) keeping the beat of the Shan ensemble: struck together on every beat and swung apart so they ring, while the long drums' deep strokes and the gongs fall between." });
       let from = .3, to = .3, age = 9;   // how far apart the cymbals are: 0 shut, 1 wide open
       const gap = () => age < .06 ? from * (1 - age / .06) : to * Math.min(1, (age - .06) / .25) ** .6;
       const hit = () => { from = gap(); to = .8; age = 0; };
@@ -3181,23 +3194,26 @@ window.TempleFloors = function TempleFloors(ctx) {
       };
       return { D, hit, step };
     })();
-    const band = [drummer, gonger, cymbaler];
+    const band = [...drummers, gonger, cymbaler];
     // play one stroke: the player moves and the sound is queued for the ambience (the gongs' with their pitches)
     const CHORD = GONGS.map(([, f, w]) => [f, w]);   // every gong's pitch and loudness
-    const play = (kind, v) => {
+    const play = (kind, v, who = 0) => {
       if (kind === "gong") { gonger.hit(); BAND.push([kind, v, CHORD]); }
       else if (kind === "cym") { cymbaler.hit(); BAND.push([kind, v]); }
-      else { drummer.hit(kind, v); BAND.push([kind, v]); }
+      else { drummers[who].hit(kind, v); BAND.push([kind, v, who]); }   // the second drum a little higher
       if (BAND.length > 24) BAND.shift();
     };
     // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...]
-    const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v]) => { if (c0 < n + m && n + m <= c1) play(kind, v); }); };
+    const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who); }); };
     /* each bar is three beats (about 112 to the minute), as a recording of a Shan ensemble keeps them: the cymbals ring on every
        beat; the long drum's deep strokes and the gongs fall between the beats, the drum filling in with slaps and open strokes; the
        bar opens on the drum's deep stroke and the gongs together, the dancers' landing, and the gongs' chord sounds again on
        every half beat after, loudest between the beats */
     const GONG = [[0, .8], [1 / 6, .55], [1 / 3, .4], [1 / 2, .55], [2 / 3, .4], [5 / 6, .55]];
-    const DRUM = [[0, "dum", 1], [1 / 6, "dum", .6], [1 / 4, "tak", .3], [1 / 3, "tak", .5], [1 / 2, "dum", .7], [7 / 12, "ting", .35], [2 / 3, "tak", .5], [5 / 6, "dum", .65], [11 / 12, "tak", .3]];
+    // the two drums: both on the bar's first deep stroke; the first leads with the deep strokes between the beats, the second
+    // answers with slaps and open strokes and a deep stroke of its own
+    const DRUM = [[0, "dum", 1, 0], [0, "dum", .7, 1], [1 / 6, "dum", .6, 0], [1 / 4, "tak", .3, 1], [1 / 3, "tak", .5, 1], [5 / 12, "ting", .3, 0],
+                  [1 / 2, "dum", .7, 0], [7 / 12, "ting", .35, 1], [2 / 3, "tak", .5, 1], [3 / 4, "dum", .45, 1], [5 / 6, "dum", .65, 0], [11 / 12, "tak", .3, 1]];
     const frame = () => [...DRUM, [0, "cym", 1], [1 / 3, "cym", .7], [2 / 3, "cym", .75], ...GONG.map(([m, v]) => [m, "gong", v])];
     pose();
     return (dt, motion) => {

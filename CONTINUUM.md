@@ -49,6 +49,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-07
 
+- Per the site owner (photo from the same clip): **two drummers, two long drums**, replacing the drummer-and-bearer pair. Each
+  wears a tan jacket and baggy trousers (`musician(..., suit)`), his drum slung over the right shoulder with its head at his
+  waist and its body down past his left leg to the tail on the ground (`DIR`); under the head a ruffled skirt in yellow, green
+  and red (`FRILL`), the head blackened with rice paste and ringed in gold and black (`headT`). `longDrummer()` builds each;
+  hands land by `fit()` (1 mm). `DRUM` strokes now carry which drummer plays them: both on the bar's first deep stroke, the first
+  leading with the deep strokes between beats, the second answering with slaps, open strokes and a deep stroke of its own; the
+  second drum sounds 7% higher (`longDrum(..., tune)`). Tip now "Shan long drums · ၵွင်ယၢဝ်း".
 - Per the site owner (second photo and the clip at 0:22): the gongs are **struck all five at once**. The case now faces the
   crowd (front right, `F` turned π, `Fl` leaning back); a yellow padded beater hangs on a red arm before each gong, hinged above
   it, the arms joined by a red rod along the front; the player sits on a white stool (`musician(..., sit)` is now a stool, not

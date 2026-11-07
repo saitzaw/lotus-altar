@@ -45,7 +45,7 @@ The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival g
 temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
 epic, leaping, beating and fluttering his wings and shaking his tail (jointed legs and arms via `setLeg`/`setArm`; each leap is a
 ground crouch-and-push then a gravity arc, see the comment above `solo`); then the masked kinnara and kinnari pair from 4 to 11 PM,
-circling each other. A Shan ensemble plays at the sides of the stage whenever they are on: the long drum played by two men (drummer and bearer), a
+circling each other. A Shan ensemble plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
 (`setPush`), and cymbals (`musician(x, z, ry, cloth, sit)`, `GONGS`, `CHORD`,
 `DRUM`, `GONG`, `frame()` for each bar's strokes: three beats a bar, cymbals on the beats, deep drum and the gongs' chord between; labels in
