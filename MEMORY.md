@@ -35,7 +35,7 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 `--virtual-time-budget`. What works:
 
 1. Build, copy `dist/` to a throwaway folder under `$HOME` (snap Chromium can't use `/tmp`), and serve it on a spare port.
-2. In the copy's `lotus-altar.js` (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
+2. In the copy's `lotus-altar.js` (the joined file in `dist/`) (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
    `window.__t={camera,controls,renderer,world,enterWalk:(...a)=>enterWalk(...a)};`
 3. Force day before the page loads, with a script placed before the three.js tag:
    `localStorage.setItem("lotus-altar-daylight","1")`.

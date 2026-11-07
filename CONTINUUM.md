@@ -7,6 +7,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Current state (2026-10-28)
 
+- Code layout (2026-11-07): `lotus-altar.js` and `temple-floors.js` are cut into small topic files under
+  `lotus-temple/src/lotus-altar/` and `lotus-temple/src/temple-floors/`; `build-dist.sh` joins them into `dist/`. Map of
+  every piece: `.claude/skills/lotus-altar/references/files.md`. Names below "in `temple-floors.js`" live in those pieces.
+
 - Site deploys with Vercel from `lotus-temple/` (build: `bash build-dist.sh`, output `dist/`), automatically on every push
   to `main` (the Vercel check shows on the commit's GitHub status).
 - Halloween festival is active Oct 27 – Nov 1: houses and village huts go dark at 9 PM ICT until 5 AM, a friendly ghost
@@ -42,12 +46,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   site's owner; the boards carry the Shan names only.
 
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
-- Stale comment in `lotus-altar.js` (~line 297) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
+- Stale comment in `src/lotus-altar/02-hall-and-guanyin.js` (line 38) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
 
 ### 2026-11-07
+
+- Cut the two big scripts into topic files so a change only needs one small file read: `src/lotus-altar/` (15 pieces)
+  and `src/temple-floors/` (39 pieces, one per place). The pieces are consecutive slices of the same closure; `build-dist.sh`
+  joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
+  `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
 - Per the site owner (photo from the same clip): **two drummers, two long drums**, replacing the drummer-and-bearer pair. Each
   wears a tan jacket and baggy trousers (`musician(..., suit)`), his drum slung over the right shoulder with its head at his

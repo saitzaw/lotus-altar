@@ -11,6 +11,10 @@ rm -rf dist && mkdir dist
   cat lotus-altar.html
   printf '\n</body>\n</html>\n'
 } > dist/index.html
-cp lotus-altar.css lotus-altar.js temple-floors.js statue-sculpt.js four-face-top.js dist/
+# temple-floors.js and lotus-altar.js are each one script cut into small topic files under src/<name>/; joining them in
+# file-name order rebuilds the script. The pieces in the middle of a closure aren't valid on their own, the joined file is.
+for js in temple-floors lotus-altar; do LC_ALL=C cat src/$js/*.js > dist/$js.js; done
+if command -v node >/dev/null; then for js in dist/*.js; do node --check "$js"; done; fi
+cp lotus-altar.css statue-sculpt.js four-face-top.js dist/
 if [ -f guanyin.glb ]; then cp guanyin.glb dist/; fi
 echo "Built $(pwd)/dist"

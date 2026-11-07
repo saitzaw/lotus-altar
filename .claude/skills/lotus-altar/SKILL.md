@@ -10,6 +10,8 @@ seven-floor pagoda, buy offerings at the temple shop and place them at Guanyin's
 donate (demo only), and wander a Northern Shan State town, seven-day market, stupa hill and festival ground.
 
 - **Repo:** `/home/alex/MyProjects/lotus-altar`, everything lives in `lotus-temple/`
+- **Code layout:** the two big scripts are cut into small files, `lotus-temple/src/lotus-altar/` and
+  `lotus-temple/src/temple-floors/`, joined by `build-dist.sh`. Open the one piece you need (map in references/files.md).
 - **Stack:** plain HTML/CSS/JS, no bundler, no npm, no ES modules. Three.js **r128** as a global `THREE`; use only r128 APIs.
 - **State between sessions:** read `CONTINUUM.md` at the start, add a log entry after a meaningful change.
 - **Lessons learned:** read `MEMORY.md` (gotchas, how to get a headless render of an outdoor spot); add a lesson when you learn one.

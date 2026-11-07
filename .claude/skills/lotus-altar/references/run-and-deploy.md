@@ -7,7 +7,9 @@ cd lotus-temple && bash build-dist.sh          # builds dist/
 python3 -m http.server -d dist 8000            # then open http://localhost:8000
 ```
 
-The statue worker is fetched by URL, so serve over HTTP rather than opening the file directly.
+The build joins `src/lotus-altar/*.js` and `src/temple-floors/*.js` into `dist/lotus-altar.js` and `dist/temple-floors.js`
+and fails if `node --check` rejects either, so rebuild after every edit; the page in `lotus-temple/` itself can't run
+without `dist/`. The statue worker is fetched by URL, so serve over HTTP rather than opening the file directly.
 
 ## Testing
 

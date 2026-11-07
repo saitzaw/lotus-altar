@@ -23,12 +23,18 @@ market and stupa hill. All code is in `lotus-temple/`.
 | File | Role |
 |---|---|
 | `lotus-temple/lotus-altar.html` | HUD, panels, dialogs, script load order |
-| `lotus-temple/lotus-altar.js` | Main app: `CONFIG`, `ITEMS`, shared helpers, floor 1 hall, cameras, walking, sky, festivals, shop UI, frame loop |
-| `lotus-temple/temple-floors.js` | `window.TempleFloors(ctx)`: floors 2–7, side buildings, the whole outdoor world and terrain |
+| `lotus-temple/src/lotus-altar/NN-topic.js` | Main app, one IIFE cut into ~15 topic files: `CONFIG`, `ITEMS`, shared helpers, floor 1 hall, cameras, walking, sky, festivals, sound, shop UI, frame loop |
+| `lotus-temple/src/temple-floors/NN-place.js` | `window.TempleFloors(ctx)` cut into ~40 files, one per place: floors 2–7, side buildings, the whole outdoor world and terrain |
 | `lotus-temple/statue-sculpt.js` | Statues as signed distance fields, meshed in a Web Worker |
 | `lotus-temple/four-face-top.js` | Shan four-animal spinning-top mini-game (tokens only) |
 | `lotus-temple/lotus-altar.css` | Styles and colour tokens |
 | `lotus-temple/build-dist.sh`, `vercel.json` | Build and deploy |
+
+`lotus-altar.js` and `temple-floors.js` exist only in `dist/`: `build-dist.sh` joins `src/<name>/*.js` in file-name
+order, so the pieces share one closure and every top-level name is visible across them. Open only the piece you need: the
+piece-by-piece map with key function names is `.claude/skills/lotus-altar/references/files.md`, or find a name with
+`grep -rn "function name" lotus-temple/src`. Pieces that open, close or sit inside a function don't parse alone; the
+build runs `node --check` on the joined files.
 
 ## Build and run
 
