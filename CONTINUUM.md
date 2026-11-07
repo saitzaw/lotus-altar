@@ -58,6 +58,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
+- Per the site owner (cymbals too harsh): `stageCymbals` now uses pure sine partials weighted as in the oh-zi recording (1.0–1.5
+  kHz strongest, then 1.9, 2.4, 3.2, 3.8 kHz, a trace at 4.85 kHz) through a lowpass at 8.5 kHz, and a hiss band-passed near 3.8
+  kHz instead of a 3 kHz highpass. The old triangle waves and high hiss made 4.5–6.5 kHz and 9–11 kHz about 5 dB louder than
+  the clip. Now 1–4.5 kHz matches the clip and above 4.5 kHz sits 4–6 dB under it, on purpose.
 - Per the site owner (scores: gongs 90%, cymbals 80%, long drum 50%, rhythm 60%; "it cannot pause, use a loop"): the pause
   was the 1 s gap and the short end of my listening file; the stage itself plays without a break during a show. The drum:
   measured from its strokes on the quarter and three-quarter beat, where it plays alone, it is a low note near 82 Hz under a

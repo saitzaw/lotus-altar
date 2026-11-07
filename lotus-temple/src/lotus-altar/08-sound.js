@@ -96,15 +96,18 @@ function stageGong(v, f, t0 = 0, thump = true) {
   [[1, 1, 4], [1.002, .55, 3.5], [2.01, .22, 2], [2.74, .1, 1.2], [3.93, .05, .7]].forEach(([m, p, d]) => bandTone(t, f * m * r, f * m * r * .995, d * k, p * v, d * k, "sine", .012));
   if (thump) bandHiss(t, "lowpass", 300, .7, .3 * v, .06);   // the beaters' soft thump (once for a chord)
 }
-// the cymbals: struck together and swung apart to ring, a bright shimmer (peaks near 1.0, 1.4–1.5, 1.9, 2.4 and 4.7–5.0 kHz in a
-// recording of a Shan oh-zi ensemble) over a hiss, 12 dB down in under a fifth of a second
+// the cymbals: struck together and swung apart to ring, a shimmer of pure tones weighted as in a recording of a Shan oh-zi
+// ensemble (strongest near 1.0–1.5 kHz, then 1.9, 2.4, 3.2 and 3.8 kHz, only a trace near 4.9 kHz) over a soft hiss centred near
+// 3.8 kHz, the top above 8.5 kHz rolled off so it never turns harsh; 12 dB down in under a fifth of a second
 function stageCymbals(v, t0 = 0) {
   const a = audio, t = a.currentTime + t0, d = 1.3; v *= rand(.85, 1.1);
-  const hp = a.createBiquadFilter(), g = a.createGain(); hp.type = "highpass"; hp.frequency.value = 900;
-  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.045 * v + .0002, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + d);
-  hp.connect(g); g.connect(bandBus());
-  [1020, 1410, 1474, 1534, 1927, 2381, 4714, 5002].forEach(f => { const o = a.createOscillator(); o.type = "triangle"; o.frequency.value = f * rand(.995, 1.005); o.connect(hp); o.start(t); o.stop(t + d + .05); });
-  bandHiss(t, "highpass", 3000, .7, .2 * v, .6); bandHiss(t, "bandpass", 1600, 1.2, .16 * v, .04);   // the plates' wash and the clash
+  const lp = a.createBiquadFilter(), g = a.createGain(); lp.type = "lowpass"; lp.frequency.value = 8500; lp.Q.value = .5;
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.06 * v + .0002, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  lp.connect(g); g.connect(bandBus());
+  [[1020, .8], [1410, 1], [1534, .7], [1927, .6], [2381, .5], [3190, .65], [3800, .55], [4850, .15]].forEach(([f, p]) => {
+    const o = a.createOscillator(), og = a.createGain(); o.frequency.value = f * rand(.995, 1.005); og.gain.value = p; o.connect(og); og.connect(lp); o.start(t); o.stop(t + d + .05);
+  });
+  bandHiss(t, "bandpass", 3800, .7, .16 * v, .45, .003); bandHiss(t, "bandpass", 1600, 1.2, .12 * v, .04, .003);   // the plates' wash and the clash
 }
 // a bulbul's call: a few quick whistled notes sliding up or down
 function bird(v) {
