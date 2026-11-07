@@ -6,6 +6,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-07
 
 ### Changed
+- The kinnara dancer now dances with his arms and legs: knees that bend to land and spring, a leg kicked back in each leap,
+  and curled-back dancer's hands. His leaps rise and fall naturally instead of floating.
 - Walking is gentler on the eyes: looking round with the mouse or a finger is slower and stops when you let go, arrow keys turn
   more slowly, and the view on foot no longer widens to a fish-eye on phones.
 

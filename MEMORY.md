@@ -51,6 +51,9 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
    3 minutes.
 
 Traps:
+- Use `--screenshot=<file>`, not `--dump-dom`: with `--dump-dom` no `CONSOLE` lines come out, so the `IMG` log is lost.
+- The test machine's clock may already be inside a timed show (e.g. the kinnara solo at 2–3:45 PM ICT), so the scene animates
+  during the first frames before your script steps it; expect a phase offset, or force the switch off first.
 - The page may open in first-person walk mode. Clicking `#leaveMarketBtn` already takes you outside, so clicking
   `#outsideBtn` after it sends you back into the floor-1 hall.
 - Log a `window` `error` listener in the test script, or build errors go unseen.

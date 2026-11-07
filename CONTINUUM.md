@@ -45,6 +45,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-07
+- Reworked the kinnara's afternoon solo (`kinnaraDancers` in `temple-floors.js`) after the site owner said the jump looked
+  unnatural and asked for hands and legs. The dancers now have joints: the kinnara's legs bend at hip, knee and ankle (`setLeg`),
+  both dancers' arms at shoulder, elbow and wrist, with a palm, thumb and back-bent fingers (`setArm`), and the upper body leans
+  from the hips (`U`) so the feet stay put. Each leap is now physical: 0.34 s on the ground sinking into the knees and pushing off
+  (deeper before the big leap), then time aloft from the height under gravity (`airT`), one leg reaching forward and the other
+  kicked up behind, alternating each leap; he travels round the stage only while airborne. Wings beat up on the push and down on
+  the landing, with elbows and wrists trailing like a wave. In the evening pair he dips into his knees and lifts each foot in turn;
+  she (longyi, no visible legs) sinks a little on the beat. Checked by headless render at several points in the leap cycle.
 - Made walking gentler after the site owner said it made them dizzy. New `CONFIG.camera.look` holds the on-foot camera: mouse
   and touch look speed 0.4 of OrbitControls' default (was 1, so half a screen's drag turned you 180°), damping 0.3 so the view
   stops when you let go instead of drifting for a second (was 0.05), arrow-key turning 1.0 rad/s (was 1.6, and 0.7 of that with
