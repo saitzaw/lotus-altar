@@ -49,6 +49,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-07
 
+- Per the site owner (second photo and the clip at 0:22): the gongs are **struck all five at once**. The case now faces the
+  crowd (front right, `F` turned π, `Fl` leaning back); a yellow padded beater hangs on a red arm before each gong, hinged above
+  it, the arms joined by a red rod along the front; the player sits on a white stool (`musician(..., sit)` is now a stool, not
+  cross-legged) beyond the big gong's end and pushes the rod's grip, so every beater swings in together (`setPush(k)`; balls touch
+  the faces within 1 mm, 4.5 cm off at rest; his hand on the grip by `fit()`). Each "gong" stroke queues the whole chord
+  (`CHORD`, from `GONGS` [radius, pitch, loudness]: 354 Hz loudest, as in the clip); `GONG` gives the chord's places in the bar
+  (bar start and every half beat). The ambience plays `stageGong` once per pitch, one beater thump per chord.
 - Per the site owner, from a photo of a Shan gong set and a YouTube clip (ရှမ်းရိုးရာ ဓားသိုင်းအက, 2jsv8gcym9c): the gongs now
   hang in a painted standing case like the photo's (yellow posts and rails, red dividers with yellow pompoms, blue back, red
   crest board with gilt scrolls round the Shan flag), the player sitting cross-legged before it (`musician(..., sit)`), front

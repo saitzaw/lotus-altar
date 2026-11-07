@@ -6,8 +6,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-07
 
 ### Changed
-- The festival stage's Shan ensemble looks and sounds more like the real thing: the gongs hang in a painted Shan gong case with
-  the player sitting before it, the long drum is played by two men (one carries it on his shoulder), a cymbal player keeps the
+- The festival stage's Shan ensemble looks and sounds more like the real thing: the five gongs hang in a painted Shan gong case
+  facing the crowd, and one player on a stool at its end pushes a rod that strikes all five at once, the long drum is played by two men (one carries it on his shoulder), a cymbal player keeps the
   beat again, and the drum, gongs and cymbals play a quicker three-beat rhythm voiced after a recording of a Shan ensemble.
 
 ### Fixed

@@ -1507,12 +1507,12 @@ function longDrum(kind, v, t0 = 0) {
     bandTone(t, 180 * r, 135 * r, .05, .3 * v, .12); bandHiss(t, "bandpass", 1100, 1.3, .55 * v, .07); bandHiss(t, "highpass", 3200, .7, .12 * v, .025);
   }
 }
-// a gong of the row: bronze, bossed, struck with a padded beater, pitch `f`: a soft-edged hum, its two near partials beating
+// a gong of the row: bronze, bossed, struck with a padded beater, pitch `f` (the row is struck all together, one call a gong): a soft-edged hum, its two near partials beating
 // slowly against each other, with fainter overtones; the smaller gongs die away sooner
-function stageGong(v, f, t0 = 0) {
+function stageGong(v, f, t0 = 0, thump = true) {
   const t = audio.currentTime + t0, r = rand(.997, 1.003), k = Math.sqrt(240 / f); v *= rand(.9, 1.05);
   [[1, 1, 3.4], [1.007, .55, 3.0], [2.01, .22, 1.8], [2.74, .1, 1.2], [3.93, .05, .7]].forEach(([m, p, d]) => bandTone(t, f * m * r, f * m * r * .995, d * k, p * v, d * k, "sine", .012));
-  bandHiss(t, "lowpass", 300, .7, .2 * v, .06);   // the beater's soft thump
+  if (thump) bandHiss(t, "lowpass", 300, .7, .3 * v, .06);   // the beaters' soft thump (once for a chord)
 }
 // the cymbals: struck together and swung apart to ring, a bright shimmer (peaks near 1.6, 2.1, 3.5 and 5.4 kHz in a recording
 // of a Shan ensemble) over a hiss, dying in under a second
@@ -1592,7 +1592,7 @@ function ambStep(dt) {
   // the ensemble on the festival stage, stroke by stroke as the players play (heard outside only)
   if (band.length && out) {
     const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80);
-    if (v > .01) band.forEach(([k, s, f]) => k === "gong" ? stageGong(.1 * v * s, f, .07) : k === "cym" ? stageCymbals(.5 * v * s, .07) : longDrum(k, .2 * v * s, .07));
+    if (v > .01) band.forEach(([k, s, f]) => k === "gong" ? f.forEach(([hz, w], i) => stageGong(.06 * v * s * w, hz, .07, !i)) : k === "cym" ? stageCymbals(.5 * v * s, .07) : longDrum(k, .2 * v * s, .07));
   }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }
