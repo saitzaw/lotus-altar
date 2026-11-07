@@ -46,7 +46,7 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 5. If the log shows "Error creating WebGL context", launch with `--use-angle=swiftshader --enable-unsafe-swiftshader` (not
    `--disable-gpu`). Frames then take about 3 s each, so start counting frames only once `window.__t` exists and do the work
    in the first few frames after that.
-6. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
+6. Add `--enable-logging=stderr`, or snap Chromium prints no `CONSOLE` lines at all. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
    redirect comes out empty with snap Chromium. Base64-decode the `IMG` line to a `.jpg` and look at it. One run takes about
    3 minutes.
 

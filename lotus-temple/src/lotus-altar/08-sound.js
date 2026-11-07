@@ -94,9 +94,9 @@ function stageGong(v, f, t0 = 0, thump = true) {
   if (thump) bandHiss(t, "lowpass", 300, .7, .3 * v, .06);   // the beaters' soft thump (once for a chord)
 }
 // the cymbals: struck together and swung apart to ring, a bright shimmer (peaks near 1.6, 2.1, 3.5 and 5.4 kHz in a recording
-// of a Shan ensemble) over a hiss, dying in under a second
+// of a Shan ensemble) over a hiss, dying in a second and a half
 function stageCymbals(v, t0 = 0) {
-  const a = audio, t = a.currentTime + t0, d = .9; v *= rand(.85, 1.1);
+  const a = audio, t = a.currentTime + t0, d = 1.55; v *= rand(.85, 1.1);   // down 12 dB in about 0.35 s, as in the recording
   const hp = a.createBiquadFilter(), g = a.createGain(); hp.type = "highpass"; hp.frequency.value = 1200;
   g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.045 * v + .0002, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + d);
   hp.connect(g); g.connect(bandBus());

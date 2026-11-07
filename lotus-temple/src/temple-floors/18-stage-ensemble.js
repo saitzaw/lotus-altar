@@ -109,7 +109,7 @@
        Shan flag. One player strikes all five at once: a yellow padded beater hangs on a red arm before each gong, all the arms
        joined by a red rod along the front; he sits on a stool at the big gong's end, holding the rod's end, and pushes it so every
        beater swings in together, and the five gongs sound as one chord */
-    const GONGS = [[.165, 270, .45], [.15, 318, .55], [.135, 354, 1], [.12, 400, .45], [.105, 450, .35]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; the lower three as in a recording of a Shan ensemble, the middle one ringing out most
+    const GONGS = [[.165, 270, .5], [.15, 319, .85], [.135, 355, 1], [.12, 400, .3], [.105, 450, .25]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; the lower three as in a recording of a Shan ensemble (270, 319, 355 Hz), the middle one ringing out most and 319 nearly as loud
     const gonger = (() => {
       const yellow = std({ color: lin(0xf0c020), roughness: .6 }), blue = std({ color: lin(0x3a8ad0), roughness: .7 }), lacq = std({ color: lin(0xd02a22), roughness: .5 }), pom = std({ color: lin(0xf4e040), roughness: .9 });
       const darkBronze = std({ color: lin(0x6a5a40), roughness: .45, metalness: .35 });
@@ -230,16 +230,16 @@
     };
     // the strokes due between bar counts c0 and c1: marks(n) gives bar n's strokes as [where in the bar 0–1, kind, loudness, ...]
     const strokes = (c0, c1, marks) => { for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who); }); };
-    /* each bar is three beats (about 112 to the minute), as a recording of a Shan ensemble keeps them: the cymbals ring on every
-       beat; the long drum's deep strokes and the gongs fall between the beats, the drum filling in with slaps and open strokes; the
-       bar opens on the drum's deep stroke and the gongs together, the dancers' landing, and the gongs' chord sounds again on
-       every half beat after, loudest between the beats */
-    const GONG = [[0, .8], [1 / 6, .55], [1 / 3, .4], [1 / 2, .55], [2 / 3, .4], [5 / 6, .55]];
-    // the two drums: both on the bar's first deep stroke; the first leads with the deep strokes between the beats, the second
-    // answers with slaps and open strokes and a deep stroke of its own
-    const DRUM = [[0, "dum", 1, 0], [0, "dum", .7, 1], [1 / 6, "dum", .6, 0], [1 / 4, "tak", .3, 1], [1 / 3, "tak", .5, 1], [5 / 12, "ting", .3, 0],
-                  [1 / 2, "dum", .7, 0], [7 / 12, "ting", .35, 1], [2 / 3, "tak", .5, 1], [3 / 4, "dum", .45, 1], [5 / 6, "dum", .65, 0], [11 / 12, "tak", .3, 1]];
-    const frame = () => [...DRUM, [0, "cym", 1], [1 / 3, "cym", .7], [2 / 3, "cym", .75], ...GONG.map(([m, v]) => [m, "gong", v])];
+    /* the song, as a recording of a Shan ensemble plays it (ရှမ်းရိုးရာ ဓားသိုင်းအက): two beats over and over, about 111 to the
+       minute. On beat one the cymbals clash loud; between the beats the first drum's deep stroke falls with the gongs' chord,
+       the second drum doubling it; on beat two the cymbals clash softer; between beat two and the next beat one the deep stroke
+       comes again, a little softer, with the gongs and a light tick of the cymbals. The dance's figure lasts three beats, so a
+       figure always opens and lands on a deep stroke and the gongs, the strong one and the softer one by turns */
+    const OFF = [   // the strokes from one off-beat to the next [where in the beat 0–1, kind, loudness, which drum], for the strong off-beat and the softer one
+      [[0, "dum", 1, 0], [0, "dum", .7, 1], [0, "gong", 1], [1 / 2, "cym", .7]],
+      [[0, "dum", .8, 0], [0, "gong", 1], [0, "cym", .35], [1 / 2, "cym", 1], [1 / 2, "tak", .3, 1]]
+    ];
+    const frame = n => [0, 1, 2].flatMap(i => OFF[(3 * n + i) & 1].map(([m, ...r]) => [(i + m) / 3, ...r]));   // bar n's three beats, off-beat first
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;

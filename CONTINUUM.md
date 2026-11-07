@@ -58,6 +58,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   joins them with `cat` in name order and runs `node --check`. The joined files were checked byte-identical to the old
   `lotus-altar.js` and `temple-floors.js`, so nothing changed on the site.
 
+- Per the site owner, the stage ensemble now plays the **song from the clip** (ရှမ်းရိုးရာ ဓားသိုင်းအက, 2jsv8gcym9c), measured
+  again with numpy: beat 0.538 s (about 111/min; it drifts 0.46–0.59 s by hand), and the song repeats every **two beats**, not
+  three (onset autocorrelation is strongest at 1.08 s, weakest at 3 beats). Beat one: loud cymbals; between the beats: the
+  first drum's deep stroke (both drums) and the gongs' chord; beat two: softer cymbals; after it: a softer deep stroke, the
+  gongs again and a light cymbal tick. Gongs sound only on the off-beats now (was every half beat), pitches 270, 319, 355 Hz
+  with 319 nearly as loud as 355 (`GONGS` loudness .5/.85/1). Cymbals now drop 12 dB in about 0.35 s (`stageCymbals` d 1.55,
+  was 0.9, which fell in 0.2 s); the deep stroke's −12 dB in about 0.06 s already matched. The dance figure stays three beats
+  (`BAR` 1.614 s), starting on an off-beat so the kinnara always lands on a deep stroke and the gongs. Table: `OFF`, `frame(n)`.
 - Per the site owner (photo from the same clip): **two drummers, two long drums**, replacing the drummer-and-bearer pair. Each
   wears a tan jacket and baggy trousers (`musician(..., suit)`), his drum slung over the right shoulder with its head at his
   waist and its body down past his left leg to the tail on the ground (`DIR`); under the head a ruffled skirt in yellow, green
