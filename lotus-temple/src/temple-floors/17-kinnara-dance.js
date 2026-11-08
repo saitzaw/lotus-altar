@@ -13,7 +13,8 @@
     // rib like an umbrella panel, so it stands up as a ridge with its sides sloping back, and edged and tipped with gold pom-poms.
     // The first rib runs along the arm and past the hand, which carries the wing; with the arm down the wedges hang folded together
     // beside the dancer, and as the arm lifts they fan open from the shoulder, the first standing above the arm like a bird's wing
-    const FAN = [[1.15, .4], [1.08, .38], [1, .36], [.93, .34], [.86, .32], [.79, .3], [.72, .28]];   // each wedge's length and width (m), from the arm's in to the body's
+    // and each one after it swept further back, so the open wings stand round behind the dancer like a peacock's tail
+    const FAN = Array.from({ length: 10 }, (_, k) => [1.2 - k * .045, .38 - k * .01, .15 + k * .14]);   // each wedge's length and width (m) and how far it sweeps back (rad), from the arm's in to the body's
     const CORNER = .86, FOLD = .45;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
     const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
     const wedgeT = canvasTex(256, (c, s) => {
@@ -32,13 +33,13 @@
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
       g.setAttribute("uv", new THREE.Float32BufferAttribute([R, A, T, R, T, B].flatMap(([x, y]) => [x / w + .5, 1 + y / L]), 2)); g.computeVertexNormals(); return g;
     };
-    // the gilt rib and the pom-poms of a wedge, as one mesh: pom-poms up each side, at the corners, between the corners and the tip, and on the tip
+    // the gilt rib and the pom-poms of a wedge, as one mesh: a pom-pom at each corner and on the tip
     const joined = parts => { const pos = [], nor = []; parts.forEach(([g, x, y, z]) => { const n = g.index ? g.toNonIndexed() : g, p = n.attributes.position, q = n.attributes.normal; for (let i = 0; i < p.count; i++) { pos.push(p.getX(i) + x, p.getY(i) + y, p.getZ(i) + z); nor.push(q.getX(i), q.getY(i), q.getZ(i)); } }); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); return g; };
-    const pom = new THREE.IcosahedronGeometry(.032, 1);
-    const trimGeo = (L, w) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0], [pom, 0, -L, 0], ...[-1, 1].flatMap(sd => [.5, .75, 1, 1.5].map(e => e <= 1 ? [pom, sd * w / 2 * e, -CORNER * L * e, -FOLD * w * e] : [pom, sd * w / 4, -(CORNER + 1) / 2 * L, -FOLD * w / 2]))]);
+    const pom = new THREE.IcosahedronGeometry(.04, 1);
+    const trimGeo = (L, w) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0], [pom, 0, -L, 0], ...[-1, 1].map(sd => [pom, sd * w / 2, -CORNER * L, -FOLD * w])]);
     const wedgeGeos = FAN.map(([L, w]) => wedgeGeo(L, w)), trimGeos = FAN.map(([L, w]) => trimGeo(L, w));
-    // a wedge on a pivot at its root
-    const feather = (parent, k, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); g.add(new THREE.Mesh(wedgeGeos[k], fanM)); mesh(trimGeos[k], M.gold, 0, 0, 0, g); return g; };
+    // a wedge on a pivot at its root (turned by fanWings), tipped back by its sweep
+    const feather = (parent, k, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const b = new THREE.Group(); b.rotation.x = FAN[k][2]; g.add(b); b.add(new THREE.Mesh(wedgeGeos[k], fanM)); mesh(trimGeos[k], M.gold, 0, 0, 0, b); return g; };
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
@@ -98,7 +99,7 @@
         return { a, elbow, wrist, fingers, sd };
       });
       // the wings ride on the arms, a hand's breadth behind them (see FAN); fanWings() opens them with the arms
-      const fan = arms.map(r => { const W = new THREE.Group(); W.position.z = -.08; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, -k * .014)) }; });
+      const fan = arms.map(r => { const W = new THREE.Group(); W.position.z = -.08; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, -k * .008)) }; });
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);

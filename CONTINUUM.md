@@ -52,6 +52,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- More wedges in both dancers' wings, swept back, fewer pom-poms, as the site owner asked: ten wedges a side (was seven), each
+  tipped back about its own width by its sweep (`FAN[k][2]`, 0.15 rad for the one along the arm up to 1.4 rad for the one nearest
+  the body), so the open wings curve round behind the dancer like a fan; pom-poms only at each wedge's two corners and tip
+  (slightly bigger). Checked in headless renders from the front, side and back.
 - Rebuilt both kinnara dancers' wings after the site owner's two photos of a real Shan ka nok at night: each wing is now a fan of
   seven long cloth wedges, every wedge folded along its gilt rib like an umbrella panel (a ridge in front, the sides sloping back,
   `FOLD`), edged and tipped with gold pom-poms (rib and pom-poms joined into one mesh per wedge, `trimGeo`). Same green, gold and

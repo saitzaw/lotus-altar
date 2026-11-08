@@ -45,7 +45,8 @@ The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival g
 temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
 epic, danced after the Dehong Dai/Shan kinnara of Yunnan (YouTube gNkFn3owbgQ): a 16-bar phrase of figures, one per drum bar
 (`FIG`: step, bank, knee lift, whirl, crouch and rise, leap), each starting and ending in the same soft stance. Both dancers'
-wings are fans of seven cloth wedges a side, each folded along its gilt rib into a ridge and trimmed with gold pom-poms, riding
+wings are fans of ten cloth wedges a side, each folded along its gilt rib into a ridge, a gold pom-pom at its corners and tip, and
+swept further back the nearer it is to the body (`FAN[k][2]`) so the open wings curve round behind the dancer, riding
 on the arms (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`), fanned open by `fanWings()` as far as each arm is raised (`setArm`
 records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
 a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 11 PM,
