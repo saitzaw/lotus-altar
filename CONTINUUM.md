@@ -52,6 +52,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Added a middle fan to both kinnara dancers' wings, as the site owner asked: five wedges (`MID`, ±0.56 rad round straight up)
+  on the upper back, a little behind the side wings, that stay still like an aura behind the head while the two side wings open
+  and close with the arms. The side wings now open only up to the middle fan's edge (π − 0.6 rad). Checked in headless renders.
 - The kinnara wings now open like a peacock's tail, after the site owner's photo of a Shan ka nok dancer: eight long, broad wedges
   a side (1.35–1.56 m long, 0.6 m wide) strapped to the shoulder blades instead of riding on the arms. `fanWings()` keeps the lowest
   wedge along the arm (never below 0.7 rad from straight down, so it can't drag on the floor) and spreads the rest up to straight

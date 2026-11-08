@@ -12,9 +12,11 @@
     // the wings, as Shan and Dehong Dai dancers make them: each a fan of long cloth wedges on gilt ribs, every wedge folded along its
     // rib like an umbrella panel, so it stands up as a ridge with its sides sloping back, and edged and tipped with gold pom-poms.
     // The wings are strapped to the shoulder blades and the lowest rib runs out along the arm, so the hand carries it: with the arms
-    // down the wedges close together beside the dancer, and as the arms lift they fan open from the arm's line right round to
-    // straight up behind the head, the two wings standing behind the dancer as one great fan, like a peacock showing its tail
+    // down the wedges close together beside the dancer, and as the arms lift they fan open from the arm's line up to
+    // the edge of the middle fan, which stands still behind the head; open, the three stand behind the dancer as one great fan,
+    // like a peacock showing its tail
     const FAN = Array.from({ length: 8 }, (_, k) => [1.35 + k * .03, .6, .15 + k * .05]);   // each wedge's length and width (m) and how far it leans back (rad), from the arm's up to the top
+    const MID = [-.56, -.28, 0, .28, .56];   // the middle fan's wedges, how far each leans from straight up (rad)
     const CORNER = .86, FOLD = .3;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
     const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
     const wedgeT = canvasTex(256, (c, s) => {
@@ -100,6 +102,10 @@
       });
       // the wings on the shoulder blades (see FAN); fanWings() opens them with the arms
       const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01)) }; });
+      // and between them the middle fan, standing still behind the head like an aura while the side wings open and close round it:
+      // five wedges spread either side of straight up (MID), a little behind the side wings
+      const mid = new THREE.Group(); mid.position.set(0, 1.26, -.22); T.add(mid);
+      MID.forEach((a, i) => { feather(mid, 3, -i * .006).rotation.z = Math.PI + a; });
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
@@ -127,10 +133,10 @@
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
     let hn = 0, ht = 0, pp = 0;   // which bar, the time into it, and how far along his path
     // the wings fan open with the arms: the lowest wedge lies along the arm (never so low that it drags on the floor), and the rest
-    // spread from it up toward straight overhead as far as the arm is raised, so a lowered arm closes them; the arm reaching forward
+    // spread from it up to the middle fan's edge as far as the arm is raised, so a lowered arm closes them; the arm reaching forward
     // cups the fan round the dancer. `flut` sets the wedges trembling, as the dancer shakes them at the top of an opening
     const fanWings = (d, flut) => d.fan.forEach(w => {
-      const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .15 - a) * o, n = w.leaves.length - 1;
+      const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .6 - a) * o, n = w.leaves.length - 1;
       w.W.rotation.x = w.r.a.rotation.x * .6;
       w.leaves.forEach((L, k) => { L.rotation.z = w.sd * (a + (top - a) * k / n + flut * .05 * Math.sin(t * 16 + k * 1.3 + w.sd)); });
     });

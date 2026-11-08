@@ -47,8 +47,9 @@ epic, danced after the Dehong Dai/Shan kinnara of Yunnan (YouTube gNkFn3owbgQ): 
 (`FIG`: step, bank, knee lift, whirl, crouch and rise, leap), each starting and ending in the same soft stance. Both dancers'
 wings are fans of eight long, broad cloth wedges a side (about 1.4 m), each folded along its gilt rib into a ridge with a gold
 pom-pom at its corners and tip, strapped to the shoulder blades (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`). `fanWings()` lays
-the lowest wedge along the arm and spreads the rest up to straight overhead as far as the arm is raised, so the open wings stand
-behind the dancer as one peacock's-tail fan and close when the arms come down (`setArm` records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
+the lowest wedge along the arm and spreads the rest up to the edge of a fixed middle fan (`MID`, five wedges round straight up,
+standing still behind the head like an aura) as far as the arm is raised, so the open wings stand behind the dancer as one
+peacock's-tail fan and close when the arms come down (`setArm` records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
 a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 11 PM,
 circling each other. A Shan ensemble, all in tan Shan jackets and baggy trousers, plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
