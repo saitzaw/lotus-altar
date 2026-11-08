@@ -52,6 +52,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Undid the Shan-dress change above, as the site owner asked: the masks and the green-and-gold costumes (crowns, gilt collars,
+  belts, cuffs, anklets, green trousers, striped longyi) are essential, and the photos were a reference for the wings only
+  (they show the southern style; ours follows the old northern tradition). Kept the photo wings, green sequinned cloth with white
+  flowers, white trim and red pom-poms, now on both dancers (`WING`; the kinnari's gold wings are gone). The toast says "a masked
+  pair" again. Checked in a headless render of the pair.
 - Dressed both kinnara dancers as in the site owner's photos of Shan ka nok dancers, and took off their masks (they now show
   their own faces): he wears a pale Shan jacket with the dark cord across the chest, wide mustard Shan trousers, a green belt
   with a pink tasselled sash and a pink headcloth with its end by his ear, barefoot; she wears a white blouse, a silver-striped
