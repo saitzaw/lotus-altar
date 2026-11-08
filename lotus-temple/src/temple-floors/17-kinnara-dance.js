@@ -18,6 +18,11 @@
     // like a peacock showing its tail
     const FAN = Array.from({ length: 8 }, (_, k) => [1.35 + k * .03, .6, .15 + k * .05]);   // each wedge's length and width (m) and how far it leans back (rad), from the arm's up to the top
     const MID = [-.56, -.28, 0, .28, .56];   // the middle fan's wedges, how far each leans from straight up (rad)
+    // and a linking wing on each side joining the side wing to the middle fan, so the three move as one: LINKS broad wedges rooted
+    // with the side wing, spread evenly from its top wedge to the middle fan's edge, stretching apart as the side wing folds down
+    // and bunching together as it opens up to the middle
+    const LINK = [1.45, .8, .45], LINKS = 3, EDGE = Math.PI - MID[4];   // a linking wedge's length, width and lean (m, m, rad), how many, and the middle fan's edge (rad from straight down)
+    const SIZES = [...FAN, LINK];   // every wedge shape: the side wings' (0–7) and the linking wings' (8)
     const CORNER = .86, FOLD = .3;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
     const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
     // a wedge's cloth: the ground colour thick with sequins in two lighter shades, scattered five-petalled white flowers, a white trim
@@ -42,10 +47,10 @@
     // a wedge's white rib and its pom-poms, at each corner and on the tip, as one mesh
     const pom = new THREE.IcosahedronGeometry(.05, 1), trimM = std({ vertexColors: true, roughness: .8 });
     const trimGeo = (L, w, pc) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0, 0xe8e8e4], [pom, 0, -L, 0, pc], ...[-1, 1].map(sd => [pom, sd * w / 2, -CORNER * L, -FOLD * w, pc])]);
-    const wedgeGeos = FAN.map(([L, w]) => wedgeGeo(L, w));
-    const WING = { cloth: std({ map: wedgeT("#1f8a3c", ["#7ad890", "#c8f4d0"], 26, 78), roughness: .35, metalness: .35, side: THREE.DoubleSide }), trims: FAN.map(([L, w]) => trimGeo(L, w, 0xe02828)) };
+    const wedgeGeos = SIZES.map(([L, w]) => wedgeGeo(L, w));
+    const WING = { cloth: std({ map: wedgeT("#1f8a3c", ["#7ad890", "#c8f4d0"], 26, 78), roughness: .35, metalness: .35, side: THREE.DoubleSide }), trims: SIZES.map(([L, w]) => trimGeo(L, w, 0xe02828)) };
     // a wedge on a pivot at its root (turned by fanWings), tipped back by its sweep
-    const feather = (parent, k, z, P = WING) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const b = new THREE.Group(); b.rotation.x = FAN[k][2]; g.add(b); b.add(new THREE.Mesh(wedgeGeos[k], P.cloth)); mesh(P.trims[k], trimM, 0, 0, 0, b); return g; };
+    const feather = (parent, k, z, P = WING) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const b = new THREE.Group(); b.rotation.x = SIZES[k][2]; g.add(b); b.add(new THREE.Mesh(wedgeGeos[k], P.cloth)); mesh(P.trims[k], trimM, 0, 0, 0, b); return g; };
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
@@ -105,7 +110,7 @@
         return { a, elbow, wrist, fingers, sd };
       });
       // the wings on the shoulder blades (see FAN); fanWings() opens them with the arms
-      const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01)) }; });
+      const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01)), links: Array.from({ length: LINKS }, (_, j) => feather(W, FAN.length, -.08 - j * .006)) }; });
       // and between them the middle fan, standing still behind the head like an aura while the side wings open and close round it:
       // five wedges spread either side of straight up (MID), a little behind the side wings
       const mid = new THREE.Group(); mid.position.set(0, 1.26, -.22); T.add(mid);
@@ -143,6 +148,7 @@
       const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .6 - a) * o, n = w.leaves.length - 1;
       w.W.rotation.x = w.r.a.rotation.x * .6;
       w.leaves.forEach((L, k) => { L.rotation.z = w.sd * (a + (top - a) * k / n + flut * .05 * Math.sin(t * 16 + k * 1.3 + w.sd)); });
+      w.links.forEach((L, j) => { L.rotation.z = w.sd * (top + (EDGE - top) * (j + 1) / (LINKS + 1) + flut * .03 * Math.sin(t * 16 + j + w.sd)); });   // spread across the gap to the middle fan
     });
     const solo = dt => {
       const d = pair[0]; ht += dt;

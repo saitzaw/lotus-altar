@@ -52,6 +52,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Joined each kinnara side wing to the middle fan, as the site owner asked: a linking wing on each side, three broad wedges
+  (`LINK`, 1.45 × 0.8 m) rooted with the side wing and spread evenly by `fanWings()` from its top wedge to the middle fan's edge
+  (`EDGE`). Folding a side wing stretches them across the gap; opening it bunches them up, so the cloth never parts. Both dancers.
+  Checked in headless renders.
 - Undid the Shan-dress change above, as the site owner asked: the masks and the green-and-gold costumes (crowns, gilt collars,
   belts, cuffs, anklets, green trousers, striped longyi) are essential, and the photos were a reference for the wings only
   (they show the southern style; ours follows the old northern tradition). Kept the photo wings, green sequinned cloth with white
