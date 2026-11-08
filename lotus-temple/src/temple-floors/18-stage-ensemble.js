@@ -109,7 +109,7 @@
        Shan flag. One player strikes all five at once: a yellow padded beater hangs on a red arm before each gong, all the arms
        joined by a red rod along the front; he sits on a stool at the big gong's end, holding the rod's end, and pushes it so every
        beater swings in together, and the five gongs sound as one chord */
-    const GONGS = [[.165, 131, .18], [.15, 196, .25], [.135, 262, 1], [.12, 394, .45], [.105, 782, .12]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; as in a recording of a Shan oh-zi ensemble, near C3 G3 C4 G4 G5, the C4 gong ringing out most and the long drum tuned to it
+    const GONGS = [[.165, 131, .12], [.15, 196, .17], [.135, 262, 1], [.12, 394, .45], [.105, 782, .06]];   // [radius (m), pitch (Hz), loudness in the chord], largest first; as in a recording of a Shan oh-zi ensemble, near C3 G3 C4 G4 G5, the C4 gong ringing out most
     const gonger = (() => {
       const yellow = std({ color: lin(0xf0c020), roughness: .6 }), blue = std({ color: lin(0x3a8ad0), roughness: .7 }), lacq = std({ color: lin(0xd02a22), roughness: .5 }), pom = std({ color: lin(0xf4e040), roughness: .9 });
       const darkBronze = std({ color: lin(0x6a5a40), roughness: .45, metalness: .35 });

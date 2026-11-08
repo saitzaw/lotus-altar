@@ -51,6 +51,25 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-08
+
+- Per the site owner (the stage ensemble "very far away" from the oh-zi recording, YouTube dCmtysbXxoM): the recording has no
+  license, so it is **not** shipped or sampled. A citation is not permission. It was only measured locally, and the voices
+  stay synthesized. Re-voiced from those measurements:
+  - **Gongs** hum without a break in the clip: their notes drop under 1 dB between strokes. `stageGong` is now a standing bank
+    of oscillators per gong (`GONG_MODES`: note, a near pair, the 2nd and 3rd partials; fading over about 6 s for C4, less for
+    the smaller gongs) that each stroke swells, adding energy to what is still ringing. There are no pitch glides; the old
+    ones smeared sidebands round 262 Hz. Weights in `GONGS` were refit (196 Hz .17, 394 Hz .45, 782 Hz .06).
+  - **Cymbals** were a few pure tones 20–28 dB above the noise, which made them whistle. In the clip a crash is broadband noise
+    up to 14 kHz with rings only 7–10 dB above it. Now `CYM_WASH` (8 noise bands with their own decays, the top dying first),
+    faint `CYM_RINGS` in beating pairs, and a short highpass "clash".
+  - **Long drum** "dum" was a sung note at the gong's 262 Hz. In the clip a stroke adds a woody knock (modes near 530, 290,
+    442 and 384 Hz) and a body near 88, 132 and 149 Hz, not 262. Now `DRUM_MODES` plus a thud band-passed at 130 Hz.
+  - Levels (`ambStep`): gong .11, cymbals .11, drum .155. The mix's spectrum is now within about ±5 dB of the clip in most
+    third-octave bands (it was off by up to 20 dB). Crest factor 13.8 dB against the clip's 11.2 dB, peak about the same as before.
+  - `bandTone` and `bandHiss` set their gain to 0 before the stroke: a gain sitting at its default of 1 let one stray sample
+    through at each start, which was a click at every crash. `bandHiss` noise now loops, so decays longer than 2 s don't cut off.
+
 ### 2026-11-07
 
 - Cut the two big scripts into topic files so a change only needs one small file read: `src/lotus-altar/` (15 pieces)

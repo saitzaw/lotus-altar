@@ -77,3 +77,8 @@ Traps:
 - JavaScript's `%` keeps the sign, so `arr[n % 2]` is `undefined` for negative `n` (a bar count that starts below zero). Use
   `n & 1` or `((n % k) + k) % k`. An exception in the frame loop turns the whole screen black, so after touching anything
   that runs every frame, load the page plainly (no hooks into the internals) and check it renders and logs no errors.
+- A WebAudio `GainNode` sits at its default gain 1 until its first scheduled event. A source that starts on a fractional frame
+  can push one sample through before `setValueAtTime(.0001, t)` takes over: a single-sample click, loudest after a highpass.
+  Set `g.gain.value = 0` first.
+- A copyrighted recording with no license (most YouTube uploads) can be measured for tuning, but don't ship it or a sample of
+  it. A citation doesn't make it allowed.
