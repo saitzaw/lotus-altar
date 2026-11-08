@@ -235,21 +235,19 @@
     const strokes = (c0, c1, marks, sec) => { const now = performance.now() / 1000; for (let n = Math.floor(c0); n <= Math.floor(c1); n++) marks(n).forEach(([m, kind, v, who]) => { if (c0 < n + m && n + m <= c1) play(kind, v, who, now - (c1 - n - m) * sec); }); };
     /* the song, as a recording of the Shan oh-zi ensemble plays it (သဵင်ၵွင်တႆး, YouTube dCmtysbXxoM): about 113 beats to the minute,
        without a break, in pairs of beats. The gongs' chord falls lightly on the first beat's half and full on the second beat; the
-       cymbals clash on every beat and again just after each half beat, a little late, the first beat's the stronger. The long drums
-       never play the same beat twice running for long: the first strikes every beat, and the pair fill each beat with one of the
-       drummer's figures in sixteenths (`FIGS`, counted from the recording, the commonest most often), the second drum taking the
-       half beat. A dance figure lasts three beats, opening on a beat */
-    const PAIR = [   // the gongs and cymbals on the first and the second beat of a pair [where in the beat 0–1, kind, loudness]
-      [[0, "cym", .85], [.55, "cym", 1], [.5, "gong", .55]],
-      [[0, "gong", 1], [0, "cym", .75], [.55, "cym", .55]]
+       cymbals clash on every beat and on the first beat's half, a tap before the second beat. Heard as "Tone Tone Cha Cha Tone
+       Bon": Bon, the gongs' full chord with the drum's deep stroke and the cymbals; Tone, Tone, the drums a third of a beat later
+       and just before the next beat; Cha, Cha, the cymbals on that beat and its half (the drum strikes under the second); Tone,
+       a light stroke just before the gongs come round. The first drum takes the deep strokes, the second the light ones, and now
+       and then a light one is left out. A dance figure lasts three beats, opening on a beat */
+    const PAIR = [   // each beat of a pair [where in the beat 0–1, kind, loudness, which drum]: the "Cha Cha" beat, then the gong's
+      [[0, "cym", .9], [0, "dum", .4, 1], [.5, "cym", 1], [.5, "dum", .75, 0], [.5, "gong", .3], [.8, "dum", .4, 1]],
+      [[0, "gong", 1], [0, "cym", .85], [0, "dum", 1, 0], [1 / 3, "dum", .45, 1], [.55, "cym", .35], [5 / 6, "dum", .4, 1], [.92, "cym", .3]]
     ];
-    const FIGS = [["X.X.", 59], ["XXX.", 50], ["XXXX", 34], ["X.XX", 31], ["X...", 19], ["X..X", 13], ["XX..", 11], ["XX.X", 11]];   // the drums' figures in a beat, X a stroke on that sixteenth, and how often each was heard
-    const FIGW = FIGS.reduce((a, [, w]) => a + w, 0), SIX = [[1, 0], [.55, 0], [.8, 1], [.6, 1]];   // each sixteenth's loudness and which drum plays it
-    const hash = g => { let h = Math.imul(g ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return ((h ^ h >>> 16) >>> 0) / 4294967296; };   // a fixed 0–1 for each beat, so the drumming is the same every visit
-    const figure = g => { let r = hash(g) * FIGW; for (const [f, w] of FIGS) if ((r -= w) < 0) return f; return FIGS[0][0]; };
+    const hash = g => { let h = Math.imul(g ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return ((h ^ h >>> 16) >>> 0) / 4294967296; };   // a fixed 0–1 for each stroke, so the drumming is the same every visit
     const frame = n => [0, 1, 2].flatMap(i => {
-      const g = 3 * n + i, drum = [...figure(g)].flatMap((c, k) => c === "X" ? [[k / 4, "dum", SIX[k][0], SIX[k][1]]] : []);
-      return [...PAIR[g & 1], ...drum].map(([m, k, v, w]) => [(i + m) / 3, k, v, w]);
+      const g = 3 * n + i;
+      return PAIR[g & 1].filter(([m, k, v], j) => k !== "dum" || v > .5 || hash(g * 8 + j) > .15).map(([m, k, v, w]) => [(i + m) / 3, k, v, w]);
     });   // bar n's three beats
     pose();
     return (dt, motion) => {

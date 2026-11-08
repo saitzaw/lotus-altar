@@ -53,6 +53,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-08
 
+- Per the site owner (now "90% accurate"; the original goes "Tone Tone Cha Cha Tone Bon"): the drums no longer pick random
+  sixteenth figures (`FIGS` is gone). The pattern measured on a 12-step grid from the clip, starting at the gong beat: **Bon**,
+  gong, deep drum and cymbals together; **Tone**, a drum a third of a beat later; **Tone**, a drum just before the next beat;
+  **Cha Cha**, cymbals on that beat and its half, with a drum under the second; **Tone**, a light drum at 0.8, just before
+  the gong. Also a weak cymbal on the gong beat's half and a tap at 0.92. The light gong on the half beat went .55 → .3. Light
+  drum strokes are left out 15% of the time (seeded `hash`). All of it is in `PAIR` in `18-stage-ensemble.js`; the rendered grid
+  matches the clip's.
+
 - Per the site owner (the stage ensemble "very far away" from the oh-zi recording, YouTube dCmtysbXxoM): the recording has no
   license, so it is **not** shipped or sampled. A citation is not permission. It was only measured locally, and the voices
   stay synthesized. Re-voiced from those measurements:
