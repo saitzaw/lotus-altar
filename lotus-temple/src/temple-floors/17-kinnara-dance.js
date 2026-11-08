@@ -19,6 +19,25 @@
     const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
     const panel = new THREE.CircleGeometry(C.wing, 14, 0, Math.PI / 3);
     const knob = new THREE.SphereGeometry(.05, 8, 6);
+    // the kinnara's wings, as the Dehong Dai and Shan dancers of Yunnan wear them: each a stack of long pointed feathers of the same
+    // green cloth on gilt ribs, the first rib along the arm and past the hand, which carries it; with the arm down the feathers hang
+    // folded together beside him, and as the arm lifts they fan open from the shoulder, standing above the arm like a bird's wing
+    const LEAF = [[0, 0], [.55, .15], [1, .6], [.6, .88], [0, 1]];   // a feather's outline: out from its rib 0–1, root to tip 0–1
+    const FAN = [[1.1, .34], [1, .32], [.9, .3], [.8, .28], [.7, .26]];   // each feather's length and width (m), from the arm's in to the body's
+    const leafT = canvasTex(256, (c, s) => {
+      const P = () => { c.beginPath(); LEAF.forEach(([x, y], i) => c[i ? "lineTo" : "moveTo"](x * s, y * s)); c.closePath(); };
+      c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
+      c.save(); P(); c.clip(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .03;
+      [.34, .58, .8].forEach(y => { c.beginPath(); c.moveTo(0, y * s); c.lineTo(s, (y - .16) * s); c.stroke(); });   // gilt bands slanting out to the edge
+      const r = rng(78);
+      for (let i = 0; i < 46; i++) { c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][i % 4]; c.beginPath(); c.arc(r() * s * .8 + s * .05, r() * s * .9 + s * .05, 3 + r() * 2, 0, TAU); c.fill(); }   // sequins
+      c.restore(); P(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .06; c.stroke();   // the gilt rim
+    });
+    const fanM = std({ map: leafT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
+    const leafGeo = (L, w) => { const g = new THREE.ShapeGeometry(new THREE.Shape(LEAF.map(([x, y]) => new THREE.Vector2(x * w, -y * L)))), p = g.attributes.position, uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, p.getX(i) / w, 1 + p.getY(i) / L); return g; };
+    const leafGeos = FAN.map(([L, w]) => leafGeo(L, w)), ribGeos = FAN.map(([L]) => new THREE.CylinderGeometry(.007, .009, L, 5));
+    // a feather on a pivot at its root, pointing down (-y), its cloth to the +x side of the rib (mirrored by sd)
+    const feather = (parent, k, sd, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const p = new THREE.Mesh(leafGeos[k], fanM); p.scale.x = sd; g.add(p); mesh(ribGeos[k], M.gold, 0, -FAN[k][0] / 2, 0, g); mesh(knob, M.gold, 0, -FAN[k][0], 0, g).scale.setScalar(.6); return g; };
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
@@ -77,8 +96,10 @@
         mesh(new THREE.BoxGeometry(.016, .045, .02), skin, 0, -.015, .045, wrist).rotation.x = -.6;   // the thumb
         return { a, elbow, wrist, fingers, sd };
       });
-      // the wings: three fan panels each on a frame at the shoulder blades, gilt knobs at the points
-      const wings = [-1, 1].map(sd => {
+      // his wings ride on his arms, a hand's breadth behind them (see FAN); fanWings() opens them with the arms
+      const fan = male ? arms.map(r => { const W = new THREE.Group(); W.position.z = -.06; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, r.sd, -k * .012)) }; }) : null;
+      // hers: three fan panels each on a frame at the shoulder blades, gilt knobs at the points
+      const wings = male ? [] : [-1, 1].map(sd => {
         const w = new THREE.Group(); w.position.set(sd * .12, 1.2, -.14); T.add(w);
         for (let k = 0; k < 3; k++) {
           const p = new THREE.Mesh(panel, wingM); p.rotation.z = sd > 0 ? -.55 + k * .55 : Math.PI - Math.PI / 3 + .55 - k * .55; p.position.z = -k * .02; w.add(p);
@@ -86,60 +107,75 @@
         }
         return w;
       });
-      // a tail fan at the small of the back
-      const tail = new THREE.Group(); tail.position.set(0, .9, -.18); tail.rotation.x = .5; T.add(tail);
-      const tp = new THREE.Mesh(panel, wingM); tp.scale.setScalar(.6); tp.rotation.z = -Math.PI / 2 - Math.PI / 6; tail.add(tp);
+      // a tail fan: hers at the small of the back; his three feathers standing up behind his head, tipped back, as in Yunnan
+      const tail = new THREE.Group(), tx = male ? -.3 : .5; tail.rotation.x = tx; T.add(tail);
+      if (male) { tail.position.set(0, 1.2, -.2); [-1, 0, 1].forEach((k, i) => { const f = feather(tail, 4, k ? -k : 1, -i * .01); f.scale.setScalar(.75); f.rotation.z = Math.PI - k * .4 - (k ? 0 : .12); }); }   // cloth to the outside; the middle one leans right, its cloth to the left
+      else { tail.position.set(0, .9, -.18); const tp = new THREE.Mesh(panel, wingM); tp.scale.setScalar(.6); tp.rotation.z = -Math.PI / 2 - Math.PI / 6; tail.add(tp); }
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
-      return { D, B, U, legs, arms, wings, tail, male };
+      return { D, B, U, legs, arms, wings, fan, tail, tx, male };
     }
     // a leg's joints: hip swing (+ back, - forward), knee bend, and the ankle, which keeps the foot level unless `point` tips the toes down
     const setLeg = (l, hip, knee, point = 0) => { l.hip.rotation.x = hip; l.knee.rotation.x = knee; l.ankle.rotation.x = -(hip + knee) + point; };
     // an arm's joints: raised out to the side (lift), reached forward (fwd), the elbow and wrist curving on in the same plane,
     // and the fingers bent back, the curled-back hand of Shan and Burmese dance
-    const setArm = (r, lift, fwd, elbow, wrist, fingers) => { const sd = r.sd; r.a.rotation.z = sd * lift; r.a.rotation.x = fwd; r.elbow.rotation.z = sd * elbow; r.wrist.rotation.z = sd * wrist; r.fingers.rotation.z = sd * fingers; };
+    const setArm = (r, lift, fwd, elbow, wrist, fingers) => { const sd = r.sd; r.lift = lift; r.a.rotation.z = sd * lift; r.a.rotation.x = fwd; r.elbow.rotation.z = sd * elbow; r.wrist.rotation.z = sd * wrist; r.fingers.rotation.z = sd * fingers; };
     const pair = [dancer(true), dancer(false)];
     let t = 0;
-    // the opening of the epic, in the afternoon: the kinnara alone, gliding round the stage in soft steps, slowly opening and
-    // folding his wings, mostly turned to the crowd; a light hop every fourth bar and a leap every eighth. Each bar of the long
-    // drum is one figure: on a step he sinks a little into his knees, lifts one foot and sways onto it as he glides; on a hop he
-    // gathers into his knees, springs, and comes down into the next bar's deep stroke, his time aloft following from the
-    // height under gravity. He travels while he steps and while he's in the air, never sliding on a planted foot
+    // the opening of the epic, in the afternoon: the kinnara alone, danced after the Dehong Dai and Shan kinnara of Yunnan (M Time,
+    // YouTube gNkFn3owbgQ). Each bar of the long drum is one figure, round a phrase of sixteen (FIG): s, a step on bent, turned-out
+    // knees, one foot lifted and set down ahead as both wings sweep up wide and fold down; b, banking like a bird, one wing high and
+    // the other low, tipping toward the low one, then the other way; k, one knee drawn up high, foot flexed, rising on the other foot
+    // with the wings up and trembling; p, a whirl on the spot with the wings spread level; c and r, sinking into a deep squat with
+    // the wings swept forward round him, and rising again; L, a leap: he gathers into his knees, springs, wings opening, and comes
+    // down into the next bar's deep stroke, his time aloft following from the height under gravity. Every figure starts and ends
+    // in the same soft stance, wings half open, so one runs into the next. He travels while he steps and while he's in the air
     const GRAV = 9.8, BAR = 1.59;   // gravity (m/s²), one figure of the dance, three beats of the ensemble at about 113 a minute (s)
-    const hopH = n => n % 4 !== 3 ? 0 : n % 8 === 7 ? .24 : .13, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a hop every fourth bar, a leap every eighth
+    const FIG = "ssbkssbLspkkcrbL", fig = n => FIG[((n % 16) + 16) % 16];   // the phrase, one letter a bar (see above)
+    const RATE = { s: 1, b: .7, k: .35, p: .15, c: 0, r: 0 };   // how far he travels along his path in a bar of each figure
+    const hopH = n => fig(n) === "L" ? (n & 16 ? .24 : .16) : 0, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a leap's height (m), higher every other phrase
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
-    let hn = 0, ht = 0;   // which bar, and the time into it
-    // the wings' sweep through a bar, -1 folded to 1 open: once open and closed on a step; opening as he springs, folding as he lands
-    const sweep = (n, x) => { const h = hopH(n), gd = BAR - airT(h); return !h ? -Math.cos(TAU * x / BAR) : x < gd ? -Math.cos(Math.PI * x / gd) : Math.cos(Math.PI * (x - gd) / (BAR - gd)); };
+    let hn = 0, ht = 0, pp = 0;   // which bar, the time into it, and how far along his path
+    // his wings fan open with his arms: the feathers spread from the arm's line down toward his side as far as the arm is raised,
+    // so a lowered arm folds them; `flut` sets them trembling, as the dancer shakes them at the top of an opening
+    const fanWings = (d, flut) => d.fan && d.fan.forEach(w => { const sp = Math.min(2, Math.max(.1, w.r.lift * .95)), n = w.leaves.length - 1; w.leaves.forEach((L, k) => { L.rotation.z = -w.sd * (k / n * sp + flut * .06 * Math.sin(t * 16 + k * 1.3 + w.sd)); }); });
     const solo = dt => {
       const d = pair[0]; ht += dt;
       while (ht > BAR) { ht -= BAR; hn++; }
-      const h = hopH(hn), ta = airT(h), GD = BAR - ta, onG = ht < GD, ta_ = ht - GD, s = onG ? 0 : ta_ / ta, u = ht / BAR;
-      const y = onG ? 0 : GRAV / 2 * ta_ * (ta - ta_);   // the arc of the hop
-      // the knees: a soft bend all the while, eased in after a landing and out before a spring, sinking into the landing
-      // (as deep as the hop was high), dipping on each step, and gathering before a spring
+      const f = fig(hn), h = hopH(hn), ta = airT(h), GD = BAR - ta, onG = ht < GD, ta_ = ht - GD, s = onG ? 0 : ta_ / ta, u = ht / BAR;
+      const y = onG ? 0 : GRAV / 2 * ta_ * (ta - ta_);   // the arc of the leap
+      const env = Math.sin(Math.PI * u), env2 = env * env, tuck = onG ? 0 : Math.sin(Math.PI * s);
+      // the knees: a soft bend all the while, eased in after a landing and out before a spring, sinking into the landing (as deep
+      // as the leap was high) and gathering before a spring
       const prevH = hopH(hn - 1), easeIn = prevH ? Math.min(1, ht / .15) : 1, easeOut = h ? Math.min(1, Math.max(0, GD - ht) / .12) : 1;
-      const bend = !onG ? 0 : .1 * easeIn * easeOut + (prevH ? (.2 + prevH * 1.1) * bump(ht, 0, .55) * .8 : 0) + (h ? (.22 + h * 1.1) * bump(ht, GD - .5, GD) : .08 * bump(u, .05, .95));
-      const tuck = onG ? 0 : Math.sin(Math.PI * s);
-      const glide = h ? (onG ? 0 : smooth(s)) : smooth(u), p = hn + glide;   // along his path round the stage
-      d.D.position.set(C.x + Math.sin(p * .3) * 1.5, C.y, C.z + Math.sin(p * .6) * .6);   // kept clear of the musicians at the sides
-      d.D.rotation.y = Math.sin(p * .4) * .9 + (hn % 16 === 5 ? smooth(u) * TAU : 0);   // now and then a slow turn on a step
-      const lead = hn % 2, lift = h ? 0 : bump(u, .12, .72);   // on a step, one foot lifts and is set down again ahead
-      d.B.position.y = y - drop(bend) + lift * .025;
-      d.B.rotation.z = (lead ? 1 : -1) * lift * .07;   // swaying onto the standing foot
-      d.U.rotation.x = .06 + bend * .3 - tuck * .08;   // leaning a little into the bend, lifting the chest at the top of a hop
-      const k = tuck * (h > .2 ? .8 : .55);   // in the air one leg reaches forward, the other draws up behind
+      let bend = !onG ? 0 : .14 * easeIn * easeOut + (prevH ? (.2 + prevH * 1.1) * bump(ht, 0, .55) * .8 : 0) + (h ? (.22 + h * 1.1) * bump(ht, GD - .5, GD) : 0);
+      let lead = hn & 1, step = 0, knee = 0, deep = 0, tilt = 0, spin = 0, flut = 0, lean = 0, fwd = -.3, aL = .9, aR = .9;   // aL the arm on sd −1, aR on sd 1
+      if (f === "s") { step = bump(u, .12, .72); bend += .08 * bump(u, .05, .95); aL = aR = .9 + .8 * Math.sin(TAU * u); flut = Math.max(0, Math.sin(TAU * u)) ** 4; }
+      else if (f === "b") { tilt = Math.sin(TAU * u); aR = .9 + .75 * tilt; aL = .9 - .75 * tilt; bend += .1 * bump(u, 0, .5) + .1 * bump(u, .5, 1); step = .6 * bump(u, .1, .45); lead = tilt > 0 ? 0 : 1; }
+      else if (f === "k") { knee = env2; aL = aR = .9 + .75 * knee; flut = knee; lean = -.12 * knee; bend *= 1 - .6 * knee; }
+      else if (f === "p") { spin = smooth(u) * TAU; aL = aR = .9 + .6 * env; flut = env; lead = Math.floor(u * 4) & 1; step = .35 * env * bump((u * 4) % 1, .1, .9); }
+      else if (f === "c" || f === "r") { deep = f === "c" ? smooth(u) : 1 - smooth(u); bend += .6 * deep; aL = aR = .9 + .7 * deep; fwd = -.3 - .7 * deep; flut = deep; lean = .18 * deep; }
+      else if (f === "L") { aL = aR = onG ? .9 - .45 * bump(ht, GD - .5, GD) : .9 + .85 * tuck; flut = tuck; }
+      const out = .08 + .3 * deep;   // the knees turned out, wider in the squat
+      // along his path round the stage, kept clear of the musicians at the sides: moving while a foot is up, or in the air
+      pp += f === "L" ? (onG ? 0 : 6 * s * (1 - s) * dt / ta) : RATE[f] * 6 * u * (1 - u) * dt / BAR;
+      d.D.position.set(C.x + Math.sin(pp * .3) * 1.5, C.y, C.z + Math.sin(pp * .6) * .6);
+      d.D.rotation.y = Math.sin(pp * .4) * .9 + spin;   // mostly turned to the crowd
+      const drop2 = th => (THIGH + SHIN) * (1 - Math.cos(th) * Math.cos(out));   // the hips' sink with the knees bent and turned out
+      d.B.position.y = y - drop2(bend) + step * .025 + knee * .035;
+      d.B.rotation.z = (lead ? 1 : -1) * (step * .07 + knee * .06) + tilt * .13 + (f === "p" ? .1 * env : 0);   // swaying onto the standing foot, tipping to the low wing, leaning into a whirl
+      d.U.rotation.x = .06 + bend * .3 - tuck * .08 + lean;
+      const kk = tuck * (h > .2 ? .8 : .55);   // in the air one leg reaches forward, the other draws up behind
       d.legs.forEach((l, i) => {
-        if (i === lead) setLeg(l, -bend - k * .8 - lift * .35, 2 * bend + k * .5 + lift * .7, k * .5 + lift * .3);
-        else setLeg(l, -bend + k * .4, 2 * bend + k * .9, k * .6);
+        l.hip.rotation.z = (i ? 1 : -1) * out;
+        if (i === lead) setLeg(l, -bend - kk * .8 - step * .35 - knee * 1.25, 2 * bend + kk * .5 + step * .7 + knee * 1.5, kk * .5 + step * .3 - knee * .2);
+        else setLeg(l, -bend + kk * .4, 2 * bend + kk * .9, kk * .6 + knee * .3);
       });
-      // the wings open and fold with the bar, the feathers stirring; the arms sweep with them, elbow and wrist trailing a little
-      // like a wave down a feather, the hands curled back
-      const beat = sweep(hn, ht), lag = sweep(hn, Math.max(0, ht - .15)), stir = Math.sin(t * 6) * .02;
-      d.wings.forEach((w, i) => { const sd = i ? 1 : -1; w.rotation.z = -sd * (-.05 + beat * .3 + stir); w.rotation.y = sd * (.3 - tuck * .1 + Math.sin(t * 1.2 + i) * .08); w.rotation.x = stir; });
-      d.arms.forEach(r => setArm(r, 1.05 + beat * .3, -.4 + tuck * .2 - bend * .2, -lag * .25, .3 - lag * .25, .6 + Math.sin(t * 1.5 + r.sd) * .1));
-      d.tail.rotation.y = Math.sin(t * 1.4) * .25; d.tail.rotation.x = .5 + tuck * .2 + Math.sin(t * 2.2) * .04;
+      // the arms carry the wings, held long, the elbow soft, the hands curled back, trembling with the wings
+      d.arms.forEach(r => { const tr = flut * Math.sin(t * 14 + r.sd); setArm(r, (r.sd > 0 ? aR : aL) + tr * .05, fwd + tuck * .15, .15 + Math.sin(t * 1.5 + r.sd) * .08, .25 + tr * .12, .6 + Math.sin(t * 1.5 + r.sd) * .1); });
+      fanWings(d, flut);
+      d.tail.rotation.y = Math.sin(t * 1.4) * .2; d.tail.rotation.x = d.tx - tuck * .15 - lean * .5 + Math.sin(t * 2.2) * .04;
     };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
@@ -152,10 +188,11 @@
         // he dips into his knees on the drum beats and steps, lifting one foot then the other
         const bend = .1 + dip * .14, step = Math.sin(beat * .5);
         d.B.position.y = -drop(bend);
-        d.legs.forEach((l, j) => { const lift = Math.max(0, j ? step : -step) * .35; setLeg(l, -bend - lift, 2 * bend + lift * 1.6, lift * .4); });
+        d.legs.forEach((l, j) => { const lift = Math.max(0, j ? step : -step) * .35; l.hip.rotation.z = 0; setLeg(l, -bend - lift, 2 * bend + lift * 1.6, lift * .4); });
       } else d.B.position.y = -dip * .03;   // she sinks a little on the beats, her feet hidden by the longyi
       d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (.5 - open * .6); w.rotation.y = sd * (.7 - open * .55); w.rotation.x = 0; });
       const wave = Math.sin(t * 1.2 + i * .8 - .7);   // the elbow and wrist trailing the opening and folding
       d.arms.forEach(r => setArm(r, .5 + open, -.5 + open * .3, .25 - wave * .25, .3 - wave * .25, .6 + dip * .2));
-      d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = .5;
+      fanWings(d, 0);   // his wings fold and open with his arms
+      d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = d.tx;
     });

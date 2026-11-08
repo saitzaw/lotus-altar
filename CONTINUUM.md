@@ -52,6 +52,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Re-danced the kinnara's afternoon solo after a video the site owner gave (M Time · Yunnan Vision, "The Divine Bird Dance
+  Kinnara", YouTube gNkFn3owbgQ: the Dehong Dai/Shan kinnara of Yunnan), keeping his green and gold colours. Wings: no longer
+  fixed fans on his back but five long pointed feathers a side on gilt ribs, the first along his arm and past his hand, which
+  carries the wing (`FAN`, `feather()`, `fanWings()` in `17-kinnara-dance.js`); with the arm down they hang folded at his side,
+  raised they fan open from the shoulder. Three smaller feathers now stand up behind his head instead of the low tail fan.
+  Movement: each drum bar is a figure from the video, round a 16-bar phrase (`FIG = "ssbkssbLspkkcrbL"`): step on bent,
+  turned-out knees with a full wing sweep; bank (one wing high, one low, tipping); knee drawn up high with wings up and
+  trembling; a whirl on the spot, wings level; a squat with wings swept forward and the rise; the leap (now every eighth bar,
+  higher every other phrase). The drumming is unchanged. The evening pair's kinnara wears the new wings too (they open with his
+  arms); the kinnari keeps her shoulder fans. Checked in headless renders of each figure and of the pair.
 
 - Per the site owner (the gongs should be louder than the cymbals): stage levels in `ambStep` are now gong .11 → .17 and
   cymbals .11 → .08 (the drum stays .155). In a render the gong stem peaks about 0.67 and the cymbal stem about 0.13; the mix
