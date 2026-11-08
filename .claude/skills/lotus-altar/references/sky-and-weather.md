@@ -45,12 +45,12 @@ The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival g
 temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
 epic, danced after the Dehong Dai/Shan kinnara of Yunnan (YouTube gNkFn3owbgQ): a 16-bar phrase of figures, one per drum bar
 (`FIG`: step, bank, knee lift, whirl, crouch and rise, leap), each starting and ending in the same soft stance. Both dancers'
-wings are fans of ten cloth wedges a side, each folded along its gilt rib into a ridge, a gold pom-pom at its corners and tip, and
-swept further back the nearer it is to the body (`FAN[k][2]`) so the open wings curve round behind the dancer, riding
-on the arms (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`), fanned open by `fanWings()` as far as each arm is raised (`setArm`
-records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
+wings are fans of eight long, broad cloth wedges a side (about 1.4 m), each folded along its gilt rib into a ridge with a gold
+pom-pom at its corners and tip, strapped to the shoulder blades (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`). `fanWings()` lays
+the lowest wedge along the arm and spreads the rest up to straight overhead as far as the arm is raised, so the open wings stand
+behind the dancer as one peacock's-tail fan and close when the arms come down (`setArm` records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
 a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 11 PM,
-circling each other. A Shan ensemble plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
+circling each other. A Shan ensemble, all in tan Shan jackets and baggy trousers, plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
 (`setPush`), and cymbals (`musician(x, z, ry, cloth, sit)`, `GONGS`, `CHORD`,
 `PAIR` (gongs and cymbals over a pair of beats), `FIGS` (the drums' sixteenth-note figures, picked per beat by a fixed hash,

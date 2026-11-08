@@ -52,6 +52,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- The kinnara wings now open like a peacock's tail, after the site owner's photo of a Shan ka nok dancer: eight long, broad wedges
+  a side (1.35–1.56 m long, 0.6 m wide) strapped to the shoulder blades instead of riding on the arms. `fanWings()` keeps the lowest
+  wedge along the arm (never below 0.7 rad from straight down, so it can't drag on the floor) and spreads the rest up to straight
+  overhead as far as the arm is raised, so the two wings stand behind the dancer as one great fan and close beside him when the
+  arms come down; reaching forward cups the fan. The solo's path narrowed to ±1.3 m for the wider wings. Both dancers.
+- The gong player and the cymbal player now wear the same tan Shan jacket and baggy trousers as the long drummers (tan is now
+  `musician()`'s default suit; the white jackets and indigo trousers are gone). Headcloths unchanged. Checked in headless renders.
 - More wedges in both dancers' wings, swept back, fewer pom-poms, as the site owner asked: ten wedges a side (was seven), each
   tipped back about its own width by its sweep (`FAN[k][2]`, 0.15 rad for the one along the arm up to 1.4 rad for the one nearest
   the body), so the open wings curve round behind the dancer like a fan; pom-poms only at each wedge's two corners and tip

@@ -1,21 +1,21 @@
-    /* ---------- the ensemble at the sides of the stage, Shan musicians in loose indigo trousers, white jackets and headcloths: the
+    /* ---------- the ensemble at the sides of the stage, Shan musicians in Shan dress, tan jackets, baggy tan trousers and headcloths: the
        two long drums on the left, the row of gongs and the cymbals on the right. The dancers keep to them: every bar opens
        on the drum's deep stroke and the gongs, on which the kinnara lands from a hop ---------- */
-    const indigoM = std({ color: lin(0x232a4a), roughness: .8 }), whiteM = std({ color: lin(0xeeeae0), roughness: .7 });
+    const tanTop = std({ color: lin(0xd8a878), roughness: .8 }), tanLow = std({ color: lin(0xc89868), roughness: .85 });   // the Shan jacket and baggy trousers all the players wear
     const bronze = std({ color: lin(0xc89a50), roughness: .35, metalness: .45 }), brass = std({ color: lin(0xe8c060), roughness: .3, metalness: .45 }), teakM = std({ color: 0x43200f, roughness: .7 });
     // a musician standing (or, with `sit`, sitting on a low white stool) at (x, z) on the stage, turned by ry, in a headcloth of
     // colour `cloth`; arm(sd) makes a jointed arm (sd −1 his right, he faces +z) whose hand the instrument fills in at the elbow
     // group's −0.28. B is all of him above the legs, so a sitting player can sway at the waist
     const musician = (x, z, ry, cloth, sit, suit) => {
       const D = new THREE.Group(); D.position.set(x, C.y, z); D.rotation.y = ry; G.add(D);
-      const [white, indigo] = suit || [whiteM, indigoM];   // his jacket and trousers
+      const [jacket, trousers] = suit || [tanTop, tanLow];   // his jacket and trousers
       const B = new THREE.Group(), clothM = std({ color: lin(cloth), roughness: .7 }); D.add(B);
       if (sit) {
         B.position.y = -.4;   // down on the stool
         mesh(new THREE.BoxGeometry(.3, .34, .3), std({ color: lin(0xf0f0ea), roughness: .5 }), 0, .17, -.02, D);
-        [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.1, .11, .42, 10), indigo, sd * .11, .44, .17, D).rotation.x = Math.PI / 2; mesh(new THREE.CylinderGeometry(.085, .1, .42, 10), indigo, sd * .11, .23, .36, D); mesh(new THREE.BoxGeometry(.09, .04, .2), skin, sd * .11, .02, .41, D); });   // thighs out level, shins down
-      } else [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.11, .15, .8, 10), indigo, sd * .11, .42, 0, B); mesh(new THREE.BoxGeometry(.09, .04, .2), skin, sd * .11, .02, .05, B); });
-      mesh(new THREE.CylinderGeometry(.17, .16, .52, 12), white, 0, 1.08, 0, B);
+        [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.1, .11, .42, 10), trousers, sd * .11, .44, .17, D).rotation.x = Math.PI / 2; mesh(new THREE.CylinderGeometry(.085, .1, .42, 10), trousers, sd * .11, .23, .36, D); mesh(new THREE.BoxGeometry(.09, .04, .2), skin, sd * .11, .02, .41, D); });   // thighs out level, shins down
+      } else [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.11, .15, .8, 10), trousers, sd * .11, .42, 0, B); mesh(new THREE.BoxGeometry(.09, .04, .2), skin, sd * .11, .02, .05, B); });
+      mesh(new THREE.CylinderGeometry(.17, .16, .52, 12), jacket, 0, 1.08, 0, B);
       mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), skin, 0, 1.37, 0, B);
       const hd = new THREE.Group(); hd.position.y = 1.5; B.add(hd);
       mesh(new THREE.SphereGeometry(.115, 14, 10), skin, 0, 0, 0, hd).scale.set(.95, 1.1, 1);
@@ -24,9 +24,9 @@
       mesh(new THREE.SphereGeometry(.05, 8, 6), clothM, .1, .1, -.03, hd);   // its knot over the ear
       const arm = sd => {
         const a = new THREE.Group(); a.position.set(sd * .2, 1.28, 0); B.add(a);
-        mesh(new THREE.CylinderGeometry(.05, .045, .27, 8), white, 0, -.135, 0, a);
+        mesh(new THREE.CylinderGeometry(.05, .045, .27, 8), jacket, 0, -.135, 0, a);
         const e = new THREE.Group(); e.position.y = -.27; a.add(e);
-        mesh(new THREE.CylinderGeometry(.044, .036, .24, 8), white, 0, -.12, 0, e);
+        mesh(new THREE.CylinderGeometry(.044, .036, .24, 8), jacket, 0, -.12, 0, e);
         return { a, e, sd, age: 9 };
       };
       return { D, B, hd, arm };
@@ -59,11 +59,10 @@
       const ring = (r, col) => { c.fillStyle = col; c.beginPath(); c.arc(sz / 2, sz / 2, r * sz / 2, 0, TAU); c.fill(); };
       [[1, "#1a1410"], [.9, "#d8a840"], [.8, "#1a1410"], [.72, "#d8a840"], [.66, "#c8b088"], [.5, "#2a1c14"], [.42, "#3a2a20"]].forEach(([r, col]) => ring(r, col));
     });
-    const tanTop = std({ color: lin(0xd8a878), roughness: .8 }), tanLow = std({ color: lin(0xc89868), roughness: .85 });
     const FRILL = [[.17, .27, .1, -.1, 0xf2c820], [.15, .25, .1, -.17, 0x2a9a3a], [.13, .23, .09, -.24, 0xd82a2a]];   // the skirt's tiers: [top radius, hem radius, depth, how far down the drum, colour]
     const DIR = new THREE.Vector3(.45, -.58, -.68).normalize();   // from the head down to the tail, past his left leg (he faces +z)
     const longDrummer = (x, z, ry, cloth) => {
-      const m = musician(x, z, ry, cloth, false, [tanTop, tanLow]), { D, hd } = m;
+      const m = musician(x, z, ry, cloth, false), { D, hd } = m;
       const arms = { dum: m.arm(-1), tak: m.arm(1) };
       mesh(new THREE.SphereGeometry(.05, 8, 6), skin, 0, -.28, 0, arms.dum.e);   // a fist
       mesh(new THREE.BoxGeometry(.025, .1, .07), skin, 0, -.29, 0, arms.tak.e);   // a flat hand

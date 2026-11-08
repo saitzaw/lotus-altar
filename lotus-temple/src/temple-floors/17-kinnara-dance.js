@@ -1,5 +1,5 @@
   /* ---------- the kinnara and kinnari dance, ka nok in Shan (ၵႃႈၼူၵ်ႉ, Burmese ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
-     half-bird dancers in green and gold, in human-faced masks, with great fanned wings carried on their arms, circling each other and opening
+     half-bird dancers in green and gold, in human-faced masks, with great fanned wings on their backs, opened with their arms like a peacock's tail, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
     const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
@@ -11,11 +11,11 @@
     const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
     // the wings, as Shan and Dehong Dai dancers make them: each a fan of long cloth wedges on gilt ribs, every wedge folded along its
     // rib like an umbrella panel, so it stands up as a ridge with its sides sloping back, and edged and tipped with gold pom-poms.
-    // The first rib runs along the arm and past the hand, which carries the wing; with the arm down the wedges hang folded together
-    // beside the dancer, and as the arm lifts they fan open from the shoulder, the first standing above the arm like a bird's wing
-    // and each one after it swept further back, so the open wings stand round behind the dancer like a peacock's tail
-    const FAN = Array.from({ length: 10 }, (_, k) => [1.2 - k * .045, .38 - k * .01, .15 + k * .14]);   // each wedge's length and width (m) and how far it sweeps back (rad), from the arm's in to the body's
-    const CORNER = .86, FOLD = .45;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
+    // The wings are strapped to the shoulder blades and the lowest rib runs out along the arm, so the hand carries it: with the arms
+    // down the wedges close together beside the dancer, and as the arms lift they fan open from the arm's line right round to
+    // straight up behind the head, the two wings standing behind the dancer as one great fan, like a peacock showing its tail
+    const FAN = Array.from({ length: 8 }, (_, k) => [1.35 + k * .03, .6, .15 + k * .05]);   // each wedge's length and width (m) and how far it leans back (rad), from the arm's up to the top
+    const CORNER = .86, FOLD = .3;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
     const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
     const wedgeT = canvasTex(256, (c, s) => {
       const P = () => { c.beginPath(); WEDGE.forEach(([x, y], i) => c[i ? "lineTo" : "moveTo"](x * s, y * s)); c.closePath(); };
@@ -98,8 +98,8 @@
         mesh(new THREE.BoxGeometry(.016, .045, .02), skin, 0, -.015, .045, wrist).rotation.x = -.6;   // the thumb
         return { a, elbow, wrist, fingers, sd };
       });
-      // the wings ride on the arms, a hand's breadth behind them (see FAN); fanWings() opens them with the arms
-      const fan = arms.map(r => { const W = new THREE.Group(); W.position.z = -.08; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, -k * .008)) }; });
+      // the wings on the shoulder blades (see FAN); fanWings() opens them with the arms
+      const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01)) }; });
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
@@ -126,9 +126,14 @@
     const hopH = n => fig(n) === "L" ? (n & 16 ? .24 : .16) : 0, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a leap's height (m), higher every other phrase
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
     let hn = 0, ht = 0, pp = 0;   // which bar, the time into it, and how far along his path
-    // the wings fan open with the arms: the wedges spread from the arm's line down toward his side as far as the arm is raised,
-    // so a lowered arm folds them; `flut` sets them trembling, as the dancer shakes them at the top of an opening
-    const fanWings = (d, flut) => d.fan.forEach(w => { const sp = Math.min(2, Math.max(.1, w.r.lift * .95)), n = w.leaves.length - 1; w.leaves.forEach((L, k) => { L.rotation.z = -w.sd * (k / n * sp + flut * .06 * Math.sin(t * 16 + k * 1.3 + w.sd)); }); });
+    // the wings fan open with the arms: the lowest wedge lies along the arm (never so low that it drags on the floor), and the rest
+    // spread from it up toward straight overhead as far as the arm is raised, so a lowered arm closes them; the arm reaching forward
+    // cups the fan round the dancer. `flut` sets the wedges trembling, as the dancer shakes them at the top of an opening
+    const fanWings = (d, flut) => d.fan.forEach(w => {
+      const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .15 - a) * o, n = w.leaves.length - 1;
+      w.W.rotation.x = w.r.a.rotation.x * .6;
+      w.leaves.forEach((L, k) => { L.rotation.z = w.sd * (a + (top - a) * k / n + flut * .05 * Math.sin(t * 16 + k * 1.3 + w.sd)); });
+    });
     const solo = dt => {
       const d = pair[0]; ht += dt;
       while (ht > BAR) { ht -= BAR; hn++; }
@@ -149,7 +154,7 @@
       const out = .08 + .3 * deep;   // the knees turned out, wider in the squat
       // along his path round the stage, kept clear of the musicians at the sides: moving while a foot is up, or in the air
       pp += f === "L" ? (onG ? 0 : 6 * s * (1 - s) * dt / ta) : RATE[f] * 6 * u * (1 - u) * dt / BAR;
-      d.D.position.set(C.x + Math.sin(pp * .3) * 1.5, C.y, C.z + Math.sin(pp * .6) * .6);
+      d.D.position.set(C.x + Math.sin(pp * .3) * 1.3, C.y, C.z + Math.sin(pp * .6) * .6);
       d.D.rotation.y = Math.sin(pp * .4) * .9 + spin;   // mostly turned to the crowd
       const drop2 = th => (THIGH + SHIN) * (1 - Math.cos(th) * Math.cos(out));   // the hips' sink with the knees bent and turned out
       d.B.position.y = y - drop2(bend) + step * .025 + knee * .035;
