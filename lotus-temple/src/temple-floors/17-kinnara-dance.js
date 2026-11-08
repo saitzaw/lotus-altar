@@ -1,16 +1,24 @@
   /* ---------- the kinnara and kinnari dance, ka nok in Shan (ၵႃႈၼူၵ်ႉ, Burmese ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
-     half-bird dancers in green and gold, in human-faced masks, with great fanned wings on their backs, opened with their arms like a peacock's tail, circling each other and opening
+     half-bird dancers in Shan dress, unmasked, with great fanned wings on their backs, opened with their arms like a peacock's tail, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
-    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
+    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a pair in Shan dress dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
     const lin = h => new THREE.Color(h).convertSRGBToLinear();   // plain colours to match the sRGB cloth textures
-    const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 });
-    const stripes = canvasTex(64, (c, s) => { c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s); c.fillStyle = "#e8c040"; for (let y = 4; y < s; y += 10) c.fillRect(0, y, s, 3); });
-    const skirtM = std({ map: stripes, roughness: .45, metalness: .2 });
-    const maskM = std({ color: lin(0xf0dcc0), roughness: .55 }), hairM = std({ color: 0x15100c, roughness: .6 });
-    const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
-    // the wings, as Shan and Dehong Dai dancers make them: each a fan of long cloth wedges on gilt ribs, every wedge folded along its
-    // rib like an umbrella panel, so it stands up as a ridge with its sides sloping back, and edged and tipped with gold pom-poms.
+    const cloth = (hex, o) => std({ color: lin(hex), roughness: .75, ...o });
+    const hairM = std({ color: 0x15100c, roughness: .6 }), skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 });
+    const lipM = cloth(0xa85a58, { roughness: .6 }), beltM = cloth(0x3c6a4c, { roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });   // red: the ensemble's too
+    // the dancers dress as Shan dancers do for the ka nok, unmasked: he in a pale Shan jacket fastened at the side, its dark cord
+    // across the chest, wide mustard Shan trousers, a green belt with a pink tasselled sash, and a pink headcloth with its end
+    // hanging by the ear; she in a white blouse, a silver-striped longyi and a green belt, a patterned headband round her hair in a bun
+    const longyiT = canvasTex(64, (c, s) => { c.fillStyle = "#c4c6cc"; c.fillRect(0, 0, s, s); for (let y = 0; y < s; y += 8) { c.fillStyle = "#f2f2f4"; c.fillRect(0, y, s, 3); c.fillStyle = "#7c7e8a"; c.fillRect(0, y + 5, s, 1); } });
+    const bandT = canvasTex(64, (c, s) => { c.fillStyle = "#7a4a30"; c.fillRect(0, 0, s, s); c.fillStyle = "#e0b060"; for (let x = 0; x < s; x += 8) { c.beginPath(); c.moveTo(x, s / 2); c.lineTo(x + 4, s * .2); c.lineTo(x + 8, s / 2); c.lineTo(x + 4, s * .8); c.fill(); } });
+    const DRESS = {
+      him: { jacket: cloth(0xe4eaee), low: cloth(0xd8962a, { roughness: .85 }), head: cloth(0xf090aa), sash: cloth(0xf4a8bc) },
+      her: { jacket: cloth(0xf6f4ee), low: std({ map: longyiT, roughness: .4, metalness: .45 }), head: std({ map: bandT, roughness: .7 }) }
+    };
+    // the wings, as Shan dancers make them: each a fan of long sequinned cloth wedges on ribs, every wedge folded along its rib like
+    // an umbrella panel, so it stands up as a ridge with its sides sloping back, edged in white trim and tipped with pom-poms:
+    // his green sewn with white flowers and red pom-poms, hers gold with lime-green pom-poms.
     // The wings are strapped to the shoulder blades and the lowest rib runs out along the arm, so the hand carries it: with the arms
     // down the wedges close together beside the dancer, and as the arms lift they fan open from the arm's line up to
     // the edge of the middle fan, which stands still behind the head; open, the three stand behind the dancer as one great fan,
@@ -19,80 +27,86 @@
     const MID = [-.56, -.28, 0, .28, .56];   // the middle fan's wedges, how far each leans from straight up (rad)
     const CORNER = .86, FOLD = .3;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
     const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
-    const wedgeT = canvasTex(256, (c, s) => {
+    // a wedge's cloth: the ground colour thick with sequins in two lighter shades, scattered five-petalled white flowers, a white trim
+    const wedgeT = (ground, seq, flowers, seed) => canvasTex(256, (c, s) => {
       const P = () => { c.beginPath(); WEDGE.forEach(([x, y], i) => c[i ? "lineTo" : "moveTo"](x * s, y * s)); c.closePath(); };
-      c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
-      c.save(); P(); c.clip(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .025;
-      [.4, .62, .8].forEach(y => { c.beginPath(); c.moveTo(0, y * s); c.lineTo(s / 2, (y + .1) * s); c.lineTo(s, y * s); c.stroke(); });   // gilt chevrons across
-      const r = rng(78);
-      for (let i = 0; i < 46; i++) { c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][i % 4]; c.beginPath(); c.arc(r() * s, r() * s, 3 + r() * 2, 0, TAU); c.fill(); }   // sequins
-      c.restore(); P(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .05; c.stroke();   // the gilt rim
+      c.fillStyle = ground; c.fillRect(0, 0, s, s);
+      const r = rng(seed);
+      for (let i = 0; i < 700; i++) { c.fillStyle = seq[i % 2]; c.globalAlpha = .35 + r() * .5; c.beginPath(); c.arc(r() * s, r() * s, 1.5 + r() * 2.5, 0, TAU); c.fill(); }   // sequins
+      c.globalAlpha = 1; c.fillStyle = "#f6f6f2";
+      for (let i = 0; i < flowers; i++) { const x = r() * s, y = r() * s, f = 3 + r() * 3; for (let p = 0; p < 5; p++) { const a = p / 5 * TAU; c.beginPath(); c.arc(x + Math.cos(a) * f, y + Math.sin(a) * f, f * .65, 0, TAU); c.fill(); } }
+      P(); c.strokeStyle = "#f4f4f0"; c.lineWidth = s * .07; c.stroke();   // the white trim
+      c.lineWidth = s * .012; c.beginPath(); c.moveTo(s / 2, 0); c.lineTo(s / 2, s); c.stroke();   // and down the rib
     });
-    const fanM = std({ map: wedgeT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
     // a wedge pointing down (-y) from its root, the ridge along x = 0 facing forward (+z), its two sides sloping back
     const wedgeGeo = (L, w) => {
       const R = [0, 0, 0], T = [0, -L, 0], A = [-w / 2, -CORNER * L, -FOLD * w], B = [w / 2, -CORNER * L, -FOLD * w], pos = [R, A, T, R, T, B].flat();
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
       g.setAttribute("uv", new THREE.Float32BufferAttribute([R, A, T, R, T, B].flatMap(([x, y]) => [x / w + .5, 1 + y / L]), 2)); g.computeVertexNormals(); return g;
     };
-    // the gilt rib and the pom-poms of a wedge, as one mesh: a pom-pom at each corner and on the tip
-    const joined = parts => { const pos = [], nor = []; parts.forEach(([g, x, y, z]) => { const n = g.index ? g.toNonIndexed() : g, p = n.attributes.position, q = n.attributes.normal; for (let i = 0; i < p.count; i++) { pos.push(p.getX(i) + x, p.getY(i) + y, p.getZ(i) + z); nor.push(q.getX(i), q.getY(i), q.getZ(i)); } }); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); return g; };
-    const pom = new THREE.IcosahedronGeometry(.04, 1);
-    const trimGeo = (L, w) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0], [pom, 0, -L, 0], ...[-1, 1].map(sd => [pom, sd * w / 2, -CORNER * L, -FOLD * w])]);
-    const wedgeGeos = FAN.map(([L, w]) => wedgeGeo(L, w)), trimGeos = FAN.map(([L, w]) => trimGeo(L, w));
-    // a wedge on a pivot at its root (turned by fanWings), tipped back by its sweep
-    const feather = (parent, k, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const b = new THREE.Group(); b.rotation.x = FAN[k][2]; g.add(b); b.add(new THREE.Mesh(wedgeGeos[k], fanM)); mesh(trimGeos[k], M.gold, 0, 0, 0, b); return g; };
+    // pieces [geometry, x, y, z, colour] joined into one coloured geometry, for one mesh
+    const joined = parts => { const pos = [], nor = [], col = []; parts.forEach(([g, x, y, z, hex]) => { const n = g.index ? g.toNonIndexed() : g, p = n.attributes.position, q = n.attributes.normal, k = lin(hex); for (let i = 0; i < p.count; i++) { pos.push(p.getX(i) + x, p.getY(i) + y, p.getZ(i) + z); nor.push(q.getX(i), q.getY(i), q.getZ(i)); col.push(k.r, k.g, k.b); } }); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); return g; };
+    // a wedge's white rib and its pom-poms, at each corner and on the tip, as one mesh
+    const pom = new THREE.IcosahedronGeometry(.05, 1), trimM = std({ vertexColors: true, roughness: .8 });
+    const trimGeo = (L, w, pc) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0, 0xe8e8e4], [pom, 0, -L, 0, pc], ...[-1, 1].map(sd => [pom, sd * w / 2, -CORNER * L, -FOLD * w, pc])]);
+    const wedgeGeos = FAN.map(([L, w]) => wedgeGeo(L, w));
+    const WINGS = [["#1f8a3c", ["#7ad890", "#c8f4d0"], 26, 0xe02828], ["#d0a838", ["#f8e088", "#fff6c8"], 8, 0xa8e040]].map(([g, sq, fl, pc], i) => ({ cloth: std({ map: wedgeT(g, sq, fl, 78 + i), roughness: .35, metalness: .35, side: THREE.DoubleSide }), trims: FAN.map(([L, w]) => trimGeo(L, w, pc)) }));   // his, then hers
+    // a wedge on a pivot at its root (turned by fanWings), tipped back by its sweep, in wing set P
+    const feather = (parent, k, z, P) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const b = new THREE.Group(); b.rotation.x = FAN[k][2]; g.add(b); b.add(new THREE.Mesh(wedgeGeos[k], P.cloth)); mesh(P.trims[k], trimM, 0, 0, 0, b); return g; };
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
     function dancer(male) {
       const D = new THREE.Group(), B = new THREE.Group(); D.add(B);
+      const W8 = WINGS[male ? 0 : 1], { jacket, low, head: headM, sash } = DRESS[male ? "him" : "her"];
       // the upper body pivots at the hips (U) so the dancer can lean without his feet sliding; T holds its parts at their heights
       const U = new THREE.Group(); U.position.y = .84; B.add(U);
       const T = new THREE.Group(); T.position.y = -.84; U.add(T);
-      // legs: baggy green trousers on him, jointed at hip, knee and ankle, with gilt anklets and bare feet;
-      // a long striped longyi on her with the anklets showing below it
+      // legs: his wide Shan trousers, jointed at hip, knee and ankle, and bare feet; her longyi down to the ankles
       const legs = male ? [-1, 1].map(sd => {
         const hip = new THREE.Group(); hip.position.set(sd * .1, .84, 0); B.add(hip);
-        mesh(new THREE.CylinderGeometry(.11, .1, THIGH, 10), green, 0, -THIGH / 2, 0, hip);
+        mesh(new THREE.CylinderGeometry(.15, .14, THIGH, 10), low, 0, -THIGH / 2, 0, hip);
         const knee = new THREE.Group(); knee.position.y = -THIGH; hip.add(knee);
-        mesh(new THREE.CylinderGeometry(.1, .085, SHIN - .04, 10), green, 0, -(SHIN - .04) / 2, 0, knee);
-        mesh(new THREE.TorusGeometry(.07, .02, 6, 12), M.gold, 0, -SHIN + .07, 0, knee).rotation.x = Math.PI / 2;
+        mesh(new THREE.CylinderGeometry(.14, .12, SHIN - .04, 10), low, 0, -(SHIN - .04) / 2, 0, knee);
         const ankle = new THREE.Group(); ankle.position.y = -SHIN + .04; knee.add(ankle);
         mesh(new THREE.BoxGeometry(.08, .04, .2), skin, 0, -.02, .05, ankle);
         return { hip, knee, ankle };
       }) : null;
-      if (!male) {
-        mesh(new THREE.CylinderGeometry(.15, .21, .84, 14), skirtM, 0, .42, 0, B);
-        [-1, 1].forEach(sd => mesh(new THREE.TorusGeometry(.07, .02, 6, 12), M.gold, sd * .1, .06, 0, B).rotation.x = Math.PI / 2);
+      if (!male) { mesh(new THREE.CylinderGeometry(.15, .19, .82, 14), low, 0, .45, 0, B); [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.08, .04, .18), skin, sd * .07, .02, .06, B)); }
+      // the jacket or blouse, with a low standing collar, and the green belt
+      mesh(new THREE.CylinderGeometry(.16, .145, .5, 12), jacket, 0, 1.08, 0, T);
+      mesh(new THREE.CylinderGeometry(.06, .065, .05, 10), jacket, 0, 1.345, 0, T);
+      mesh(new THREE.TorusGeometry(.15, .028, 6, 16), beltM, 0, .86, 0, T).rotation.x = Math.PI / 2;
+      if (male) {
+        mesh(new THREE.BoxGeometry(.008, .3, .006), ink, -.03, 1.17, .156, T).rotation.z = .55;   // the jacket's cord, across from the side fastening
+        mesh(new THREE.BoxGeometry(.05, .44, .02), sash, .12, .64, .1, T).rotation.z = -.08;   // the pink sash hanging from the belt
+        mesh(new THREE.CylinderGeometry(.03, .045, .12, 8), sash, .135, .38, .1, T);   // its tassel
       }
-      // a fitted green jacket with a gilt belt and collar
-      mesh(new THREE.CylinderGeometry(.16, .14, .5, 12), green, 0, 1.08, 0, T);
-      mesh(new THREE.TorusGeometry(.15, .03, 6, 16), M.gold, 0, .85, 0, T).rotation.x = Math.PI / 2;
-      mesh(new THREE.TorusGeometry(.12, .035, 6, 16), M.gold, 0, 1.32, 0, T).rotation.x = Math.PI / 2;
-      // the mask: a human face, for the kinnara is a person above and a bird below: a pale painted face with long dark eyes, arched
-      // brows, a fine nose and red lips, ears hung with gold ear plugs, black hair at the back, under a tiered gold crown with a spire
-      mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), maskM, 0, 1.37, 0, T);   // the neck
+      // the dancer's own face, eyes, brows, nose and lips, ears, and dark hair
+      mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), skin, 0, 1.37, 0, T);   // the neck
       const head = new THREE.Group(); head.position.y = 1.5; T.add(head);
-      mesh(new THREE.SphereGeometry(.12, 16, 12), maskM, 0, 0, 0, head).scale.set(.95, 1.15, 1);
-      mesh(new THREE.SphereGeometry(.122, 14, 10), hairM, 0, .02, -.025, head).scale.set(.97, 1.1, .95);   // hair behind the face
+      mesh(new THREE.SphereGeometry(.12, 16, 12), skin, 0, 0, 0, head).scale.set(.95, 1.15, 1);
+      mesh(new THREE.SphereGeometry(.122, 14, 10), hairM, 0, .025, -.025, head).scale.set(.97, 1.1, .95);   // hair behind and over the face
       [-1, 1].forEach(sd => {
-        mesh(new THREE.SphereGeometry(.022, 10, 6), ink, sd * .045, .025, .102, head).scale.set(1.5, .55, .5);   // long dark eyes
-        const brow = mesh(new THREE.BoxGeometry(.055, .009, .008), ink, sd * .046, .058, .106, head); brow.rotation.z = -sd * .22;
-        mesh(new THREE.SphereGeometry(.03, 8, 6), maskM, sd * .118, .0, 0, head).scale.set(.45, 1, .7);   // ears
-        mesh(new THREE.CylinderGeometry(.018, .018, .02, 10), M.gold, sd * .128, -.012, .005, head).rotation.z = Math.PI / 2;   // gold ear plugs
+        mesh(new THREE.SphereGeometry(.018, 10, 6), ink, sd * .044, .022, .104, head).scale.set(1.4, .6, .5);
+        const brow = mesh(new THREE.BoxGeometry(.05, .008, .008), ink, sd * .046, .055, .107, head); brow.rotation.z = -sd * .15;
+        mesh(new THREE.SphereGeometry(.03, 8, 6), skin, sd * .118, .0, 0, head).scale.set(.45, 1, .7);   // ears
       });
-      const nose = mesh(new THREE.ConeGeometry(.016, .05, 6), maskM, 0, -.005, .12, head); nose.rotation.x = -Math.PI * .4;
-      mesh(new THREE.SphereGeometry(.024, 10, 6), red, 0, -.055, .105, head).scale.set(1.1, .38, .5);   // red lips
-      [.12, .19, .25].forEach((y, i) => mesh(new THREE.CylinderGeometry(.11 - i * .03, .13 - i * .03, .07, 12), i % 2 ? green : M.gold, 0, y, 0, head));
-      mesh(new THREE.ConeGeometry(.04, .28, 8), M.gold, 0, .42, 0, head);
-      // arms: a green sleeve jointed at the elbow, a gilt cuff, and a bare dancer's hand whose fingers bend back from the palm
+      const nose = mesh(new THREE.ConeGeometry(.016, .05, 6), skin, 0, -.005, .12, head); nose.rotation.x = -Math.PI * .4;
+      mesh(new THREE.SphereGeometry(.022, 10, 6), lipM, 0, -.055, .104, head).scale.set(1.1, .35, .5);
+      if (male) {   // the pink headcloth wound round, its end hanging by his left ear
+        mesh(new THREE.CylinderGeometry(.13, .128, .09, 16), headM, 0, .075, -.005, head);
+        mesh(new THREE.BoxGeometry(.06, .2, .03), headM, .125, -.04, -.03, head).rotation.z = .15;
+      } else {   // her hair up in a bun at the back, under a patterned headband
+        mesh(new THREE.SphereGeometry(.07, 12, 8), hairM, 0, .08, -.12, head);
+        mesh(new THREE.CylinderGeometry(.127, .126, .045, 16), headM, 0, .06, -.01, head);
+      }
+      // arms: a long sleeve jointed at the elbow, and a bare dancer's hand whose fingers bend back from the palm
       const arms = [-1, 1].map(sd => {
         const a = new THREE.Group(); a.position.set(sd * .19, 1.28, 0); T.add(a);
-        mesh(new THREE.CylinderGeometry(.048, .042, .26, 8), green, 0, -.13, 0, a);
+        mesh(new THREE.CylinderGeometry(.05, .045, .26, 8), jacket, 0, -.13, 0, a);
         const elbow = new THREE.Group(); elbow.position.y = -.26; a.add(elbow);
-        mesh(new THREE.CylinderGeometry(.042, .034, .24, 8), green, 0, -.12, 0, elbow);
-        mesh(new THREE.TorusGeometry(.036, .012, 6, 10), M.gold, 0, -.23, 0, elbow).rotation.x = Math.PI / 2;
+        mesh(new THREE.CylinderGeometry(.044, .036, .24, 8), jacket, 0, -.12, 0, elbow);
         const wrist = new THREE.Group(); wrist.position.y = -.25; elbow.add(wrist);
         mesh(new THREE.BoxGeometry(.022, .08, .065), skin, 0, -.04, 0, wrist);   // the palm
         const fingers = new THREE.Group(); fingers.position.y = -.08; wrist.add(fingers);
@@ -101,11 +115,11 @@
         return { a, elbow, wrist, fingers, sd };
       });
       // the wings on the shoulder blades (see FAN); fanWings() opens them with the arms
-      const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01)) }; });
+      const fan = arms.map(r => { const W = new THREE.Group(); W.position.set(r.sd * .1, 1.24, -.17); T.add(W); return { r, sd: r.sd, W, leaves: FAN.map((f, k) => feather(W, k, -k * .01, W8)) }; });
       // and between them the middle fan, standing still behind the head like an aura while the side wings open and close round it:
       // five wedges spread either side of straight up (MID), a little behind the side wings
       const mid = new THREE.Group(); mid.position.set(0, 1.26, -.22); T.add(mid);
-      MID.forEach((a, i) => { feather(mid, 3, -i * .006).rotation.z = Math.PI + a; });
+      MID.forEach((a, i) => { feather(mid, 3, -i * .006, W8).rotation.z = Math.PI + a; });
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);

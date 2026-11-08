@@ -52,6 +52,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Dressed both kinnara dancers as in the site owner's photos of Shan ka nok dancers, and took off their masks (they now show
+  their own faces): he wears a pale Shan jacket with the dark cord across the chest, wide mustard Shan trousers, a green belt
+  with a pink tasselled sash and a pink headcloth with its end by his ear, barefoot; she wears a white blouse, a silver-striped
+  longyi, a green belt and a patterned headband over her hair in a bun (`DRESS` in `17-kinnara-dance.js`). The crowns, gilt
+  collars, belts, cuffs and anklets are gone. Wings per dancer (`WINGS`): his green sequinned cloth with white flowers and red
+  pom-poms, hers gold with lime-green pom-poms, both with a white trim and white ribs (ribs and pom-poms are one vertex-coloured
+  mesh per wedge). The toast now says "a pair in Shan dress". Checked in headless renders of the solo and the pair.
 - Added a middle fan to both kinnara dancers' wings, as the site owner asked: five wedges (`MID`, ±0.56 rad round straight up)
   on the upper back, a little behind the side wings, that stay still like an aura behind the head while the two side wings open
   and close with the arms. The side wings now open only up to the middle fan's edge (π − 0.6 rad). Checked in headless renders.

@@ -41,16 +41,18 @@ elders) and dressed for a cold night in the hills: long-sleeved jackets, scarves
 trousers or an ankle-length longyi, and anyone coming into view appears already in step. Each body is one vertex-coloured mesh; all legs, arms and umbrellas
 are three shared `InstancedMesh`es.
 
-The kinnara dancers (`kinnaraDancers` in `temple-floors.js`) take the festival ground's pavilion stage twice a day on the
+The kinnara dancers (`kinnaraDancers` in `temple-floors.js`), unmasked and in Shan dress after the site owner's photos (`DRESS`: he in
+a pale Shan jacket with its cord, wide mustard trousers, green belt, pink sash and pink headcloth; she in a white blouse, silver-striped
+longyi, green belt and patterned headband over a bun), take the festival ground's pavilion stage twice a day on the
 temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
 epic, danced after the Dehong Dai/Shan kinnara of Yunnan (YouTube gNkFn3owbgQ): a 16-bar phrase of figures, one per drum bar
 (`FIG`: step, bank, knee lift, whirl, crouch and rise, leap), each starting and ending in the same soft stance. Both dancers'
-wings are fans of eight long, broad cloth wedges a side (about 1.4 m), each folded along its gilt rib into a ridge with a gold
-pom-pom at its corners and tip, strapped to the shoulder blades (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`). `fanWings()` lays
+wings are fans of eight long, broad cloth wedges a side (about 1.4 m), each folded along its rib into a ridge, white-trimmed, with a pom-pom
+at its corners and tip (his green with white flowers and red pom-poms, hers gold with lime-green ones, `WINGS`), strapped to the shoulder blades (`FAN`, `wedgeGeo`, `trimGeo`, `feather()`). `fanWings()` lays
 the lowest wedge along the arm and spreads the rest up to the edge of a fixed middle fan (`MID`, five wedges round straight up,
 standing still behind the head like an aura) as far as the arm is raised, so the open wings stand behind the dancer as one
 peacock's-tail fan and close when the arms come down (`setArm` records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
-a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 11 PM,
+a crouch-and-push then a gravity arc, see the comment above `solo`; then the kinnara and kinnari pair from 4 to 11 PM,
 circling each other. A Shan ensemble, all in tan Shan jackets and baggy trousers, plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
 (`setPush`), and cymbals (`musician(x, z, ry, cloth, sit)`, `GONGS`, `CHORD`,
