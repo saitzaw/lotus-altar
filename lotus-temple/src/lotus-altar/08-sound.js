@@ -184,7 +184,7 @@ function ambStep(dt) {
     const v = near(Math.hypot(p.x - S.stage[0], p.z - S.stage[1]), 8, 80);
     // each stroke lands a fixed 0.1 s after it fell, on the audio clock, so frame-to-frame jitter never shakes the rhythm
     const wall = performance.now() / 1000;
-    if (v > .01) band.forEach(([k, s, f, due]) => { const t0 = Math.max(0, .1 - (wall - due)); k === "gong" ? f.forEach(([hz, w], i) => stageGong(.11 * v * s * w, hz, t0, !i)) : k === "cym" ? stageCymbals(.11 * v * s, t0) : longDrum(k, .155 * v * s, t0); });
+    if (v > .01) band.forEach(([k, s, f, due]) => { const t0 = Math.max(0, .1 - (wall - due)); k === "gong" ? f.forEach(([hz, w], i) => stageGong(.17 * v * s * w, hz, t0, !i)) : k === "cym" ? stageCymbals(.08 * v * s, t0) : longDrum(k, .155 * v * s, t0); });
   }
   if (wet > .7 && due("thunder", 25, 70)) thunder(.35 * (out ? 1 : .5));
 }

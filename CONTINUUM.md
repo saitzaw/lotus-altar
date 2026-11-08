@@ -53,6 +53,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-08
 
+- Per the site owner (the gongs should be louder than the cymbals): stage levels in `ambStep` are now gong .11 → .17 and
+  cymbals .11 → .08 (the drum stays .155). In a render the gong stem peaks about 0.67 and the cymbal stem about 0.13; the mix
+  peaks about 0.88.
+
 - Per the site owner (now "90% accurate"; the original goes "Tone Tone Cha Cha Tone Bon"): the drums no longer pick random
   sixteenth figures (`FIGS` is gone). The pattern measured on a 12-step grid from the clip, starting at the gong beat: **Bon**,
   gong, deep drum and cymbals together; **Tone**, a drum a third of a beat later; **Tone**, a drum just before the next beat;
