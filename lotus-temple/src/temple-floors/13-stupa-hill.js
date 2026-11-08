@@ -137,7 +137,7 @@
   }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
   // floor height); the kinnara dances alone in the afternoon and the pair in the evening, see CONFIG.dancers and setDancers()
-  const KINNARA = { y: 1.0, r: 1.15, turn: .22, wing: 1.1 };   // stage floor height (m), circle radius (m), turn speed (rad/s), wing fan radius (m)
+  const KINNARA = { y: 1.0, r: 1.15, turn: .22 };   // stage floor height (m), circle radius (m), turn speed (rad/s)
   // their audience: rows on arcs round the stage's centre, in front of it (the stage's front edge is 2.75 m out, its steps 4 m):
   // seated children close in, young people standing behind; `spread` is the arc's width in radians; `epic` rows come only for the
   // afternoon solo, the opening of the epic, when the crowd is biggest

@@ -1,43 +1,44 @@
   /* ---------- the kinnara and kinnari dance, ka nok in Shan (ၵႃႈၼူၵ်ႉ, Burmese ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
-     half-bird dancers in green and gold, in human-faced masks, with great fanned wings on frames and a tail fan, circling each other and opening
+     half-bird dancers in green and gold, in human-faced masks, with great fanned wings carried on their arms, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
   function kinnaraDancers(G, list, cx, cz) {
     const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
-    // the wing cloth: green satin sewn with sequins, a gilt rim and bands; drawn round the centre so the fan panels pick up rings
-    const wingT = canvasTex(256, (c, s) => {
-      const h = s / 2; c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
-      [[.97, .05, "#e8c040"], [.7, .035, "#e8c040"], [.42, .03, "#e8c040"]].forEach(([r, w, col]) => { c.strokeStyle = col; c.lineWidth = w * h; c.beginPath(); c.arc(h, h, r * h, 0, TAU); c.stroke(); });
-      const r = rng(77);
-      for (let ring = 0; ring < 3; ring++) for (let i = 0; i < 36; i++) { const a = i / 36 * TAU + ring, rr = (.56 + ring * .14) * h; c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][(i + ring) % 4]; c.beginPath(); c.arc(h + Math.cos(a) * rr, h + Math.sin(a) * rr, 3 + r() * 2, 0, TAU); c.fill(); }
-    });
-    const wingM = std({ map: wingT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
     const lin = h => new THREE.Color(h).convertSRGBToLinear();   // plain colours to match the sRGB cloth textures
     const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 });
     const stripes = canvasTex(64, (c, s) => { c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s); c.fillStyle = "#e8c040"; for (let y = 4; y < s; y += 10) c.fillRect(0, y, s, 3); });
     const skirtM = std({ map: stripes, roughness: .45, metalness: .2 });
     const maskM = std({ color: lin(0xf0dcc0), roughness: .55 }), hairM = std({ color: 0x15100c, roughness: .6 });
     const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
-    const panel = new THREE.CircleGeometry(C.wing, 14, 0, Math.PI / 3);
-    const knob = new THREE.SphereGeometry(.05, 8, 6);
-    // the kinnara's wings, as the Dehong Dai and Shan dancers of Yunnan wear them: each a stack of long pointed feathers of the same
-    // green cloth on gilt ribs, the first rib along the arm and past the hand, which carries it; with the arm down the feathers hang
-    // folded together beside him, and as the arm lifts they fan open from the shoulder, standing above the arm like a bird's wing
-    const LEAF = [[0, 0], [.55, .15], [1, .6], [.6, .88], [0, 1]];   // a feather's outline: out from its rib 0–1, root to tip 0–1
-    const FAN = [[1.1, .34], [1, .32], [.9, .3], [.8, .28], [.7, .26]];   // each feather's length and width (m), from the arm's in to the body's
-    const leafT = canvasTex(256, (c, s) => {
-      const P = () => { c.beginPath(); LEAF.forEach(([x, y], i) => c[i ? "lineTo" : "moveTo"](x * s, y * s)); c.closePath(); };
+    // the wings, as Shan and Dehong Dai dancers make them: each a fan of long cloth wedges on gilt ribs, every wedge folded along its
+    // rib like an umbrella panel, so it stands up as a ridge with its sides sloping back, and edged and tipped with gold pom-poms.
+    // The first rib runs along the arm and past the hand, which carries the wing; with the arm down the wedges hang folded together
+    // beside the dancer, and as the arm lifts they fan open from the shoulder, the first standing above the arm like a bird's wing
+    const FAN = [[1.15, .4], [1.08, .38], [1, .36], [.93, .34], [.86, .32], [.79, .3], [.72, .28]];   // each wedge's length and width (m), from the arm's in to the body's
+    const CORNER = .86, FOLD = .45;   // where down the wedge its corners stand (0–1), and how far back they slope for its width
+    const WEDGE = [[.5, 0], [1, CORNER], [.5, 1], [0, CORNER]];   // the wedge's outline on its cloth: across 0–1, root to tip 0–1
+    const wedgeT = canvasTex(256, (c, s) => {
+      const P = () => { c.beginPath(); WEDGE.forEach(([x, y], i) => c[i ? "lineTo" : "moveTo"](x * s, y * s)); c.closePath(); };
       c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s);
-      c.save(); P(); c.clip(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .03;
-      [.34, .58, .8].forEach(y => { c.beginPath(); c.moveTo(0, y * s); c.lineTo(s, (y - .16) * s); c.stroke(); });   // gilt bands slanting out to the edge
+      c.save(); P(); c.clip(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .025;
+      [.4, .62, .8].forEach(y => { c.beginPath(); c.moveTo(0, y * s); c.lineTo(s / 2, (y + .1) * s); c.lineTo(s, y * s); c.stroke(); });   // gilt chevrons across
       const r = rng(78);
-      for (let i = 0; i < 46; i++) { c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][i % 4]; c.beginPath(); c.arc(r() * s * .8 + s * .05, r() * s * .9 + s * .05, 3 + r() * 2, 0, TAU); c.fill(); }   // sequins
-      c.restore(); P(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .06; c.stroke();   // the gilt rim
+      for (let i = 0; i < 46; i++) { c.fillStyle = ["#c02a2a", "#2a5ad0", "#f4e070", "#e06a9a"][i % 4]; c.beginPath(); c.arc(r() * s, r() * s, 3 + r() * 2, 0, TAU); c.fill(); }   // sequins
+      c.restore(); P(); c.strokeStyle = "#e8c040"; c.lineWidth = s * .05; c.stroke();   // the gilt rim
     });
-    const fanM = std({ map: leafT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
-    const leafGeo = (L, w) => { const g = new THREE.ShapeGeometry(new THREE.Shape(LEAF.map(([x, y]) => new THREE.Vector2(x * w, -y * L)))), p = g.attributes.position, uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, p.getX(i) / w, 1 + p.getY(i) / L); return g; };
-    const leafGeos = FAN.map(([L, w]) => leafGeo(L, w)), ribGeos = FAN.map(([L]) => new THREE.CylinderGeometry(.007, .009, L, 5));
-    // a feather on a pivot at its root, pointing down (-y), its cloth to the +x side of the rib (mirrored by sd)
-    const feather = (parent, k, sd, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); const p = new THREE.Mesh(leafGeos[k], fanM); p.scale.x = sd; g.add(p); mesh(ribGeos[k], M.gold, 0, -FAN[k][0] / 2, 0, g); mesh(knob, M.gold, 0, -FAN[k][0], 0, g).scale.setScalar(.6); return g; };
+    const fanM = std({ map: wedgeT, roughness: .45, metalness: .25, side: THREE.DoubleSide });
+    // a wedge pointing down (-y) from its root, the ridge along x = 0 facing forward (+z), its two sides sloping back
+    const wedgeGeo = (L, w) => {
+      const R = [0, 0, 0], T = [0, -L, 0], A = [-w / 2, -CORNER * L, -FOLD * w], B = [w / 2, -CORNER * L, -FOLD * w], pos = [R, A, T, R, T, B].flat();
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute("uv", new THREE.Float32BufferAttribute([R, A, T, R, T, B].flatMap(([x, y]) => [x / w + .5, 1 + y / L]), 2)); g.computeVertexNormals(); return g;
+    };
+    // the gilt rib and the pom-poms of a wedge, as one mesh: pom-poms up each side, at the corners, between the corners and the tip, and on the tip
+    const joined = parts => { const pos = [], nor = []; parts.forEach(([g, x, y, z]) => { const n = g.index ? g.toNonIndexed() : g, p = n.attributes.position, q = n.attributes.normal; for (let i = 0; i < p.count; i++) { pos.push(p.getX(i) + x, p.getY(i) + y, p.getZ(i) + z); nor.push(q.getX(i), q.getY(i), q.getZ(i)); } }); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); return g; };
+    const pom = new THREE.IcosahedronGeometry(.032, 1);
+    const trimGeo = (L, w) => joined([[new THREE.CylinderGeometry(.007, .009, L, 5), 0, -L / 2, 0], [pom, 0, -L, 0], ...[-1, 1].flatMap(sd => [.5, .75, 1, 1.5].map(e => e <= 1 ? [pom, sd * w / 2 * e, -CORNER * L * e, -FOLD * w * e] : [pom, sd * w / 4, -(CORNER + 1) / 2 * L, -FOLD * w / 2]))]);
+    const wedgeGeos = FAN.map(([L, w]) => wedgeGeo(L, w)), trimGeos = FAN.map(([L, w]) => trimGeo(L, w));
+    // a wedge on a pivot at its root
+    const feather = (parent, k, z) => { const g = new THREE.Group(); g.position.z = z; parent.add(g); g.add(new THREE.Mesh(wedgeGeos[k], fanM)); mesh(trimGeos[k], M.gold, 0, 0, 0, g); return g; };
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
@@ -96,25 +97,12 @@
         mesh(new THREE.BoxGeometry(.016, .045, .02), skin, 0, -.015, .045, wrist).rotation.x = -.6;   // the thumb
         return { a, elbow, wrist, fingers, sd };
       });
-      // his wings ride on his arms, a hand's breadth behind them (see FAN); fanWings() opens them with the arms
-      const fan = male ? arms.map(r => { const W = new THREE.Group(); W.position.z = -.06; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, r.sd, -k * .012)) }; }) : null;
-      // hers: three fan panels each on a frame at the shoulder blades, gilt knobs at the points
-      const wings = male ? [] : [-1, 1].map(sd => {
-        const w = new THREE.Group(); w.position.set(sd * .12, 1.2, -.14); T.add(w);
-        for (let k = 0; k < 3; k++) {
-          const p = new THREE.Mesh(panel, wingM); p.rotation.z = sd > 0 ? -.55 + k * .55 : Math.PI - Math.PI / 3 + .55 - k * .55; p.position.z = -k * .02; w.add(p);
-          [0, 1].forEach(e => { const a = p.rotation.z + e * Math.PI / 3; mesh(knob, M.gold, Math.cos(a) * C.wing, Math.sin(a) * C.wing, p.position.z, w); });
-        }
-        return w;
-      });
-      // a tail fan: hers at the small of the back; his three feathers standing up behind his head, tipped back, as in Yunnan
-      const tail = new THREE.Group(), tx = male ? -.3 : .5; tail.rotation.x = tx; T.add(tail);
-      if (male) { tail.position.set(0, 1.2, -.2); [-1, 0, 1].forEach((k, i) => { const f = feather(tail, 4, k ? -k : 1, -i * .01); f.scale.setScalar(.75); f.rotation.z = Math.PI - k * .4 - (k ? 0 : .12); }); }   // cloth to the outside; the middle one leans right, its cloth to the left
-      else { tail.position.set(0, .9, -.18); const tp = new THREE.Mesh(panel, wingM); tp.scale.setScalar(.6); tp.rotation.z = -Math.PI / 2 - Math.PI / 6; tail.add(tp); }
+      // the wings ride on the arms, a hand's breadth behind them (see FAN); fanWings() opens them with the arms
+      const fan = arms.map(r => { const W = new THREE.Group(); W.position.z = -.08; r.a.add(W); return { r, sd: r.sd, leaves: FAN.map((f, k) => feather(W, k, -k * .014)) }; });
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
-      return { D, B, U, legs, arms, wings, fan, tail, tx, male };
+      return { D, B, U, legs, arms, fan, male };
     }
     // a leg's joints: hip swing (+ back, - forward), knee bend, and the ankle, which keeps the foot level unless `point` tips the toes down
     const setLeg = (l, hip, knee, point = 0) => { l.hip.rotation.x = hip; l.knee.rotation.x = knee; l.ankle.rotation.x = -(hip + knee) + point; };
@@ -137,9 +125,9 @@
     const hopH = n => fig(n) === "L" ? (n & 16 ? .24 : .16) : 0, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a leap's height (m), higher every other phrase
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
     let hn = 0, ht = 0, pp = 0;   // which bar, the time into it, and how far along his path
-    // his wings fan open with his arms: the feathers spread from the arm's line down toward his side as far as the arm is raised,
+    // the wings fan open with the arms: the wedges spread from the arm's line down toward his side as far as the arm is raised,
     // so a lowered arm folds them; `flut` sets them trembling, as the dancer shakes them at the top of an opening
-    const fanWings = (d, flut) => d.fan && d.fan.forEach(w => { const sp = Math.min(2, Math.max(.1, w.r.lift * .95)), n = w.leaves.length - 1; w.leaves.forEach((L, k) => { L.rotation.z = -w.sd * (k / n * sp + flut * .06 * Math.sin(t * 16 + k * 1.3 + w.sd)); }); });
+    const fanWings = (d, flut) => d.fan.forEach(w => { const sp = Math.min(2, Math.max(.1, w.r.lift * .95)), n = w.leaves.length - 1; w.leaves.forEach((L, k) => { L.rotation.z = -w.sd * (k / n * sp + flut * .06 * Math.sin(t * 16 + k * 1.3 + w.sd)); }); });
     const solo = dt => {
       const d = pair[0]; ht += dt;
       while (ht > BAR) { ht -= BAR; hn++; }
@@ -175,7 +163,6 @@
       // the arms carry the wings, held long, the elbow soft, the hands curled back, trembling with the wings
       d.arms.forEach(r => { const tr = flut * Math.sin(t * 14 + r.sd); setArm(r, (r.sd > 0 ? aR : aL) + tr * .05, fwd + tuck * .15, .15 + Math.sin(t * 1.5 + r.sd) * .08, .25 + tr * .12, .6 + Math.sin(t * 1.5 + r.sd) * .1); });
       fanWings(d, flut);
-      d.tail.rotation.y = Math.sin(t * 1.4) * .2; d.tail.rotation.x = d.tx - tuck * .15 - lean * .5 + Math.sin(t * 2.2) * .04;
     };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
@@ -190,9 +177,7 @@
         d.B.position.y = -drop(bend);
         d.legs.forEach((l, j) => { const lift = Math.max(0, j ? step : -step) * .35; l.hip.rotation.z = 0; setLeg(l, -bend - lift, 2 * bend + lift * 1.6, lift * .4); });
       } else d.B.position.y = -dip * .03;   // she sinks a little on the beats, her feet hidden by the longyi
-      d.wings.forEach((w, k) => { const sd = k ? 1 : -1; w.rotation.z = -sd * (.5 - open * .6); w.rotation.y = sd * (.7 - open * .55); w.rotation.x = 0; });
       const wave = Math.sin(t * 1.2 + i * .8 - .7);   // the elbow and wrist trailing the opening and folding
       d.arms.forEach(r => setArm(r, .5 + open, -.5 + open * .3, .25 - wave * .25, .3 - wave * .25, .6 + dip * .2));
-      fanWings(d, 0);   // his wings fold and open with his arms
-      d.tail.rotation.y = Math.sin(beat * .5) * .3; d.tail.rotation.x = d.tx;
+      fanWings(d, 0);   // the wings fold and open with the arms
     });

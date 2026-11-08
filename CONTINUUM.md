@@ -52,6 +52,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-08
+- Rebuilt both kinnara dancers' wings after the site owner's two photos of a real Shan ka nok at night: each wing is now a fan of
+  seven long cloth wedges, every wedge folded along its gilt rib like an umbrella panel (a ridge in front, the sides sloping back,
+  `FOLD`), edged and tipped with gold pom-poms (rib and pom-poms joined into one mesh per wedge, `trimGeo`). Same green, gold and
+  sequin cloth. The kinnari now wears the same arm-carried wings as the kinnara (her shoulder fans are gone), opening and folding
+  with her arms in the pair's dance. Both tails are gone, as the owner said neither dancer has one. `KINNARA.wing` dropped.
+  Checked in headless renders of the solo and the pair.
 - Re-danced the kinnara's afternoon solo after a video the site owner gave (M Time · Yunnan Vision, "The Divine Bird Dance
   Kinnara", YouTube gNkFn3owbgQ: the Dehong Dai/Shan kinnara of Yunnan), keeping his green and gold colours. Wings: no longer
   fixed fans on his back but five long pointed feathers a side on gilt ribs, the first along his arm and past his hand, which
