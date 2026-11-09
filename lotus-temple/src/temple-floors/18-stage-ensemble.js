@@ -98,7 +98,7 @@
       };
       return { D, hit, step };
     };
-    const drummers = [longDrummer(C.x - 3.45, C.z - 1.05, 1.0, 0xe88a8a), longDrummer(C.x - 3.45, C.z + .15, 1.0, 0xf0f0e8)];
+    const drummers = [longDrummer(C.x - 5.6, C.z - 1.05, 1.0, 0xe88a8a), longDrummer(C.x - 5.6, C.z + .15, 1.0, 0xf0f0e8)];
     const info = { tip: "Shan long drums · ၵွင်ယၢဝ်း", toast: "Two kawng yao (ၵွင်ယၢဝ်း), Shan long drums, each slung from its drummer's shoulder: a slender wooden drum about as long as a man is tall, its one head blackened with a tuning patch of rice paste, skirted under the head with ruffled cloth in yellow, green and red. The drummers strike with the fist in the centre for the deep, booming note, and with the hand near the rim for the ringing open note or flat for the slap; the first leads and the second answers. They lead the ensemble for the ka nok, with the row of gongs (မွင်း) and the cymbals; the kinnara steps and lands on their deep stroke." };
     drummers.forEach(d => gateOn(d.D, info));
 
@@ -113,7 +113,7 @@
       const yellow = std({ color: lin(0xf0c020), roughness: .6 }), blue = std({ color: lin(0x3a8ad0), roughness: .7 }), lacq = std({ color: lin(0xd02a22), roughness: .5 }), pom = std({ color: lin(0xf4e040), roughness: .9 });
       const darkBronze = std({ color: lin(0x6a5a40), roughness: .45, metalness: .35 });
       const gap = .035, wid = GONGS.map(([rad]) => 2 * rad + gap), L = wid.reduce((a, b) => a + b, 0) + gap, TOP = .66;
-      const FX = C.x + 2.85, FZ = C.z + 1.45;   // the case's middle on the stage
+      const FX = C.x + 5.0, FZ = C.z + 1.45;   // the case's middle on the stage
       // the case: its own frame has the gongs' faces toward −z and the big gong at −x; turned round so they face the crowd and
       // the big gong is at the stage's edge
       const F = new THREE.Group(); F.position.set(FX, C.y, FZ); F.rotation.y = Math.PI; G.add(F);
@@ -196,7 +196,7 @@
     /* the cymbal player, at the back right corner, with a pair of brass cymbals held by their knobs, struck and swung apart for
        the ringing stroke on every beat */
     const cymbaler = (() => {
-      const m = musician(C.x + 3.3, C.z - 1.6, -.6, 0xe8c040), { D, hd } = m;
+      const m = musician(C.x + 5.45, C.z - 1.6, -.6, 0xe8c040), { D, hd } = m;
       const prof = [[0, .035], [.035, .035], [.045, .012], [.14, 0], [.145, -.006]].map(([r_, y]) => new THREE.Vector2(r_, y));
       const disc = new THREE.LatheGeometry(prof, 22);
       const hands = [-1, 1].map(sd => {
@@ -251,16 +251,18 @@
     pose();
     return (dt, motion) => {
       const show = FOLK.dance;
-      pair[0].D.visible = !!show; pair[1].D.visible = show === "pair"; band.forEach(b => { b.D.visible = !!show; if (b.D2) b.D2.visible = !!show; });
+      const alone = show === "solo" || show === "toKinnara";   // the kinnara dancing alone: on his own, or between the two to
+      pair[0].D.visible = alone || show === "pair"; pair[1].D.visible = show === "pair";   // the band plays for the to too band.forEach(b => { b.D.visible = !!show; if (b.D2) b.D2.visible = !!show; });
       if (!show) return;
       const d = dt * motion, q0 = t / BAR - .5, c0 = hn + ht / BAR;
       t += d;
       const sec = BAR / Math.max(motion, .01);
-      if (show === "solo") { solo(d); strokes(c0, hn + ht / BAR, frame, sec); }
+      if (alone) { solo(d); strokes(c0, hn + ht / BAR, frame, sec); }
       else {
-        pose();   // the pair dip into their knees on the deep strokes and open and fold their wings gong to gong
+        if (show === "pair") pose();   // the pair dip into their knees on the deep strokes and open and fold their wings gong to gong
         strokes(q0, t / BAR - .5, frame, sec);
       }
       band.forEach(b => b.step(d));
+      return show === "toKinnara" ? hn + ht / BAR : show === "to" || show === "twoTo" ? t / BAR - .5 : undefined;   // the bar count, for the to to keep time to
     };
   }

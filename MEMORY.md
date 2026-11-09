@@ -11,6 +11,11 @@ lesson when you learn one, and delete a lesson once it stops being true.
 
 ## Building the world
 
+- `build-dist.sh` joins the pieces in the order the *shell* sorts `src/<name>/*.js`, so it sets `LC_ALL=C` for the whole script.
+  In other locales the dash is ignored and `18b-x.js` sorts before `18-y.js`, which drops a new piece into the middle of the
+  previous function (here `toDancers` landed inside `kinnaraDancers` and was "not defined"). Prefix a new piece with the
+  number of the piece before it plus a letter (`18b-`), and check its place with `grep -n "function name" dist/*.js`.
+
 - `CONFIG` lives in `lotus-altar.js` and isn't passed to `TempleFloors(ctx)`. Tweakable values for outdoor places in
   `temple-floors.js` go in a local constant next to the builder (`HILL`, `MON`, `FALLS`).
 - The near hills (`peak()` in `mountainsAndForest`, a ring 150–165 m out) are wide cones, radius 30–46 m, so their feet

@@ -37,6 +37,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the to dance) and the romanisation "ka to" in its toast.
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
 - Have a Shan speaker check ၸၢပ်ႈ (the cymbals on the festival stage; a best guess, after the Tai word chap).
@@ -50,6 +51,29 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-09 (night)
+- Added the to dance (`toDancers` in `src/temple-floors/18b-to-dance.js`), as the site owner asked, after their photo and
+  YouTube _U-imZ1KuM8: two dancers in one white costume (gold/green/red trim, swirls on the flanks, ruffs at knees and ankles,
+  gilt paws, long maned neck, wagging tail). After the site owner's note the head is a deer's: long tapering muzzle, black nose,
+  big eyes, large ears out to the sides and branched deer antlers (`tine()`), in place of the first crest tuft and face ruff. The body is stretched
+  each frame between the back dancer's rump and the front dancer's chest, so rearing (back crouched, front on tiptoe, neck up)
+  looks like the photo. One figure per drum bar, from the bar count the kinnara step now returns while the to is on.
+- Then a second, yellow to (`toDancers(..., yellow)`: yellow coat, white scallops in the trim, tip "The yellow to"), and the stage
+  programme the site owner asked for (`CONFIG.dancers`, lists of windows, ICT): kinnara solo 14–15.5, pair 16–17.75, to 18–19.5,
+  `twoTo` 19.75–20.5 (both to round an oval), pair 20.75–21.75, `toKinnara` 22–23 (the kinnara alone, kept to the middle, with a to
+  at each side facing the crowd). "Two to and Kinnara" was read as the kinnara alone, not the pair; confirm with the site owner.
+  With a partner close by, the to's turn figure is a swing, not a full turn. `?dancers=to|twoTo|toKinnara` force them.
+- Then widened the festival pavilion stage, as the site owner asked, so the two to can move freely: 14 × 6.5 m (was 9 × 5.5;
+  `PW`, `PD`, `PZ` in `festivalGround`, back edge unchanged). The band moved out to the new sides (drums at x −5.6, gongs at
+  +5.0, cymbals at +5.45), the flag pole to `FZ` 3.0 (1.35 m of grass from the bottom step), the audience rows 0.8 m further
+  out (`AUDIENCE`). The to's paths widened to match (one to ±2.2 m, the two to round a 2.4 × 1.1 m oval, at ±3.4 m in the
+  finale) and the kinnara solo roams 1.3× wider. Checked in headless renders of `twoTo` and `toKinnara`. The audience toasts now say "the dancing" rather than naming the kinnara.
+- `build-dist.sh` now exports `LC_ALL=C` before the glob (see `MEMORY.md`); the existing pieces' order is unchanged.
+- Checked in headless renders of every figure; pair and solo still load without errors. Not yet committed: the site owner
+  wants to see it locally first.
+- Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the dance's name, given by the site owner) and our romanisation "ka to"; the toast's
+  Tavatimsa welcome story is the common telling, worth confirming.
 
 ### 2026-11-09
 - Front street lights, as the site owner asked (from a screenshot of the town road's light): the red lantern posts on the

@@ -5,7 +5,17 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-09
 
+### Added
+- The to dance (Shan တၢင်းၵႃႈတူဝ်း, Burmese တိုးနယား) on the festival stage from 6 to 7:30 PM Bangkok time: two dancers in one
+  white beast costume trimmed in gold, green and red prance, bow to the crowd, rear up, crouch, shake the mane and wag the tail
+  to the Shan ensemble. It has a deer's face and branched antlers.
+- A second, yellow to, which dances with the white one, and a closing dance with both to and the kinnara.
+- The festival ground's pavilion stage is wider and deeper (14 × 6.5 m), so the dancers have room; the band, the flag pole and
+  the audience moved back to suit.
+
 ### Changed
+- The festival stage's programme (Bangkok time): the kinnara alone 2–3:30 PM, the kinnara and kinnari 4–5:45 PM, the to 6–7:30 PM,
+  the two to 7:45–8:30 PM, the kinnara and kinnari 8:45–9:45 PM, and the two to with the kinnara 10–11 PM.
 - The front street outside the gate has the town road's tall modern street lights in place of the red lantern posts, and
   they now run its whole length, from the hospital corner to the police station.
 - When it rains during a kinnara dance, the children in the festival ground's front rows go home and the young people standing

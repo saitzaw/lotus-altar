@@ -53,10 +53,11 @@ const CONFIG = {
   // townsfolk: ten people in the seven-day market and five on the roads, out from `from` until they go home at `until` o'clock on the temple's clock;
   // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
   townsfolk: { from: 18, until: 22, umbrella: .3 },
-  // the kinnara dancers on the festival ground's stage, as [from, until] in hours on the temple's clock (15.75 is 3:45 pm): the
-  // kinnara alone, leaping, before the biggest crowd (the epic's opening), then the kinnara and kinnari pair in the evening;
-  // ?dancers=solo, ?dancers=pair (or 1) or ?dancers=0 forces one
-  dancers: { solo: [14, 15.75], pair: [16, 23] },
+  // the dances on the festival ground's stage, each a list of [from, until] in hours on the temple's clock (17.75 is 5:45 pm): the
+  // kinnara alone, leaping, before the biggest crowd (the epic's opening), the kinnara and kinnari pair, the to (တၢင်းၵႃႈတူဝ်း,
+  // Burmese တိုးနယား) at dusk, the white and the yellow to together, the pair again, and to close, the two to with the kinnara
+  // alone between them; ?dancers=solo, pair (or 1), to, twoTo, toKinnara, or ?dancers=0 forces one
+  dancers: { solo: [[14, 15.5]], pair: [[16, 17.75], [20.75, 21.75]], to: [[18, 19.5]], twoTo: [[19.75, 20.5]], toKinnara: [[22, 23]] },
   // dragon and lion dance training (舞龍 舞獅) on the kung fu ground, for the `days` before Chinese New Year (newYear: the first day of
   // the first lunar month, [year, month, day]); hours are [from, until] on the temple's clock, 21.5 is 9:30 pm. On New Year's day itself
   // the troupe dances in the town, so the ground is quiet. ?lionDragon=dragon, ?lionDragon=lion or ?lionDragon=0 forces one

@@ -42,8 +42,8 @@ trousers or an ankle-length longyi, and anyone coming into view appears already 
 are three shared `InstancedMesh`es.
 
 The kinnara dancers (`kinnaraDancers` in `temple-floors.js`), masked and in the northern style's green and gold (keep both: the
-site owner's photos of southern dress were a reference for the wings only), take the festival ground's pavilion stage twice a day on the
-temple's clock (`CONFIG.dancers`, [from, until] in fractional hours): the kinnara alone from 2 to 3:45 PM, the opening of the
+site owner's photos of southern dress were a reference for the wings only), take the festival ground's pavilion stage on the
+temple's clock (`CONFIG.dancers`, each a list of [from, until] in fractional hours): the kinnara alone from 2 to 3:30 PM, the opening of the
 epic, danced after the Dehong Dai/Shan kinnara of Yunnan (YouTube gNkFn3owbgQ): a 16-bar phrase of figures, one per drum bar
 (`FIG`: step, bank, knee lift, whirl, crouch and rise, leap), each starting and ending in the same soft stance. Both dancers'
 wings are fans of eight long, broad cloth wedges a side (about 1.4 m), each folded along its rib into a ridge, white-trimmed, with a pom-pom
@@ -52,8 +52,18 @@ the lowest wedge along the arm and spreads the rest up to the edge of a fixed mi
 standing still behind the head like an aura; on each side a linking wing of `LINKS` broad wedges, rooted with the side wing
 and spread evenly from its top wedge to the middle fan's edge `EDGE`, joins them so the fan moves as one) as far as the arm is raised, so the open wings stand behind the dancer as one
 peacock's-tail fan and close when the arms come down (`setArm` records `r.lift`). Neither dancer has a tail. Jointed legs and arms via `setLeg`/`setArm`; a leap is
-a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 11 PM,
-circling each other. A Shan ensemble, all in tan Shan jackets and baggy trousers, plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
+a crouch-and-push then a gravity arc, see the comment above `solo`; then the masked kinnara and kinnari pair from 4 to 5:45 PM,
+circling each other; the to from 6 to 7:30 PM; the white and the yellow to together from 7:45 to 8:30 PM (`twoTo`, round an
+oval on opposite sides); the pair again from 8:45 to 9:45 PM; and from 10 to 11 PM the two to with the kinnara alone between them
+(`toKinnara`: the kinnara's solo kept to the middle, `roam`, the to each at its own side facing the crowd; a bigger crowd, as for
+the solo). The shows are `DANCES` in `07-festivals-and-weather.js`, in the order `danceNow()` checks them.
+The to (`toDancers` in `18b-to-dance.js`, Shan တၢင်းၵႃႈတူဝ်း, Burmese တိုးနယား, after the site owner's photo and YouTube _U-imZ1KuM8)
+is two dancers in one white costume trimmed gold, green and red: two jointed pairs of legs with gold/green/red ruffs and gilt paws,
+a barrel body stretched each frame between the back dancer's rump and the front dancer's chest (so it tips up when the back one
+crouches), a long neck with a mane, a deer's head (long muzzle, black nose, big eyes, ears out to the sides, branched
+antlers built by `tine()`) and a wagging tail. It keeps time with the band: the kinnara step returns the
+bar count while a to is on and plays the music (the kinnara pair are hidden), and the to runs one figure per bar round its
+own 16-bar `FIG` (prance, bow to the crowd, shake, rear, hop, turn, crouch). A Shan ensemble, all in tan Shan jackets and baggy trousers, plays at the sides of the stage whenever they are on: two long drums, each slung from its drummer's shoulder (`longDrummer()`), a
 row of five graduated gongs in a painted case, all struck at once by a row of beaters on a rod that a player on a stool pushes
 (`setPush`), and cymbals (`musician(x, z, ry, cloth, sit)`, `GONGS`, `CHORD`,
 `PAIR` (gongs and cymbals over a pair of beats), `FIGS` (the drums' sixteenth-note figures, picked per beat by a fixed hash,
@@ -63,7 +73,7 @@ first drum on every beat; a bar (one dance figure,
 `BAR` 1.59 s) is three beats; labels in
 Shan only), keeping time with the dancers (one figure per bar, `BAR`). Players' hands land on their instruments through `fit()`,
 a pose search run once at build time. The strokes reach the ambience through `temple.takeBand()`. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
-and can't be clicked. `?dancers=solo`, `?dancers=pair` (or `1`) and `?dancers=0` force one.
+and can't be clicked. `?dancers=solo`, `pair` (or `1`), `to`, `twoTo`, `toKinnara` and `?dancers=0` force one.
 Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: blocky low-poly children sitting cross-legged
 and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked
 `epic` join only for the solo, making 37. When it rains (the townsfolk's `umbrellas` switch) the children go home and the young people standing hold

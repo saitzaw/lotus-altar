@@ -39,7 +39,7 @@
 | `04-altar-dressing.js` | lights, dust, flowers, fruit, water, effects, tweens; **`shrine()`** for every other statue's altar | `addFlower` `addFruit` `tween` `shrine` `offerAtShrine` |
 | `05-pagoda-and-camera-modes.js` | pagoda floors and the view from outside; camera modes | `applyMode` `placeInfo` |
 | `06-sun-and-moon.js` | real sun/moon positions and moon phase | `Astro` `updateCelestial` `moonTexture` |
-| `07-festivals-and-weather.js` | Halloween, townsfolk hours, kinnara dance and lion/dragon schedule, beat officer (commented out), day/night sky, weather | `festNow` `folkNow` `danceNow` `drillNow` `skyColors` `applySky` `weatherNow` `weatherStep` |
+| `07-festivals-and-weather.js` | Halloween, townsfolk hours, stage dance schedule (kinnara, to) and lion/dragon schedule, beat officer (commented out), day/night sky, weather | `festNow` `folkNow` `danceNow` `drillNow` `skyColors` `applySky` `weatherNow` `weatherStep` |
 | `08-sound.js` | WebAudio ambience and the festival stage ensemble | `ambStart` `ambStep` `templeBell` `longDrum` `stageGong` `stageCymbals` |
 | `09-top-game-and-action-bar.js` | four-animal top hook-up; action bar sheets | `openTopGame` `openSheet` `setPanel` |
 | `10-walking.js` | first-person walking, market at eye level, pavilion bench, flying between places | `enterWalk` `walkStep` `KEYMAP` `goTo` |
@@ -71,6 +71,7 @@
 | `16-festival-ground.js` | festival ground and stage | `festivalGround` |
 | `17-kinnara-dance.js` | kinnara/kinnari dancers | `kinnaraDancers` |
 | `18-stage-ensemble.js` | stage musicians (*inside `kinnaraDancers`*) | |
+| `18b-to-dance.js` | the to (two dancers in one beast costume), white or (`yellow`) yellow, keeps time to the ensemble's bar count | `toDancers` |
 | `19-dance-audience.js` | audience | `festivalAudience` |
 | `20-front-street.js` | houses along the front street | `streetFrontage` |
 | `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |

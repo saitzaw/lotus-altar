@@ -170,7 +170,8 @@
       const out = .08 + .3 * deep;   // the knees turned out, wider in the squat
       // along his path round the stage, kept clear of the musicians at the sides: moving while a foot is up, or in the air
       pp += f === "L" ? (onG ? 0 : 6 * s * (1 - s) * dt / ta) : RATE[f] * 6 * u * (1 - u) * dt / BAR;
-      d.D.position.set(C.x + Math.sin(pp * .3) * 1.3, C.y, C.z + Math.sin(pp * .6) * .6);
+      const roam = FOLK.dance === "toKinnara" ? .6 : 1.3;   // a wider stage to roam; between the two to he keeps to the middle, a little forward
+      d.D.position.set(C.x + Math.sin(pp * .3) * 1.3 * roam, C.y, C.z + Math.sin(pp * .6) * .6 * roam + Math.max(0, 1 - roam) * .8);
       d.D.rotation.y = Math.sin(pp * .4) * .9 + spin;   // mostly turned to the crowd
       const drop2 = th => (THIGH + SHIN) * (1 - Math.cos(th) * Math.cos(out));   // the hips' sink with the knees bent and turned out
       d.B.position.y = y - drop2(bend) + step * .025 + knee * .035;

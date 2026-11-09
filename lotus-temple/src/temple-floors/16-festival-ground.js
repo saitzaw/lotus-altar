@@ -24,7 +24,7 @@
     }
     // the prayer-flag pole (တံခွန်တိုင်) near the centre, crowned by a golden hamsa, with a long streamer; set a little downhill so
     // there is room to walk between its plinth and the pavilion's steps
-    const FZ = 2.2;
+    const FZ = 3.0;
     mesh(new THREE.CylinderGeometry(.9, 1.1, .6, 8), std({ color: 0xf2eee4, roughness: .8 }), 0, .3, FZ, G);
     mesh(new THREE.CylinderGeometry(.08, .14, 14, 10), std({ color: 0xc02a2a, roughness: .5 }), 0, 7, FZ, G);
     const hamsa = new THREE.Group(); hamsa.position.set(0, 14.4, FZ); G.add(hamsa);
@@ -37,7 +37,7 @@
     // the pavilion stage (မဏ္ဍပ်): teak posts, a raised floor, a two-tier gable roof like the monasteries', at the uphill side
     const teak = std({ color: 0x43200f, roughness: .7 }), roofT = corrugated("#6a3a24", "#8e5838", "#40200f"); roofT.repeat.set(6, 1);
     const roofM = std({ map: roofT, roughness: .5, metalness: .35, side: THREE.DoubleSide });
-    const PZ = -R / 2 + 3.6, PW = 9, PD = 5.5;
+    const PZ = -R / 2 + 4.1, PW = 14, PD = 6.5;   // its centre, width and depth: wide enough for the two to to dance round each other
     sRect(G, -PW / 2, PW / 2, PZ - PD / 2, PZ + PD / 2 + 1.3); sCircle(G, 0, FZ, 1.1); [-8, -4, 4, 8].forEach(x => sCircle(G, x, R / 2 - 3, 1.1));
     mesh(new THREE.BoxGeometry(PW, 1.0, PD), teak, 0, .5, PZ, G);
     for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(2.4, 1 - i * .25, .3), teak, 0, (1 - i * .25) / 2, PZ + PD / 2 + .15 + i * .3, G);
@@ -66,11 +66,11 @@
       for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
-    const dancers = kinnaraDancers(G, list, 0, PZ);   // on the stage's centre
+    const dancers = kinnaraDancers(G, list, 0, PZ), to = toDancers(G, list, 0, PZ), to2 = toDancers(G, list, 0, PZ, true);   // on the stage's centre
     G.updateMatrixWorld(true); { const w = G.localToWorld(new THREE.Vector3(0, 0, PZ)); STAGE[0] = w.x; STAGE[1] = w.z; }
     const audience = festivalAudience(G, list, 0, PZ, [[0, FZ, 1.9], ...[-8, -4, 4, 8].map(x => [x, R / 2 - 3, 1.5])]);   // kept off the flag pole and the kahtein trees
     updaters.pagoda.push((dt, t, motion) => {
-      dancers(dt, motion); audience(dt, motion);
+      const bar = dancers(dt, motion); to(dt, motion, bar); to2(dt, motion, bar); audience(dt, motion);
       flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 4 - t * 3 + i) * .08 * x * motion); } p.needsUpdate = true; });
       streamer.rotation.y = Math.sin(t * .6) * .4 * motion; streamer.rotation.z = Math.sin(t * .9) * .06 * motion;
     });

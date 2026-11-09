@@ -3,8 +3,8 @@
      switch) the children go home and the young people stay under umbrellas; the dancers and band are dry under the pavilion roof.
      Blocky low-poly figures like the townsfolk, one mesh each; the children bob and rock as they watch. Returns the step to run each frame ---------- */
   function festivalAudience(G, list, cx, cz, keepOff) {
-    const C = AUDIENCE, r = rng(4242), data = { tip: "The audience · ပွဲကြည့်ပရိသတ်", toast: "Children from the town sit right up at the front of the stage, and the young people stand behind them, to watch the kinnara and kinnari dance." }, dry = data.toast,
-          wet = "It's raining, so the children have gone home; the young people stay on under their umbrellas to watch the kinnara and kinnari dance, dry under the pavilion roof.";
+    const C = AUDIENCE, r = rng(4242), data = { tip: "The audience · ပွဲကြည့်ပရိသတ်", toast: "Children from the town sit right up at the front of the stage, and the young people stand behind them, to watch the dancing." }, dry = data.toast,
+          wet = "It's raining, so the children have gone home; the young people stay on under their umbrellas to watch the dancing, dry under the pavilion roof.";
     const M_ = std({ vertexColors: true, flatShading: true, roughness: .85 });
     onDaylight(d => M_.emissive.copy(lerpC(0x1c1814, 0x000000, d)));   // a little lift so they read under the lanterns
     const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18, pk = l => l[(r() * l.length) | 0];
@@ -57,7 +57,7 @@
     folk.forEach((f, i) => { umbs.setColorAt(i, f.umb); umbs.setMatrixAt(i, zero); });
     let t = 0, wasWet = null;
     return (dt, motion) => {
-      const show = FOLK.dance, big = show === "solo", rain = !!show && FOLK.umbrellas;
+      const show = FOLK.dance, big = show === "solo" || show === "toKinnara", rain = !!show && FOLK.umbrellas;
       folk.forEach(f => f.body.visible = !!show && (big || !f.epic) && !(rain && f.sit));   // the extra rows come only for the solo, the epic's opening; children go home in the rain
       if (rain !== wasWet) {   // put the umbrellas up or down
         wasWet = rain; data.toast = rain ? wet : dry;

@@ -136,13 +136,13 @@
     return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
-  // floor height); the kinnara dances alone in the afternoon and the pair in the evening, see CONFIG.dancers and setDancers()
+  // floor height); the kinnara dances alone in the afternoon, the pair in the evening, with the to between, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22 };   // stage floor height (m), circle radius (m), turn speed (rad/s)
-  // their audience: rows on arcs round the stage's centre, in front of it (the stage's front edge is 2.75 m out, its steps 4 m):
+  // their audience: rows on arcs round the stage's centre, in front of it (the stage's front edge is 3.25 m out, its steps 4.5 m):
   // seated children close in, young people standing behind; `spread` is the arc's width in radians; `epic` rows come only for the
   // afternoon solo, the opening of the epic, when the crowd is biggest
-  const AUDIENCE = { rows: [{ rad: 5.2, n: 10, sit: true, spread: 2.0 }, { rad: 7.0, n: 11, sit: false, spread: 1.75 },
-    { rad: 6.1, n: 7, sit: true, spread: 1.5, epic: true }, { rad: 8.6, n: 12, sit: false, spread: 1.9, epic: true }, { rad: 10.0, n: 8, sit: false, spread: 1.5, epic: true }] };
+  const AUDIENCE = { rows: [{ rad: 6.0, n: 10, sit: true, spread: 1.9 }, { rad: 7.8, n: 11, sit: false, spread: 1.7 },
+    { rad: 6.9, n: 7, sit: true, spread: 1.45, epic: true }, { rad: 9.4, n: 12, sit: false, spread: 1.8, epic: true }, { rad: 10.8, n: 8, sit: false, spread: 1.45, epic: true }] };
   function shanStupaHill(g) {
     const list = picks.pagoda, { cx, cz, top, rTop, rBase } = HILL;
     const tip = { tip: `The stupa hill · climb the stair to ${SHAN_NAMES.stupa}` };
