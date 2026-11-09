@@ -52,6 +52,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 ## Log
 
 ### 2026-11-09
+- Front street lights, as the site owner asked (from a screenshot of the town road's light): the red lantern posts on the
+  front street are gone; it now has the town road's modern street light (`streetLight` in `10-town.js`, shared by both roads)
+  at the kerb with the arm out over the road, alternate sides every 10 m from x = -120 to 140 (they used to stop at ±60).
+  Street trees stay in the other slots near the gate. Skipped: the gate, junction and lane mouths (`gaps`, `LANES`), the
+  hill-stair corner (x ≈ -45 south) and the fire/police aprons (x 103–142 north). Checked in a headless night render.
 - Rain at the festival ground, as the site owner asked: while the townsfolk's umbrellas are up (`wx.rain > CONFIG.townsfolk.umbrella`),
   the seated children in the dancers' audience go home and the standing young people hold umbrellas (`festivalAudience`: a second
   body geometry with the right arm raised, umbrellas as one `InstancedMesh`; colours from their own `rng(4243)` so the crowd's

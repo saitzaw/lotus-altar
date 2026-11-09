@@ -96,6 +96,19 @@
       mesh(new THREE.BoxGeometry(2.4, 1.1, .05), steel, 0, .55, fz, h);
     }
   }
+  // a modern street light: a tall steel pole by the kerb, a long arm out over the road and a flat white lamp head that
+  // glows at night. The arm points along local -x turned by `ry` (0: west, PI / 2: south, -PI / 2: north)
+  const lightPoleG = new THREE.CylinderGeometry(.07, .1, 5.2, 8), lightArmG = new THREE.BoxGeometry(1.6, .07, .07), lightHeadG = new THREE.BoxGeometry(.5, .1, .25);
+  function streetLight(g, x, z, ry) {
+    const c = Math.cos(ry), s = Math.sin(ry), hx = x - 1.5 * c, hz = z + 1.5 * s;
+    sCircle(g, x, z, .12);
+    mesh(lightPoleG, steel, x, 2.6, z, g);
+    mesh(lightArmG, steel, x - .8 * c, 5.15, z + .8 * s, g).rotation.y = ry;
+    const head = mesh(lightHeadG, std({ color: 0xf8f4e8, emissive: 0xfff2d0, emissiveIntensity: 1 }), hx, 5.08, hz, g); head.rotation.y = ry;
+    const gl = glowSprite(0xfff0d0, 2.6, .7); gl.position.set(hx, 4.95, hz); g.add(gl);
+    onDaylight(d => { gl.material.opacity = .7 * (1 - d); head.material.emissiveIntensity = 1 - .8 * d; });
+    poleLights.push({ x: hx, z: hz, set: lit => { gl.material.opacity = lit ? .7 * (1 - daylight) : 0; head.material.emissiveIntensity = lit ? 1 - .8 * daylight : 0; } });
+  }
   function shanTown(g) {
     const { roadX, roadW, z0, z1 } = TOWN, len = z1 - z0, mid = (z0 + z1) / 2;
     // asphalt with a dashed centre line and kerbed concrete pavements
@@ -108,17 +121,8 @@
       mesh(new THREE.BoxGeometry(1.6, .18, len), std({ color: 0x8a867e, roughness: .9 }), px, .09, mid, g);
       mesh(new THREE.BoxGeometry(.14, .2, len), std({ color: 0xb0aca2, roughness: .8 }), roadX + sd * roadW / 2, .1, mid, g);
     });
-    // modern street lights on the east pavement, glowing at night
-    for (let z = z0 + 4; z < z1 - 2; z += 12) {
-      const x = roadX + roadW / 2 + 1.1;
-      sCircle(g, x, z, .12);
-      mesh(new THREE.CylinderGeometry(.07, .1, 5.2, 8), steel, x, 2.6, z, g);
-      mesh(new THREE.BoxGeometry(1.6, .07, .07), steel, x - .8, 5.15, z, g);
-      const head = mesh(new THREE.BoxGeometry(.5, .1, .25), std({ color: 0xf8f4e8, emissive: 0xfff2d0, emissiveIntensity: 1 }), x - 1.5, 5.08, z, g);
-      const gl = glowSprite(0xfff0d0, 2.6, .7); gl.position.set(x - 1.5, 4.95, z); g.add(gl);
-      onDaylight(d => { gl.material.opacity = .7 * (1 - d); head.material.emissiveIntensity = 1 - .8 * d; });
-      poleLights.push({ x: x - 1.5, z, set: lit => { gl.material.opacity = lit ? .7 * (1 - daylight) : 0; head.material.emissiveIntensity = lit ? 1 - .8 * daylight : 0; } });
-    }
+    // modern street lights on the east pavement, their arms out over the road
+    for (let z = z0 + 4; z < z1 - 2; z += 12) streetLight(g, roadX + roadW / 2 + 1.1, z, 0);
     // a row of trees in the strip between the temple wall and the road
     for (let z = z0 + 8; z < z1 - 4; z += 9) (Math.round(z) % 2 ? pine : tree)(g, -35.3, z, .7, 70 + z | 0);
     // houses along the west side of the road, facing it

@@ -62,7 +62,7 @@
 | `07-halls-3f-5f-4f.js` | 3F Meditation, 5F Thousand-Armed Guanyin (+ shop), 4F Medicine Buddha | `meditationHall` `thousandArms` `medicineHall` |
 | `08-lotus-pond.js` | outdoor pond, coin wish, bathing the Buddha | `outdoorPond` `pondRituals` |
 | `09-trees-and-walls.js` | trees, ginkgo, pine, temple wall, grounds | `tree` `ginkgo` `pine` `templeWall` `templeGrounds` |
-| `10-town.js` | Shan town road and houses, river crossing | `TOWN` `LANES` `shanHouse` `shanTown` `riverCrossing` |
+| `10-town.js` | Shan town road and houses, river crossing | `TOWN` `LANES` `streetLight` `shanHouse` `shanTown` `riverCrossing` |
 | `11-waterfall-and-stream.js` | waterfall, paddy fields | `FALLS` `waterfall` `paddyFields` |
 | `12-market.js` | seven-day market | `sevenDayMarket` |
 | `13-stupa-hill.js` | stupa hill and **terrain** (height/walkable ground) | `HILL` `groundAt` `walkAt` `terrainAt` `MON` `KINNARA` `AUDIENCE` `shanStupaHill` |

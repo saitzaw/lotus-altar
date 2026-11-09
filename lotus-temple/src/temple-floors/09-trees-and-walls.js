@@ -97,20 +97,17 @@
     for (let i = 0; i < 44; i++) dash.setMatrixAt(i, m4.makeTranslation(-119 + i * 6, .05, 54));
     for (let i = 0; i < 9; i++) dash.setMatrixAt(44 + i, m4.makeRotationY(Math.PI / 2).setPosition(HX, .05, 46 - i * 6));   // and up the road to the hospital
     g.add(dash);
-    // lamp posts and street trees along both pavements, clear of the gate
-    for (let x = -60; x <= 60; x += 10) {
+    // street lights the whole length of the street, standing at the kerb with their arms out over the road, on alternate
+    // sides every 10 m; near the gate the other side gets a street tree instead. None at the gate, in a junction or lane
+    // mouth, at the corner where the hill stair comes down, or across the fire and police stations' aprons
+    for (let x = -120; x <= 140; x += 10) {
       if (Math.abs(x) < 7) continue;
-      [[48.5, 0], [59.6, Math.PI]].forEach(([z, ry], side) => {
-        if (side === 0 && Math.abs(x - TOWN.roadX) < 6) return;   // the mouth of the town road
-        if (LANES.some(l => l.mouth && (l.z0 > 55) === !!side && x > l.x0 - 1.5 && x < l.x1 + 1.5)) return;   // and of the back lanes
-        if ((x / 10 + side) % 2 === 0) {
-          mesh(new THREE.CylinderGeometry(.07, .1, 3.4, 8), M.lacquer, x, 1.7, z, g);
-          sCircle(g, x, z, .12);
-          const arm = mesh(new THREE.BoxGeometry(.06, .06, .7), M.lacquer, x, 3.35, z + (side ? -.3 : .3), g); arm.rotation.y = ry;
-          const l = flat(mesh(lanternGeo, lanternMat, x, 3.05, z + (side ? -.6 : .6), g)); l.scale.set(.75, .9, .75);
-          const gl = lanternGlow(0xff7a3a, 2.2, .6); gl.position.copy(l.position); g.add(gl);
-          poleLights.push({ x, z: l.position.z, set: lit => { l.material = lit ? lanternMat : lanternOff; gl.material.opacity = lit ? .6 * (1 - daylight) : 0; } });
-        } else (((x / 10) | 0) % 4 === 1 || ((x / 10) | 0) % 4 === -3 ? tree : pine)(g, x, z + (side ? .3 : -.3), .85, seed++);
+      [[49.4, Math.PI / 2], [58.6, -Math.PI / 2]].forEach(([z, ry], side) => {
+        if (side === 0 && (gaps.some(([a, b]) => x > a - 1.5 && x < b + 1.5) || (x > 103 && x < 142))) return;
+        if (side === 1 && Math.abs(x + 45) < 4) return;
+        if (LANES.some(l => l.mouth && (l.z0 > 55) === !!side && x > l.x0 - 1.5 && x < l.x1 + 1.5)) return;   // and the back lanes
+        if ((x / 10 + side) % 2 === 0) streetLight(g, x, z, ry);
+        else if (Math.abs(x) <= 60) (((x / 10) | 0) % 4 === 1 || ((x / 10) | 0) % 4 === -3 ? tree : pine)(g, x, (side ? 59.9 : 48.2), .85, seed++);
       });
     }
   }

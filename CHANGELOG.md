@@ -6,6 +6,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-09
 
 ### Changed
+- The front street outside the gate has the town road's tall modern street lights in place of the red lantern posts, and
+  they now run its whole length, from the hospital corner to the police station.
 - When it rains during a kinnara dance, the children in the festival ground's front rows go home and the young people standing
   behind stay to watch under umbrellas; the dancers and the band are dry under the pavilion roof.
 
