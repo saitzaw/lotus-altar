@@ -3,6 +3,12 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-09
+
+### Changed
+- When it rains during a kinnara dance, the children in the festival ground's front rows go home and the young people standing
+  behind stay to watch under umbrellas; the dancers and the band are dry under the pavilion roof.
+
 ## 2026-11-07
 
 ### Changed

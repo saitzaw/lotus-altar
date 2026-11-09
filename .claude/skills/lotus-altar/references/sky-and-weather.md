@@ -66,7 +66,8 @@ a pose search run once at build time. The strokes reach the ambience through `te
 and can't be clicked. `?dancers=solo`, `?dancers=pair` (or `1`) and `?dancers=0` force one.
 Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: blocky low-poly children sitting cross-legged
 and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked
-`epic` join only for the solo, making 37.
+`epic` join only for the solo, making 37. When it rains (the townsfolk's `umbrellas` switch) the children go home and the young people standing hold
+umbrellas (a second body with the right arm raised, umbrellas as one `InstancedMesh`); the dancers and band stay dry under the pavilion roof.
 
 ## Dragon and lion dance training
 

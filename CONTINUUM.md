@@ -51,6 +51,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-09
+- Rain at the festival ground, as the site owner asked: while the townsfolk's umbrellas are up (`wx.rain > CONFIG.townsfolk.umbrella`),
+  the seated children in the dancers' audience go home and the standing young people hold umbrellas (`festivalAudience`: a second
+  body geometry with the right arm raised, umbrellas as one `InstancedMesh`; colours from their own `rng(4243)` so the crowd's
+  layout is unchanged). The audience toast says so. Dancers and band stay on, under the pavilion roof. Checked in a headless render.
+
 ### 2026-11-08
 - Joined each kinnara side wing to the middle fan, as the site owner asked: a linking wing on each side, three broad wedges
   (`LINK`, 1.45 × 0.8 m) rooted with the side wing and spread evenly by `fanWings()` from its top wedge to the middle fan's edge

@@ -1,8 +1,10 @@
   /* ---------- the dancers' audience: children sitting cross-legged on the grass in a front row before the stage and young people
-     standing behind them, all turned to the dancers; out while the dancers are (setDancers). Blocky low-poly figures like the
-     townsfolk, one mesh each; the children bob and rock as they watch. Returns the step to run each frame ---------- */
+     standing behind them, all turned to the dancers; out while the dancers are (setDancers). When it rains (the townsfolk's umbrella
+     switch) the children go home and the young people stay under umbrellas; the dancers and band are dry under the pavilion roof.
+     Blocky low-poly figures like the townsfolk, one mesh each; the children bob and rock as they watch. Returns the step to run each frame ---------- */
   function festivalAudience(G, list, cx, cz, keepOff) {
-    const C = AUDIENCE, r = rng(4242), data = { tip: "The audience · ပွဲကြည့်ပရိသတ်", toast: "Children from the town sit right up at the front of the stage, and the young people stand behind them, to watch the kinnara and kinnari dance." };
+    const C = AUDIENCE, r = rng(4242), data = { tip: "The audience · ပွဲကြည့်ပရိသတ်", toast: "Children from the town sit right up at the front of the stage, and the young people stand behind them, to watch the kinnara and kinnari dance." }, dry = data.toast,
+          wet = "It's raining, so the children have gone home; the young people stay on under their umbrellas to watch the kinnara and kinnari dance, dry under the pavilion roof.";
     const M_ = std({ vertexColors: true, flatShading: true, roughness: .85 });
     onDaylight(d => M_.emissive.copy(lerpC(0x1c1814, 0x000000, d)));   // a little lift so they read under the lanterns
     const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18, pk = l => l[(r() * l.length) | 0];
@@ -24,12 +26,16 @@
       [cyl(.045, .045, .06, 6), skin, 0, .52, 0], ...head(.66, skin, girl, top)
     ];
     // a young person standing: jeans or a longyi, a shirt, arms down
-    const stander = (skin, top, lower, girl) => [
+    const stander = (skin, top, lower, girl, hd, wet) => [
       ...(girl ? [[cyl(.16, .18, .78), lower, 0, .39, 0]] : [[box(.12, .78, .12), lower, -.08, .39, 0], [box(.12, .78, .12), lower, .08, .39, 0]]),
       [box(.13, .04, .22), 0x3a2e28, -.08, .02, .04], [box(.13, .04, .22), 0x3a2e28, .08, .02, .04],   // sandals
-      [cyl(.155, .165, .5), top, 0, 1.02, 0], [box(.09, .46, .095), top, -.2, 1.01, 0], [box(.09, .46, .095), top, .2, 1.01, 0],
-      [box(.07, .08, .08), skin, -.2, .74, 0], [box(.07, .08, .08), skin, .2, .74, 0], [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...head(1.45, skin, girl, top)
+      [cyl(.155, .165, .5), top, 0, 1.02, 0], [box(.09, .46, .095), top, -.2, 1.01, 0],
+      [box(.07, .08, .08), skin, -.2, .74, 0], ...(wet ? [[box(.09, .26, .095), top, .2, 1.12, 0], [box(.09, .095, .26), top, .2, 1.0, .12], [box(.07, .08, .08), skin, .2, 1.0, .28]]   // in the rain the right hand holds the umbrella up
+        : [[box(.09, .46, .095), top, .2, 1.01, 0], [box(.07, .08, .08), skin, .2, .74, 0]]), [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...hd
     ];
+    // the umbrellas, one instanced mesh tinted per person: a canopy on a pole rising from the raised hand
+    const umbGeo = lowPoly([[new THREE.ConeGeometry(.6, .2, 8, 1, true), 0xffffff, 0, 1.95, 0], [cyl(.012, .012, 1.0, 4), 0x9a9aa0, 0, 1.45, 0]]);
+    const UMBRELLA = [0x1a1a22, 0x23305a, 0xa82a2a, 0x3a6a4a, 0xd88a3a, 0x7a3a7a, 0x2a8ac8, 0xe88aa0].map(h => new THREE.Color(h)), ru = rng(4243);
     const clear = (x, z) => keepOff.every(([kx, kz, kr]) => Math.hypot(x - kx, z - kz) > kr);
     const folk = [];
     C.rows.forEach(({ rad, n, sit, spread, epic = false }) => {
@@ -37,18 +43,29 @@
         const a = (i / (n - 1) - .5) * spread + (r() - .5) * .05, rr = rad + (r() - .5) * .4, x = cx + Math.sin(a) * rr, z = cz + Math.cos(a) * rr;
         if (!clear(x, z)) continue;
         const girl = r() < .5, skin = pk(SKIN), top = pk(TOP), lower = girl && !sit ? pk(LONGYI) : pk(LOWER);
-        const body = new THREE.Mesh(lowPoly(sit ? sitter(skin, top, lower, girl) : stander(skin, top, lower, girl)), M_);
+        const hd = sit ? null : head(1.45, skin, girl, top), geo = lowPoly(sit ? sitter(skin, top, lower, girl) : stander(skin, top, lower, girl, hd, false)), body = new THREE.Mesh(geo, M_);
+        const wetGeo = sit ? null : lowPoly(stander(skin, top, lower, girl, hd, true));   // the same person holding an umbrella
         const sc = sit ? .8 + r() * .15 : 1.0 + r() * .12;
         body.scale.setScalar(sc); body.position.set(x, 0, z); body.rotation.y = Math.atan2(cx - x, cz - z) + (r() - .5) * .3; body.castShadow = false;
         clickable(list, body, data); body.raycast = function (ray, out) { if (body.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };
-        G.add(body); folk.push({ body, sit, epic, ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
+        G.add(body); folk.push({ body, sit, epic, geo, wetGeo, umb: UMBRELLA[(ru() * UMBRELLA.length) | 0], ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
       }
     });
-    let t = 0;
+    const umbs = new THREE.InstancedMesh(umbGeo, std({ vertexColors: true, flatShading: true, roughness: .6, side: THREE.DoubleSide }), folk.length);
+    umbs.frustumCulled = false; umbs.castShadow = false; umbs.userData.noCull = true; G.add(umbs); clickable(list, umbs, data);
+    const at = new THREE.Matrix4().makeTranslation(.2, 0, .28), m4 = new THREE.Matrix4(), zero = new THREE.Matrix4().makeScale(0, 0, 0);
+    folk.forEach((f, i) => { umbs.setColorAt(i, f.umb); umbs.setMatrixAt(i, zero); });
+    let t = 0, wasWet = null;
     return (dt, motion) => {
-      const show = FOLK.dance, big = show === "solo";
-      folk.forEach(f => f.body.visible = !!show && (big || !f.epic));   // the extra rows come only for the solo, the epic's opening
-      if (!show) return;
+      const show = FOLK.dance, big = show === "solo", rain = !!show && FOLK.umbrellas;
+      folk.forEach(f => f.body.visible = !!show && (big || !f.epic) && !(rain && f.sit));   // the extra rows come only for the solo, the epic's opening; children go home in the rain
+      if (rain !== wasWet) {   // put the umbrellas up or down
+        wasWet = rain; data.toast = rain ? wet : dry;
+        folk.forEach((f, i) => { if (f.wetGeo) f.body.geometry = rain ? f.wetGeo : f.geo; umbs.setMatrixAt(i, zero); });   // folded away until placed below
+        umbs.instanceMatrix.needsUpdate = true;
+      }
+      if (!show) { umbs.visible = false; return; }
+      umbs.visible = rain;
       t += dt * motion;
       folk.forEach(f => {
         // children bob and rock to the drum; everyone turns a little now and then to follow the dancers; at the solo the young
@@ -57,5 +74,6 @@
         f.body.rotation.z = f.lively ? Math.sin(t * 1.5 + f.ph) * .06 : 0;
         f.body.rotation.y = f.ry + Math.sin(t * .3 + f.ph) * .15;
       });
+      if (rain) { folk.forEach((f, i) => { if (f.sit || !f.body.visible) return umbs.setMatrixAt(i, zero); f.body.updateMatrix(); umbs.setMatrixAt(i, m4.multiplyMatrices(f.body.matrix, at)); }); umbs.instanceMatrix.needsUpdate = true; }
     };
   }
