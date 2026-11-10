@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-10
 
 ### Added
+- The kinnara and kinnari dancers wear the trimmings of a Shan kinnara's dress: red arm, knee and ankle bands, an embroidered chest panel under a yellow sash, a red waistband with a yellow apron and two lace-edged medallions, and white stockinged feet.
 - The festival band's gong player and cymbal player wear big, soft Shan straw hats (about 80 cm across) hung on their backs.
 - A Shan singer takes the festival stage alone in the gaps between the dances (3:31, 5:46, 7:31 and 9:46 PM); he is seen, not heard.
 - The hills round the valley have a Shan name, လွႆသၢမ်သိပ်း (Loi Sam Sip): hover a peak to see it, click for its meaning.

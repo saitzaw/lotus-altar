@@ -53,6 +53,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-10: the kinnara and kinnari's dress trimmings
+
+- After the owner's photo of a Shan kinnara (red boxes on the parts to copy), both dancers (`dancer()` in
+  `17-kinnara-dance.js`) gained: a red band round the top of each arm; a gold-and-orange embroidered panel down the chest
+  under a yellow sash worn shoulder to hip; a red waistband with a yellow embroidered apron edged in red, a round lace-edged
+  medallion at either side; red bands below the knees and red gilt-edged ankle cuffs; white stockinged feet. On the kinnari
+  the knee and ankle bands go round her longyi, with her white toes peeping out under the hem.
+- The apron hangs plumb from the waist and swings forward over whichever thigh he lifts (`dressSwing`, run after
+  `fanWings` each frame), so his knee-lifts and lunges don't push through it. The new reds use `scarlet` (linearised);
+  the old `red` (lips, unconverted) renders pinkish.
+
 ### 2026-11-10: straw hats on the band's backs
 
 - The gong player and the cymbal player wear a big Shan straw hat hung on the back by a cord round the neck (`strawHat` in

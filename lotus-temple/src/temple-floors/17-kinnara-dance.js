@@ -9,6 +9,13 @@
     const skirtM = std({ map: stripes, roughness: .45, metalness: .2 });
     const maskM = std({ color: lin(0xf0dcc0), roughness: .55 }), hairM = std({ color: 0x15100c, roughness: .6 });
     const skin = std({ color: lin(0xc89a70), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 }), red = std({ color: 0xc02a2a, roughness: .5 });
+    // the dress's trimmings, after the owner's photo of a Shan kinnara: red bands at the shoulders, knees and ankles, white stockinged
+    // feet, a gold-and-orange embroidered panel down the chest under a yellow sash, a red waistband, and hanging from it a yellow
+    // embroidered apron edged in red with a round lace-edged medallion at either side
+    const scarlet = std({ color: lin(0xc02a2a), roughness: .55 }), yellow = std({ color: lin(0xe8c040), roughness: .45, metalness: .25 }), sock = std({ color: lin(0xf2f0ea), roughness: .8 });
+    const chestM = std({ map: canvasTex(64, (c, s) => { c.fillStyle = "#c0281f"; c.fillRect(0, 0, s, s); c.fillStyle = "#d8702a"; c.fillRect(s * .14, 0, s * .72, s); c.fillStyle = "#f0c848"; for (let y = 4; y < s; y += 9) { c.beginPath(); c.arc(s / 2, y, 3, 0, TAU); c.fill(); c.fillRect(s * .22, y - 1, s * .56, 2); } }), roughness: .4, metalness: .3 });
+    const apronM = std({ map: canvasTex(128, (c, s) => { c.fillStyle = "#c0281f"; c.fillRect(0, 0, s, s); c.fillStyle = "#ecc83a"; c.fillRect(s * .1, 0, s * .8, s * .88); c.strokeStyle = "#b8862a"; c.lineWidth = 3; for (let y = 20; y < s * .85; y += 26) { c.beginPath(); c.arc(s / 2, y, 9, 0, TAU); c.stroke(); [-1, 1].forEach(d => { c.beginPath(); c.arc(s / 2 + d * 26, y + 6, 5, 0, TAU); c.stroke(); }); } }), roughness: .45, metalness: .25, side: THREE.DoubleSide });
+    const discM = std({ map: canvasTex(128, (c, s) => { const m = s / 2; c.fillStyle = "#f4f2ea"; for (let k = 0; k < 18; k++) { const a = k / 18 * TAU; c.beginPath(); c.arc(m + Math.cos(a) * m * .86, m + Math.sin(a) * m * .86, m * .15, 0, TAU); c.fill(); } c.beginPath(); c.arc(m, m, m * .86, 0, TAU); c.fill(); c.fillStyle = "#d8a830"; c.beginPath(); c.arc(m, m, m * .74, 0, TAU); c.fill(); c.fillStyle = "#a8c040"; c.beginPath(); c.arc(m, m, m * .58, 0, TAU); c.fill(); c.strokeStyle = "#f0d860"; c.lineWidth = 3; for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; c.beginPath(); c.moveTo(m, m); c.lineTo(m + Math.cos(a) * m * .56, m + Math.sin(a) * m * .56); c.stroke(); } }), transparent: true, alphaTest: .5, roughness: .5, side: THREE.DoubleSide });
     // the wings, as Shan dancers make them: each a fan of long sequinned cloth wedges on ribs, every wedge folded along its rib like
     // an umbrella panel, so it stands up as a ridge with its sides sloping back: green sequinned cloth sewn with white flowers,
     // edged in white trim and tipped with red pom-poms, on both dancers.
@@ -66,19 +73,31 @@
         mesh(new THREE.CylinderGeometry(.11, .1, THIGH, 10), green, 0, -THIGH / 2, 0, hip);
         const knee = new THREE.Group(); knee.position.y = -THIGH; hip.add(knee);
         mesh(new THREE.CylinderGeometry(.1, .085, SHIN - .04, 10), green, 0, -(SHIN - .04) / 2, 0, knee);
-        mesh(new THREE.TorusGeometry(.07, .02, 6, 12), M.gold, 0, -SHIN + .07, 0, knee).rotation.x = Math.PI / 2;
+        mesh(new THREE.CylinderGeometry(.104, .1, .06, 10), scarlet, 0, -.1, 0, knee);   // the red band below the knee
+        mesh(new THREE.CylinderGeometry(.088, .092, .07, 10), scarlet, 0, -SHIN + .075, 0, knee);   // the red ankle cuff, gilt-edged
+        mesh(new THREE.TorusGeometry(.088, .012, 6, 12), M.gold, 0, -SHIN + .11, 0, knee).rotation.x = Math.PI / 2;
         const ankle = new THREE.Group(); ankle.position.y = -SHIN + .04; knee.add(ankle);
-        mesh(new THREE.BoxGeometry(.08, .04, .2), skin, 0, -.02, .05, ankle);
+        mesh(new THREE.BoxGeometry(.08, .04, .2), sock, 0, -.02, .05, ankle);   // a white stockinged foot
         return { hip, knee, ankle };
       }) : null;
       if (!male) {
         mesh(new THREE.CylinderGeometry(.15, .21, .84, 14), skirtM, 0, .42, 0, B);
-        [-1, 1].forEach(sd => mesh(new THREE.TorusGeometry(.07, .02, 6, 12), M.gold, sd * .1, .06, 0, B).rotation.x = Math.PI / 2);
+        mesh(new THREE.CylinderGeometry(.19, .194, .06, 14, 1, true), scarlet, 0, .32, 0, B);   // the red band at the knees
+        mesh(new THREE.CylinderGeometry(.213, .216, .05, 14, 1, true), scarlet, 0, .03, 0, B);   // and round the hem at the ankles
+        [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.08, .04, .2), sock, sd * .08, .02, .14, B));   // white stockinged toes peeping out
       }
       // a fitted green jacket with a gilt belt and collar
       mesh(new THREE.CylinderGeometry(.16, .14, .5, 12), green, 0, 1.08, 0, T);
       mesh(new THREE.TorusGeometry(.15, .03, 6, 16), M.gold, 0, .85, 0, T).rotation.x = Math.PI / 2;
       mesh(new THREE.TorusGeometry(.12, .035, 6, 16), M.gold, 0, 1.32, 0, T).rotation.x = Math.PI / 2;
+      mesh(new THREE.BoxGeometry(.1, .42, .012), chestM, 0, 1.09, .152, T).rotation.x = .04;   // the embroidered panel down the chest
+      const sash = new THREE.Group(); sash.position.y = 1.1; sash.rotation.z = .55; T.add(sash);   // the yellow sash, over one shoulder to the other hip
+      const band = mesh(new THREE.TorusGeometry(.158, .014, 6, 24), yellow, 0, 0, 0, sash); band.rotation.x = Math.PI / 2; band.scale.x = 1 / Math.cos(.55);
+      mesh(new THREE.CylinderGeometry(.152, .148, .07, 14, 1, true), scarlet, 0, .885, 0, T);   // the red waistband
+      // the apron, hung from the waistband and swung forward by his thighs (see dressSwing), with its medallions
+      const apron = new THREE.Group(); apron.position.set(0, .87, .17); T.add(apron);
+      mesh(new THREE.PlaneGeometry(.2, .36), apronM, 0, -.18, 0, apron);
+      [-1, 1].forEach(sd => mesh(new THREE.CircleGeometry(.08, 20), discM, sd * .15, -.11, .012, apron).rotation.y = sd * .35);
       // the mask: a human face, for the kinnara is a person above and a bird below: a pale painted face with long dark eyes, arched
       // brows, a fine nose and red lips, ears hung with gold ear plugs, black hair at the back, under a tiered gold crown with a spire
       mesh(new THREE.CylinderGeometry(.045, .05, .1, 10), maskM, 0, 1.37, 0, T);   // the neck
@@ -99,6 +118,7 @@
       const arms = [-1, 1].map(sd => {
         const a = new THREE.Group(); a.position.set(sd * .19, 1.28, 0); T.add(a);
         mesh(new THREE.CylinderGeometry(.048, .042, .26, 8), green, 0, -.13, 0, a);
+        mesh(new THREE.TorusGeometry(.048, .014, 6, 10), scarlet, 0, -.06, 0, a).rotation.x = Math.PI / 2;   // the red band round the top of the arm
         const elbow = new THREE.Group(); elbow.position.y = -.26; a.add(elbow);
         mesh(new THREE.CylinderGeometry(.042, .034, .24, 8), green, 0, -.12, 0, elbow);
         mesh(new THREE.TorusGeometry(.036, .012, 6, 10), M.gold, 0, -.23, 0, elbow).rotation.x = Math.PI / 2;
@@ -118,12 +138,14 @@
       // hidden while they're off the stage, and then not clickable either
       D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
-      return { D, B, U, legs, arms, fan, male };
+      return { D, B, U, legs, arms, fan, male, apron };
     }
     // a leg's joints: hip swing (+ back, - forward), knee bend, and the ankle, which keeps the foot level unless `point` tips the toes down
     const setLeg = (l, hip, knee, point = 0) => { l.hip.rotation.x = hip; l.knee.rotation.x = knee; l.ankle.rotation.x = -(hip + knee) + point; };
     // an arm's joints: raised out to the side (lift), reached forward (fwd), the elbow and wrist curving on in the same plane,
     // and the fingers bent back, the curled-back hand of Shan and Burmese dance
+    // the apron hangs plumb from the waist whatever the body's lean, and swings forward over whichever thigh is lifted; hers stands off her longyi
+    const dressSwing = d => { d.apron.rotation.x = d.legs ? Math.min(-.04, d.legs[0].hip.rotation.x - .06, d.legs[1].hip.rotation.x - .06) - d.U.rotation.x : -.09 - d.U.rotation.x; };
     const setArm = (r, lift, fwd, elbow, wrist, fingers) => { const sd = r.sd; r.lift = lift; r.a.rotation.z = sd * lift; r.a.rotation.x = fwd; r.elbow.rotation.z = sd * elbow; r.wrist.rotation.z = sd * wrist; r.fingers.rotation.z = sd * fingers; };
     const pair = [dancer(true), dancer(false)];
     let t = 0;
@@ -185,7 +207,7 @@
       });
       // the arms carry the wings, held long, the elbow soft, the hands curled back, trembling with the wings
       d.arms.forEach(r => { const tr = flut * Math.sin(t * 14 + r.sd); setArm(r, (r.sd > 0 ? aR : aL) + tr * .05, fwd + tuck * .15, .15 + Math.sin(t * 1.5 + r.sd) * .08, .25 + tr * .12, .6 + Math.sin(t * 1.5 + r.sd) * .1); });
-      fanWings(d, flut);
+      fanWings(d, flut); dressSwing(d);
     };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
@@ -202,5 +224,5 @@
       } else d.B.position.y = -dip * .03;   // she sinks a little on the beats, her feet hidden by the longyi
       const wave = Math.sin(t * 1.2 + i * .8 - .7);   // the elbow and wrist trailing the opening and folding
       d.arms.forEach(r => setArm(r, .5 + open, -.5 + open * .3, .25 - wave * .25, .3 - wave * .25, .6 + dip * .2));
-      fanWings(d, 0);   // the wings fold and open with the arms
+      fanWings(d, 0); dressSwing(d);   // the wings fold and open with the arms
     });
