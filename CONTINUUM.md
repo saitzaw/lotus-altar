@@ -37,6 +37,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
 - Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the to dance) and the romanisation "ka to" in its toast.
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
@@ -51,6 +52,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-10: the hills named
+
+- The two ranges of forested hills behind the fields (`mountainsAndForest` in `29-forest-and-hills.js`) are named
+  လွႆသၢမ်သိပ်း (Loi Sam Sip). Every peak is clickable in the outdoor picks: hover shows the name, a click gives a toast
+  explaining it. **For a native Shan speaker to check:** လွႆသၢမ်သိပ်း and the gloss "thirty hills".
 
 ### 2026-11-10: site map and architecture docs
 

@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-10
 
 ### Added
+- The hills round the valley have a Shan name, လွႆသၢမ်သိပ်း (Loi Sam Sip): hover a peak to see it, click for its meaning.
 - `SITEMAP.md` (every place, how to reach it, the code that builds it, performance test routes) and `ARCHITECTURE.md`
   (load sequence, frame loop, likely hotspots, a plan for a `?perf=1` overlay and field tracking, tuning ideas).
 

@@ -1,4 +1,6 @@
   /* ---------- beyond the paddy fields: a band of forest, then the forested Shan hills rising in two ranges toward the horizon ---------- */
+  // the hills have a Shan name, လွႆသၢမ်သိပ်း (Loi Sam Sip, "the thirty hills"): every peak names them on hover and tells of them on a click
+  const HILLS = { tip: "လွႆသၢမ်သိပ်း · the Loi Sam Sip hills", toast: "လွႆသၢမ်သိပ်း, Loi Sam Sip: \"the thirty hills\" in Shan (လွႆ, loi, a hill or mountain; သၢမ်သိပ်း, sam sip, thirty). Forested ridges of the Shan uplands, greener in front and bluer behind, closing the valley round the town and its fields." };
   function mountainsAndForest(g) {
     const r = rng(2024);
     const near = std({ color: 0x3e5a34, roughness: 1, flatShading: true }), far = std({ color: 0x4a6a6a, roughness: 1, flatShading: true });
@@ -17,7 +19,7 @@
       // none may stand on the road up to the hospital or on the hospital itself (the random numbers are still drawn, so the others keep their shapes)
       if (Math.hypot(x - clamp(x, -130, -86), z - clamp(z, -19, 60)) < rad) { geo.dispose(); return; }
       geo.computeVertexNormals();
-      const m = mesh(geo, mat, x, h / 2 - .5, z, g); m.castShadow = false; m.rotation.y = ry;
+      const m = clickable(picks.pagoda, mesh(geo, mat, x, h / 2 - .5, z, g), HILLS); m.castShadow = false; m.rotation.y = ry;
       peaks.push({ x, z, rad, h });
     }
     // two ranges along an arc behind the fields: lower, greener hills in front; taller, bluer ridges behind
