@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-10
 
 ### Added
+- The festival band's drummers, gong player and cymbal player wear big Shan straw hats hung on their backs.
 - A Shan singer takes the festival stage alone in the gaps between the dances (3:31, 5:46, 7:31 and 9:46 PM); he is seen, not heard.
 - The hills round the valley have a Shan name, လွႆသၢမ်သိပ်း (Loi Sam Sip): hover a peak to see it, click for its meaning.
 - `SITEMAP.md` (every place, how to reach it, the code that builds it, performance test routes) and `ARCHITECTURE.md`

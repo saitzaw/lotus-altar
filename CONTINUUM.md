@@ -53,6 +53,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-10: straw hats on the band's backs
+
+- Every stage musician (both long drummers, the gong player, the cymbal player) now wears a big Shan straw hat hung on his
+  back by a cord round the neck (`strawHat` in `musician()`, `18-stage-ensemble.js`); checked headless from behind the drummers.
+- **For a native Shan speaker to check:** ၵုပ်း (kup) for the straw hat, in the code comment only.
+
 ### 2026-11-10: a singer between the dances
 
 - In the gaps of the stage programme (3:31–3:59, 5:46–5:58, 7:31–7:44, 9:46–9:59 PM ICT, `CONFIG.dancers.singer`) a Shan

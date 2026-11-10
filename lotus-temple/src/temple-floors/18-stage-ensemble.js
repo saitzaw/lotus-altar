@@ -1,4 +1,4 @@
-    /* ---------- the ensemble at the sides of the stage, Shan musicians in Shan dress, tan jackets, baggy tan trousers and headcloths: the
+    /* ---------- the ensemble at the sides of the stage, Shan musicians in Shan dress, tan jackets, baggy tan trousers and headcloths, big straw hats hung on their backs: the
        two long drums on the left, the row of gongs and the cymbals on the right. The dancers keep to them: every bar opens
        on the drum's deep stroke and the gongs, on which the kinnara lands from a hop ---------- */
     const tanTop = std({ color: lin(0xd8a878), roughness: .8 }), tanLow = std({ color: lin(0xc89868), roughness: .85 });   // the Shan jacket and baggy trousers all the players wear
@@ -6,6 +6,18 @@
     // a musician standing (or, with `sit`, sitting on a low white stool) at (x, z) on the stage, turned by ry, in a headcloth of
     // colour `cloth`; arm(sd) makes a jointed arm (sd −1 his right, he faces +z) whose hand the instrument fills in at the elbow
     // group's −0.28. B is all of him above the legs, so a sitting player can sway at the waist
+    // the Shan straw hat (ၵုပ်း) every player wears hung on his back by its cord: a broad, shallow cone of woven bamboo and straw
+    // with a little peaked crown, its rim bound with cane
+    const hatT = canvasTex(128, (c, sz) => { c.fillStyle = "#d8b878"; c.fillRect(0, 0, sz, sz); c.strokeStyle = "#a88848"; c.lineWidth = 1; for (let i = 0; i < sz; i += 6) { c.beginPath(); c.moveTo(i, 0); c.lineTo(i, sz); c.stroke(); } c.strokeStyle = "#c0a060"; for (let i = 3; i < sz; i += 6) { c.beginPath(); c.moveTo(0, i); c.lineTo(sz, i); c.stroke(); } });
+    const hatM = std({ map: hatT, roughness: .9, side: THREE.DoubleSide }), caneM = std({ color: lin(0x9a7038), roughness: .8 }), cordM = std({ color: lin(0x5a3a20), roughness: .9 });
+    const hatGeo = new THREE.LatheGeometry([[.3, 0], [.24, .025], [.14, .055], [.09, .075], [.075, .11], [.035, .15], [0, .165]].map(([r, y]) => new THREE.Vector2(r, y)), 20);
+    const hatRim = new THREE.TorusGeometry(.3, .01, 4, 24), neckCord = new THREE.TorusGeometry(.075, .006, 4, 14);
+    const strawHat = B => {
+      const h = new THREE.Group(); h.position.set(0, 1.04, -.19); h.rotation.x = -Math.PI / 2 + .12; B.add(h);   // flat against his back, the crown out behind
+      mesh(hatGeo, hatM, 0, 0, 0, h); mesh(hatRim, caneM, 0, 0, 0, h).rotation.x = Math.PI / 2;
+      mesh(neckCord, cordM, 0, 1.33, .01, B).rotation.x = Math.PI / 2 - .5;   // the cord round his neck, low at the front
+      [-1, 1].forEach(sd => { const c_ = mesh(new THREE.CylinderGeometry(.005, .005, .2, 4), cordM, sd * .06, 1.24, -.13, B); c_.rotation.x = -.5; c_.rotation.z = sd * .2; });   // down his back to the hat
+    };
     const musician = (x, z, ry, cloth, sit, suit) => {
       const D = new THREE.Group(); D.position.set(x, C.y, z); D.rotation.y = ry; G.add(D);
       const [jacket, trousers] = suit || [tanTop, tanLow];   // his jacket and trousers
@@ -22,6 +34,7 @@
       [-1, 1].forEach(sd => mesh(new THREE.SphereGeometry(.016, 8, 6), ink, sd * .042, .02, .1, hd));
       mesh(new THREE.CylinderGeometry(.125, .12, .1, 14), clothM, 0, .08, 0, hd);   // the headcloth wound round
       mesh(new THREE.SphereGeometry(.05, 8, 6), clothM, .1, .1, -.03, hd);   // its knot over the ear
+      strawHat(B);
       const arm = sd => {
         const a = new THREE.Group(); a.position.set(sd * .2, 1.28, 0); B.add(a);
         mesh(new THREE.CylinderGeometry(.05, .045, .27, 8), jacket, 0, -.135, 0, a);
