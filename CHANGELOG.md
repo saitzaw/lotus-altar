@@ -3,6 +3,12 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-10
+
+### Added
+- `SITEMAP.md` (every place, how to reach it, the code that builds it, performance test routes) and `ARCHITECTURE.md`
+  (load sequence, frame loop, likely hotspots, a plan for a `?perf=1` overlay and field tracking, tuning ideas).
+
 ## 2026-11-09
 
 ### Added

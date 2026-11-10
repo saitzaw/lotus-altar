@@ -52,6 +52,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-10: site map and architecture docs
+
+- Added `SITEMAP.md` and `ARCHITECTURE.md` at the repo root as groundwork for performance work. Nothing is measured yet:
+  next steps are the `?perf=1` overlay (ARCHITECTURE §8.1), a baseline on the SITEMAP routes, then tuning (§9).
+  Field tracking (§8.2) needs the owner to choose: Vercel Speed Insights, a custom beacon, or none.
+
 ### 2026-11-09 (night)
 - Added the to dance (`toDancers` in `src/temple-floors/18b-to-dance.js`), as the site owner asked, after their photo and
   YouTube _U-imZ1KuM8: two dancers in one white costume (gold/green/red trim, swirls on the flanks, ruffs at knees and ankles,

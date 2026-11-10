@@ -55,6 +55,9 @@ against this list.
 
 ## Checking
 
+`ARCHITECTURE.md` (repo root) lists the suspected hotspots, the measurement plan and tuning ideas; `SITEMAP.md` has the
+test routes.
+
 There's no profiler set up. In Chrome, open DevTools → Performance and record a walk through the town and market; look
 for long frames and stalls when entering a building. For draw calls and triangles, temporarily log
 `renderer.info.render.calls` and `.triangles` from the frame loop (`renderer` is inside the app's closure, not on
