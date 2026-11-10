@@ -56,7 +56,11 @@ a crouch-and-push then a gravity arc, see the comment above `solo`; then the mas
 circling each other; the to from 6 to 7:30 PM; the white and the yellow to together from 7:45 to 8:30 PM (`twoTo`, round an
 oval on opposite sides); the pair again from 8:45 to 9:45 PM; and from 10 to 11 PM the two to with the kinnara alone between them
 (`toKinnara`: the kinnara's solo kept to the middle, `roam`, the to each at its own side facing the crowd; a bigger crowd, as for
-the solo). The shows are `DANCES` in `07-festivals-and-weather.js`, in the order `danceNow()` checks them.
+the solo). In the gaps between them (3:31–3:59, 5:46–5:58, 7:31–7:44 and 9:46–9:59 PM) a Shan singer stands alone on the
+stage (`singer`, `stageSinger` in `18c-stage-singer.js`, after the site owner's photo: grey silk jacket, white headcloth, straw hat on
+his back, sword with wool tassels, microphone at his mouth). He is **silent on purpose**: no song is played, so there is nothing to
+license; the band's players step off and no stroke reaches the ambience. Don't add a recording of a real song to him.
+The shows are `DANCES` in `07-festivals-and-weather.js`, in the order `danceNow()` checks them.
 The to (`toDancers` in `18b-to-dance.js`, Shan တၢင်းၵႃႈတူဝ်း, Burmese တိုးနယား, after the site owner's photo and YouTube _U-imZ1KuM8)
 is two dancers in one white costume trimmed gold, green and red: two jointed pairs of legs with gold/green/red ruffs and gilt paws,
 a barrel body stretched each frame between the back dancer's rump and the front dancer's chest (so it tips up when the back one
@@ -73,7 +77,7 @@ first drum on every beat; a bar (one dance figure,
 `BAR` 1.59 s) is three beats; labels in
 Shan only), keeping time with the dancers (one figure per bar, `BAR`). Players' hands land on their instruments through `fit()`,
 a pose search run once at build time. The strokes reach the ambience through `temple.takeBand()`. The main script passes `temple.setDancers("solo" | "pair" | null)` each frame; off stage they are hidden
-and can't be clicked. `?dancers=solo`, `pair` (or `1`), `to`, `twoTo`, `toKinnara` and `?dancers=0` force one.
+and can't be clicked. `?dancers=solo`, `pair` (or `1`), `to`, `twoTo`, `toKinnara`, `singer` and `?dancers=0` force one.
 Their audience (`festivalAudience`, rows in `AUDIENCE`) follows the same switch: blocky low-poly children sitting cross-legged
 and young people standing behind, one vertex-coloured mesh each, turned to the stage. The pair draws 16; the rows marked
 `epic` join only for the solo, making 37. When it rains (the townsfolk's `umbrellas` switch) the children go home and the young people standing hold

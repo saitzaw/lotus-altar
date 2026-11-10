@@ -66,11 +66,11 @@
       for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
     onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
-    const dancers = kinnaraDancers(G, list, 0, PZ), to = toDancers(G, list, 0, PZ), to2 = toDancers(G, list, 0, PZ, true);   // on the stage's centre
+    const dancers = kinnaraDancers(G, list, 0, PZ), to = toDancers(G, list, 0, PZ), to2 = toDancers(G, list, 0, PZ, true), singer = stageSinger(G, list, 0, PZ);   // on the stage's centre
     G.updateMatrixWorld(true); { const w = G.localToWorld(new THREE.Vector3(0, 0, PZ)); STAGE[0] = w.x; STAGE[1] = w.z; }
     const audience = festivalAudience(G, list, 0, PZ, [[0, FZ, 1.9], ...[-8, -4, 4, 8].map(x => [x, R / 2 - 3, 1.5])]);   // kept off the flag pole and the kahtein trees
     updaters.pagoda.push((dt, t, motion) => {
-      const bar = dancers(dt, motion); to(dt, motion, bar); to2(dt, motion, bar); audience(dt, motion);
+      const bar = dancers(dt, motion); to(dt, motion, bar); to2(dt, motion, bar); singer(dt, motion); audience(dt, motion);
       flags.forEach((fl, i) => { const p = fl.geometry.attributes.position; for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setZ(j, Math.sin(x * 4 - t * 3 + i) * .08 * x * motion); } p.needsUpdate = true; });
       streamer.rotation.y = Math.sin(t * .6) * .4 * motion; streamer.rotation.z = Math.sin(t * .9) * .06 * motion;
     });

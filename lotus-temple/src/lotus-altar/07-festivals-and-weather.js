@@ -68,7 +68,7 @@ function festNote() {
 /* ---------- townsfolk: people out in the market and on the roads from 6 pm until they go home at 10 pm ICT ---------- */
 const forced = key => { try { const v = new URLSearchParams(location.search).get(key); return v === null ? null : v !== "0"; } catch (e) { return null; } };
 const FOLK_FORCE = forced("townsfolk");
-const DANCES = ["solo", "pair", "to", "twoTo", "toKinnara"];   // the stage's shows, as in CONFIG.dancers
+const DANCES = ["solo", "pair", "to", "twoTo", "toKinnara", "singer"];   // the stage's shows, as in CONFIG.dancers
 const DANCE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("dancers"); return v === null ? undefined : v === "0" ? null : DANCES.includes(v) ? v : "pair"; } catch (e) { return undefined; } })();
 function inHours({ from, until }) {
   const [h, m] = new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", minute: "numeric", hourCycle: "h23" }).format(Date.now()).split(":"), hour = +h + m / 60;
@@ -76,7 +76,8 @@ function inHours({ from, until }) {
 }
 const folkNow = () => FOLK_FORCE !== null ? FOLK_FORCE : inHours(CONFIG.townsfolk);
 // who dances on the festival stage (CONFIG.dancers), ICT: the kinnara alone 2–3:30 pm, the kinnara pair 4–5:45 pm, the to 6–7:30 pm,
-// the two to 7:45–8:30 pm, the pair again 8:45–9:45 pm, the two to with the kinnara 10–11 pm, else no one
+// the two to 7:45–8:30 pm, the pair again 8:45–9:45 pm, the two to with the kinnara 10–11 pm, the singer in the gaps (3:31–3:59,
+// 5:46–5:58, 7:31–7:44 and 9:46–9:59 pm), else no one
 const danceNow = () => {
   if (DANCE_FORCE !== undefined) return DANCE_FORCE;
   const at = w => (w || []).some(([from, until]) => inHours({ from, until }));

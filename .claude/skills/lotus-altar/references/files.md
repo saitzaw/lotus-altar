@@ -72,6 +72,7 @@
 | `17-kinnara-dance.js` | kinnara/kinnari dancers | `kinnaraDancers` |
 | `18-stage-ensemble.js` | stage musicians (*inside `kinnaraDancers`*) | |
 | `18b-to-dance.js` | the to (two dancers in one beast costume), white or (`yellow`) yellow, keeps time to the ensemble's bar count | `toDancers` |
+| `18c-stage-singer.js` | the Shan singer alone on the stage between the dances, silent (no song played) | `stageSinger` |
 | `19-dance-audience.js` | audience | `festivalAudience` |
 | `20-front-street.js` | houses along the front street | `streetFrontage` |
 | `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |

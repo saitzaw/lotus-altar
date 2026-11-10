@@ -53,6 +53,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-10: a singer between the dances
+
+- In the gaps of the stage programme (3:31–3:59, 5:46–5:58, 7:31–7:44, 9:46–9:59 PM ICT, `CONFIG.dancers.singer`) a Shan
+  singer stands alone on the festival stage (`stageSinger`, `18c-stage-singer.js`), dressed after the owner's photo. He plays
+  **no sound**, at the owner's request, to avoid licensing trouble; the band steps off. Force with `?dancers=singer`.
+- Fixed in passing: the band's show/hide line in `18-stage-ensemble.js` had been swallowed into a comment; now only the
+  singer's gaps hide the players (the band otherwise stays on stage as before).
+- **For a native Shan speaker to check:** the tip's ၵႂၢမ်းတႆး ("Shan song"); Burmese ရှမ်းအဆိုတော် ("Shan singer").
+
 ### 2026-11-10: the hills named
 
 - The two ranges of forested hills behind the fields (`mountainsAndForest` in `29-forest-and-hills.js`) are named
