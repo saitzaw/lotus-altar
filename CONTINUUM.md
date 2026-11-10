@@ -57,7 +57,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 - The gong player and the cymbal player wear a big Shan straw hat hung on the back by a cord round the neck (`strawHat` in
   `musician()`, `18-stage-ensemble.js`). The long drummers had them too at first, but the owner didn't like the hat with
-  the drum, so `longDrummer` passes `hat = false`.
+  the drum, so `longDrummer` passes `hat = false`. At the owner's request the hat is big (`HAT_R` = .4, 80 cm across, about
+  half the man's height) and soft: its brim waves, curls in and flops a little, with no hard cane rim.
 - **For a native Shan speaker to check:** ၵုပ်း (kup) for the straw hat, in the code comment only.
 
 ### 2026-11-10: a singer between the dances
