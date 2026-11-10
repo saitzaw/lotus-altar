@@ -1,5 +1,9 @@
+/* ---------- testing shortcuts in the address (?dancers=, ?weather=, ?halloween=, ?townsfolk=, ?lionDragon=): they work only on the
+   developer's own computer (localhost), so on the public site everyone sees the real schedule on the temple's clock ---------- */
+const DEV_HOST = (() => { try { return ["localhost", "127.0.0.1", "[::1]", "::1"].includes(location.hostname); } catch (e) { return false; } })();
+const devParam = key => DEV_HOST ? new URLSearchParams(location.search).get(key) : null;   // null on the public site, as if the address had no shortcut
 /* ---------- Halloween night: the houses go dark at 9 pm ICT, a friendly ghost walks the roads, walkers carry a torch ---------- */
-const FEST_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("halloween"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+const FEST_FORCE = (() => { try { const v = devParam("halloween"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
 function festNow() {
   if (FEST_FORCE !== null) return { season: FEST_FORCE, night: FEST_FORCE };
   const { tz } = CONFIG.sky, { from, to, outHour, untilHour } = CONFIG.halloween;
@@ -66,10 +70,10 @@ function festNote() {
 }
 
 /* ---------- townsfolk: people out in the market and on the roads from 6 pm until they go home at 10 pm ICT ---------- */
-const forced = key => { try { const v = new URLSearchParams(location.search).get(key); return v === null ? null : v !== "0"; } catch (e) { return null; } };
+const forced = key => { try { const v = devParam(key); return v === null ? null : v !== "0"; } catch (e) { return null; } };
 const FOLK_FORCE = forced("townsfolk");
 const DANCES = ["solo", "pair", "to", "twoTo", "toKinnara", "singer"];   // the stage's shows, as in CONFIG.dancers
-const DANCE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("dancers"); return v === null ? undefined : v === "0" ? null : DANCES.includes(v) ? v : "pair"; } catch (e) { return undefined; } })();
+const DANCE_FORCE = (() => { try { const v = devParam("dancers"); return v === null ? undefined : v === "0" ? null : DANCES.includes(v) ? v : "pair"; } catch (e) { return undefined; } })();
 function inHours({ from, until }) {
   const [h, m] = new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, hour: "numeric", minute: "numeric", hourCycle: "h23" }).format(Date.now()).split(":"), hour = +h + m / 60;
   return from < until ? hour >= from && hour < until : hour >= from || hour < until;   // a window that may run past midnight
@@ -84,7 +88,7 @@ const danceNow = () => {
   return DANCES.find(k => at(CONFIG.dancers[k])) || null;
 };
 // dragon and lion dance training on the kung fu ground in the weeks before Chinese New Year: { season, newYear, show: "dragon" | "lion" | null }
-const DRILL_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("lionDragon"); return v === null ? undefined : v === "0" ? null : v === "lion" ? "lion" : "dragon"; } catch (e) { return undefined; } })();
+const DRILL_FORCE = (() => { try { const v = devParam("lionDragon"); return v === null ? undefined : v === "0" ? null : v === "lion" ? "lion" : "dragon"; } catch (e) { return undefined; } })();
 function drillNow() {
   const C = CONFIG.lionDragon, [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(Date.now()).split("-").map(Number);
   const today = Date.UTC(y, m - 1, d), ny = C.newYear.map(([a, b, c]) => Date.UTC(a, b - 1, c)).find(t => t > today);   // the next New Year's day
@@ -97,7 +101,7 @@ setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */
-// const POLICE_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
+// const POLICE_FORCE = (() => { try { const v = devParam("police"); return v === null ? null : v !== "0"; } catch (e) { return null; } })();
 // temple.setPolice({ ...CONFIG.police, on: POLICE_FORCE === null ? CONFIG.police.on : POLICE_FORCE });
 // const POLICE_SAYS = {
 //   spotted: "👮 A police officer has seen you and gives chase! Get inside the temple grounds or a market, where no one can be arrested.",
@@ -121,7 +125,7 @@ const WEATHER = {   // fog: how far you see (x the usual haze), tint: the sky's 
   mist:   { icon: "🌫", label: "Mist in the valley", fog: .3, tint: 0xc2c6ca, k: .65, rain: 0, wind: .15 },
   haze:   { icon: "🌫", label: "Smoky haze from the field burning", fog: .5, tint: 0xb39c78, k: .55, rain: 0, wind: .3 }
 };
-const WX_FORCE = (() => { try { const v = new URLSearchParams(location.search).get("weather"); return WEATHER[v] ? v : null; } catch (e) { return null; } })();
+const WX_FORCE = (() => { try { const v = devParam("weather"); return WEATHER[v] ? v : null; } catch (e) { return null; } })();
 function weatherNow() {
   if (WX_FORCE) return WX_FORCE;
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", hourCycle: "h23" })

@@ -118,4 +118,5 @@ These routes cover the heavy paths. Run each one on a phone and on a desktop, wi
 6. **Festival extras.** `?halloween=1` at night (ghost, torch, lights out) and `?lionDragon=dragon`.
 
 URL flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`, `?townsfolk=1|0`,
-`?dancers=solo|pair|to|twoTo|toKinnara|0`, `?lionDragon=dragon|lion|0`.
+`?dancers=solo|pair|to|twoTo|toKinnara|singer|0`, `?lionDragon=dragon|lion|0`. They work only on `localhost` / `127.0.0.1`
+(`devParam`); the public site ignores them.

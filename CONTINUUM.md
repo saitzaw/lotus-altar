@@ -53,6 +53,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-10: address shortcuts only on localhost
+
+- The testing shortcuts in the address (`?dancers=`, `?weather=`, `?halloween=`, `?townsfolk=`, `?lionDragon=`) now work only
+  when the page is served from `localhost` / `127.0.0.1` (`devParam` in `07-festivals-and-weather.js`). On the public site they
+  are ignored, so visitors see the real Bangkok-time schedule. Owner's request: first step of tightening the site.
+- Still offered, not done: SRI `integrity` hashes on the CDN scripts and security headers (CSP, X-Frame-Options,
+  X-Content-Type-Options) in `vercel.json`.
+
 ### 2026-11-10: the kinnara and kinnari's dress trimmings
 
 - After the owner's photo of a Shan kinnara (red boxes on the parts to copy), both dancers (`dancer()` in

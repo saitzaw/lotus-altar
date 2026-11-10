@@ -14,7 +14,10 @@ without `dist/`. The statue worker is fetched by URL, so serve over HTTP rather 
 ## Testing
 
 There are no automated tests. Load the page, visit the affected place, and watch the console for errors.
-Useful address flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`, `?townsfolk=1|0`, `?dancers=solo|pair|to|twoTo|toKinnara|0`, `?lionDragon=dragon|lion|0`. (`?police=1|0` only works once the beat officer is uncommented.)
+Useful address flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`, `?townsfolk=1|0`, `?dancers=solo|pair|to|twoTo|toKinnara|singer|0`, `?lionDragon=dragon|lion|0`. (`?police=1|0` only works once the beat officer is uncommented.)
+**They work only on `localhost` / `127.0.0.1`** (`devParam` in `07-festivals-and-weather.js`): on the public site, a LAN address or a
+claude.ai Artifact they are ignored and everyone sees the real schedule. The site owner asked for this; read any new shortcut through
+`devParam`, never `location.search` directly.
 
 Headless check on this machine (snap Chromium can't write to `/tmp`, so save screenshots under `$HOME`):
 

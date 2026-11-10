@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-10
 
+### Changed
+- The address shortcuts that force a show, the weather or a festival (`?dancers=`, `?weather=` and the rest) work only on the developer's own computer; the public site always follows the real schedule.
+
 ### Added
 - The kinnara and kinnari dancers wear the trimmings of a Shan kinnara's dress: red arm, knee and ankle bands, an embroidered chest panel under a yellow sash, a red waistband with a yellow apron and two lace-edged medallions, and white stockinged feet.
 - The festival band's gong player and cymbal player wear big, soft Shan straw hats (about 80 cm across) hung on their backs.

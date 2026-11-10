@@ -175,7 +175,7 @@ The overlay is local only, sends nothing, and is off by default. It belongs in a
     one frame in 30)
 - **Long tasks:** `PerformanceObserver({ type: "longtask" })`, logged with the current mode.
 - **Toggles for A/B tests:** `?shadows=0`, `?dpr=1`, `?aa=0`, `?cull=0` (`temple.culling = false` already exists),
-  so a change can be compared without editing code. Read the flags the same way as the existing `?weather=` and
+  so a change can be compared without editing code. Read the flags through `devParam` (localhost only), like the existing `?weather=` and
   similar flags.
 
 ### 8.2 Field tracking (real visitors)
