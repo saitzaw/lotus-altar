@@ -54,6 +54,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Haw Kham turned round, and the Hluttaw and clock tower behind it
+
+- The owner had the palace facing the wrong way. In `15-haw-kham.js` the front face (main stair, porch, throne room, justice and
+  monks halls) is now built in `BACK` (local −z, away from the town) and the back face (end-stair pavilions, literature, dining,
+  opera) in `G` (local +z, toward the town); the shape is unchanged in the world. `hawKham(g, 16, 204, π)`: moved 22 m from the lane,
+  `CZ` 38 (the town gate stays at world z 166), `CZB` 50 (front gate at z 254, a 17 m forecourt). `face()` lays its paved way at the
+  end landings when it has no main stair. Guards follow their faces, plus two inside the council's gate.
+- New `15b-hluttaw-and-clock-tower.js`, `councilCompound(G, …)` after the owner's two old photographs: an inner wall at local
+  z = `ZX` (12) with a gabled gate; the Hluttaw (Burmese လွှတ်တော်, in its tip) at local z 25, facing the palace, a one-floor teak
+  hall on posts with a slatted balustrade, two front stairs (walkable verandah), a closed council room, skirt roof, crossed gables
+  and a five-tiered pyatthat; the clock tower at local (−13, 16.6), the palace's east side, with a crenellated base, four round
+  columns, platform, ladder, drum and bell (not walkable up). Both in `TALL`. Checked in headless renders from the lane, inside the
+  council's compound, the forecourt and beside the tower.
+
 ### 2026-11-11: a back gate for the Haw Kham
 
 - `15-haw-kham.js`: the compound's back wall (local z = -CZB) is open in the middle under a second gate built by the same loop as

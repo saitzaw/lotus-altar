@@ -2,11 +2,13 @@
      photographs of the Shan haws: a long low teak hall, two halls deep, on a high whitewashed plinth with a pierced parapet, a
      verandah of slender white posts under a wide skirt roof all round, and above it a dark band of upper wall under the upper roofs:
      a cluster of parallel carved gables at the east end, the seven-tiered pyatthat over the throne room, a long hipped roof with two
-     raised ridge vents, and a lesser tiered spire at the west end. Front and back are built alike (`face`): at the front a main stair
-     under a porch of three stepped gables and a pyatthat, and on both faces a lesser stair at each end climbing along the plinth's
-     face (at the back under a roofed pavilion at its landing, after the owner's photograph, and no main stair), and three doors, to the halls
-     built by `hawHall`: at the front the throne room, the hall of justice and the hall of the monks; at the back the literature
-     hall, the dining hall and the opera hall. All inside a whitewashed wall with a gate toward the town and another behind ---------- */
+     raised ridge vents, and a lesser tiered spire at the west end. Front and back are built alike (`face`): at the front, which faces
+     away from the town across the forecourt, a main stair under a porch of three stepped gables and a pyatthat, and on both faces a
+     lesser stair at each end climbing along the plinth's face (at the back, toward the town, under a roofed pavilion at its landing,
+     after the owner's photograph, and no main stair), and three doors, to the halls built by `hawHall`: at the front the throne
+     room, the hall of justice and the hall of the monks; at the back the literature hall, the dining hall and the opera hall. All
+     inside a whitewashed wall with a gate at the front and another toward the town; between the back and the town gate, behind an
+     inner wall, the compound of the Hluttaw, the council of state, with the palace clock tower ---------- */
   /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
      studded with silver, baggy black trousers, a black headcloth with its tail over the right shoulder, a straw hat slung on the
      back, a sword on a green cord hung with wool pom-poms, and a spear held upright at the right side. They stand still at the
@@ -58,15 +60,15 @@
   }
   function hawKham(g, x, z, ry) {
     const list = picks.pagoda, { teak, teakDark, white, pane, gable, pyatthat } = shanCarpentry();
-    const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = ry; g.add(G);   // its front (local +z) faces the town; local +x is west
-    const CX = 22, CZ = 16, CZB = 38;   // the compound's half width, and how far it reaches forward (to the gate) and back
+    const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = ry; g.add(G);   // its back (local +z) faces the town; local +x is west
+    const CX = 22, CZ = 38, CZB = 50, ZX = 12;   // the compound's half width, how far it reaches toward the town gate (+z) and to the front gate (−z), and the inner wall round the council's compound
     const red = std({ color: 0x8a1e14, roughness: .45 }), tile = std({ color: 0x7a2a1c, roughness: .7 }), gravel = std({ color: 0xb8a888, roughness: 1 });
-    const data = { tip: `${SHAN_NAMES.haw} · the Haw Kham, the saopha's palace`, toast: `${SHAN_NAMES.haw}, the Haw Kham or golden palace: the haw of Hsenwi's saopha (${SHAN_NAMES.saopha}, "lord of the sky"), the prince who ruled the Shan state from here. A long teak hall on a high whitewashed plinth, a verandah of slender posts all round, the throne room under the seven-tiered pyatthat, and at front and back a main stair under a spired porch with a lesser stair at each end. The saophas gave up their powers in 1959.` };
-    // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the front gate
-    // toward the town and at the back gate behind the palace
+    const data = { tip: `${SHAN_NAMES.haw} · the Haw Kham, the saopha's palace`, toast: `${SHAN_NAMES.haw}, the Haw Kham or golden palace: the haw of Hsenwi's saopha (${SHAN_NAMES.saopha}, "lord of the sky"), the prince who ruled the Shan state from here. A long teak hall on a high whitewashed plinth, a verandah of slender posts all round, the throne room under the seven-tiered pyatthat, a main stair under a spired porch at the front, away from the town, and a lesser stair at each end of both faces. The saophas gave up their powers in 1959.` };
+    // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the gate toward
+    // the town and at the front gate beyond the palace
     flat(mesh(new THREE.BoxGeometry(2 * CX, .04, CZ + CZB), gravel, 0, .025, (CZ - CZB) / 2, G)).receiveShadow = true;
-    flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, CZ + 2.75, G));   // the paved walk out of the gate to the palace lane
-    flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, -CZB - 2.75, G));   // and out of the back gate
+    flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, CZ + 2.75, G));   // the paved walk out of the town gate to the palace lane
+    flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, -CZB - 2.75, G));   // and out of the front gate
     [[-CX, -3.4, -CZB, -CZB], [3.4, CX, -CZB, -CZB], [-CX, -CX, -CZB, CZ], [CX, CX, -CZB, CZ], [-CX, -3.4, CZ, CZ], [3.4, CX, CZ, CZ]].forEach(([a, b, c, d]) => {
       const w = Math.max(b - a, .4), dd = Math.max(d - c, .4), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(new THREE.BoxGeometry(w, 2.2, dd), white, mx, 1.1, mz, G);
@@ -141,9 +143,10 @@
     // [place key, what to call it]; sx turns G's x into this frame's. main: the face has the main stair and its porch (the front);
     // without it (the back, after the owner's photograph) only the two end stairs, each under a roofed pavilion at its landing
     function face(F, halls, sx, main) {
-      // the paved way across in front of the main stair's foot and along to the feet of the end stairs
-      flat(mesh(new THREE.BoxGeometry(2 * FX + 4.8, .05, 2.2), M.stone, 0, .046, CF + 1.1, F));
-      [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.8, .05, CF + 2.2 - PZ1), M.stone, sd * (FX + 1.5), .047, (PZ1 + CF + 2.2) / 2, F)));
+      // the paved way across in front of the main stair's foot (or the end landings, without one) and along to the feet of the end stairs
+      const ZW = main ? CF : PZ1 + SW;
+      flat(mesh(new THREE.BoxGeometry(2 * FX + 4.8, .05, 2.2), M.stone, 0, .046, ZW + 1.1, F));
+      [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.8, .05, ZW + 2.2 - PZ1), M.stone, sd * (FX + 1.5), .047, (PZ1 + ZW + 2.2) / 2, F)));
       // walkable: the main landing and stair between their walls; the end stairs and their landings, their outer walls blocking
       if (main) sRect(F, -LX, LX, PZ1, PZ1 + SW, PH);
       [-1, 1].forEach(sd => {
@@ -222,13 +225,12 @@
       Object.assign(board.userData, { toast: data.toast });
     }
     const BACK = new THREE.Group(); BACK.position.z = 2 * ZM; BACK.rotation.y = Math.PI; G.add(BACK);
-    face(G, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], 1, true);
-    face(BACK, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], -1, false);
-    flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - CF), M.stone, 0, .045, (CZ + CF) / 2, G));   // the paved way from the gate to the main stair's foot
-    // behind, the paved way from the back gate to the plinth, where it turns both ways along the plinth to the feet of the end stairs
-    const BZ = 2 * ZM - (PZ1 + SW + 1.1);
-    flat(mesh(new THREE.BoxGeometry(3.4, .05, BZ + CZB), M.stone, 0, .045, (BZ - CZB) / 2, G));
-    flat(mesh(new THREE.BoxGeometry(2 * FX + 2, .05, 1.6), M.stone, 0, .046, BZ, G));
+    // the front (in BACK, turned round about z = ZM) faces away from the town; the back faces the town and the council's compound
+    face(BACK, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], -1, true);
+    face(G, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], 1, false);
+    const FZ = 2 * ZM - CF;   // the main stair's foot, in G's frame
+    flat(mesh(new THREE.BoxGeometry(3.4, .05, FZ + CZB), M.stone, 0, .045, (FZ - CZB) / 2, G));   // the paved way from the front gate to the main stair's foot
+    flat(mesh(new THREE.BoxGeometry(3.4, .05, ZX - PZ1 - SW - 2.2), M.stone, 0, .045, (ZX + PZ1 + SW + 2.2) / 2, G));   // and behind, from the inner gate to the way along the back
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
     const posts = [], m4 = new THREE.Matrix4();
@@ -271,22 +273,24 @@
     G.updateMatrixWorld(true);
     [[-CX + 3, CZ - 3], [CX - 3, CZ - 3], [-CX + 3, -CZB + 3], [CX - 3, -CZB + 3]].forEach(([lx, lz], i) => { const w = G.localToWorld(V(lx, 0, lz)); tree(g, w.x, w.z, .9, 820 + i); });
     G.traverse(o => { if (o.isMesh && !doors.some(d => d[0] === o)) clickable(list, o, data); });
+    councilCompound(G, list, hip, ZX, CX, CZ);
     // the doors, and where you come out of each hall: on the verandah before its doors, looking out over the courtyard
     PALACE.exits = {};
     doors.forEach(([d, key, what, F, dx]) => {
       clickable(list, d, { floor: key, tip: `Enter ${what} of ${SHAN_NAMES.haw}` });
       const ex = F.localToWorld(V(dx, 0, HZ1 + 1.1)), look = F.localToWorld(V(dx * .5, 0, CF + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]];
     });
-    // the guards: two outside each gate and two inside it facing the walk, and on each face two at the main stair's foot, one beside
-    // each end stair's foot, two at the centre doors and one at each lesser door (the back's turned round about z = ZM, and without
-    // the pair at the main stair's foot, having no main stair)
+    // the guards: two outside each gate and two inside it facing the walk, two inside the council's gate, and on each face two at the
+    // main stair's foot, one beside each end stair's foot, two at the centre doors and one at each lesser door (the front's turned
+    // round about z = ZM; the back without the pair at the main stair's foot, having no main stair)
     const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - .9, 0, PZ1 - .9, 0], [FX + .9, 0, PZ1 - .9, 0],
                        [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]];
     palaceGuards(G, list, [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2],
       [-4.4, 0, -CZB - 1.1, Math.PI], [4.4, 0, -CZB - 1.1, Math.PI], [-2.9, 0, -CZB + 1.6, Math.PI / 2], [2.9, 0, -CZB + 1.6, -Math.PI / 2],
-      ...faceSpots, ...faceSpots.slice(2).map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
+      [-3.4, 0, ZX + 1, 0], [3.4, 0, ZX + 1, 0],
+      ...faceSpots.slice(2), ...faceSpots.map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
     // keep the outside camera above the hall and its spires
     const xs = [], zs = [];
-    [[-PX - 1, PZ0 - SW - 1], [PX + 1, PZ0 - SW - 1], [-PX - 1, CF + 1], [PX + 1, CF + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
+    [[-PX - 1, FZ - 1], [PX + 1, FZ - 1], [-PX - 1, PZ1 + SW + 1], [PX + 1, PZ1 + SW + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: 26 });
   }
