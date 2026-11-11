@@ -58,8 +58,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 - After another of the owner's photographs and notes: the main stair runs straight up the middle from the gate (foot at `CF`) to
   the landing (3.2 m wide, `LX` 1.6) before the throne room's doors, under a porch the owner asked for to show the saopha's power:
-  red-lacquered posts banded in gilt, two carved gables stepping down with the stair, a seven-tier pyatthat (after the owner's
-  picture of one) over the upper gable. A lesser stair at each end of the front verandah climbs along the plinth's face toward the
+  red-lacquered posts banded in gilt, three carved gables stepping down with the stair (one over each third), and a five-tier
+  pyatthat over the top one (first seven tiers; the owner asked for it shorter, with three roofs). A lesser stair at each end of the front verandah climbs along the plinth's face toward the
   middle (foot at x ±`FX`, landing at ±`TX`…±(`TX`−`SW`)). Paved paths reach all three feet. Guards: two at the main stair's foot,
   one beside each end stair's foot (twelve in all).
 

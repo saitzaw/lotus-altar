@@ -155,21 +155,19 @@
       mesh(wg, white, sd > 0 ? LX + .3 : -LX, 0, 0, G);
       const cope = mesh(new THREE.BoxGeometry(.42, .1, Math.hypot(run, PH) + .1), white, sd * (LX + .15), .9 + PH / 2 + .05, PZ1 + SW + run / 2, G); cope.rotation.x = Math.atan2(PH, run);
     });
-    // its porch, the mark of the saopha's power: red-lacquered posts banded in gilt either side, two carved gables stepping down with
-    // the stair, and over the upper one a seven-tiered pyatthat with a gilt spire
-    const PXp = LX + .7, Zm = PZ1 + SW + run * .5, yU = PH + 3.1, yL = 3.5;
-    [[PZ1 + SW + .1, yU], [Zm, yU], [CF + .1, yL]].forEach(([pz, top]) => [-1, 1].forEach(sd => {
+    // its porch, the mark of the saopha's power: red-lacquered posts banded in gilt either side, three carved gables stepping down
+    // with the stair (each over a third of it), and over the top one a five-tiered pyatthat with a gilt spire
+    const PXp = LX + .7, Z = [PZ1 + SW, PZ1 + SW + run / 3, PZ1 + SW + run * 2 / 3, CF], Y = [PH + 3.1, 4.5, 3.5];   // Z: where each third begins and ends; Y: each gable's eaves
+    [[Z[0] + .1, Y[0]], [Z[1], Y[0]], [Z[2], Y[1]], [Z[3] + .1, Y[2]]].forEach(([pz, top]) => [-1, 1].forEach(sd => {
       mesh(new THREE.CylinderGeometry(.14, .16, top, 10), red, sd * PXp, top / 2, pz, G); sCircle(G, sd * PXp, pz, .2);
       [.4, top - .3].forEach(y => mesh(new THREE.CylinderGeometry(.17, .17, .1, 10), M.gold, sd * PXp, y, pz, G));
     }));
-    [-1, 1].forEach(sd => {
-      mesh(new THREE.BoxGeometry(.2, .26, Zm - PZ1 - SW + .3), red, sd * PXp, yU - .13, (PZ1 + SW + Zm) / 2, G);
-      mesh(new THREE.BoxGeometry(.2, .26, CF - Zm + .3), red, sd * PXp, yL - .13, (Zm + CF) / 2, G);
+    Y.forEach((y, k) => {
+      const z0 = k ? Z[k] : PZ1 - .3, z1 = Z[k + 1] + (k < 2 ? .5 : .7);
+      [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.2, .26, Z[k + 1] - Z[k] + .3), red, sd * PXp, y - .13, (Z[k] + Z[k + 1]) / 2, G));
+      gable(G, 0, y, (z0 + z1) / 2, 2 * PXp + 1 - k * .2, z1 - z0, 2.2 - k * .25);
     });
-    const zU0 = PZ1 - .3, zU1 = Zm + .5;
-    gable(G, 0, yU, (zU0 + zU1) / 2, 2 * PXp + 1, zU1 - zU0, 2.3);
-    gable(G, 0, yL, (Zm + CF + .7) / 2, 2 * PXp + .7, CF + .7 - Zm, 1.8);
-    pyatthat(G, 0, yU + 1.25, (zU0 + zU1) / 2, 3.4, 7, .12);
+    pyatthat(G, 0, Y[0] + 1.2, (PZ1 - .3 + Z[1] + .5) / 2, 2.9, 5, .15);
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // tall windows in gilt frames lamplit at night
     const posts = [], m4 = new THREE.Matrix4();
