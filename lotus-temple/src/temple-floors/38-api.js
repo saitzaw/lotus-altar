@@ -13,7 +13,7 @@
     set culling(on) { CULL.on = on; if (!on) CULL.cells.forEach(c => { c.vis = true; c.items.forEach(it => it.o.visible = true); }); },
     get fourTop() { return fourTop; },
     get market() { return MARKET; },
-    groundAt, terrainAt, walkAt, get monasteries() { return MONASTERIES; }, get palace() { return PALACE; },
+    groundAt, terrainAt, walkAt, get monasteries() { return MONASTERIES; }, get palace() { return PALACE; }, set walkerY(v) { WALKER_Y = v; },
     // where the world makes its sounds, in the grounds' frame (the main script's ambience fades each in by distance):
     // the hti bells on the stupa hill's spires, the Bell Tower, the gong in the Lotus Temple hall, the compound's walls
     // [x0, x1, z0, z1], the festival stage, the old banyan, the paddies [x0, x1, z0, z1], the forest's edge, the waterfall's foot

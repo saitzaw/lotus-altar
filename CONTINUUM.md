@@ -55,6 +55,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: up the clock tower's ladder
+
+- The ladder (now at T x .6) is a walkable ramp from the base's top (y 6.9) through a hatch cut in the platform to the platform
+  (y 10.425). The base's top and the platform lie over the same ground, so the tower's surface reads `WALKER_Y` (new, in
+  `13-stupa-hill.js`; set each step by the walk as `temple.walkerY = p.y − EYE` in `10-walking.js`, setter in `38-api.js`) and
+  gives the platform's floor above the midpoint, the base's top below. The columns block only at the base's level. Gong frame and
+  bell moved to the platform's far side (z +1 in T). The toast no longer mentions Mandalay. Checked with `walkAt` probes and renders.
+
 ### 2026-11-11: the Hluttaw's Shan name
 
 - The Hluttaw's tip and toast now carry the owner's Shan name ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း (`SHAN_NAMES.council`) instead of the Burmese

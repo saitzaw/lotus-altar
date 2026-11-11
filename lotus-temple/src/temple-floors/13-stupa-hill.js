@@ -57,6 +57,7 @@
   // solids and raised surfaces attached to objects, in the object's own frame (resolved to world lazily, after the grounds are built):
   // { obj, rect: [x0, x1, z0, z1] | circle: [cx, cz, r], h: null (blocks) | number | (lx, lz) => number (a surface, in local units) }
   const SURF = [], PAD = .35, MONASTERIES = [], PALACE = {};   // PAD: a walker's own radius, in metres; PALACE.exit: where you come out of the Haw Kham's throne room
+  let WALKER_Y = 0;   // the first-person walker's feet, set by the walk each step (temple.walkerY), for places with two floors over the same ground (the clock tower)
   const solid = (obj, shape, h = null) => { SURF.push({ obj, ...shape, h, inv: null }); };
   const sCircle = (obj, cx, cz, r) => solid(obj, { circle: [cx, cz, r] });
   const sRect = (obj, x0, x1, z0, z1, h = null) => solid(obj, { rect: [x0, x1, z0, z1] }, h);

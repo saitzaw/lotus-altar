@@ -25,6 +25,10 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - The outside sky is a sphere (`SKY_R` in `33-pagoda-exterior.js`) with the day dome inside it at .94 × `SKY_R`, drawn over
   whatever lies beyond it. Anything built past ~.9 × `SKY_R` from the temple vanishes into sky (the Haw Kham's back courtyard did
   at the old 220). Before placing something far out, check its distance from the origin against `SKY_R`, and `worldR` for walkers.
+- A walk surface gives one height per (x, z): `walkAt` has no y. Where two floors lie over the same ground (the clock tower's base
+  and platform), the surface function reads `WALKER_Y` (the walker's feet, set by the walk each step) to pick the floor, and the
+  climb between them (a ladder or stair) is its own ramp registered first. Anything that only blocks one floor (columns under a
+  platform) belongs inside that function, not in a separate `sCircle`, which blocks every floor.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
 ## The sky

@@ -121,16 +121,20 @@
     mesh(swg, white, SX1 + .2, 0, 0, T);
     const scope = mesh(new THREE.BoxGeometry(.3, .1, Math.hypot(srun, TOP) + .1), white, SX1 + .1, .9 + TOP / 2 + .05, (SZ0 + SZ1) / 2, T); scope.rotation.x = Math.atan2(TOP, srun);
     mesh(new THREE.BoxGeometry(SX1 - 2.1, .9, .2), white, (SX1 + 2.1) / 2, TOP + .45, -2, T);   // the landing's parapet toward the gate
-    // walkable: the stair and landing, the base's top within its crenellations (the columns and the ladder in the way), the base itself blocks
+    // walkable: the stair and landing, the base's top within its crenellations, round the columns; the base itself blocks
     sRect(T, SX1, SX1 + .25, -1.9, SZ0);
     sRect(T, SX0, SX1, SZ1, SZ0, (lx, lz) => TOP * clamp((SZ0 - lz) / srun, 0, 1));
     sRect(T, 2.1, SX1, -1.9, SZ1, (lx, lz) => lz < -1.75 ? null : TOP);
-    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => sCircle(T, a * 1.55, b * 1.55, .35));
-    sRect(T, .55, 1.25, -1.9, .35);
-    sRect(T, -2.2, 2.2, -2.2, 2.2, (lx, lz) => Math.abs(lx) > 1.95 && !(lx > 0 && lz > -1.75 && lz < -.45) || Math.abs(lz) > 1.95 ? null : TOP);
+    // the ladder, a steep climb from the base's top through the hatch to the platform; over the same ground there are two floors,
+    // the base's top and the platform, and which you stand on follows your height (WALKER_Y, set by the walk)
+    const PLAT = BH + 3.6 + .225, LX = .6, LZ0 = .2, LZ1 = -1.8;
+    sRect(T, LX - .3, LX + .3, LZ1, LZ0, (lx, lz) => TOP + (PLAT - TOP) * clamp((LZ0 - lz) / (LZ0 - LZ1), 0, 1));
+    sRect(T, -2.2, 2.2, -2.2, 2.2, (lx, lz) => WALKER_Y > (TOP + PLAT) / 2
+      ? (Math.abs(lx) > 1.9 || Math.abs(lz) > 1.9 || lx > -1.6 && lx < .2 && Math.abs(lz - 1) < .2 ? null : PLAT)   // the platform, inside its rail, round the gong's frame
+      : (Math.abs(lx) > 1.95 && !(lx > 0 && lz > -1.75 && lz < -.45) || Math.abs(lz) > 1.95 || Math.hypot(Math.abs(lx) - 1.55, Math.abs(lz) - 1.55) < .65 ? null : TOP));   // the base's top, round the columns
     sRect(T, -B0 / 2 - .5, B0 / 2 + .5, -B0 / 2 - .5, B0 / 2 + .5);
     // the four round columns, a teak platform on them, and the open pavilion: slender posts, a low rail, a hipped skirt roof and a small top roof
-    const PY = BH + 3.6, col = new THREE.CylinderGeometry(.3, .32, PY - BH - .3, 14), foot = new THREE.CylinderGeometry(.38, .38, .2, 14);
+    const PY = PLAT - .225, col = new THREE.CylinderGeometry(.3, .32, PY - BH - .3, 14), foot = new THREE.CylinderGeometry(.38, .38, .2, 14);
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => {
       const cx = a * 1.55, cz = b * 1.55;
       part(col, white, cx, BH + .3 + (PY - BH - .3) / 2, cz, T);
@@ -138,7 +142,9 @@
       mesh(new THREE.BoxGeometry(.75, .22, .75), white, cx, PY - .15, cz, T);
       mesh(new THREE.CylinderGeometry(.09, .1, 2.6, 8), teak, a * 1.9, PY + 1.3, b * 1.9, T);
     });
-    mesh(new THREE.BoxGeometry(4.4, .25, 4.4), teakDark, 0, PY + .1, 0, T);
+    // the platform's planks, round the ladder's hatch (x LX ± .4, z −1.9…−.7)
+    [[-2.2, LX - .4, -2.2, 2.2], [LX + .4, 2.2, -2.2, 2.2], [LX - .4, LX + .4, -2.2, -1.9], [LX - .4, LX + .4, -.7, 2.2]].forEach(([x0, x1, z0, z1]) =>
+      mesh(new THREE.BoxGeometry(x1 - x0, .25, z1 - z0), teakDark, (x0 + x1) / 2, PY + .1, (z0 + z1) / 2, T));
     [[0, 2.1, 4.2, .08], [0, -2.1, 4.2, .08], [2.1, 0, .08, 4.2], [-2.1, 0, .08, 4.2]].forEach(([rx, rz, w, d]) => mesh(new THREE.BoxGeometry(w, .08, d), teakDark, rx, PY + .9, rz, T));
     mesh(new THREE.BoxGeometry(4.2, .22, 4.2), teakDark, 0, PY + 2.6, 0, T);
     hip([-3, 3, -3, 3], [-1.2, 1.2, -1.2, 1.2], PY + 2.5, PY + 3.4, T);
@@ -150,24 +156,24 @@
     [[3, PY + 2.6, 1.5], [1.55, PY + 4.15, 1.1]].forEach(([r, y, s]) => [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { const f = mesh(flame, teakDark, a * r, y, b * r, T); f.scale.setScalar(s); f.rotation.set(b * .4, 0, -a * .4); }));
     // the gong and the bell that told the hours: a great bronze gong with a raised boss, hung on cords from a red frame, its padded
     // beater beside it; the bell from the pavilion's beams
-    const GX = -.7, GY = PY + 1.35;
-    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.3, .12), red, GX + sd * .8, PY + 1.25, -.3, T));
-    mesh(new THREE.BoxGeometry(1.9, .14, .14), red, GX, PY + 2.4, -.3, T);
-    [-1, 1].forEach(sd => { const c = mesh(new THREE.CylinderGeometry(.012, .012, .62, 4), teakDark, GX + sd * .32, GY + .78, -.3, T); c.rotation.z = sd * .45; });
-    const gong = mesh(new THREE.CylinderGeometry(.6, .6, .05, 32), M.bronze, GX, GY, -.3, T); gong.rotation.x = Math.PI / 2;
-    mesh(new THREE.TorusGeometry(.6, .035, 6, 32), M.bronze, GX, GY, -.3, T);
-    mesh(new THREE.SphereGeometry(.15, 12, 8), M.gold, GX, GY, -.25, T).scale.z = .5;
-    const beat = mesh(new THREE.CylinderGeometry(.025, .025, .9, 6), teak, GX + 1.05, PY + .85, .1, T); beat.rotation.z = .25;
-    mesh(new THREE.SphereGeometry(.11, 10, 8), red, GX + 1.16, PY + 1.3, .1, T);
-    const bell = mesh(new THREE.CylinderGeometry(.25, .42, .7, 16, 1, true), M.bronze, .9, PY + 1.8, .3, T); bell.material.side = THREE.DoubleSide;
-    mesh(new THREE.SphereGeometry(.26, 12, 8, 0, TAU, 0, Math.PI / 2), M.bronze, .9, PY + 2.15, .3, T);
-    // the ladder up from the base's top to a hatch in the platform
-    const lad = new THREE.Group(); lad.position.set(.9, BH + .3, .2); lad.rotation.x = -Math.atan2(2, PY - BH - .3); T.add(lad);
+    const GX = -.7, GY = PY + 1.35, GZ = 1;   // on the far side of the platform from the ladder's hatch
+    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.3, .12), red, GX + sd * .8, PY + 1.25, GZ, T));
+    mesh(new THREE.BoxGeometry(1.9, .14, .14), red, GX, PY + 2.4, GZ, T);
+    [-1, 1].forEach(sd => { const c = mesh(new THREE.CylinderGeometry(.012, .012, .62, 4), teakDark, GX + sd * .32, GY + .78, GZ, T); c.rotation.z = sd * .45; });
+    const gong = mesh(new THREE.CylinderGeometry(.6, .6, .05, 32), M.bronze, GX, GY, GZ, T); gong.rotation.x = Math.PI / 2;
+    mesh(new THREE.TorusGeometry(.6, .035, 6, 32), M.bronze, GX, GY, GZ, T);
+    mesh(new THREE.SphereGeometry(.15, 12, 8), M.gold, GX, GY, GZ + .05, T).scale.z = .5;
+    const beat = mesh(new THREE.CylinderGeometry(.025, .025, .9, 6), teak, GX + 1.05, PY + .85, GZ + .4, T); beat.rotation.z = .25;
+    mesh(new THREE.SphereGeometry(.11, 10, 8), red, GX + 1.16, PY + 1.3, GZ + .4, T);
+    const bell = mesh(new THREE.CylinderGeometry(.25, .42, .7, 16, 1, true), M.bronze, 1.2, PY + 1.8, GZ, T); bell.material.side = THREE.DoubleSide;
+    mesh(new THREE.SphereGeometry(.26, 12, 8, 0, TAU, 0, Math.PI / 2), M.bronze, 1.2, PY + 2.15, GZ, T);
+    // the ladder up from the base's top through the hatch in the platform
+    const lad = new THREE.Group(); lad.position.set(LX, BH + .3, LZ0); lad.rotation.x = -Math.atan2(2, PY - BH - .3); T.add(lad);
     const LL = Math.hypot(2, PY - BH - .3);
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.06, LL, .08), teak, sd * .25, LL / 2, 0, lad));
     for (let i = 1; i < 11; i++) mesh(new THREE.BoxGeometry(.5, .04, .04), teak, 0, i * LL / 11, 0, lad);
     bakeParts(T);
-    const tData = { tip: "The palace clock tower", toast: "The palace clock tower, like the one in the palace at Mandalay: a tall whitewashed base crenellated along its top, four round columns carrying a teak platform, and an open pavilion under two roofs. A water clock kept the time, and the watchmen climbed the stair and the ladder to beat the hours on the great gong and sound the bell." };
+    const tData = { tip: "The palace clock tower", toast: "The palace clock tower: a tall whitewashed base crenellated along its top, four round columns carrying a teak platform, and an open pavilion under two roofs. A water clock kept the time, and the watchmen climbed the stair and the ladder to beat the hours on the great gong and sound the bell." };
     T.traverse(o => { if (o.isMesh) clickable(list, o, tData); });
     // keep the outside camera above the tower and the Hluttaw's spire
     G.updateMatrixWorld(true);

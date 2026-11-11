@@ -129,6 +129,7 @@ function walkStep(dt) {
   // stay off the water and out of the benches: if the step is blocked, slide along whichever axis is free
   // stay off the water and out of walls, posts and benches, and never step up more than a stair's height at once:
   // if the step is blocked, slide along whichever axis is free
+  temple.walkerY = p.y - EYE;   // which floor you're on, where two lie over the same ground (the clock tower's base and platform)
   const h0 = temple.walkAt(p.x, p.z), ok = (x, z) => { const h = temple.walkAt(x, z); return h0 === null || h !== null && Math.abs(h - h0) < .45; };   // no climbing walls or stepping off ledges; anyone caught inside something can always step out
   if (!ok(nx, nz)) {
     if (ok(nx, p.z)) nz = p.z; else if (ok(p.x, nz)) nx = p.x; else return;
