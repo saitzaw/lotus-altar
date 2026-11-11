@@ -7,8 +7,8 @@
      lesser stair at each end climbing along the plinth's face (at the back, toward the town, under a roofed pavilion at its landing,
      after the owner's photograph, and no main stair), and three doors, to the halls built by `hawHall`: at the front the throne
      room, the hall of justice and the hall of the monks; at the back the literature hall, the dining hall and the opera hall. All
-     inside a whitewashed wall with a gate at the front and another toward the town; between the main stair and the front gate,
-     behind an inner wall, the compound of the Hluttaw, the council of state, facing the main entrance, with the palace clock tower.
+     inside a whitewashed wall with a gate at the front and another toward the town. Across the road from the front gate, in its
+     own walled compound, the Hluttaw, the council of state, facing the main entrance, with the palace clock tower.
      The back yard, toward the town, is kept clear for the royal kitchen, bathhouse and lake still to come ---------- */
   /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
      studded with silver, baggy black trousers, a black headcloth with its tail over the right shoulder, a straw hat slung on the
@@ -62,7 +62,7 @@
   function hawKham(g, x, z, ry) {
     const list = picks.pagoda, { teak, teakDark, white, pane, gable, pyatthat } = shanCarpentry();
     const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = ry; g.add(G);   // its back (local +z) faces the town; local +x is west
-    const CX = 22, CZ = 38, CZB = 63;   // the compound's half width, and how far it reaches toward the town gate (+z) and to the front gate (−z)
+    const CX = 22, CZ = 38, CZB = 50;   // the compound's half width, and how far it reaches toward the town gate (+z) and to the front gate (−z)
     const red = std({ color: 0x8a1e14, roughness: .45 }), tile = std({ color: 0x7a2a1c, roughness: .7 }), gravel = std({ color: 0xb8a888, roughness: 1 });
     const data = { tip: `${SHAN_NAMES.haw} · the Haw Kham, the saopha's palace`, toast: `${SHAN_NAMES.haw}, the Haw Kham or golden palace: the haw of Hsenwi's saopha (${SHAN_NAMES.saopha}, "lord of the sky"), the prince who ruled the Shan state from here. A long teak hall on a high whitewashed plinth, a verandah of slender posts all round, the throne room under the seven-tiered pyatthat, a main stair under a spired porch at the front, away from the town, and a lesser stair at each end of both faces. The saophas gave up their powers in 1959.` };
     // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the gate toward
@@ -229,8 +229,8 @@
     // the front (in BACK, turned round about z = ZM) faces away from the town; the back faces the town and the council's compound
     face(BACK, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], -1, true);
     face(G, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], 1, false);
-    const FZ = 2 * ZM - CF, ZX = CF + 4;   // the main stair's foot, in G's frame; the council's inner wall, in BACK's (4 m out from the stair's foot)
-    flat(mesh(new THREE.BoxGeometry(3.4, .05, ZX - CF), M.stone, 0, .045, (CF + ZX) / 2, BACK));   // the paved way from the council's gate to the main stair's foot
+    const FZ = 2 * ZM - CF, ZX = CZB + 2 * ZM + 8.5;   // the main stair's foot, in G's frame; the Hluttaw compound's front wall, in BACK's, across the road (see LANES)
+    flat(mesh(new THREE.BoxGeometry(3.4, .05, FZ + CZB), M.stone, 0, .045, (FZ - CZB) / 2, G));   // the paved way from the front gate to the main stair's foot
     flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - PZ1 - SW - 2.2), M.stone, 0, .045, (CZ + PZ1 + SW + 2.2) / 2, G));   // and behind, from the town gate to the way along the back
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
@@ -274,21 +274,21 @@
     G.updateMatrixWorld(true);
     [[-CX + 3, CZ - 3], [CX - 3, CZ - 3], [-CX + 3, -CZB + 3], [CX - 3, -CZB + 3]].forEach(([lx, lz], i) => { const w = G.localToWorld(V(lx, 0, lz)); tree(g, w.x, w.z, .9, 820 + i); });
     G.traverse(o => { if (o.isMesh && !doors.some(d => d[0] === o)) clickable(list, o, data); });
-    councilCompound(BACK, list, hip, ZX, CX, 2 * ZM + CZB);   // in the forecourt, built in the front's frame
+    councilCompound(BACK, list, hip, ZX);   // across the road before the front gate, built in the front's frame
     // the doors, and where you come out of each hall: on the verandah before its doors, looking out over the courtyard
     PALACE.exits = {};
     doors.forEach(([d, key, what, F, dx]) => {
       clickable(list, d, { floor: key, tip: `Enter ${what} of ${SHAN_NAMES.haw}` });
       const ex = F.localToWorld(V(dx, 0, HZ1 + 1.1)), look = F.localToWorld(V(dx * .5, 0, CF + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]];
     });
-    // the guards: two outside each gate and two inside it facing the walk, two inside the council's gate, and on each face two at the
+    // the guards: two outside each gate and two inside it facing the walk, two outside the Hluttaw's gate facing the palace, and on each face two at the
     // main stair's foot, one beside each end stair's foot, two at the centre doors and one at each lesser door (the front's turned
     // round about z = ZM; the back without the pair at the main stair's foot, having no main stair)
     const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - .9, 0, PZ1 - .9, 0], [FX + .9, 0, PZ1 - .9, 0],
                        [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]];
     palaceGuards(G, list, [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2],
       [-4.4, 0, -CZB - 1.1, Math.PI], [4.4, 0, -CZB - 1.1, Math.PI], [-2.9, 0, -CZB + 1.6, Math.PI / 2], [2.9, 0, -CZB + 1.6, -Math.PI / 2],
-      [-3.4, 0, 2 * ZM - ZX - 1, Math.PI], [3.4, 0, 2 * ZM - ZX - 1, Math.PI],
+      [-3.4, 0, 2 * ZM - ZX + 1, 0], [3.4, 0, 2 * ZM - ZX + 1, 0],
       ...faceSpots.slice(2), ...faceSpots.map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
     // keep the outside camera above the hall and its spires
     const xs = [], zs = [];

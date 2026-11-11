@@ -54,6 +54,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: a road between the palace and the Hluttaw; the clock tower's gong and stair
+
+- Owner's asks. `LANES` (`10-town.js`) gains two lanes in world coordinates tied to `hawKham(g, 16, 204, π)`: the market lane on
+  along the palace's east wall (x 38.75…43.25, z 160.5…255.5) and the Hluttaw road (x −10…43.25, z 255.5…261.5); `backStreets`
+  draws them with drains, poles and lamps. If the palace moves, move these too. `CZB` back to 50 (front wall z 254).
+- `councilCompound(F, list, hip, ZX)` now walls its own compound (half width 20, 24 deep from `ZX`, front wall world z 262.5) with
+  the gate toward the palace; two guards outside it face the palace gate. `ZX` = `CZB + 2·ZM + 8.5` in `BACK`'s frame (careful:
+  BACK z = −24 − G z).
+- Clock tower: the drum is now a bronze gong with a gilt boss on a red frame, with its beater. A 23-step stair (rise .3) climbs the
+  east face (T +x) to a landing through a gap in the merlons; the base's top (y 6.9) is walkable, columns and ladder block. Checked
+  in headless renders and with `walkAt` probes.
+
 ### 2026-11-11: the Hluttaw moved before the Haw Kham's main entrance
 
 - The owner wants the Hluttaw face to face with the palace's main entrance, and the back yard (toward the town) kept for a royal

@@ -8,7 +8,9 @@
     { x0: -2.25, x1: 2.25, z0: 71.2, z1: 107 },                  // the plaza lane, south from the plaza opposite the gate
     { x0: 38.75, x1: 43.25, z0: 60.8, z1: 160.5, mouth: true },  // the market lane, beside the daily market, past the high school
     { x0: -73, x1: -68.5, z0: -24, z1: 50, mouth: true },        // the west lane, a row back from the houses on the town road
-    { x0: -10, x1: 38.75, z0: 155.5, z1: 160.5 }                 // the palace lane, from the market lane's end past the Haw Kham to the hill's east stair
+    { x0: -10, x1: 38.75, z0: 155.5, z1: 160.5 },                // the palace lane, from the market lane's end past the Haw Kham to the hill's east stair
+    { x0: 38.75, x1: 43.25, z0: 160.5, z1: 255.5 },              // the market lane on along the Haw Kham's east wall (hawKham(g, 16, 204, π): the wall at x 38)
+    { x0: -10, x1: 43.25, z0: 255.5, z1: 261.5 }                 // the Hluttaw road, between the Haw Kham's front wall (z 254) and the Hluttaw's compound (z 262.5)
   ];
   const corrugated = (base, light, dark) => {
     const t = canvasTex(64, (c, sz) => {
