@@ -189,6 +189,7 @@
     sevenDayMarket(g);
     shanStupaHill(g);
     shanMonasteries(g);
+    hawKham(g, 16, 182, Math.PI);   // the saopha's palace, east of the stupa hill's foot
     streetFrontage(g);
     backStreets(g);
     hillHuts(g);

@@ -54,6 +54,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Haw Kham in a file of its own
+
+- The owner plans a ground floor and underground rooms (a traditional prison) for the Haw Kham, so it no longer lives inside the
+  monastery's builder. `hawKham(g, x, z, ry)` and `palaceGuards` in `15-haw-kham.js` are top-level and parse alone; the world
+  calls `hawKham(g, 16, 182, Math.PI)` right after `shanMonasteries(g)` (in the outdoor build list in `36-lion-dragon-dance.js`).
+  What both shared (teak, whitewash, lamplit glass, rusty iron roof, `gable`, `pyatthat`) moved to `shanCarpentry()` in
+  `13b-shan-carpentry.js`, made once and handed to both. Nothing in the world changed.
+
+
 ### 2026-11-11: the Haw Kham's two lesser halls and its guards
 
 - At the owner's request, three halls in the palace: the throne room in the centre (`haw`), the hall of justice on the left

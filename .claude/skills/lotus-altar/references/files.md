@@ -67,8 +67,9 @@
 | `11-waterfall-and-stream.js` | waterfall, paddy fields | `FALLS` `waterfall` `paddyFields` |
 | `12-market.js` | seven-day market | `sevenDayMarket` |
 | `13-stupa-hill.js` | stupa hill and **terrain** (height/walkable ground) | `HILL` `groundAt` `walkAt` `terrainAt` `MON` `KINNARA` `AUDIENCE` `shanStupaHill` |
+| `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials and the carved gable and pyatthat, shared by the monastery and the Haw Kham (made once) | `shanCarpentry` |
 | `14-shan-monasteries.js` | Shan teak monasteries | `shanMonasteries` |
-| `15-haw-kham.js` | the saopha's palace (*inside `shanMonasteries`*) | |
+| `15-haw-kham.js` | the saopha's palace and its guards, its own top-level builder (called from `36-lion-dragon-dance.js` after `shanMonasteries`) | `hawKham` `palaceGuards` |
 | `16-festival-ground.js` | festival ground and stage | `festivalGround` |
 | `17-kinnara-dance.js` | kinnara/kinnari dancers | `kinnaraDancers` |
 | `18-stage-ensemble.js` | stage musicians (*inside `kinnaraDancers`*) | |
