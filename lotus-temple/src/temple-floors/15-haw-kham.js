@@ -235,7 +235,7 @@
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
     const posts = [], m4 = new THREE.Matrix4();
-    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(Math.abs(px) - SLC) > SW / 2 + .2) { if (Math.abs(px) > LX + .4) posts.push([px, PZ1 - .55]); posts.push([px, PZ0 + .55]); }
+    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(Math.abs(px) - SLC) > SW / 2 + .2 && Math.abs(px) > LX + .4) { posts.push([px, PZ1 - .55]); posts.push([px, PZ0 + .55]); }   // none before the centre doors, front or back
     for (let k = 1; k < 12; k++) { const pz = PZ0 + .55 + k * (PZ1 - PZ0 - 1.1) / 12; [-1, 1].forEach(sd => posts.push([sd * (PX - .55), pz])); }
     const post = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .12, EH - PH, 8), white, posts.length);
     posts.forEach(([px, pz], i) => post.setMatrixAt(i, m4.makeTranslation(px, (PH + EH) / 2, pz)));
