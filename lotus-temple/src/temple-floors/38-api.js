@@ -70,6 +70,7 @@
       if (obj.userData.bathe && pondBathe) {
         return pondBathe() ? { toast: "You pour pond water over the infant Buddha, washing away the dust of the year: may your mind be as clear as the water." } : {};
       }
+      if (obj.userData.ladder) return obj.userData.ladder();
       if (obj.userData.pavilion) return { pavilion: true };
       if (obj.userData.ringBell) { bellRingers.forEach(f => f()); return {}; }
       if (obj.userData.fourTop) return { fourTop: true };

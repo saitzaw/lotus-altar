@@ -175,6 +175,12 @@
     bakeParts(T);
     const tData = { tip: "The palace clock tower", toast: "The palace clock tower: a tall whitewashed base crenellated along its top, four round columns carrying a teak platform, and an open pavilion under two roofs. A water clock kept the time, and the watchmen climbed the stair and the ladder to beat the hours on the great gong and sound the bell." };
     T.traverse(o => { if (o.isMesh) clickable(list, o, tData); });
+    // Space or a tap on the ladder climbs it, up from the base's top or down from the platform, the way you'd find it on foot
+    const climbLadder = () => {
+      const up = WALKER_Y < (TOP + PLAT) / 2, at = T.localToWorld(up ? V(-.6, 0, -1) : V(LX, 0, .9)), look = T.localToWorld(up ? V(GX, 0, GZ) : V(2.2, 0, -1.1));
+      return { walk: [[at.x, at.z], [look.x, look.z], up ? PLAT : TOP] };
+    };
+    lad.traverse(o => { if (o.isMesh) Object.assign(o.userData, { tip: "The ladder · climb up or down", ladder: climbLadder }); });
     // keep the outside camera above the tower and the Hluttaw's spire
     G.updateMatrixWorld(true);
     [[T, 3.5, PY + 7.5], [H, HW + 1, EV + 13]].forEach(([o, r, h]) => {

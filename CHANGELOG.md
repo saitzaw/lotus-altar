@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-11
 
 ### Changed
+- Space or a tap on the clock tower's ladder climbs it, up from the base or down from the platform.
 - You can climb the clock tower's ladder from the top of its base through a hatch onto the platform, and walk round the gong and the bell there. The tower's description no longer compares it to Mandalay's.
 - The Hluttaw has its own walled compound across a new road from the Haw Kham's front gate, kept by two guards; the road joins the market lane, which now runs on along the palace's east wall. The palace's forecourt is back to 17 m.
 - The clock tower tells the hours on a bronze gong in a red frame instead of a drum, and a steep stair climbs its east face to the crenellated top, where you can walk round under the columns.

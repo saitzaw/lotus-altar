@@ -147,6 +147,7 @@ function useObject(o) {
     const r = temple.activate(o, current, lastHit);
     if (r.fourTop) { openTopGame(); return; }
     if (r.pavilion) { sitInPavilion(); return; }
+    if (r.walk) { if (inMarket) { temple.walkerY = r.walk[2]; enterWalk(r.walk[0], r.walk[1]); } return; }   // a ladder: on foot, step to its other end
     if (r.market) { if (inMarket) walkTo(lastHit); else enterMarket(); return; }
     if (r.view) { setView(r.view); return; }
     if (r.floor) { moving = !!r.delay; setTimeout(() => { moving = false; goTo(r.floor); }, r.delay || 0); } else if (r.toast) toast(r.toast);

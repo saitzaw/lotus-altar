@@ -55,6 +55,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the clock tower's ladder works both ways
+
+- The owner couldn't get down: from the platform the ladder ramp can only be entered at its top end, beside the rail. Now the
+  ladder's meshes carry `userData.ladder` (tip "The ladder · climb up or down"); `temple.activate` returns `{ walk: [at, look, y] }`
+  and `useObject` (`11-loop-and-picking.js`) sets `temple.walkerY = y` and `enterWalk(at, look)`, putting you at the other end:
+  on the platform by the gong, or on the base's top by the ladder's foot. Walking up the ramp still works. Checked headlessly.
+
 ### 2026-11-11: up the clock tower's ladder
 
 - The ladder (now at T x .6) is a walkable ramp from the base's top (y 6.9) through a hatch cut in the platform to the platform
