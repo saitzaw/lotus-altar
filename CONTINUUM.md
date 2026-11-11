@@ -44,6 +44,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker check ၸၢပ်ႈ (the cymbals on the festival stage; a best guess, after the Tai word chap).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the throne room's ပလၢင်ႇသီႇႁႃႇသၼ (lion throne) and ၸွင်ႈၽိူၵ် (white umbrella), in `hawHall`'s toasts.
+- Have a Shan speaker check ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း, the owner's Shan name for the Hluttaw (`SHAN_NAMES.council`, in its tip and toast).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
   site's owner; the boards carry the Shan names only.
@@ -53,6 +54,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-11: the Hluttaw's Shan name
+
+- The Hluttaw's tip and toast now carry the owner's Shan name ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း (`SHAN_NAMES.council`) instead of the Burmese
+  လွှတ်တော်. Added to the open threads for a native speaker to check.
 
 ### 2026-11-11: a road between the palace and the Hluttaw; the clock tower's gong and stair
 

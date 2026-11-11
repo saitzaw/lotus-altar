@@ -1,5 +1,5 @@
   /* ---------- the council's compound across the road from the Haw Kham's front gate, after the owner's old photographs: a
-     whitewashed wall round it with a gate toward the palace; the Hluttaw (Burmese လွှတ်တော်), the council of state, a small one-floor
+     whitewashed wall round it with a gate toward the palace; the Hluttaw (in Shan ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း, `SHAN_NAMES.council`), the council of state, a small one-floor
      teak hall raised on posts with a slatted balustrade round its verandah, two stairs at the front ends, a skirt roof of corrugated
      iron and crossed carved gables under a tiered pyatthat, face to face with the palace's main entrance; and by the gate the clock tower, a
      tall whitewashed base crenellated at the top, climbed by a steep stair along its side, four round white columns carrying a teak
@@ -88,7 +88,7 @@
     mesh(new THREE.BoxGeometry(1.8, 1.2, 1.8), teakDark, 0, EV + 3, 0, H);
     pyatthat(H, 0, EV + 3.4, 0, 2.6, 5, .14);
     bakeParts(H);
-    const hData = { tip: "လွှတ်တော် · the Hluttaw, the council of state", toast: "The Hluttaw (Burmese လွှတ်တော်), the council of state: a small one-floor teak hall raised on posts, with a slatted balustrade round its verandah, a stair at each end of its front and a tiered pyatthat over the council room. Here the saopha's ministers sat in council on the business of the state, the hall facing the palace across its own compound, as in the old photographs." };
+    const hData = { tip: `${SHAN_NAMES.council} · the Hluttaw, the council of state`, toast: `${SHAN_NAMES.council}, the Hluttaw, the council of state: a small one-floor teak hall raised on posts, with a slatted balustrade round its verandah, a stair at each end of its front and a tiered pyatthat over the council room. Here the saopha's ministers sat in council on the business of the state, the hall facing the palace's main entrance across the road, as in the old photographs.` };
     H.traverse(o => { if (o.isMesh) clickable(list, o, hData); });
 
     /* ---------- the clock tower, in its own frame T, inside the gate on the east side ---------- */
