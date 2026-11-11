@@ -96,8 +96,8 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
 | Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (shared materials, `gable`, `pyatthat` in `13b-shan-carpentry.js`) |
-| Haw Kham palace outside, its guards (front away from the town, back toward it) | (16, 204), walls z 166…254 | `hawKham`, `palaceGuards` | `15-haw-kham.js` |
-| Hluttaw (council of state) and the palace clock tower, in their walled compound between the palace's back and the town gate | (16, 179); tower (29, 187) | `councilCompound` | `15b-hluttaw-and-clock-tower.js` |
+| Haw Kham palace outside, its guards (front away from the town, back toward it; back yard kept for the kitchen, bathhouse and lake) | (16, 204), walls z 166…267 | `hawKham`, `palaceGuards` | `15-haw-kham.js` |
+| Hluttaw (council of state) and the palace clock tower, in their walled compound between the palace's main stair and the front gate, facing the main entrance | (16, 254); tower (29, 246) | `councilCompound` | `15b-hluttaw-and-clock-tower.js` |
 | Festival ground, stage, dancers, ensemble, audience | festival ground (`STAGE`) | `festivalGround`, `kinnaraDancers`, `toDancers`, `stageSinger`, `festivalAudience` | `16-` … `19-*.js` |
 | Village lamps, hut villages | town edges | `hillHuts`, `hutVillage`, `villageLamp` | `22-village-lamps-and-huts.js` |
 | Hospital, road houses | across from the football ground | `hospital`, `hospitalRoadHouses` | `26-hospital-football-school.js` |

@@ -54,6 +54,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Hluttaw moved before the Haw Kham's main entrance
+
+- The owner wants the Hluttaw face to face with the palace's main entrance, and the back yard (toward the town) kept for a royal
+  kitchen, royal bathhouse and a lake, not yet planned. `councilCompound` is now called in `BACK` (the front's frame): inner wall at
+  `ZX` = CF + 4 out from the main stair's foot, the Hluttaw 13 m beyond (world (16, 254)), clock tower at BACK (13, ZX + 4.6), the
+  east side (world (29, 246)). `CZB` 63, so the front gate is at world z 267. The back yard is 34 m of empty gravel from the end
+  stairs to the town gate. Checked in headless renders.
+
 ### 2026-11-11: the Haw Kham turned round, and the Hluttaw and clock tower behind it
 
 - The owner had the palace facing the wrong way. In `15-haw-kham.js` the front face (main stair, porch, throne room, justice and

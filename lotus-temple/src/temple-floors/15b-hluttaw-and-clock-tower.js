@@ -1,10 +1,10 @@
-  /* ---------- the council's compound behind the Haw Kham, between its back and the town gate, after the owner's old photographs: an
-     inner whitewashed wall with a gate toward the palace; the Hluttaw (Burmese လွှတ်တော်), the council of state, a small one-floor
+  /* ---------- the council's compound before the Haw Kham, between its main stair and the front gate, after the owner's old
+     photographs: an inner whitewashed wall with a gate toward the palace; the Hluttaw (Burmese လွှတ်တော်), the council of state, a small one-floor
      teak hall raised on posts with a slatted balustrade round its verandah, two stairs at the front ends, a skirt roof of corrugated
-     iron and crossed carved gables under a tiered pyatthat, facing the palace; and close to the palace's back the clock tower, a
+     iron and crossed carved gables under a tiered pyatthat, face to face with the palace's main entrance; and near the palace the clock tower, a
      tall whitewashed base crenellated at the top, four round white columns carrying a teak platform and an open teak pavilion under
-     two roofs, where the drum and the bell told the hours. G: the palace's frame (local +z toward the town); hip: its roof maker;
-     ZX: the inner wall's z; CX: the compound's half width; CZ: the town gate's z ---------- */
+     two roofs, where the drum and the bell told the hours. G: the palace front's frame (local +z out from the main stair, x turned
+     round so −x is west); hip: its roof maker; ZX: the inner wall's z; CX: the compound's half width; CZ: the front gate's z ---------- */
   function councilCompound(G, list, hip, ZX, CX, CZ) {
     const { teak, teakDark, roofM, white, flame, gable, pyatthat } = shanCarpentry();
     const red = std({ color: 0x8a1e14, roughness: .45 }), tile = std({ color: 0x7a2a1c, roughness: .7 });
@@ -18,13 +18,13 @@
     [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(.7, 3, .7), white, sd * 2.6, 1.5, ZX, C); sRect(C, sd * 2.6 - .35, sd * 2.6 + .35, ZX - .35, ZX + .35); });
     mesh(new THREE.BoxGeometry(5.8, .4, 1), red, 0, 3.2, ZX, C);
     gable(C, 0, 3.4, ZX, 5.4, 1.6, 1.3);
-    // the paved ways: in from the town gate, round both sides of the Hluttaw, and on to the inner gate
-    const ZH = 25, HW = 6, HD = 4;   // the Hluttaw's middle, half width and half depth
+    // the paved ways: in from the front gate, round both sides of the Hluttaw, and on to the inner gate
+    const ZH = ZX + 13, HW = 6, HD = 4;   // the Hluttaw's middle, half width and half depth
     const ZB = ZH + HD + 2, ZF = ZX + 3;   // the ways across behind the Hluttaw and before it
     [[ZB, CZ, 3.4], [ZB - .8, ZB + .8, 2 * HW + 6.6], [ZF - .8, ZF + .8, 2 * HW + 6.6], [ZX, ZF, 3.4]].forEach(([z0, z1, w], i) =>
       flat(mesh(new THREE.BoxGeometry(w, .05, z1 - z0), M.stone, 0, .045 + i * .001, (z0 + z1) / 2, C)));
     [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.6, .05, ZB - ZF), M.stone, sd * (HW + 2.5), .049, (ZB + ZF) / 2, C)));
-    C.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "The council's gate", toast: "The inner wall and gate between the Haw Kham's back courtyard and the compound of the Hluttaw, the council of state, where the palace clock tower also stands." }); });
+    C.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "The council's gate", toast: "The inner wall and gate between the Haw Kham's main stair and the compound of the Hluttaw, the council of state, where the palace clock tower also stands." }); });
 
     /* ---------- the Hluttaw, in its own frame H: its front (local +z) faces the palace ---------- */
     const H = new THREE.Group(); H.position.set(0, 0, ZH); H.rotation.y = Math.PI; G.add(H);
@@ -87,8 +87,8 @@
     const hData = { tip: "လွှတ်တော် · the Hluttaw, the council of state", toast: "The Hluttaw (Burmese လွှတ်တော်), the council of state: a small one-floor teak hall raised on posts, with a slatted balustrade round its verandah, a stair at each end of its front and a tiered pyatthat over the council room. Here the saopha's ministers sat in council on the business of the state, the hall facing the palace across its own compound, as in the old photographs." };
     H.traverse(o => { if (o.isMesh) clickable(list, o, hData); });
 
-    /* ---------- the clock tower, in its own frame T, close to the palace's back on its east side ---------- */
-    const T = new THREE.Group(); T.position.set(-13, 0, ZX + 4.6); G.add(T);
+    /* ---------- the clock tower, in its own frame T, near the palace on the east side ---------- */
+    const T = new THREE.Group(); T.position.set(13, 0, ZX + 4.6); G.add(T);
     const B0 = 5.6, B1 = 4.6, BH = 6.6, sq = (w0, w1, h) => { const geo = new THREE.CylinderGeometry(w1 / Math.SQRT2, w0 / Math.SQRT2, h, 4); geo.rotateY(Math.PI / 4); return geo; };
     // the base: a moulded foot, a whitewashed body narrowing upward with a string course and corner piers, a cornice and the crenellations
     mesh(new THREE.BoxGeometry(B0 + 1, .5, B0 + 1), white, 0, .25, 0, T);

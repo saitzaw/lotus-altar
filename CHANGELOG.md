@@ -9,8 +9,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 - The Haw Kham is turned round: its main stair and spired porch now face away from the town across a deeper forecourt to the front gate, and its back, with the two roofed end stairs, faces the town. The palace stands 22 m further from the palace lane; the town gate is where it was.
 
 ### Added
-- The Hluttaw, the council of state, behind the Haw Kham in its own walled compound between the palace and the town gate: a small one-floor teak hall raised on posts, with a slatted balustrade, two front stairs and a tiered spire, facing the palace.
-- The palace clock tower in the council's compound, close to the palace's back: a crenellated whitewashed base, four round columns, a teak platform reached by a ladder and an open pavilion under two roofs with the drum and bell that told the hours.
+- The Hluttaw, the council of state, before the Haw Kham in its own walled compound between the main stair and the front gate: a small one-floor teak hall raised on posts, with a slatted balustrade, two front stairs and a tiered spire, face to face with the palace's main entrance. The palace's back yard, toward the town, is left clear for a royal kitchen, bathhouse and lake.
+- The palace clock tower in the council's compound, near the palace: a crenellated whitewashed base, four round columns, a teak platform reached by a ladder and an open pavilion under two roofs with the drum and bell that told the hours.
 
 ### Fixed
 - The back of the Haw Kham no longer vanishes into the sky: the sky and the ground reach twice as far, and on the town's side you can walk out to 340 m from the temple (225 m toward the fields and hills, as before).

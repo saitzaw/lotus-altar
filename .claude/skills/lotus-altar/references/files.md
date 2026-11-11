@@ -70,7 +70,7 @@
 | `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials and the carved gable and pyatthat, shared by the monastery and the Haw Kham (made once) | `shanCarpentry` |
 | `14-shan-monasteries.js` | Shan teak monasteries | `shanMonasteries` |
 | `15-haw-kham.js` | the saopha's palace and its guards, its own top-level builder (called from `36-lion-dragon-dance.js` after `shanMonasteries`); front away from the town, back toward it | `hawKham` `palaceGuards` |
-| `15b-hluttaw-and-clock-tower.js` | the council's compound between the palace's back and the town gate: inner wall and gate, the Hluttaw on posts, the clock tower (called from `hawKham`) | `councilCompound` |
+| `15b-hluttaw-and-clock-tower.js` | the council's compound in the forecourt, between the palace's main stair and the front gate: inner wall and gate, the Hluttaw on posts facing the main entrance, the clock tower (called from `hawKham` in the front's frame `BACK`) | `councilCompound` |
 | `16-festival-ground.js` | festival ground and stage | `festivalGround` |
 | `17-kinnara-dance.js` | kinnara/kinnari dancers | `kinnaraDancers` |
 | `18-stage-ensemble.js` | stage musicians (*inside `kinnaraDancers`*) | |
