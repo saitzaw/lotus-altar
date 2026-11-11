@@ -56,10 +56,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-11: three stairs to the Haw Kham
 
-- After another of the owner's photographs: the entrance has three stairs meeting at one landing (now 3.2 m wide, `LX` 1.6) before
-  the throne room's doors: the left one along the plinth's face as before, its mirror on the right, and a central stair straight down
-  toward the gate (foot at `CF`). Paved paths lead from the gate to all three feet. Guards: two at the central stair's foot and one
-  beside each side stair's foot (twelve in all now).
+- After another of the owner's photographs and notes: the main stair runs straight up the middle from the gate (foot at `CF`) to
+  the landing (3.2 m wide, `LX` 1.6) before the throne room's doors, under a porch the owner asked for to show the saopha's power:
+  red-lacquered posts banded in gilt, two carved gables stepping down with the stair, a seven-tier pyatthat (after the owner's
+  picture of one) over the upper gable. A lesser stair at each end of the front verandah climbs along the plinth's face toward the
+  middle (foot at x ±`FX`, landing at ±`TX`…±(`TX`−`SW`)). Paved paths reach all three feet. Guards: two at the main stair's foot,
+  one beside each end stair's foot (twelve in all).
 
 
 ### 2026-11-11: the Haw Kham in a file of its own
