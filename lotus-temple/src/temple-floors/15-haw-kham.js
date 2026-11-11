@@ -41,7 +41,8 @@
       sRect(G, -HX, HX, HZ0, HZ1);
       sRect(G, -PX, PX, PZ0, PZ1, (lx, lz) => Math.min(PX - Math.abs(lx), lz - PZ0, PZ1 - lz) < ED && !(lz > 0 && Math.abs(lx) < LX - .3) ? null : PH);
       sRect(G, -LX, LX, PZ1, PZ1 + SW, (lx, lz) => lx > LX - .45 || lz > PZ1 + SW - .45 ? null : PH);
-      sRect(G, SX - .2, -LX, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 || lx < SX ? null : PH * clamp((lx - SX) / run, 0, 1));
+      sRect(G, SX - .6, SX, PZ1 + SW - .6, PZ1 + SW + .15);   // the lotus-bud pier at the stair's foot
+      sRect(G, SX, -LX, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 ? null : PH * clamp((lx - SX) / run, 0, 1));   // open at its foot, where you step on
       // the plinth: whitewashed brick, a moulded foot and cornice, paved on top
       const paveT = canvasTex(128, (c, sz) => { c.fillStyle = "#b8b0a0"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) { const v = 172 + ((r * 3 + k * 5) % 4) * 9; c.fillStyle = `rgb(${v},${v - 5},${v - 14})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
       paveT.wrapS = paveT.wrapT = THREE.RepeatWrapping; paveT.repeat.set(PX / 1.2, (PZ1 - PZ0) / 2.4);
