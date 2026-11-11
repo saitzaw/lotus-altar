@@ -22,6 +22,9 @@ lesson when you learn one, and delete a lesson once it stops being true.
   come in close. The one at about (−149, −57) reaches x ≈ −112 and half-buries anything placed west of the stream's end.
   Check `peaks` before you place something at the edge of the world. Peaks that would cover the hospital road are skipped,
   so there's a gap in the ring there.
+- The outside sky is a sphere (`SKY_R` in `33-pagoda-exterior.js`) with the day dome inside it at .94 × `SKY_R`, drawn over
+  whatever lies beyond it. Anything built past ~.9 × `SKY_R` from the temple vanishes into sky (the Haw Kham's back courtyard did
+  at the old 220). Before placing something far out, check its distance from the origin against `SKY_R`, and `worldR` for walkers.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
 ## The sky
@@ -51,7 +54,9 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 5. If the log shows "Error creating WebGL context", launch with `--use-angle=swiftshader --enable-unsafe-swiftshader` (not
    `--disable-gpu`). Frames then take about 3 s each, so start counting frames only once `window.__t` exists and do the work
    in the first few frames after that.
-6. Add `--enable-logging=stderr`, or snap Chromium prints no `CONSOLE` lines at all. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
+6. If a run prints no `CONSOLE` lines at all and the screenshot is black, the page never reached your capture frame inside the
+   budget: raise `--virtual-time-budget` (240000 works) rather than hunting for an error.
+7. Add `--enable-logging=stderr`, or snap Chromium prints no `CONSOLE` lines at all. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
    redirect comes out empty with snap Chromium. Base64-decode the `IMG` line to a `.jpg` and look at it. One run takes about
    3 minutes.
 

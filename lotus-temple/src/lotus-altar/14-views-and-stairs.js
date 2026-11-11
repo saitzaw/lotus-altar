@@ -49,7 +49,7 @@ function setView(v, instant = false) {
   }
   inCorridor = v === "corridor"; inStairs = v === "stairs";
   temple.setBackdrop(inCorridor ? current : 0);   // the real temple grounds below the balcony
-  world.fog.near = inCorridor ? CONFIG.fog.corridor[0] : 13; world.fog.far = inCorridor ? CONFIG.fog.corridor[1] : 28; camera.far = inCorridor ? 500 : 80; camera.updateProjectionMatrix();
+  world.fog.near = inCorridor ? CONFIG.fog.corridor[0] : 13; world.fog.far = inCorridor ? CONFIG.fog.corridor[1] : 28; camera.far = inCorridor ? 1000 : 80; camera.updateProjectionMatrix();
   applySky();
   const view = inCorridor ? CONFIG.camera.corridor : inStairs ? (current === CONFIG.floors.length ? CONFIG.camera.stairsTop : CONFIG.camera.stairs) : CONFIG.camera.full;
   const p0 = camera.position.clone(), t0 = controls.target.clone(), p1 = V(...view.pos), t1 = V(...view.target);

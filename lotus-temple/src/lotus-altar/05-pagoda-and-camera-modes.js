@@ -23,7 +23,7 @@ function applyMode(mode) {
   Object.assign(controls, out
     ? { minDistance: 14, maxDistance: 110, minPolarAngle: .35, maxPolarAngle: 1.52, minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity }
     : { minDistance: INTERIOR.min, maxDistance: INTERIOR.max, minPolarAngle: INTERIOR.minP, maxPolarAngle: INTERIOR.maxP, minAzimuthAngle: INTERIOR.minA, maxAzimuthAngle: INTERIOR.maxA });
-  camera.far = out ? 500 : 80; camera.updateProjectionMatrix();
+  camera.far = out ? 1000 : 80;   // outside: far enough to reach across the sky's dome (SKY_R 420) from anywhere a walker can stand camera.updateProjectionMatrix();
   camera.position.set(...view.pos); controls.target.set(...view.target); controls.update();
   closeTopGame(true);
   if (inMarket) leaveMarketState();

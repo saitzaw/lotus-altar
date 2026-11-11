@@ -54,6 +54,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: a bigger sky, and room to grow the town
+
+- The owner found sky where the palace's back courtyard should be: the sky sphere (220) and the day dome (.94 of it, drawn over
+  what lies beyond) ended inside the yard (world z up to 220). Now `SKY_R` = 420 (`33-pagoda-exterior.js`; stars, day dome and
+  ground scaled with it), the outside camera's far plane is 1000, and walkers may go 340 m toward the town / stupa hill / palace
+  (`WORLD_R_TOWN`, +z) and 225 m toward the fields and hills (`WORLD_R`, −z), blended round the sides (`worldR`). The owner
+  wants to expand the town all round toward the stupa hill; there is now room on the +z side.
+
+
 ### 2026-11-11: two roofed stairs at the Haw Kham's back
 
 - After the owner's photograph of a palace stair: the back face has no main stair or porch. Only its two end stairs, each climbing

@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-11
 
+### Fixed
+- The back of the Haw Kham no longer vanishes into the sky: the sky and the ground reach twice as far, and on the town's side you can walk out to 340 m from the temple (225 m toward the fields and hills, as before).
+
 ### Added
 - The Haw Kham is twice as deep, its back built like its front, with two stairs at its ends, each under a roofed pavilion, and three doors: the literature hall in the middle, the dining hall on the left and the palace's little opera hall on the right.
 - The Haw Kham's entrance has three stairs, as in the old photographs: the main stair straight up the middle from the gate, under a porch of three stepped gables crowned with a five-tiered spire for the saopha's rank, and a lesser stair at each end of the front verandah climbing along the plinth.

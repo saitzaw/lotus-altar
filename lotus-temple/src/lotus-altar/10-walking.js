@@ -12,7 +12,10 @@ function lookFrom(pos, at) {
   controls.update();
 }
 // first person: walk the grounds at eye height, anywhere on the land; the market is one place to start
-const WORLD_R = 225;   // how far from the temple a walker may go
+// how far from the temple a walker may go: WORLD_R toward the fields and hills behind it (−z), WORLD_R_TOWN toward the town, the
+// stupa hill and the palace (+z), blending between them round the sides; the sky (SKY_R 420 in temple-floors) stays well beyond both
+const WORLD_R = 225, WORLD_R_TOWN = 340;
+const worldR = (x, z) => { const r = Math.hypot(x, z) || 1; return WORLD_R + (WORLD_R_TOWN - WORLD_R) * Math.min(1, Math.max(0, (z / r + .2) / .4)); };
 const eyeAt = (x, z) => { const h = temple.walkAt(x, z); return (h === null ? temple.terrainAt(x, z) : h) + EYE; };
 function enterWalk(at, look, where) {
   if (inMarket) { const p1 = V(at[0], eyeAt(at[0], at[1]), at[1]); lookFrom(p1, V(look[0], p1.y, look[1])); return; }
@@ -122,7 +125,7 @@ function walkStep(dt) {
   const p = camera.position;
   if (seated) seated = false;   // walking off stands you up from the bench
   let nx = p.x + move.x, nz = p.z + move.z;
-  const r = Math.hypot(nx, nz); if (r > WORLD_R) { nx *= WORLD_R / r; nz *= WORLD_R / r; }
+  const r = Math.hypot(nx, nz), R = worldR(nx, nz); if (r > R) { nx *= R / r; nz *= R / r; }
   // stay off the water and out of the benches: if the step is blocked, slide along whichever axis is free
   // stay off the water and out of walls, posts and benches, and never step up more than a stair's height at once:
   // if the step is blocked, slide along whichever axis is free

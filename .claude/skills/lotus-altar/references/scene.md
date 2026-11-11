@@ -35,7 +35,7 @@
 The beat officer is commented out for now (`beatOfficer(g)` in `temple-floors.js`, `policeStep` in `lotus-altar.js`). His safe ground (`SAFE` in `temple-floors.js`): the compound, the seven-day market (x 43…104, z −14…47.4) and
 the daily market (x 44…100, z 61.8…102.8). Move these if those places move.
 
-Walkers may go up to `WORLD_R` (225 m) from the temple.
+Walkers may go up to `WORLD_R` (225 m) from the temple toward the fields and hills (−z), and `WORLD_R_TOWN` (340 m) toward the town, the stupa hill and the palace (+z), blending round the sides (`worldR` in `10-walking.js`). The outside sky is a sphere of radius `SKY_R` (420, `33-pagoda-exterior.js`) with the day dome at .94 of it; anything beyond the dome is hidden, so keep every building well inside it. The outside camera's far plane is 1000.
 
 ## Altars
 
