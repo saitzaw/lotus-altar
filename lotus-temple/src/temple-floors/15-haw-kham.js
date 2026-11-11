@@ -4,6 +4,57 @@
        and above it a dark band of upper wall under the upper roofs: a cluster of parallel carved gables at the east end, the
        seven-tiered pyatthat over the throne room, a long hipped roof with two raised ridge vents, and a lesser tiered spire at the
        west end; all inside a whitewashed wall and gate. Its doors lead to the throne room (`hawHall`) ---------- */
+    /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
+       studded with silver, baggy black trousers, a black headcloth with its tail over the right shoulder, a straw hat slung on the
+       back, a sword on a green cord hung with wool pom-poms, and a spear held upright at the right side. They stand still at the
+       gate and about the palace. Every piece but the jacket (which answers to a tap) is baked into shared instanced meshes ---------- */
+    function palaceGuards(G, CZ, SX, SZ, PH, HZ1, SDX) {
+      const lin = h => new THREE.Color(h).convertSRGBToLinear();
+      const silk = std({ color: lin(0x232328), roughness: .35, metalness: .25 }), trousers = std({ color: lin(0x18181b), roughness: .6 }), cloth = std({ color: lin(0x1c1c1f), roughness: .8 });
+      const knit = std({ color: 0x0e0e10, roughness: .9 }), skin = std({ color: lin(0xe4bf86), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 });
+      const silver = std({ color: 0xd8dade, roughness: .25, metalness: .8 }), cord = std({ color: lin(0x2a8a3c), roughness: .7 }), sheath = std({ color: 0x24262a, roughness: .45, metalness: .3 });
+      const wood = std({ color: lin(0x5a3a1e), roughness: .6 }), steel = std({ color: 0xc8ccd0, roughness: .3, metalness: .8 }), hiltM = std({ color: lin(0xe8c040), roughness: .8 });
+      const WOOL = [0x1f8a3c, 0xd82a2a, 0xf0c830, 0xf4f2ea].map(h => std({ color: lin(h), roughness: .95 }));
+      const straw = std({ map: canvasTex(128, (c, s) => { c.fillStyle = "#d8b868"; c.fillRect(0, 0, s, s); for (let y = 0; y < s; y += 4) { c.fillStyle = y & 4 ? "rgba(150,110,40,.35)" : "rgba(255,240,180,.35)"; c.fillRect(0, y, s, 2); } }), roughness: .85, side: THREE.DoubleSide });
+      const unit = (r0, r1) => { const geo = new THREE.CylinderGeometry(r1, r0, 1, 8); geo.translate(0, .5, 0); return geo; };
+      const GEO = { leg: new THREE.CylinderGeometry(.14, .12, .84, 10), slip: new THREE.BoxGeometry(.1, .05, .24), jacket: new THREE.CylinderGeometry(.18, .26, .72, 14), neck: new THREE.CylinderGeometry(.06, .07, .12, 10),
+        collar: new THREE.TorusGeometry(.075, .022, 6, 14), stud: new THREE.SphereGeometry(.009, 6, 4), head: new THREE.SphereGeometry(.115, 16, 12), eye: new THREE.SphereGeometry(.016, 8, 6), brow: new THREE.BoxGeometry(.045, .008, .008),
+        ear: new THREE.SphereGeometry(.026, 8, 6), nose: new THREE.ConeGeometry(.014, .045, 6), wrap: new THREE.CylinderGeometry(.128, .122, .12, 16), dome: new THREE.SphereGeometry(.125, 14, 8, 0, TAU, 0, Math.PI / 2), tail: new THREE.BoxGeometry(.12, .62, .025),
+        hat: new THREE.ConeGeometry(.62, .26, 28, 1, true), rim: new THREE.TorusGeometry(.62, .015, 4, 28), up: unit(.085, .05), lo: unit(.042, .036), hand: new THREE.SphereGeometry(.04, 8, 6),
+        cord: unit(.008, .008), sheath: unit(.02, .016), hilt: unit(.018, .018), pom: new THREE.SphereGeometry(.035, 8, 6), shaft: unit(.018, .018), blade: new THREE.ConeGeometry(.035, .24, 4), tassel: new THREE.CylinderGeometry(.012, .02, .4, 6) };
+      const Y = V(0, 1, 0), tmp = V(0, 0, 0), P = (x, y, z) => V(x, y, z);
+      const span = (o, a, b) => { tmp.subVectors(b, a); const L = tmp.length(); o.position.copy(a); o.quaternion.setFromUnitVectors(Y, tmp.divideScalar(L)); o.scale.y = L; return o; };
+      const GG = new THREE.Group(); G.add(GG);
+      const data = { tip: "A guard of the palace", toast: "One of the saopha's guards, in the old Shan dress of the hills all in black: a long black silk jacket studded with silver, baggy black trousers, a black headcloth with its long tail over the shoulder and a great straw hat slung on his back, a sword hung on a green cord with wool pom-poms, and a spear in his hand. They keep the gate and the doors of the halls." };
+      const guard = (x, y, z, ry) => {
+        const B = new THREE.Object3D(); B.position.set(x, y, z); B.rotation.y = ry; GG.add(B);
+        const pt = (geo, m, px, py, pz) => part(geo, m, px, py, pz, B);
+        [-1, 1].forEach(sd => { pt(GEO.leg, trousers, sd * .11, .44, 0); pt(GEO.slip, ink, sd * .11, .025, .05); });
+        clickable(list, mesh(GEO.jacket, silk, 0, 1.03, 0, B), data);
+        pt(GEO.neck, knit, 0, 1.4, 0); pt(GEO.collar, silk, 0, 1.4, 0).rotation.x = Math.PI / 2;
+        for (let i = 0; i < 12; i++) { const yy = .7 + i * .055; pt(GEO.stud, silver, .05, yy, .26 - (yy - .67) * .11 + .006); }
+        for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; pt(GEO.stud, silver, Math.sin(a) * .265, .69, Math.cos(a) * .265); }
+        pt(GEO.head, skin, 0, 1.56, 0).scale.set(.92, 1.15, 1);
+        [-1, 1].forEach(sd => { pt(GEO.eye, ink, sd * .042, 1.58, .1); pt(GEO.brow, ink, sd * .044, 1.61, .105); pt(GEO.ear, skin, sd * .108, 1.56, 0).scale.set(.45, 1, .7); });
+        pt(GEO.nose, skin, 0, 1.555, .115).rotation.x = -Math.PI * .4;
+        pt(GEO.wrap, cloth, 0, 1.65, -.005); pt(GEO.dome, cloth, 0, 1.7, -.005).scale.y = .55;
+        pt(GEO.tail, cloth, -.12, 1.33, -.02);
+        pt(GEO.hat, straw, 0, 1.0, -.36).rotation.x = -Math.PI / 2 + .12; pt(GEO.rim, straw, 0, 1.0, -.23).rotation.x = .12;
+        // the sword on its cord from the right shoulder to the left hip, its hilt forward at the waist under a bunch of pom-poms
+        span(pt(GEO.cord, cord), P(-.15, 1.34, .1), P(.2, .88, .2));
+        const hilt = P(.17, .98, .26); span(pt(GEO.sheath, sheath), hilt, P(.36, .3, -.05)); span(pt(GEO.hilt, hiltM), P(.13, 1.05, .3), hilt);
+        [[.2, .82, .27, 0], [.24, .76, .25, 1], [.18, .74, .28, 3], [.22, .68, .26, 2]].forEach(([px, py, pz, k]) => pt(GEO.pom, WOOL[k], px, py, pz));
+        // the arms: black silk sleeves to the elbow, black knitted forearms; the right hand grips the spear, the left rests on the hilt
+        [[P(-.21, 1.33, 0), P(-.27, 1.07, .04), P(-.25, .86, .13)], [P(.21, 1.33, 0), P(.31, 1.1, .08), P(.17, 1.0, .28)]].forEach(([S, E, H]) => { span(pt(GEO.up, silk), S, E); span(pt(GEO.lo, knit), E, H); pt(GEO.hand, skin, H.x, H.y, H.z); });
+        // the spear, butt on the ground, a red tassel under its steel head
+        span(pt(GEO.shaft, wood), P(-.25, .02, .14), P(-.25, 2.2, .14)); pt(GEO.blade, steel, -.25, 2.32, .14); pt(GEO.tassel, WOOL[1], -.25, 2.0, .14);
+        sCircle(G, x, z, .32);
+      };
+      // two outside the gate, two inside it facing the walk, one at the stair's foot, two at the throne room's doors, one at each lesser door
+      [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2], [SX - 1.1, 0, SZ + .45, 0],
+       [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]].forEach(a => guard(...a));
+      bakeParts(GG);
+    }
     function hawKham(x, z, ry) {
       const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = ry; g.add(G);   // its front (local +z) faces the town; local +x is west
       const CX = 22, CZ = 16;   // the compound's half sizes
@@ -32,7 +83,7 @@
       // to HZ1, walls WH high up to yW), and the stair along the plinth's face: SW wide, n steps rising toward +x from its foot at SX
       // to the landing (LX half wide) before the doors
       const PH = 2.4, PX = 18, PZ0 = -14.2, PZ1 = 2, HX = 15, HZ0 = -11.2, HZ1 = -1, HC = (HZ0 + HZ1) / 2, HD = HZ1 - HZ0, WH = 4.6, yW = PH + WH;
-      const SW = 2.2, n = 14, tread = .34, run = n * tread, LX = 1.1, SX = -LX - run, EH = PH + 3, ED = .75;   // EH: the verandah's eaves; ED: the parapet's no-go strip
+      const SDX = 8.75, SW = 2.2, n = 14, tread = .34, run = n * tread, LX = 1.1, SX = -LX - run, EH = PH + 3, ED = .75;   // EH: the verandah's eaves; ED: the parapet's no-go strip
       // the paved way from the gate to the landing's foot and along to the stair's foot
       flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - PZ1 - SW - .2), M.stone, 0, .045, (CZ + PZ1 + SW + .2) / 2, G));
       flat(mesh(new THREE.BoxGeometry(1.7 - SX + 1.4, .05, 2.2), M.stone, (1.7 + SX - 1.4) / 2, .046, PZ1 + SW + 1.3, G));
@@ -92,7 +143,7 @@
       mesh(new THREE.BoxGeometry(2 * HX, WH, HD), teak, 0, PH + WH / 2, HC, G);
       [PH + .25, PH + 3.05].forEach(y => mesh(new THREE.BoxGeometry(2 * HX + .08, .2, HD + .08), M.trim, 0, y, HC, G));
       const win = (wx, wz, r) => { const o = new THREE.Group(); o.position.set(wx, PH + 1.55, wz); o.rotation.y = r; G.add(o); mesh(new THREE.BoxGeometry(1.1, 2, .06), M.trim, 0, 0, .02, o); mesh(new THREE.PlaneGeometry(.86, 1.76), pane, 0, 0, .06, o); };
-      for (let i = 0; i < 12; i++) { const wx = -HX + (i + .5) * 2 * HX / 12; if (Math.abs(wx) > 1.6) win(wx, HZ1, 0); }
+      for (let i = 0; i < 12; i++) { const wx = -HX + (i + .5) * 2 * HX / 12; if (Math.abs(wx) > 1.6 && Math.abs(Math.abs(wx) - SDX) > .5) win(wx, HZ1, 0); }
       for (let i = 0; i < 3; i++) [-1, 1].forEach(sd => win(sd * HX, HZ0 + (i + .5) * HD / 3, sd * Math.PI / 2));
       // the doors of the throne room, gilt-framed under a pointed gilt pediment, and the name board above them
       const door = mesh(new THREE.BoxGeometry(1.8, 2.8, .1), red, 0, PH + 1.4, HZ1 + .03, G);
@@ -100,6 +151,14 @@
       mesh(new THREE.BoxGeometry(2.1, .14, .14), M.gold, 0, PH + 2.85, HZ1 + .05, G);
       [-.45, .45].forEach(dx => mesh(new THREE.BoxGeometry(.6, 2.3, .02), M.trim, dx, PH + 1.4, HZ1 + .09, G));
       const ped = mesh(new THREE.ConeGeometry(1.1, .8, 4), M.gold, 0, PH + 3.35, HZ1 + .05, G); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
+      // the lesser doors either side: on the left (east) the hall of justice, on the right (west) the hall where the saopha receives the monks
+      const sideDoors = [[-SDX, "hawJustice", "the hall of justice"], [SDX, "hawMonks", "the hall where the saopha receives the monks"]].map(([dx, key, what]) => {
+        const d = mesh(new THREE.BoxGeometry(1.4, 2.5, .1), red, dx, PH + 1.25, HZ1 + .03, G);
+        [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.6, .14), M.gold, dx + sd * .74, PH + 1.3, HZ1 + .05, G));
+        mesh(new THREE.BoxGeometry(1.6, .12, .14), M.gold, dx, PH + 2.56, HZ1 + .05, G);
+        const pd = mesh(new THREE.ConeGeometry(.85, .6, 4), M.gold, dx, PH + 2.92, HZ1 + .05, G); pd.rotation.y = Math.PI / 4; pd.scale.z = .12;
+        return [d, key, what, dx];
+      });
       const BW = 3.2, BH = BW * 300 / 1024, board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, shanBoardFace(SHAN_NAMES.haw, "Haw Kham"), teakDark], 0, PH + 3.85 + BH / 2, HZ1 + .06, G);
       // the roofs, corrugated iron like the monastery's, laid on as hipped planes: `hip` runs four slopes from the eave rectangle
       // o [x0, x1, z0, z1] at y0 up to the rectangle (or ridge line) t at y1, the corrugations running down each slope
@@ -142,12 +201,14 @@
       pyatthat(G, 13.6, yW + 2.4, HC, 3.8, 5, .15);
       G.updateMatrixWorld(true);
       [[-CX + 3, CZ - 3], [CX - 3, CZ - 3]].forEach(([lx, lz], i) => { const w = G.localToWorld(V(lx, 0, lz)); tree(g, w.x, w.z, .9, 820 + i); });
-      G.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, data); });
+      G.traverse(o => { if (o.isMesh && o !== door && !sideDoors.some(sd => sd[0] === o)) clickable(list, o, data); });
       clickable(list, door, { floor: "haw", tip: `Enter the throne room of ${SHAN_NAMES.haw}` });
+      sideDoors.forEach(([d, key, what]) => clickable(list, d, { floor: key, tip: `Enter ${what} of ${SHAN_NAMES.haw}` }));
+      palaceGuards(G, CZ, SX, PZ1 + SW, PH, HZ1, SDX);
       Object.assign(board.userData, { toast: data.toast });
-      // where you come out of the throne room: on the verandah before the doors, looking down over the courtyard to the gate
-      const ex = G.localToWorld(V(0, 0, HZ1 + 1.1)), look = G.localToWorld(V(0, 0, CZ + 6));
-      PALACE.exit = [[ex.x, ex.z], [look.x, look.z]];
+      // where you come out of each hall: on the verandah before its doors, looking out over the courtyard
+      PALACE.exits = {};
+      [[0, "haw"], ...sideDoors.map(([, key, , dx]) => [dx, key])].forEach(([dx, key]) => { const ex = G.localToWorld(V(dx, 0, HZ1 + 1.1)), look = G.localToWorld(V(dx * .5, 0, CZ + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]]; });
       // keep the outside camera above the hall and its spires
       const xs = [], zs = [];
       [[-PX - 1, PZ0 - 1], [PX + 1, PZ0 - 1], [-PX - 1, PZ1 + SW + 1], [PX + 1, PZ1 + SW + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });

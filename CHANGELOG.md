@@ -5,6 +5,10 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-11
 
+### Added
+- Two more halls in the Haw Kham, through doors either side of the throne room's: on the left the hall of justice, with the saopha's seat of judgement and the law books on a table before it; on the right the hall where he receives the monks, their seats raised on a high dais above his own low seat.
+- Nine palace guards at the gate and about the Haw Kham, dressed like the Shan singer but all in black, with spears.
+
 ### Changed
 - The Haw Kham is rebuilt after old photographs of a Shan palace: a long teak hall on a high whitewashed plinth with a pierced parapet, a stair climbing along the plinth to the doors, a verandah of slender white posts all round, carved gables at the east end, the seven-tiered spire over the throne room and a lesser spire at the west end.
 

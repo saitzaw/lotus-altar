@@ -3,9 +3,12 @@
      carpet between the courtiers' mats, and at the far end on a stepped dais the throne itself: a gilded base set with glass
      mosaic and lions in its niches, curling gilt arms either side of the seat, and behind it a tall gilt screen with a little door,
      crowned with a pointed crest of flames; white umbrellas of state either side and white drapes gathered back from the pillars.
-     No offering altar: there is no image here ---------- */
-  const HAW = { pillars: [-4.4, -1, 2.4, 5.8].flatMap(z => [[-3.6, z], [3.6, z]]), dais: 3.2, front: -1.6 };   // dais: the dais's half width; front: its front edge
-  function hawHall(g, n) {
+     The same builder makes the two lesser halls either side (kind): on the left the hall of justice, the saopha's seat of
+     judgement with conches in its base and the law books on a table before it; on the right the hall where he receives the monks,
+     their seats raised on a high dais and his own low seat below them. No offering altar: there is no image in any of them ---------- */
+  const HAW = { pillars: [-4.4, -1, 2.4, 5.8].flatMap(z => [[-3.6, z], [3.6, z]]), dais: 3.2, front: -1.6,   // dais: the throne dais's half width; front: its front edge
+    rooms: { haw: [[-3.2, 3.2, -6, -1.6]], hawJustice: [[-3.2, 3.2, -6, -1.6], [-1.1, 1.1, -1.3, -.5]], hawMonks: [[-3.6, 3.6, -6, -2.4], [-1.5, 1.5, -2.4, -.3]] } };   // what blocks walkers in each hall
+  function hawHall(g, n, kind = "haw") {
     picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
     const list = picks[n], HH = 7.4;   // HH: the ceiling's height
     const floorT = canvasTex(128, (c, s2) => { c.fillStyle = "#6a3a1c"; c.fillRect(0, 0, s2, s2); for (let k = 0; k < s2; k += 16) { c.fillStyle = "rgba(25,10,3,.55)"; c.fillRect(0, k, s2, 2); c.fillStyle = "rgba(150,90,45,.14)"; c.fillRect(0, k + 5, s2, 3); } });
@@ -50,7 +53,9 @@
     [-.2, 1.2, 2.6, 4, 5.4].forEach(z => [-1, 1].forEach(sd => flat(part(matG, matM, sd * 2, .012, z, g))));
     bakeParts(g);
     // the throne: everything on and round the dais answers to a tap
-    const throne = { tip: "The saopha's throne", toast: `The saopha's throne, gilded and set with glass mosaic, lions crouched in the niches of its base: a lion throne (Shan ပလၢင်ႇသီႇႁႃႇသၼ) in the manner of the Burmese kings' at Mandalay. Here the saopha (${SHAN_NAMES.saopha}) sat in state to receive his court and the headmen of his circles, who knelt on the mats below. He came out to it through the little door in the gilt screen behind the seat.` };
+    if (kind !== "hawMonks") {   // the throne and its umbrellas: the lion throne, or in the hall of justice the seat of judgement
+    const justice = kind === "hawJustice";
+    const throne = justice ? { tip: "The saopha's seat of judgement", toast: `The saopha's seat of judgement, gilded, with conch shells, a sign of good fortune, in the niches of its base and a great white conch on the red panel behind. Here the saopha (${SHAN_NAMES.saopha}) heard the cases and disputes brought up from the circles of his state, with his ministers kneeling on the mats either side, and gave judgement by the dhammathat, the old Buddhist law of Burma and the Shan states, whose palm-leaf books lie on the table below.` } : { tip: "The saopha's throne", toast: `The saopha's throne, gilded and set with glass mosaic, lions crouched in the niches of its base: a lion throne (Shan ပလၢင်ႇသီႇႁႃႇသၼ) in the manner of the Burmese kings' at Mandalay. Here the saopha (${SHAN_NAMES.saopha}) sat in state to receive his court and the headmen of his circles, who knelt on the mats below. He came out to it through the little door in the gilt screen behind the seat.` };
     const T = new THREE.Group(); g.add(T);
     // the dais, two broad steps of dark teak edged in gold
     [[2 * HAW.dais, 5.5 + HAW.front, 0], [2 * HAW.dais - 1, 5.5 + HAW.front - .6, .25]].forEach(([w, d, y]) => {
@@ -63,6 +68,13 @@
       for (let k = 0; k < 4; k++) {
         const x = k * 64 + 8;
         c.fillStyle = "#3a1408"; c.beginPath(); c.moveTo(x, s2 - 24); c.lineTo(x, 90); c.quadraticCurveTo(x + 24, 34, x + 24, 18); c.quadraticCurveTo(x + 24, 34, x + 48, 90); c.lineTo(x + 48, s2 - 24); c.fill();
+        if (justice) {   // a conch shell, its spire up, whorls round it and its lip curling down one side
+          c.fillStyle = "#f4eee0"; c.beginPath(); c.ellipse(x + 24, s2 - 80, 15, 38, 0, 0, TAU); c.fill();
+          c.beginPath(); c.moveTo(x + 14, s2 - 112); c.lineTo(x + 24, s2 - 146); c.lineTo(x + 34, s2 - 112); c.fill();
+          c.strokeStyle = "#b89a6a"; c.lineWidth = 2; [0, 1, 2, 3].forEach(k => { c.beginPath(); c.ellipse(x + 24, s2 - 112 - k * 8, 10 - k * 2, 3, 0, 0, Math.PI); c.stroke(); });
+          c.beginPath(); c.moveTo(x + 30, s2 - 108); c.quadraticCurveTo(x + 40, s2 - 80, x + 28, s2 - 46); c.stroke();
+          continue;
+        }
         c.fillStyle = "#e8c070";   // a seated lion, facing out: haunches, chest, maned head, ears
         c.beginPath(); c.ellipse(x + 24, s2 - 52, 18, 22, 0, 0, TAU); c.fill();
         c.beginPath(); c.ellipse(x + 24, s2 - 92, 12, 22, 0, 0, TAU); c.fill();
@@ -98,9 +110,18 @@
     const latT = canvasTex(128, (c, s2) => { c.fillStyle = "#c99a44"; c.fillRect(0, 0, s2, s2); for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) { c.fillStyle = (r + k) % 2 ? "#1a5a3a" : "#8a1a10"; c.fillRect(k * 32 + 6, r * 32 + 6, 20, 20); c.fillStyle = "#e8c070"; c.beginPath(); c.arc(k * 32 + 16, r * 32 + 16, 4, 0, TAU); c.fill(); } });
     latT.wrapS = latT.wrapT = THREE.RepeatWrapping; latT.repeat.set(4, 5);
     const SH = 3, SZ = BZ - .95;
-    mesh(new THREE.BoxGeometry(2.8, SH, .14), [gold, gold, gold, gold, std({ map: latT, roughness: .3, metalness: .5 }), gold], 0, seat + SH / 2, SZ, T);
-    mesh(new THREE.BoxGeometry(1.1, 2.0, .04), gold, 0, seat + 1.1, SZ + .08, T);
-    mesh(new THREE.BoxGeometry(.9, 1.8, .03), std({ color: 0x1a0a04, roughness: .5 }), 0, seat + 1.05, SZ + .1, T);
+    if (justice) {   // a red lacquer panel in a gilt frame, a great white conch in a gilt roundel on it
+      mesh(new THREE.BoxGeometry(2.8, SH, .14), gold, 0, seat + SH / 2, SZ, T);
+      mesh(new THREE.BoxGeometry(2.5, SH - .3, .04), red, 0, seat + SH / 2, SZ + .08, T);
+      mesh(new THREE.CylinderGeometry(.7, .7, .05, 32), gold, 0, seat + 1.8, SZ + .1, T).rotation.x = Math.PI / 2;
+      const shell = std({ color: 0xf4eee0, roughness: .35 }), sh = mesh(new THREE.SphereGeometry(.3, 16, 12), shell, 0, seat + 1.72, SZ + .2, T); sh.scale.set(.75, 1.1, .5);
+      mesh(new THREE.ConeGeometry(.2, .4, 16), shell, 0, seat + 2.18, SZ + .2, T);
+      mesh(new THREE.ConeGeometry(.1, .3, 12), shell, 0, seat + 1.3, SZ + .2, T).rotation.x = Math.PI;
+    } else {
+      mesh(new THREE.BoxGeometry(2.8, SH, .14), [gold, gold, gold, gold, std({ map: latT, roughness: .3, metalness: .5 }), gold], 0, seat + SH / 2, SZ, T);
+      mesh(new THREE.BoxGeometry(1.1, 2.0, .04), gold, 0, seat + 1.1, SZ + .08, T);
+      mesh(new THREE.BoxGeometry(.9, 1.8, .03), std({ color: 0x1a0a04, roughness: .5 }), 0, seat + 1.05, SZ + .1, T);
+    }
     [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.11, .13, SH + .3, 12), gold, sd * 1.5, seat + (SH + .3) / 2, SZ + .05, T); mesh(new THREE.ConeGeometry(.16, .7, 8), gold, sd * 1.5, seat + SH + .65, SZ + .05, T); });
     // the crest over the screen: a pointed arch of gilt with a red inner field, flames up its edges and a little spire at the top
     const arch = (pw, ph) => { const s = new THREE.Shape(); s.moveTo(-pw, 0); s.bezierCurveTo(-pw, ph * .5, -pw * .2, ph * .55, 0, ph); s.bezierCurveTo(pw * .2, ph * .55, pw, ph * .5, pw, 0); s.closePath(); return s; };
@@ -127,6 +148,60 @@
       mesh(new THREE.ConeGeometry(.07, .5, 8), gold, 0, 4.85, 0, U);
       U.traverse(o => { if (o.isMesh) clickable(list, o, umb); });
     });
+    T.traverse(o => { if (o.isMesh) clickable(list, o, throne); });
+    if (justice) {   // the low red table before the dais with the law books on it: palm-leaf bundles between wooden covers, tied with cord
+      const J = new THREE.Group(); g.add(J);
+      mesh(new THREE.BoxGeometry(2, .06, .7), red, 0, .38, -.9, J);
+      [[-.9, -1.15], [.9, -1.15], [-.9, -.65], [.9, -.65]].forEach(([lx, lz]) => mesh(new THREE.BoxGeometry(.08, .36, .08), red, lx, .18, lz, J));
+      const leaf = std({ color: 0xd8c08a, roughness: .8 }), cover = std({ color: 0x3a1e0e, roughness: .6 });
+      [[-.55, .41, -.9, 0], [-.55, .49, -.9, .1], [.05, .41, -.95, -.15], [.6, .41, -.85, .2]].forEach(([lx, ly, lz, r2]) => {
+        const b = new THREE.Group(); b.position.set(lx, ly, lz); b.rotation.y = r2; J.add(b);
+        mesh(new THREE.BoxGeometry(.5, .05, .07), leaf, 0, .025, 0, b); [-.03, .03].forEach(dy => mesh(new THREE.BoxGeometry(.52, .012, .075), cover, 0, .025 + dy, 0, b));
+      });
+      J.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "The law books", toast: "The law books of the hall of justice: palm-leaf manuscripts of the dhammathat, the old law books of Burma and the Shan states, written with a stylus on strips of palm leaf and kept between lacquered wooden covers. The judges read out the rule for each case, and the saopha gave judgement by it." }); });
+    }
+    } else {   // the hall where the saopha receives the monks: their seats raised on a high dais, his own low seat facing them below
+      const D = new THREE.Group(); g.add(D);
+      [[7.2, -2.4, 0], [6.6, -2.8, .25], [6, -3.2, .5]].forEach(([w, z1, y]) => {
+        mesh(new THREE.BoxGeometry(w, .25, z1 + 5.5), dark, 0, y + .125, (z1 - 5.5) / 2, D);
+        mesh(new THREE.BoxGeometry(w + .02, .05, .04), gold, 0, y + .23, z1, D);
+      });
+      const latT = canvasTex(128, (c, s2) => { c.fillStyle = "#c99a44"; c.fillRect(0, 0, s2, s2); for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) { c.fillStyle = (r + k) % 2 ? "#1a5a3a" : "#8a1a10"; c.fillRect(k * 32 + 6, r * 32 + 6, 20, 20); c.fillStyle = "#e8c070"; c.beginPath(); c.arc(k * 32 + 16, r * 32 + 16, 4, 0, TAU); c.fill(); } });
+      latT.wrapS = latT.wrapT = THREE.RepeatWrapping; latT.repeat.set(8, 4);
+      mesh(new THREE.BoxGeometry(5.8, 3, .1), [gold, gold, gold, gold, std({ map: latT, roughness: .3, metalness: .5 }), gold], 0, 2.25, -5.4, D);   // a gilt screen behind the seats
+      // three monks' seats: a low gilt platform, a square cushion and a triangular back cushion, a palm-leaf fan in a stand beside each
+      const robe = std({ color: 0x6a2a0e, roughness: .85 }), palm = std({ color: 0xd8c48a, roughness: .8, side: THREE.DoubleSide });
+      [-2, 0, 2].forEach(x => {
+        mesh(new THREE.BoxGeometry(1.3, .2, 1.3), gold, x, .85, -4.2, D);
+        mesh(new THREE.BoxGeometry(.95, .1, .95), robe, x, 1, -4.2, D);
+        const back = mesh(new THREE.CylinderGeometry(.3, .3, .8, 3), robe, x, 1.25, -4.75, D); back.rotation.z = Math.PI / 2; back.rotation.x = Math.PI / 6;
+        mesh(new THREE.CylinderGeometry(.08, .1, .1, 12), gold, x + .78, .8, -4.3, D);
+        mesh(new THREE.CylinderGeometry(.015, .015, 1.1, 6), gold, x + .78, 1.35, -4.3, D);
+        const fan = mesh(new THREE.CircleGeometry(.32, 24), palm, x + .78, 2.05, -4.3, D); fan.scale.y = 1.35;
+        mesh(new THREE.TorusGeometry(.32, .015, 6, 24), gold, x + .78, 2.05, -4.29, D).scale.y = 1.35;
+      });
+      D.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "The monks' seats", toast: "Seats for the monks, raised above every other seat in the room. When the saopha invited the abbots of the town's monasteries to the palace he sat below them on his own low seat, offered them robes and food, and listened to their sermon: even a prince sits lower than a monk. Beside each seat stands the palm-leaf fan a monk holds before his face while he chants." }); });
+      // the saopha's own low seat facing them: a gilt lotus base and a red cushion; robes on gilt trays and two lacquer offering vessels before the monks
+      const L = new THREE.Group(); g.add(L);
+      mesh(new THREE.CylinderGeometry(.55, .62, .28, 24), gold, 0, .14, -.9, L);
+      for (let k = 0; k < 12; k++) { const a = k / 12 * TAU, pt = mesh(new THREE.SphereGeometry(.14, 8, 6), gold, Math.sin(a) * .58, .28, -.9 + Math.cos(a) * .58, L); pt.scale.set(.6, .5, 1); pt.rotation.y = a; }
+      mesh(new THREE.CylinderGeometry(.46, .46, .12, 24), std({ color: 0x7a0c10, roughness: .85 }), 0, .34, -.9, L);
+      L.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "The saopha's low seat", toast: `The saopha's seat in this hall: a low gilt lotus with a cushion on it, set on the floor below the monks, facing them. Here the prince (${SHAN_NAMES.saopha}) sat as a lay follower to make his offerings and hear the Dhamma.` }); });
+      const O = new THREE.Group(); g.add(O);
+      const lac = std({ color: 0x5a0e08, roughness: .35 }), black = std({ color: 0x141010, roughness: .35 });
+      [-1, 1].forEach(sd => {
+        const x = sd * 1.15, z = -1.8;   // a lacquer offering vessel: a footed bowl, a domed lid and a spired knob, banded in gold
+        mesh(new THREE.CylinderGeometry(.22, .28, .14, 20), black, x, .07, z, O);
+        mesh(new THREE.CylinderGeometry(.34, .2, .36, 20), lac, x, .32, z, O);
+        mesh(new THREE.CylinderGeometry(.35, .35, .04, 20), gold, x, .5, z, O);
+        mesh(new THREE.SphereGeometry(.34, 20, 10, 0, TAU, 0, Math.PI / 2), lac, x, .52, z, O).scale.y = .7;
+        [.82, .98, 1.1].forEach((y, k) => mesh(new THREE.CylinderGeometry(.12 - k * .03, .14 - k * .03, .12, 16), k % 2 ? gold : lac, x, y, z, O));
+        mesh(new THREE.ConeGeometry(.05, .3, 12), gold, x, 1.3, z, O);
+        mesh(new THREE.CylinderGeometry(.3, .26, .04, 20), gold, sd * .55, .27, -2.65, O);   // a gilt tray of folded robes on the dais's lowest step
+        mesh(new THREE.BoxGeometry(.4, .14, .3), robe, sd * .55, .36, -2.65, O);
+      });
+      O.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "Offerings for the monks", toast: "Offerings for the monks: folded robes on gilt trays, and lacquered offering vessels with spired lids, which carry food to the monastery. Giving robes and food to the Sangha is the first of the good works of a Buddhist ruler." }); });
+    }
     // white drapes gathered back to the pillars either side of the throne, swagged from a gilt rod across the hall
     mesh(new THREE.CylinderGeometry(.04, .04, 7.2, 8), gold, 0, 6.5, -4.4, g).rotation.z = Math.PI / 2;
     [-1, 1].forEach(sd => {
@@ -135,7 +210,6 @@
       const swag = mesh(new THREE.SphereGeometry(1, 20, 12), cloth, sd * 2.4, 6.2, -4.3, g); swag.scale.set(1.1, .45, .3);
       mesh(new THREE.TorusGeometry(.18, .04, 6, 16), gold, sd * 3.25, 4.1, -4, g);   // the gilt tie-back
     });
-    T.traverse(o => { if (o.isMesh) clickable(list, o, throne); });
     // hanging lanterns of glass in gilt frames down the hall
     const lampM = std({ color: 0xfff0d0, emissive: 0xffd890, emissiveIntensity: 0, transparent: true, opacity: .9 });
     onDaylight(d => lampM.emissiveIntensity = .3 + .7 * (1 - d));

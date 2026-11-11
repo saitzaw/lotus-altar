@@ -176,6 +176,7 @@ const inHall = fn => (...a) => goTo(1, () => fn(...a));   // offerings, chanting
   $("outsideBtn").addEventListener("click", () => goTo(current === "pagoda" ? 1 : "pagoda"));
   // the two buildings beside the pagoda, under the floor buttons
   Object.entries(CONFIG.places).forEach(([key, pl]) => {
+    if (pl.nav === false) return;   // reached only through its door
     const b = document.createElement("button");
     b.type = "button"; b.id = "place-" + key; b.className = nav.querySelector(".fl-place") ? "fl-place" : "fl-place first"; b.dataset.f = key;
     b.setAttribute("aria-label", pl.name); b.title = pl.name;

@@ -54,6 +54,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Haw Kham's two lesser halls and its guards
+
+- At the owner's request, three halls in the palace: the throne room in the centre (`haw`), the hall of justice on the left
+  (`hawJustice`, east) and the hall where the saopha receives the monks on the right (`hawMonks`, west). One builder,
+  `hawHall(g, n, kind)` in `05b-haw-kham-throne-room.js`; the side halls have doors in the palace's front wall at local x ±8.75
+  and `nav: false` in `CONFIG.places` (no button). Justice: a conch throne (conches in the base, a white conch on the panel), a
+  low table of palm-leaf law books (dhammathat). Monks: three monks' seats on a high three-step dais, palm-leaf fans, the
+  saopha's low lotus seat below them facing them, robes on trays and lacquer offering vessels. No Shan names added for these.
+- Guards (`palaceGuards` in `15-haw-kham.js`), at the owner's request "Shan singer style" in black with yellowish skin: the
+  singer's figure all in black (jacket studded with silver, trousers, headcloth), straw hat on the back, sword on a green cord,
+  a spear in the right hand. Static; every piece but the jacket is a `part()`, baked once for all nine.
+
+
 ### 2026-11-11: the Haw Kham after the old photographs, and its throne room
 
 - After the owner's four old photographs (two of a long Shan haw on its plinth, one of a prince's throne, one in colour),

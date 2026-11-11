@@ -81,7 +81,7 @@
     [[0, 0, 0], [-.13, 0, .05], [.13, 0, .05], [-.06, .07, .02], [.07, .07, .02], [0, .13, .03]].forEach(([x, y, z]) => { const i = ingot(); i.position.set(x, ALT.y + .05 + y, ALT.z - .27 + z); g.add(i); });
   }
 
-  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: guanyinShop, 6: victoryHall, 7: maitreyaHall, bell: bellTower, library, shop, quarters, kyaung: kyaungHall, church: churchHall, haw: hawHall };
+  const BUILD = { 2: lampHall, 3: meditationHall, 4: medicineHall, 5: guanyinShop, 6: victoryHall, 7: maitreyaHall, bell: bellTower, library, shop, quarters, kyaung: kyaungHall, church: churchHall, haw: hawHall, hawJustice: (g, n) => hawHall(g, n, "hawJustice"), hawMonks: (g, n) => hawHall(g, n, "hawMonks") };
   function floor(n) {
     if (!groups[n]) {
       const g = new THREE.Group(); g.name = "floor" + n; world.add(g);
