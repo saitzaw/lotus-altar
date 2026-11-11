@@ -54,6 +54,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: two roofed stairs at the Haw Kham's back
+
+- After the owner's photograph of a palace stair: the back face has no main stair or porch. Only its two end stairs, each climbing
+  along the plinth to a landing under a roofed pavilion (four red posts, a hipped skirt roof, a carved gable). `face(F, halls, sx, main)`:
+  `main` false drops the main stair, its landing and its guards and closes the parapet across the middle. `hip` now takes a frame.
+
 ### 2026-11-11: the Haw Kham's back, and three more halls
 
 - At the owner's request the palace is longer front to back and its back is built like its front. `hawKham` now builds the plinth

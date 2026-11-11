@@ -2,8 +2,9 @@
      photographs of the Shan haws: a long low teak hall, two halls deep, on a high whitewashed plinth with a pierced parapet, a
      verandah of slender white posts under a wide skirt roof all round, and above it a dark band of upper wall under the upper roofs:
      a cluster of parallel carved gables at the east end, the seven-tiered pyatthat over the throne room, a long hipped roof with two
-     raised ridge vents, and a lesser tiered spire at the west end. Front and back are alike (`face`): a main stair under a porch of
-     three stepped gables and a pyatthat, a lesser stair at each end climbing along the plinth's face, and three doors, to the halls
+     raised ridge vents, and a lesser tiered spire at the west end. Front and back are built alike (`face`): at the front a main stair
+     under a porch of three stepped gables and a pyatthat, and on both faces a lesser stair at each end climbing along the plinth's
+     face (at the back under a roofed pavilion at its landing, after the owner's photograph, and no main stair), and three doors, to the halls
      built by `hawHall`: at the front the throne room, the hall of justice and the hall of the monks; at the back the literature
      hall, the dining hall and the opera hall. All inside a whitewashed wall with a gate toward the town ---------- */
   /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
@@ -90,7 +91,7 @@
     const SDX = 8.75, SW = 2.2, n = 14, tread = .34, run = n * tread, LX = 1.6, CF = PZ1 + SW + run, FX = PX - .4, TX = FX - run, SLC = TX - SW / 2, EH = PH + 3, ED = .75;   // EH: the verandah's eaves; ED: the parapet's no-go strip
     // walkable: the hall's walls block; the plinth's top is the verandah, kept in by the parapet but open to the landings on both faces
     sRect(G, -HX, HX, HZ0, HZ1);
-    sRect(G, -PX, PX, PZ0, PZ1, (lx, lz) => { const fz = lz > ZM ? lz : 2 * ZM - lz, edge = PZ1 - fz < ED; return (Math.abs(lx) > PX - ED || edge) && !(edge && (Math.abs(lx) < LX - .3 || Math.abs(Math.abs(lx) - SLC) < SW / 2 - .3)) ? null : PH; });
+    sRect(G, -PX, PX, PZ0, PZ1, (lx, lz) => { const fz = lz > ZM ? lz : 2 * ZM - lz, edge = PZ1 - fz < ED; return (Math.abs(lx) > PX - ED || edge) && !(edge && (lz > ZM && Math.abs(lx) < LX - .3 || Math.abs(Math.abs(lx) - SLC) < SW / 2 - .3)) ? null : PH; });
     // the plinth: whitewashed brick, a moulded foot and cornice, paved on top
     const paveT = canvasTex(128, (c, sz) => { c.fillStyle = "#b8b0a0"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) { const v = 172 + ((r * 3 + k * 5) % 4) * 9; c.fillStyle = `rgb(${v},${v - 5},${v - 14})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
     paveT.wrapS = paveT.wrapT = THREE.RepeatWrapping; paveT.repeat.set(PX / 1.2, (PZ1 - PZ0) / 2.4);
@@ -117,61 +118,81 @@
       mesh(new THREE.ConeGeometry(.07, .3, 10), M.gold, nx, y + 1.92, nz, F);
     };
     [[-PX, PZ0], [PX, PZ0], [-PX, PZ1], [PX, PZ1]].forEach(([nx, nz]) => newel(G, nx + (nx > 0 ? -.3 : .3), nz + (nz > 0 ? -.3 : .3), PH));
+    // the roofs, corrugated iron like the monastery's, laid on as hipped planes: `hip` runs four slopes from the eave rectangle
+    // o [x0, x1, z0, z1] at y0 up to the rectangle (or ridge line) t at y1, the corrugations running down each slope
+    const hipT = corrugated("#6a3a24", "#8e5838", "#40200f"), hipM = std({ map: hipT, roughness: .5, metalness: .35, side: THREE.DoubleSide });
+    const hip = (o, t, y0, y1, F = G) => {
+      const pos = [], uv = [], O = (i, j) => [o[i], y0, o[j]], T = (i, j) => [t[i], y1, t[j]];
+      const quad = (pts, alongX) => [0, 1, 2, 0, 2, 3].forEach(k => { const p = pts[k]; pos.push(...p); uv.push(alongX ? p[0] : p[2], alongX ? p[2] : p[0]); });
+      quad([O(0, 3), O(1, 3), T(1, 3), T(0, 3)], true); quad([O(1, 2), O(0, 2), T(0, 2), T(1, 2)], true);
+      quad([O(0, 2), O(0, 3), T(0, 3), T(0, 2)], false); quad([O(1, 3), O(1, 2), T(1, 2), T(1, 3)], false);
+      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
+      return mesh(geo, hipM, 0, 0, 0, F);
+    };
     const rise = PH / n, doors = [];
     // one face of the palace, built in its own frame F (the front in G's frame; the back in a frame turned round about z = ZM, so the
     // same numbers serve): its stairs and landings, the main stair's porch, the little gables over the verandah at the east end, the
     // wall's windows, its three doors and the name board. halls: [left, centre, right] as seen by someone facing the doors, each
-    // [place key, what to call it]; sx turns G's x into this frame's
-    function face(F, halls, sx) {
+    // [place key, what to call it]; sx turns G's x into this frame's. main: the face has the main stair and its porch (the front);
+    // without it (the back, after the owner's photograph) only the two end stairs, each under a roofed pavilion at its landing
+    function face(F, halls, sx, main) {
       // the paved way across in front of the main stair's foot and along to the feet of the end stairs
       flat(mesh(new THREE.BoxGeometry(2 * FX + 4.8, .05, 2.2), M.stone, 0, .046, CF + 1.1, F));
       [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.8, .05, CF + 2.2 - PZ1), M.stone, sd * (FX + 1.5), .047, (PZ1 + CF + 2.2) / 2, F)));
       // walkable: the main landing and stair between their walls; the end stairs and their landings, their outer walls blocking
-      sRect(F, -LX, LX, PZ1, PZ1 + SW, PH);
+      if (main) sRect(F, -LX, LX, PZ1, PZ1 + SW, PH);
       [-1, 1].forEach(sd => {
-        sRect(F, sd > 0 ? LX : -LX - .3, sd > 0 ? LX + .3 : -LX, PZ1, CF + .6);   // the main landing's parapet and the stair's wall
+        if (main) sRect(F, sd > 0 ? LX : -LX - .3, sd > 0 ? LX + .3 : -LX, PZ1, CF + .6);   // the main landing's parapet and the stair's wall
         const x0 = sd > 0 ? TX - SW : -TX, x1 = sd > 0 ? TX : -TX + SW;
         sRect(F, x0, x1, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 || Math.abs(lx) < TX - SW + .45 ? null : PH);   // an end landing
         sRect(F, sd > 0 ? TX : -FX, sd > 0 ? FX : -TX, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 ? null : PH * clamp((FX - Math.abs(lx)) / run, 0, 1));   // an end stair, open at its foot
         sRect(F, sd > 0 ? FX : -FX - .6, sd > 0 ? FX + .6 : -FX, PZ1 + SW - .6, PZ1 + SW + .15);   // the lotus-bud pier at its foot
       });
-      sRect(F, -LX, LX, PZ1 + SW, CF, (lx, lz) => PH * clamp((CF - lz) / run, 0, 1));
+      if (main) sRect(F, -LX, LX, PZ1 + SW, CF, (lx, lz) => PH * clamp((CF - lz) / run, 0, 1));
       // the landings built out from the plinth's face, and the parapet along the face between them
-      mesh(new THREE.BoxGeometry(2 * LX + .6, PH, SW), slab, 0, PH / 2, PZ1 + SW / 2, F);
+      if (main) mesh(new THREE.BoxGeometry(2 * LX + .6, PH, SW), slab, 0, PH / 2, PZ1 + SW / 2, F);
       [-1, 1].forEach(sd => {
         mesh(new THREE.BoxGeometry(SW, PH, SW), slab, sd * SLC, PH / 2, PZ1 + SW / 2, F);
         const a = (u, v) => [Math.min(sd * u, sd * v), Math.max(sd * u, sd * v)];
-        para(F, ...a(LX, TX - SW), PZ1 - .3, PZ1); para(F, ...a(TX, PX), PZ1 - .3, PZ1);
-        para(F, ...a(LX, LX + .3), PZ1, PZ1 + SW);   // the main landing's sides
+        para(F, ...a(main ? LX : 0, TX - SW), PZ1 - .3, PZ1); para(F, ...a(TX, PX), PZ1 - .3, PZ1);
+        if (main) para(F, ...a(LX, LX + .3), PZ1, PZ1 + SW);   // the main landing's sides
         para(F, ...a(TX - SW, TX), PZ1 + SW - .3, PZ1 + SW); para(F, ...a(TX - SW, TX - SW + .3), PZ1, PZ1 + SW - .3);   // an end landing's front and inner side
-        newel(F, sd * (LX + .15), PZ1 + SW - .15, PH); newel(F, sd * (LX + .15), CF + .3, 0); newel(F, sd * (TX - SW + .15), PZ1 + SW - .15, PH); newel(F, sd * (FX + .3), PZ1 + SW - .15, 0);
+        if (main) { newel(F, sd * (LX + .15), PZ1 + SW - .15, PH); newel(F, sd * (LX + .15), CF + .3, 0); } newel(F, sd * (TX - SW + .15), PZ1 + SW - .15, PH); newel(F, sd * (FX + .3), PZ1 + SW - .15, 0);
         // an end stair along the plinth's face, rising toward the middle between the plinth and a sloping white wall with a moulded coping
         for (let i = 0; i < n; i++) mesh(new THREE.BoxGeometry(tread, (i + 1) * rise, SW - .3), white, sd * (FX - (i + .5) * tread), (i + 1) * rise / 2, PZ1 + (SW - .3) / 2, F);
         const sw = new THREE.Shape(); sw.moveTo(sd * FX, 0); sw.lineTo(sd * FX, .9); sw.lineTo(sd * TX, PH + .9); sw.lineTo(sd * TX, 0); sw.closePath();
         mesh(new THREE.ExtrudeGeometry(sw, { depth: .3, bevelEnabled: false }), white, 0, 0, PZ1 + SW - .3, F);
         const cope = mesh(new THREE.BoxGeometry(Math.hypot(run, PH) + .1, .1, .42), white, sd * (FX - run / 2), .9 + PH / 2 + .05, PZ1 + SW - .15, F); cope.rotation.z = -sd * Math.atan2(PH, run);
       });
-      // the main stair, straight down from the landing between two sloping white walls
-      for (let i = 0; i < n; i++) mesh(new THREE.BoxGeometry(2 * LX, PH - i * rise, tread), white, 0, (PH - i * rise) / 2, PZ1 + SW + (i + .5) * tread, F);
-      const cw = new THREE.Shape(); cw.moveTo(PZ1 + SW, 0); cw.lineTo(PZ1 + SW, PH + .9); cw.lineTo(CF, .9); cw.lineTo(CF, 0); cw.closePath();
-      [-1, 1].forEach(sd => {
-        const wg = new THREE.ExtrudeGeometry(cw, { depth: .3, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
-        mesh(wg, white, sd > 0 ? LX + .3 : -LX, 0, 0, F);
-        const cope = mesh(new THREE.BoxGeometry(.42, .1, Math.hypot(run, PH) + .1), white, sd * (LX + .15), .9 + PH / 2 + .05, PZ1 + SW + run / 2, F); cope.rotation.x = Math.atan2(PH, run);
+      if (main) {
+        // the main stair, straight down from the landing between two sloping white walls
+        for (let i = 0; i < n; i++) mesh(new THREE.BoxGeometry(2 * LX, PH - i * rise, tread), white, 0, (PH - i * rise) / 2, PZ1 + SW + (i + .5) * tread, F);
+        const cw = new THREE.Shape(); cw.moveTo(PZ1 + SW, 0); cw.lineTo(PZ1 + SW, PH + .9); cw.lineTo(CF, .9); cw.lineTo(CF, 0); cw.closePath();
+        [-1, 1].forEach(sd => {
+          const wg = new THREE.ExtrudeGeometry(cw, { depth: .3, bevelEnabled: false }); wg.rotateY(-Math.PI / 2);
+          mesh(wg, white, sd > 0 ? LX + .3 : -LX, 0, 0, F);
+          const cope = mesh(new THREE.BoxGeometry(.42, .1, Math.hypot(run, PH) + .1), white, sd * (LX + .15), .9 + PH / 2 + .05, PZ1 + SW + run / 2, F); cope.rotation.x = Math.atan2(PH, run);
+        });
+        // its porch, the mark of the saopha's power: red-lacquered posts banded in gilt either side, three carved gables stepping down
+        // with the stair (each over a third of it), and over the top one a five-tiered pyatthat with a gilt spire
+        const PXp = LX + .7, Z = [PZ1 + SW, PZ1 + SW + run / 3, PZ1 + SW + run * 2 / 3, CF], Y = [PH + 3.1, 4.5, 3.5];   // Z: where each third begins and ends; Y: each gable's eaves
+        [[Z[0] + .1, Y[0]], [Z[1], Y[0]], [Z[2], Y[1]], [Z[3] + .1, Y[2]]].forEach(([pz, top]) => [-1, 1].forEach(sd => {
+          mesh(new THREE.CylinderGeometry(.14, .16, top, 10), red, sd * PXp, top / 2, pz, F); sCircle(F, sd * PXp, pz, .2);
+          [.4, top - .3].forEach(y => mesh(new THREE.CylinderGeometry(.17, .17, .1, 10), M.gold, sd * PXp, y, pz, F));
+        }));
+        Y.forEach((y, k) => {
+          const z0 = k ? Z[k] : PZ1 - .3, z1 = Z[k + 1] + (k < 2 ? .5 : .7);
+          [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.2, .26, Z[k + 1] - Z[k] + .3), red, sd * PXp, y - .13, (Z[k] + Z[k + 1]) / 2, F));
+          gable(F, 0, y, (z0 + z1) / 2, 2 * PXp + 1 - k * .2, z1 - z0, 2.2 - k * .25);
+        });
+        pyatthat(F, 0, Y[0] + 1.2, (PZ1 - .3 + Z[1] + .5) / 2, 2.9, 5, .15);
+      } else [-1, 1].forEach(sd => {   // a roofed pavilion over each end stair's landing: red posts, a hipped skirt roof, a carved gable and a gilt finial
+        const cx = sd * SLC, cz = PZ1 + SW / 2, yP = PH + 2.7;
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { const px = cx + a * (SW / 2 - .2), pz = cz + b * (SW / 2 - .2); mesh(new THREE.CylinderGeometry(.11, .13, yP - PH, 10), red, px, (PH + yP) / 2, pz, F); sCircle(F, px, pz, .15); mesh(new THREE.CylinderGeometry(.14, .14, .08, 10), M.gold, px, yP - .2, pz, F); });
+        hip([cx - 1.8, cx + 1.8, cz - 1.8, cz + 1.8], [cx - 1, cx + 1, cz - 1, cz + 1], yP, yP + .7, F);
+        mesh(new THREE.BoxGeometry(2, .5, 2), teakDark, cx, yP + .9, cz, F);
+        gable(F, cx, yP + 1.15, cz, 2.6, 2.8, 1.5);
       });
-      // its porch, the mark of the saopha's power: red-lacquered posts banded in gilt either side, three carved gables stepping down
-      // with the stair (each over a third of it), and over the top one a five-tiered pyatthat with a gilt spire
-      const PXp = LX + .7, Z = [PZ1 + SW, PZ1 + SW + run / 3, PZ1 + SW + run * 2 / 3, CF], Y = [PH + 3.1, 4.5, 3.5];   // Z: where each third begins and ends; Y: each gable's eaves
-      [[Z[0] + .1, Y[0]], [Z[1], Y[0]], [Z[2], Y[1]], [Z[3] + .1, Y[2]]].forEach(([pz, top]) => [-1, 1].forEach(sd => {
-        mesh(new THREE.CylinderGeometry(.14, .16, top, 10), red, sd * PXp, top / 2, pz, F); sCircle(F, sd * PXp, pz, .2);
-        [.4, top - .3].forEach(y => mesh(new THREE.CylinderGeometry(.17, .17, .1, 10), M.gold, sd * PXp, y, pz, F));
-      }));
-      Y.forEach((y, k) => {
-        const z0 = k ? Z[k] : PZ1 - .3, z1 = Z[k + 1] + (k < 2 ? .5 : .7);
-        [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.2, .26, Z[k + 1] - Z[k] + .3), red, sd * PXp, y - .13, (Z[k] + Z[k + 1]) / 2, F));
-        gable(F, 0, y, (z0 + z1) / 2, 2 * PXp + 1 - k * .2, z1 - z0, 2.2 - k * .25);
-      });
-      pyatthat(F, 0, Y[0] + 1.2, (PZ1 - .3 + Z[1] + .5) / 2, 2.9, 5, .15);
       // the little gables over the verandah before the east end's three gables
       [-14, -11.45, -8.9].forEach(cx => gable(F, sx * cx, EH - .05, PZ1 - 1.9, 2.4, 3.2, 1.3));
       // tall windows in gilt frames along the wall, lamplit at night
@@ -196,13 +217,13 @@
       Object.assign(board.userData, { toast: data.toast });
     }
     const BACK = new THREE.Group(); BACK.position.z = 2 * ZM; BACK.rotation.y = Math.PI; G.add(BACK);
-    face(G, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], 1);
-    face(BACK, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], -1);
+    face(G, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], 1, true);
+    face(BACK, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], -1, false);
     flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - CF), M.stone, 0, .045, (CZ + CF) / 2, G));   // the paved way from the gate to the main stair's foot
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
     const posts = [], m4 = new THREE.Matrix4();
-    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(px) > LX + .4 && Math.abs(Math.abs(px) - SLC) > SW / 2 + .2) posts.push([px, PZ1 - .55], [px, PZ0 + .55]);
+    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(Math.abs(px) - SLC) > SW / 2 + .2) { if (Math.abs(px) > LX + .4) posts.push([px, PZ1 - .55]); posts.push([px, PZ0 + .55]); }
     for (let k = 1; k < 12; k++) { const pz = PZ0 + .55 + k * (PZ1 - PZ0 - 1.1) / 12; [-1, 1].forEach(sd => posts.push([sd * (PX - .55), pz])); }
     const post = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .12, EH - PH, 8), white, posts.length);
     posts.forEach(([px, pz], i) => post.setMatrixAt(i, m4.makeTranslation(px, (PH + EH) / 2, pz)));
@@ -212,17 +233,6 @@
     mesh(new THREE.BoxGeometry(2 * HX, WH, HD), teak, 0, PH + WH / 2, HC, G);
     [PH + .25, PH + 3.05].forEach(y => mesh(new THREE.BoxGeometry(2 * HX + .08, .2, HD + .08), M.trim, 0, y, HC, G));
     for (let i = 0; i < 6; i++) [-1, 1].forEach(sd => { const o = new THREE.Group(); o.position.set(sd * HX, PH + 1.55, HZ0 + (i + .5) * HD / 6); o.rotation.y = sd * Math.PI / 2; G.add(o); mesh(new THREE.BoxGeometry(1.1, 2, .06), M.trim, 0, 0, .02, o); mesh(new THREE.PlaneGeometry(.86, 1.76), pane, 0, 0, .06, o); });
-    // the roofs, corrugated iron like the monastery's, laid on as hipped planes: `hip` runs four slopes from the eave rectangle
-    // o [x0, x1, z0, z1] at y0 up to the rectangle (or ridge line) t at y1, the corrugations running down each slope
-    const hipT = corrugated("#6a3a24", "#8e5838", "#40200f"), hipM = std({ map: hipT, roughness: .5, metalness: .35, side: THREE.DoubleSide });
-    const hip = (o, t, y0, y1) => {
-      const pos = [], uv = [], O = (i, j) => [o[i], y0, o[j]], T = (i, j) => [t[i], y1, t[j]];
-      const quad = (pts, alongX) => [0, 1, 2, 0, 2, 3].forEach(k => { const p = pts[k]; pos.push(...p); uv.push(alongX ? p[0] : p[2], alongX ? p[2] : p[0]); });
-      quad([O(0, 3), O(1, 3), T(1, 3), T(0, 3)], true); quad([O(1, 2), O(0, 2), T(0, 2), T(1, 2)], true);
-      quad([O(0, 2), O(0, 3), T(0, 3), T(0, 2)], false); quad([O(1, 3), O(1, 2), T(1, 2), T(1, 3)], false);
-      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
-      return mesh(geo, hipM, 0, 0, 0, G);
-    };
     // the skirt roof over the verandah all round, from the posts' beam up to the top of the hall's walls
     hip([-PX - .7, PX + .7, PZ0 - .7, PZ1 + .7], [-HX, HX, HZ0, HZ1], EH - .74, yW);   // the verandah is 3 m deep all round, so it lands on the beam everywhere
     // the east end: three parallel gables, their carved ends to front and back, stepped up toward the throne room
@@ -259,13 +269,14 @@
       const ex = F.localToWorld(V(dx, 0, HZ1 + 1.1)), look = F.localToWorld(V(dx * .5, 0, CF + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]];
     });
     // the guards: two outside the gate and two inside it facing the walk, and on each face two at the main stair's foot, one beside
-    // each end stair's foot, two at the centre doors and one at each lesser door (the back's turned round about z = ZM)
+    // each end stair's foot, two at the centre doors and one at each lesser door (the back's turned round about z = ZM, and without
+    // the pair at the main stair's foot, having no main stair)
     const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - .9, 0, PZ1 - .9, 0], [FX + .9, 0, PZ1 - .9, 0],
                        [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]];
     palaceGuards(G, list, [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2],
-      ...faceSpots, ...faceSpots.map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
+      ...faceSpots, ...faceSpots.slice(2).map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
     // keep the outside camera above the hall and its spires
     const xs = [], zs = [];
-    [[-PX - 1, 2 * ZM - CF - 1], [PX + 1, 2 * ZM - CF - 1], [-PX - 1, CF + 1], [PX + 1, CF + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
+    [[-PX - 1, PZ0 - SW - 1], [PX + 1, PZ0 - SW - 1], [-PX - 1, CF + 1], [PX + 1, CF + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: 26 });
   }
