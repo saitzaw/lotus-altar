@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-11
 
 ### Added
+- The Haw Kham's entrance has three stairs, as in the old photographs: one either side climbing along the plinth to the landing before the throne room, and one straight up the middle from the gate.
 - Two more halls in the Haw Kham, through doors either side of the throne room's: on the left the hall of justice, with the saopha's seat of judgement and the law books on a table before it; on the right the hall where he receives the monks, their seats raised on a high dais above his own low seat.
 - Nine palace guards at the gate and about the Haw Kham, dressed like the Shan singer but all in black, with spears.
 

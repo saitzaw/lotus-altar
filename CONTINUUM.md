@@ -54,6 +54,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: three stairs to the Haw Kham
+
+- After another of the owner's photographs: the entrance has three stairs meeting at one landing (now 3.2 m wide, `LX` 1.6) before
+  the throne room's doors: the left one along the plinth's face as before, its mirror on the right, and a central stair straight down
+  toward the gate (foot at `CF`). Paved paths lead from the gate to all three feet. Guards: two at the central stair's foot and one
+  beside each side stair's foot (twelve in all now).
+
+
 ### 2026-11-11: the Haw Kham in a file of its own
 
 - The owner plans a ground floor and underground rooms (a traditional prison) for the Haw Kham, so it no longer lives inside the
