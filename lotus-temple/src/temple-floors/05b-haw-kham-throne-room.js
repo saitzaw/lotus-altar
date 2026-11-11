@@ -50,7 +50,7 @@
     [-.2, 1.2, 2.6, 4, 5.4].forEach(z => [-1, 1].forEach(sd => flat(part(matG, matM, sd * 2, .012, z, g))));
     bakeParts(g);
     // the throne: everything on and round the dais answers to a tap
-    const throne = { tip: "The saopha's throne", toast: `The saopha's throne, gilded and set with glass mosaic, lions crouched in the niches of its base: a lion throne (Burmese သီဟာသနပလ္လင်, thihathana palin) in the manner of the Burmese kings' at Mandalay. Here the saopha (${SHAN_NAMES.saopha}) sat in state to receive his court and the headmen of his circles, who knelt on the mats below. He came out to it through the little door in the gilt screen behind the seat.` };
+    const throne = { tip: "The saopha's throne", toast: `The saopha's throne, gilded and set with glass mosaic, lions crouched in the niches of its base: a lion throne (Shan ပလၢင်ႇသီႇႁႃႇသၼ) in the manner of the Burmese kings' at Mandalay. Here the saopha (${SHAN_NAMES.saopha}) sat in state to receive his court and the headmen of his circles, who knelt on the mats below. He came out to it through the little door in the gilt screen behind the seat.` };
     const T = new THREE.Group(); g.add(T);
     // the dais, two broad steps of dark teak edged in gold
     [[2 * HAW.dais, 5.5 + HAW.front, 0], [2 * HAW.dais - 1, 5.5 + HAW.front - .6, .25]].forEach(([w, d, y]) => {
@@ -115,7 +115,7 @@
     });
     mesh(new THREE.ConeGeometry(.1, .5, 8), gold, 0, cy + 2.15, SZ, T);
     // white umbrellas of state either side of the throne: three tiers of white cloth with gilt rims on a gilt pole
-    const umb = { tip: "A white umbrella of state", toast: "A white umbrella (Burmese ထီးဖြူ, hti hpyu). At the Burmese court and in the Shan states the white umbrella was the mark of a ruler: only the saopha might have it carried over him, and it stood beside him on the throne dais." };
+    const umb = { tip: "A white umbrella of state", toast: "A white umbrella (Shan ၸွင်ႈၽိူၵ်). At the Burmese court and in the Shan states the white umbrella was the mark of a ruler: only the saopha might have it carried over him, and it stood beside him on the throne dais." };
     [-1, 1].forEach(sd => {
       const U = new THREE.Group(); U.position.set(sd * 2.6, y0, -2.4); g.add(U);
       mesh(new THREE.CylinderGeometry(.035, .035, 4.2, 8), gold, 0, 2.1, 0, U);

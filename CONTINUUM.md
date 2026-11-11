@@ -43,6 +43,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker check ၵွင်ယၢဝ်း (the long drum's name on the festival stage drummer).
 - Have a Shan speaker check ၸၢပ်ႈ (the cymbals on the festival stage; a best guess, after the Tai word chap).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
+- Have a Shan speaker check the throne room's ပလၢင်ႇသီႇႁႃႇသၼ (lion throne) and ၸွင်ႈၽိူၵ် (white umbrella), in `hawHall`'s toasts.
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
   site's owner; the boards carry the Shan names only.
@@ -62,8 +63,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   three parallel gables (east), the seven-tier pyatthat over the throne room, a long hipped roof with two ridge vents, a
   five-tier spire (west). Walkers climb the stair and walk the verandah round the hall.
 - New place `haw` (`hawHall` in `05b-haw-kham-throne-room.js`, `CONFIG.places.haw`, button "Haw"): the throne room, entered by
-  the palace doors; you come back out on the verandah (`PALACE.exit`). No offering altar (no image). Burmese terms in its toasts:
-  သီဟာသနပလ္လင် (lion throne), ထီးဖြူ (white umbrella). No figures on the throne or kneeling attendants (the photo has them).
+  the palace doors; you come back out on the verandah (`PALACE.exit`). No offering altar (no image). Shan terms in its toasts, from
+  the site's owner: ပလၢင်ႇသီႇႁႃႇသၼ (lion throne), ၸွင်ႈၽိူၵ် (white umbrella). No figures on the throne or kneeling attendants (the photo has them).
 - Not yet checked by eye in a real browser beyond headless renders.
 
 
