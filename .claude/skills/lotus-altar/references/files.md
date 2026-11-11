@@ -58,7 +58,7 @@
 | `03-hall-2f-lamps-and-lotus-hall.js` | 2F Hall of a Thousand Lamps; 蓮華寺 interior | `lampHall` `library` |
 | `04-kyaung-shrine-hall.js` | Shan monastery shrine hall interior | `KYAUNG` `kyaungHall` |
 | `05-church-interior.js` | Kachin Baptist church interior | `CHURCH` `churchHall` |
-| `05b-haw-kham-throne-room.js` | the Haw Kham's three halls: throne room, hall of justice, hall of the monks (`kind`) | `HAW` `hawHall` |
+| `05b-haw-kham-throne-room.js` | the Haw Kham's six halls (`kind`): throne room, hall of justice, hall of the monks; literature, dining and opera halls at the back | `HAW` `hawHall` |
 | `06-shop-and-monks-room.js` | temple shop interior, monks' room | `shop` `quarters` |
 | `07-halls-3f-5f-4f.js` | 3F Meditation, 5F Thousand-Armed Guanyin (+ shop), 4F Medicine Buddha | `meditationHall` `thousandArms` `medicineHall` |
 | `08-lotus-pond.js` | outdoor pond, coin wish, bathing the Buddha | `outdoorPond` `pondRituals` |

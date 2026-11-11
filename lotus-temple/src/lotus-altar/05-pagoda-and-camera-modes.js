@@ -47,7 +47,8 @@ function applyMode(mode) {
 // on foot through a door: indoors you stand just inside the entrance facing the shrine; outdoors, just outside the door you came out of
 const EXIT_SPOT = { 1: [[0, 13.5], [0, 30]], library: [[14.5, 26], [0, 26]], shop: [[-18.5, 27], [0, 27]], quarters: [[-18.5, 21.6], [0, 21.6]], bell: [[-17, 5.5], [-17, 20]], church: [[12, 112.5], [12, 100]],
                     get kyaung() { const m = temple.monasteries[0]; return m && m.exit; },   // the monastery's verandah, looking down its stair
-                    get haw() { return (temple.palace.exits || {}).haw; }, get hawJustice() { return (temple.palace.exits || {}).hawJustice; }, get hawMonks() { return (temple.palace.exits || {}).hawMonks; } };   // the palace's verandah before each hall's doors
+                    };
+["haw", "hawJustice", "hawMonks", "hawLibrary", "hawDining", "hawOpera"].forEach(k => Object.defineProperty(EXIT_SPOT, k, { get: () => (temple.palace.exits || {})[k] }));   // the palace's verandah before each hall's doors
 function stayFirstPerson(prev) {
   if (current === "pagoda") {
     const [at, look] = EXIT_SPOT[typeof prev === "number" ? 1 : prev] || EXIT_SPOT[1];

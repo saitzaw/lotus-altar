@@ -54,6 +54,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Haw Kham's back, and three more halls
+
+- At the owner's request the palace is longer front to back and its back is built like its front. `hawKham` now builds the plinth
+  and hall symmetric about z = `ZM` (−12; hall z −23…−1, plinth −26…2) and each face with `face(F, halls, sx)`; the back's frame
+  is turned round about `ZM`. The compound wall now runs back to local z −38 (world z ≈ 220, inside `WORLD_R`); no gate at the back.
+  The middle hipped roof's ridge now runs front to back; the end gables and the throne gable stretch the whole depth.
+- Back doors (as seen facing them): centre `hawLibrary` (literature hall: lacquered book chests, palm-leaf bundles on a rack,
+  a reading stand with a black parabaik), left `hawDining` (low round lacquer tables set for a Shan meal, the saopha's gilt table
+  on the dais, water pots and food carriers), right `hawOpera` (a little stage, gilt proscenium, painted backdrop, footlamps,
+  long drum and gongs, the saopha's seat). Guards on the back face too (twenty in all). `EXIT_SPOT` gets the palace keys in a loop.
+- "Left" and "right" at the back are as seen by someone standing at the back facing the doors; check with the owner.
+
+
 ### 2026-11-11: three stairs to the Haw Kham
 
 - After another of the owner's photographs and notes: the main stair runs straight up the middle from the gate (foot at `CF`) to
