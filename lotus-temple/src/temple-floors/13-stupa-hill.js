@@ -56,7 +56,7 @@
   // the height a walker stands at, at (x, z), or null where they cannot go (water, walls, posts, railings)
   // solids and raised surfaces attached to objects, in the object's own frame (resolved to world lazily, after the grounds are built):
   // { obj, rect: [x0, x1, z0, z1] | circle: [cx, cz, r], h: null (blocks) | number | (lx, lz) => number (a surface, in local units) }
-  const SURF = [], PAD = .35, MONASTERIES = [];   // PAD: a walker's own radius, in metres
+  const SURF = [], PAD = .35, MONASTERIES = [], PALACE = {};   // PAD: a walker's own radius, in metres; PALACE.exit: where you come out of the Haw Kham's throne room
   const solid = (obj, shape, h = null) => { SURF.push({ obj, ...shape, h, inv: null }); };
   const sCircle = (obj, cx, cz, r) => solid(obj, { circle: [cx, cz, r] });
   const sRect = (obj, x0, x1, z0, z1, h = null) => solid(obj, { rect: [x0, x1, z0, z1] }, h);

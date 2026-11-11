@@ -29,6 +29,7 @@ flowchart TD
   SHOP -->|upstairs| QUART["quarters · 寮房 Monks' room"]
   PAGODA -->|monastery door, stupa hill| KYAUNG["kyaung · Shan monastery shrine hall"]
   PAGODA -->|church door| CHURCH["church · Kachin Baptist church"]
+  PAGODA -->|palace door| HAW["haw · Haw Kham throne room"]
 
   F1 -.->|corridor / balcony views| CORR["corridor view<br/>(real grounds shown below: setBackdrop)"]
 ```
@@ -64,6 +65,7 @@ Every indoor place except floor 1 is built **lazily** the first time it's visite
 | `quarters` | 寮房 Monks' dining and rest room | `quarters` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `kyaung` | Shan monastery shrine hall (ၵျွင်းၵွင်းမူးၶမ်း) | `kyaungHall` | `temple-floors/04-kyaung-shrine-hall.js` | yes (Shan ledge) |
 | `church` | Kachin Baptist church | `churchHall` | `temple-floors/05-church-interior.js` | no (church) |
+| `haw` | Haw Kham throne room | `hawHall` | `temple-floors/05b-haw-kham-throne-room.js` | no (throne, no image) |
 
 Statue floors also start a sculpt job in the Web Worker (`statue-sculpt.js`) for their figure.
 

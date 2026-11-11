@@ -53,6 +53,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: the Haw Kham after the old photographs, and its throne room
+
+- After the owner's four old photographs (two of a long Shan haw on its plinth, one of a prince's throne, one in colour),
+  `hawKham` (`15-haw-kham.js`) is rebuilt: the stilted hall and its two lesser halls are gone; now a long teak hall on a 2.4 m
+  whitewashed plinth with a pierced parapet, a stair along the plinth's face up to a landing before the doors (as in the photos,
+  it rises toward the viewer's right), a 3 m verandah of white posts all round under a hipped skirt roof, and the upper roofs:
+  three parallel gables (east), the seven-tier pyatthat over the throne room, a long hipped roof with two ridge vents, a
+  five-tier spire (west). Walkers climb the stair and walk the verandah round the hall.
+- New place `haw` (`hawHall` in `05b-haw-kham-throne-room.js`, `CONFIG.places.haw`, button "Haw"): the throne room, entered by
+  the palace doors; you come back out on the verandah (`PALACE.exit`). No offering altar (no image). Burmese terms in its toasts:
+  သီဟာသနပလ္လင် (lion throne), ထီးဖြူ (white umbrella). No figures on the throne or kneeling attendants (the photo has them).
+- Not yet checked by eye in a real browser beyond headless renders.
+
+
 ### 2026-11-10: address shortcuts only on localhost
 
 - The testing shortcuts in the address (`?dancers=`, `?weather=`, `?halloween=`, `?townsfolk=`, `?lionDragon=`) now work only

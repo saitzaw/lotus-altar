@@ -3,6 +3,14 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-11
+
+### Changed
+- The Haw Kham is rebuilt after old photographs of a Shan palace: a long teak hall on a high whitewashed plinth with a pierced parapet, a stair climbing along the plinth to the doors, a verandah of slender white posts all round, carved gables at the east end, the seven-tiered spire over the throne room and a lesser spire at the west end.
+
+### Added
+- The Haw Kham's doors open onto its throne room: the saopha's gilded lion throne on a stepped dais, with a tall gilt screen and crest behind it, white umbrellas of state, white drapes, red-and-gold pillars and the courtiers' mats along a red carpet.
+
 ## 2026-11-10
 
 ### Changed

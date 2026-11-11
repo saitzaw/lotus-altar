@@ -179,7 +179,7 @@ const inHall = fn => (...a) => goTo(1, () => fn(...a));   // offerings, chanting
     const b = document.createElement("button");
     b.type = "button"; b.id = "place-" + key; b.className = nav.querySelector(".fl-place") ? "fl-place" : "fl-place first"; b.dataset.f = key;
     b.setAttribute("aria-label", pl.name); b.title = pl.name;
-    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop", kyaung: "Kyaung", church: "Church" }[key] || pl.name.split(" ")[0];
+    b.textContent = { bell: "Bell", library: "Hall", shop: "Shop", kyaung: "Kyaung", church: "Church", haw: "Haw" }[key] || pl.name.split(" ")[0];
     b.addEventListener("click", () => goTo(key));
     nav.appendChild(b);
   });
