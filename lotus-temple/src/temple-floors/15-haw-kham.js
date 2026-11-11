@@ -6,7 +6,7 @@
      under a porch of three stepped gables and a pyatthat, and on both faces a lesser stair at each end climbing along the plinth's
      face (at the back under a roofed pavilion at its landing, after the owner's photograph, and no main stair), and three doors, to the halls
      built by `hawHall`: at the front the throne room, the hall of justice and the hall of the monks; at the back the literature
-     hall, the dining hall and the opera hall. All inside a whitewashed wall with a gate toward the town ---------- */
+     hall, the dining hall and the opera hall. All inside a whitewashed wall with a gate toward the town and another behind ---------- */
   /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
      studded with silver, baggy black trousers, a black headcloth with its tail over the right shoulder, a straw hat slung on the
      back, a sword on a green cord hung with wool pom-poms, and a spear held upright at the right side. They stand still at the
@@ -62,24 +62,29 @@
     const CX = 22, CZ = 16, CZB = 38;   // the compound's half width, and how far it reaches forward (to the gate) and back
     const red = std({ color: 0x8a1e14, roughness: .45 }), tile = std({ color: 0x7a2a1c, roughness: .7 }), gravel = std({ color: 0xb8a888, roughness: 1 });
     const data = { tip: `${SHAN_NAMES.haw} · the Haw Kham, the saopha's palace`, toast: `${SHAN_NAMES.haw}, the Haw Kham or golden palace: the haw of Hsenwi's saopha (${SHAN_NAMES.saopha}, "lord of the sky"), the prince who ruled the Shan state from here. A long teak hall on a high whitewashed plinth, a verandah of slender posts all round, the throne room under the seven-tiered pyatthat, and at front and back a main stair under a spired porch with a lesser stair at each end. The saophas gave up their powers in 1959.` };
-    // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the gate
+    // the courtyard, raked gravel inside the wall, and the whitewashed wall itself with a red tile coping, open at the front gate
+    // toward the town and at the back gate behind the palace
     flat(mesh(new THREE.BoxGeometry(2 * CX, .04, CZ + CZB), gravel, 0, .025, (CZ - CZB) / 2, G)).receiveShadow = true;
     flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, CZ + 2.75, G));   // the paved walk out of the gate to the palace lane
-    [[-CX, CX, -CZB, -CZB], [-CX, -CX, -CZB, CZ], [CX, CX, -CZB, CZ], [-CX, -3.4, CZ, CZ], [3.4, CX, CZ, CZ]].forEach(([a, b, c, d]) => {
+    flat(mesh(new THREE.BoxGeometry(4.8, .05, 5.7), M.stone, 0, .035, -CZB - 2.75, G));   // and out of the back gate
+    [[-CX, -3.4, -CZB, -CZB], [3.4, CX, -CZB, -CZB], [-CX, -CX, -CZB, CZ], [CX, CX, -CZB, CZ], [-CX, -3.4, CZ, CZ], [3.4, CX, CZ, CZ]].forEach(([a, b, c, d]) => {
       const w = Math.max(b - a, .4), dd = Math.max(d - c, .4), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(new THREE.BoxGeometry(w, 2.2, dd), white, mx, 1.1, mz, G);
       mesh(new THREE.BoxGeometry(w + .2, .18, dd + .2), tile, mx, 2.29, mz, G);
       sRect(G, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
-    // the gate: white pillars under a beam carrying a little three-tiered pyatthat, a lantern on each pillar lit at night
+    // the gates, front and back alike: white pillars under a beam carrying a little three-tiered pyatthat, a lantern on each
+    // pillar's outer face lit at night
     const lamps = [];
-    [-1, 1].forEach(sd => {
-      mesh(new THREE.BoxGeometry(1, 4.2, 1), white, sd * 3, 2.1, CZ, G); mesh(new THREE.BoxGeometry(1.2, .2, 1.2), M.trim, sd * 3, 4.25, CZ, G);
-      sRect(G, sd * 3 - .5, sd * 3 + .5, CZ - .5, CZ + .5);
-      const b = glowSprite(0xffd060, 1.1, .8); b.position.set(sd * 3, 3.4, CZ + .7); G.add(b); lamps.push(b);
+    [[CZ, 1], [-CZB, -1]].forEach(([gz, out]) => {
+      [-1, 1].forEach(sd => {
+        mesh(new THREE.BoxGeometry(1, 4.2, 1), white, sd * 3, 2.1, gz, G); mesh(new THREE.BoxGeometry(1.2, .2, 1.2), M.trim, sd * 3, 4.25, gz, G);
+        sRect(G, sd * 3 - .5, sd * 3 + .5, gz - .5, gz + .5);
+        const b = glowSprite(0xffd060, 1.1, .8); b.position.set(sd * 3, 3.4, gz + out * .7); G.add(b); lamps.push(b);
+      });
+      mesh(new THREE.BoxGeometry(7.2, .6, 1.4), red, 0, 4.6, gz, G); mesh(new THREE.BoxGeometry(7.4, .14, 1.5), M.trim, 0, 4.95, gz, G);
+      pyatthat(G, 0, 5, gz, 2.6, 3);
     });
-    mesh(new THREE.BoxGeometry(7.2, .6, 1.4), red, 0, 4.6, CZ, G); mesh(new THREE.BoxGeometry(7.4, .14, 1.5), M.trim, 0, 4.95, CZ, G);
-    pyatthat(G, 0, 5, CZ, 2.6, 3);
     onDaylight(d => lamps.forEach(b => b.material.opacity = .85 * (1 - d)));
     // the sizes. The palace is the same front and back, mirrored about z = ZM: the plinth (PH high, PX half wide, from PZ0 at the back
     // to PZ1 at the front), the hall on it (HX half wide, from HZ0 to HZ1, walls WH high up to yW), two halls deep. Each face has its
@@ -220,6 +225,10 @@
     face(G, [["hawJustice", "the hall of justice"], ["haw", "the throne room"], ["hawMonks", "the hall where the saopha receives the monks"]], 1, true);
     face(BACK, [["hawDining", "the dining hall"], ["hawLibrary", "the literature hall"], ["hawOpera", "the opera hall"]], -1, false);
     flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - CF), M.stone, 0, .045, (CZ + CF) / 2, G));   // the paved way from the gate to the main stair's foot
+    // behind, the paved way from the back gate to the plinth, where it turns both ways along the plinth to the feet of the end stairs
+    const BZ = 2 * ZM - (PZ1 + SW + 1.1);
+    flat(mesh(new THREE.BoxGeometry(3.4, .05, BZ + CZB), M.stone, 0, .045, (BZ - CZB) / 2, G));
+    flat(mesh(new THREE.BoxGeometry(2 * FX + 2, .05, 1.6), M.stone, 0, .046, BZ, G));
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
     const posts = [], m4 = new THREE.Matrix4();
@@ -268,12 +277,13 @@
       clickable(list, d, { floor: key, tip: `Enter ${what} of ${SHAN_NAMES.haw}` });
       const ex = F.localToWorld(V(dx, 0, HZ1 + 1.1)), look = F.localToWorld(V(dx * .5, 0, CF + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]];
     });
-    // the guards: two outside the gate and two inside it facing the walk, and on each face two at the main stair's foot, one beside
+    // the guards: two outside each gate and two inside it facing the walk, and on each face two at the main stair's foot, one beside
     // each end stair's foot, two at the centre doors and one at each lesser door (the back's turned round about z = ZM, and without
     // the pair at the main stair's foot, having no main stair)
     const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - .9, 0, PZ1 - .9, 0], [FX + .9, 0, PZ1 - .9, 0],
                        [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]];
     palaceGuards(G, list, [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2],
+      [-4.4, 0, -CZB - 1.1, Math.PI], [4.4, 0, -CZB - 1.1, Math.PI], [-2.9, 0, -CZB + 1.6, Math.PI / 2], [2.9, 0, -CZB + 1.6, -Math.PI / 2],
       ...faceSpots, ...faceSpots.slice(2).map(([gx, gy, gz, r]) => [-gx, gy, 2 * ZM - gz, r + Math.PI])]);
     // keep the outside camera above the hall and its spires
     const xs = [], zs = [];

@@ -54,6 +54,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-11: a back gate for the Haw Kham
+
+- `15-haw-kham.js`: the compound's back wall (local z = -CZB) is open in the middle under a second gate built by the same loop as
+  the front one (pillars, red beam, three-tiered pyatthat, lanterns on the outer faces). A paved walk runs out of it, and inside a
+  paved way runs to the plinth and turns along it (at z = BZ) to the feet of the two back end stairs. Four more guards (two
+  outside, two inside), so 4 + 4 at the gates. Checked in headless renders from outside and inside the back gate.
+
 ### 2026-11-11: a bigger sky, and room to grow the town
 
 - The owner found sky where the palace's back courtyard should be: the sky sphere (220) and the day dome (.94 of it, drawn over
