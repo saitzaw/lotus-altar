@@ -44,6 +44,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker check ၸၢပ်ႈ (the cymbals on the festival stage; a best guess, after the Tai word chap).
 - Have a Shan speaker check the welcome board's Shan line (`WELCOME` in `temple-floors.js`).
 - Have a Shan speaker check the throne room's ပလၢင်ႇသီႇႁႃႇသၼ (lion throne) and ၸွင်ႈၽိူၵ် (white umbrella), in `hawHall`'s toasts.
+- Have a Shan speaker check the library's name ႁူင်းတူၺ်းလိၵ်ႈၵူၼ်းမိူင်း, and a Tai Nüa reader its Tai Le line (`LIB_NAMES`).
 - Have a Shan speaker check ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း, the owner's Shan name for the Hluttaw (`SHAN_NAMES.council`, in its tip and toast).
 - Have a Shan speaker check the palace's names in `SHAN_NAMES`: ႁေႃၶမ်း (Haw Kham, on its board) and ၸဝ်ႈၾႃႉ (saopha, in its toast).
 - Have a Shan speaker check the hill's names (`SHAN_NAMES`): ၽြႃးမုင်ႈမိူင်း (stupa) and ၵျွင်းၵွင်းမူးၶမ်း (monastery), as given by the
@@ -64,6 +65,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   with a curved balcony, right wing on posts, left one-storey verandah with a terrace, red tile hips (`tinHipRoof` with a tile
   texture), chimney, lawn, shrubs, flag (`flagPole`), name board `civicSign` in Burmese "ပြည်သူ့စာကြည့်တိုက်" / "Public Library".
   Verandah floors are walkable at .4. Exterior only: no interior mode yet. Checked headlessly from the lane and the palace side.
+- Name board (`libraryBoard`, wording in `LIB_NAMES`, given by the owner): Shan ႁူင်းတူၺ်းလိၵ်ႈၵူၼ်းမိူင်း, Tai Nüa (Tai Le script)
+  ᥞᥨᥒᥰ ᥖᥧᥭᥰ ᥘᥤᥐ ᥐᥨᥢᥰ ᥛᥫᥒᥰ, Burmese ပြည်သူ့စာကြည့်တိုက်, Chinese 公共图书馆 (simplified), English. `lotus-altar.html` now also loads
+  Noto Serif SC (simplified glyphs) and Noto Sans Tai Le from Google Fonts; Google serves only the slices used.
 
 ### 2026-11-12: a watchman at the clock tower's gong; the palace guards in grey with rifles
 

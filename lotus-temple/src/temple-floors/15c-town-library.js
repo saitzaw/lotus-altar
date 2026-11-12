@@ -4,10 +4,31 @@
      bay beside it, a porch on two columns carrying a curved balcony, a one-storey verandah with a terrace on top at its left end
      and a two-storey wing on posts at its right, a chimney on the roof, and a lawn with crotons and clipped shrubs, the flag on its
      pole out front ---------- */
+  // the name board's lines: Shan, Tai Nüa (Dehong Dai, in Tai Le script), Burmese, Chinese and English, as given by the site's owner
+  const LIB_NAMES = { shan: "ႁူင်းတူၺ်းလိၵ်ႈၵူၼ်းမိူင်း", taiNua: "ᥞᥨᥒᥰ ᥖᥧᥭᥰ ᥘᥤᥐ ᥐᥨᥢᥰ ᥛᥫᥒᥰ", my: "ပြည်သူ့စာကြည့်တိုက်", zh: "公共图书馆", en: "Public Library" };
   const LIB = { x: 60, z: 197, ry: -Math.PI / 2 };   // where it stands; ry turns its front (local +z) west, to the Haw Kham across the lane; its left end (local −x) toward the bamboo grove
+  // the name board on two posts by the path: five lines in white on blue in a white frame, faintly lit at night, readable from both sides
+  function libraryBoard(parent, x, y, z) {
+    const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 640;
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    const MY = '"Noto Sans Myanmar", "Myanmar Text", sans-serif', N = LIB_NAMES;
+    const LINES = [[N.shan, `600 66px ${MY}`, 108], [N.taiNua, '400 60px "Noto Sans Tai Le", "Microsoft Tai Le", sans-serif', 218], [N.my, `600 58px ${MY}`, 322], [N.zh, '600 74px "Noto Serif SC", "Noto Serif TC", "Songti SC", serif', 432], [N.en, '600 46px "Figtree", sans-serif', 542]];
+    const paint = () => {
+      const c = cv.getContext("2d");
+      c.fillStyle = "#2a4a8a"; c.fillRect(0, 0, 1024, 640); c.strokeStyle = "#fff"; c.lineWidth = 12; c.strokeRect(8, 8, 1008, 624);
+      c.fillStyle = "#fff"; c.textAlign = "center"; c.textBaseline = "middle";
+      LINES.forEach(([s, font, ly]) => { c.font = font; c.fillText(s, 512, ly, 960); });
+      t.needsUpdate = true;
+    };
+    paint();
+    if (document.fonts && document.fonts.load) Promise.all(LINES.map(([s, font]) => document.fonts.load(font, s).catch(() => {}))).then(paint);
+    const m = std({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .3, roughness: .6, side: THREE.DoubleSide });
+    onDaylight(d => { m.emissiveIntensity = .3 + .5 * (1 - d); });
+    flat(mesh(new THREE.PlaneGeometry(3.2, 2), m, x, y + .4, z, parent));
+  }
   function townLibrary(g) {
     const L = new THREE.Group(); L.position.set(LIB.x, 0, LIB.z); L.rotation.y = LIB.ry; g.add(L);
-    const list = picks.pagoda, data = { tip: "The library · ပြည်သူ့စာကြည့်တိုက်", toast: "ပြည်သူ့စာကြည့်တိုက်, the town's public library, in a mansion of the saophas' time across the lane from the Haw Kham: two storeys of plaster under red tile, a half-octagon bay and a round bay of teak-framed windows, and a porch carrying a curved balcony. Inside are books in Shan, Burmese and English, the newspapers on long tables, and the town's old records; children come after school to read on the verandahs." };
+    const list = picks.pagoda, data = { tip: `The library · ${LIB_NAMES.shan}`, toast: `${LIB_NAMES.shan} in Shan, ${LIB_NAMES.my} in Burmese, ${LIB_NAMES.taiNua} in Tai Nüa and ${LIB_NAMES.zh} in Chinese: the town's public library, in a mansion of the saophas' time across the lane from the Haw Kham: two storeys of plaster under red tile, a half-octagon bay and a round bay of teak-framed windows, and a porch carrying a curved balcony. Inside are books in Shan, Burmese and English, the newspapers on long tables, and the town's old records; children come after school to read on the verandahs.` };
     const P = .4, FH = 3.6, F2 = P + FH, EV = P + 2 * FH;   // the plinth (a walker can step up it), a storey, the upper floor, the eaves
     const cream = std({ color: 0xf0e6cc, roughness: .9 }), trim = std({ color: 0xfaf6ec, roughness: .8 }), frame = std({ color: 0x5a3420, roughness: .7 });
     const fascia = std({ color: 0x5e5048, roughness: .8 }), doorM = std({ color: 0x4a2a16, roughness: .6 });
@@ -115,8 +136,8 @@
     for (let x = -17.5; x < 15.5; x += 1.6 + r() * 1.4) if (Math.abs(x - PX) > 2.6) { shrub(x, 12 + r() * .8, .5 + r() * .4); if (r() < .5) shrub(x + .6, 15.2, .4 + r() * .3); }
     for (let z = -7; z < 11; z += 2.2 + r()) { shrub(-17.8, z, .45 + r() * .35); shrub(15, z, .45 + r() * .35); }
     const [fx, fz] = [LIB.x - 13.5, LIB.z + 13]; mesh(box(.6, .5, .6), concrete, fx, .25, fz, g); flagPole(g, fx, fz, 9);
-    [-5.5, -2.5].forEach(x => { mesh(box(.14, 2.6, .14), townFrame, x, 1.3, 15.4, L); sCircle(L, x, 15.4, .12); });
-    civicSign(L, "ပြည်သူ့စာကြည့်တိုက်", "Public Library", "#2a4a8a", "#ffffff", 3, -4, 2.15, 15.48);
+    [-5.6, -2.4].forEach(x => { mesh(box(.14, 3.2, .14), townFrame, x, 1.6, 15.4, L); sCircle(L, x, 15.4, .12); });
+    libraryBoard(L, -4, 2.15, 15.48);
     // keep the outside camera above it
     TALL.push({ x0: LIB.x - 12, x1: LIB.x + 7, z0: LIB.z - 16, z1: LIB.z + 12, h: EV + 3.4 });
   }

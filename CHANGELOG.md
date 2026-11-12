@@ -7,6 +7,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ### Added
 - A public library (ပြည်သူ့စာကြည့်တိုက်) stands across the market lane from the Haw Kham, beside the bamboo grove, facing the palace: an old two-storey mansion of cream plaster and red tile with a half-octagon bay, a round bay, a porch under a curved balcony, a lawn with crotons and the flag. It can't be entered yet.
+- The library's name board reads in Shan, Tai Nüa, Burmese, Chinese and English (fonts Noto Sans Tai Le and Noto Serif SC added).
 
 ### Changed
 - A watchman on the clock tower's platform strikes the hours on the gong; the bell is gone.
