@@ -3,7 +3,7 @@
      teak hall raised on posts with a slatted balustrade round its verandah, two stairs at the front ends, a skirt roof of corrugated
      iron and crossed carved gables under a tiered pyatthat, face to face with the palace's main entrance; and by the gate the clock tower, a
      tall whitewashed base crenellated at the top, climbed by a steep stair along its side, four round white columns carrying a teak
-     platform (up a ladder) and an open teak pavilion under two roofs, where the gong and the bell told the hours. G: the palace
+     platform (up a ladder) and an open teak pavilion under two roofs, where the gong told the hours. G: the palace
      front's frame (local +z out from the main stair, x turned round so −x is west); hip: its roof maker; ZX: the compound's front
      wall's z ---------- */
   function councilCompound(G, list, hip, ZX) {
@@ -130,7 +130,7 @@
     const PLAT = BH + 3.6 + .225, LX = .6, LZ0 = .2, LZ1 = -1.8;
     sRect(T, LX - .3, LX + .3, LZ1, LZ0, (lx, lz) => TOP + (PLAT - TOP) * clamp((LZ0 - lz) / (LZ0 - LZ1), 0, 1));
     sRect(T, -2.2, 2.2, -2.2, 2.2, (lx, lz) => WALKER_Y > (TOP + PLAT) / 2
-      ? (Math.abs(lx) > 1.9 || Math.abs(lz) > 1.9 || lx > -1.6 && lx < .2 && Math.abs(lz - 1) < .2 ? null : PLAT)   // the platform, inside its rail, round the gong's frame
+      ? (Math.abs(lx) > 1.9 || Math.abs(lz) > 1.9 || lx > -1.6 && lx < .2 && Math.abs(lz - 1) < .2 || Math.hypot(lx + 1.05, lz - 1.75) < .35 ? null : PLAT)   // the platform, inside its rail, round the gong's frame and its watchman
       : (Math.abs(lx) > 1.95 && !(lx > 0 && lz > -1.75 && lz < -.45) || Math.abs(lz) > 1.95 || Math.hypot(Math.abs(lx) - 1.55, Math.abs(lz) - 1.55) < .65 ? null : TOP));   // the base's top, round the columns
     sRect(T, -B0 / 2 - .5, B0 / 2 + .5, -B0 / 2 - .5, B0 / 2 + .5);
     // the four round columns, a teak platform on them, and the open pavilion: slender posts, a low rail, a hipped skirt roof and a small top roof
@@ -154,8 +154,7 @@
     mesh(new THREE.CylinderGeometry(.015, .015, .8, 4), M.gold, 0, PY + 7.1, 0, T);
     // the flame finials curling up at the corners of both roofs
     [[3, PY + 2.6, 1.5], [1.55, PY + 4.15, 1.1]].forEach(([r, y, s]) => [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { const f = mesh(flame, teakDark, a * r, y, b * r, T); f.scale.setScalar(s); f.rotation.set(b * .4, 0, -a * .4); }));
-    // the gong and the bell that told the hours: a great bronze gong with a raised boss, hung on cords from a red frame, its padded
-    // beater beside it; the bell from the pavilion's beams
+    // the gong that told the hours: a great bronze gong with a raised boss, hung on cords from a red frame
     const GX = -.7, GY = PY + 1.35, GZ = 1;   // on the far side of the platform from the ladder's hatch
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.3, .12), red, GX + sd * .8, PY + 1.25, GZ, T));
     mesh(new THREE.BoxGeometry(1.9, .14, .14), red, GX, PY + 2.4, GZ, T);
@@ -163,18 +162,37 @@
     const gong = mesh(new THREE.CylinderGeometry(.6, .6, .05, 32), M.bronze, GX, GY, GZ, T); gong.rotation.x = Math.PI / 2;
     mesh(new THREE.TorusGeometry(.6, .035, 6, 32), M.bronze, GX, GY, GZ, T);
     mesh(new THREE.SphereGeometry(.15, 12, 8), M.gold, GX, GY, GZ + .05, T).scale.z = .5;
-    const beat = mesh(new THREE.CylinderGeometry(.025, .025, .9, 6), teak, GX + 1.05, PY + .85, GZ + .4, T); beat.rotation.z = .25;
-    mesh(new THREE.SphereGeometry(.11, 10, 8), red, GX + 1.16, PY + 1.3, GZ + .4, T);
-    const bell = mesh(new THREE.CylinderGeometry(.25, .42, .7, 16, 1, true), M.bronze, 1.2, PY + 1.8, GZ, T); bell.material.side = THREE.DoubleSide;
-    mesh(new THREE.SphereGeometry(.26, 12, 8, 0, TAU, 0, Math.PI / 2), M.bronze, 1.2, PY + 2.15, GZ, T);
     // the ladder up from the base's top through the hatch in the platform
     const lad = new THREE.Group(); lad.position.set(LX, BH + .3, LZ0); lad.rotation.x = -Math.atan2(2, PY - BH - .3); T.add(lad);
     const LL = Math.hypot(2, PY - BH - .3);
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.06, LL, .08), teak, sd * .25, LL / 2, 0, lad));
     for (let i = 1; i < 11; i++) mesh(new THREE.BoxGeometry(.5, .04, .04), teak, 0, i * LL / 11, 0, lad);
     bakeParts(T);
-    const tData = { tip: "The palace clock tower", toast: "The palace clock tower: a tall whitewashed base crenellated along its top, four round columns carrying a teak platform, and an open pavilion under two roofs. A water clock kept the time, and the watchmen climbed the stair and the ladder to beat the hours on the great gong and sound the bell." };
+    const tData = { tip: "The palace clock tower", toast: "The palace clock tower: a tall whitewashed base crenellated along its top, four round columns carrying a teak platform, and an open pavilion under two roofs. A water clock kept the time, and the watchmen climbed the stair and the ladder to beat the hours on the great gong." };
     T.traverse(o => { if (o.isMesh) clickable(list, o, tData); });
+    // the watchman on the platform, facing the gong and striking its boss with the padded beater in his right hand: an indigo
+    // jacket, dark baggy trousers and a pale headcloth
+    {
+      const W = new THREE.Group(); W.position.set(GX - .35, PLAT, GZ + .75); W.rotation.y = Math.PI; T.add(W);
+      const indigo = std({ color: 0x27304a, roughness: .7 }), dark = std({ color: 0x1e1e22, roughness: .75 }), headcloth = std({ color: 0xe6dfcc, roughness: .85 });
+      const skin = std({ color: 0xc89a68, roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 });
+      const Y = V(0, 1, 0), d = V(0, 0, 0);
+      const limb = (r0, r1, m, a, b) => { const geo = new THREE.CylinderGeometry(r1, r0, 1, 8); geo.translate(0, .5, 0); const o = mesh(geo, m, a.x, a.y, a.z, W); d.subVectors(b, a); o.scale.y = d.length(); o.quaternion.setFromUnitVectors(Y, d.normalize()); return o; };
+      [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.14, .12, .84, 10), dark, sd * .11, .44, 0, W); mesh(new THREE.BoxGeometry(.1, .05, .24), ink, sd * .11, .025, .05, W); });
+      const body = mesh(new THREE.CylinderGeometry(.18, .25, .72, 14), indigo, 0, 1.03, 0, W);
+      mesh(new THREE.CylinderGeometry(.06, .07, .12, 10), skin, 0, 1.4, 0, W);
+      mesh(new THREE.SphereGeometry(.115, 16, 12), skin, 0, 1.56, 0, W).scale.set(.92, 1.15, 1);
+      [-1, 1].forEach(sd => mesh(new THREE.SphereGeometry(.016, 8, 6), ink, sd * .042, 1.58, .1, W));
+      mesh(new THREE.CylinderGeometry(.128, .122, .12, 16), headcloth, 0, 1.65, -.005, W);
+      mesh(new THREE.SphereGeometry(.125, 14, 8, 0, TAU, 0, Math.PI / 2), headcloth, 0, 1.7, -.005, W).scale.y = .55;
+      // the left arm hangs; the right reaches out to the gong, the beater's padded head on the boss
+      const P = (x, y, z) => V(x, y, z), S = [P(.21, 1.33, 0), P(.26, 1.07, .03), P(.24, .86, .07), P(-.21, 1.33, 0), P(-.3, 1.13, .14), P(-.28, 1.2, .32)];
+      [0, 3].forEach(i => { limb(.085, .05, indigo, S[i], S[i + 1]); limb(.042, .036, skin, S[i + 1], S[i + 2]); mesh(new THREE.SphereGeometry(.04, 8, 6), skin, S[i + 2].x, S[i + 2].y, S[i + 2].z, W); });
+      const head = P(-.34, 1.13, .56);
+      limb(.022, .022, teak, P(-.27, 1.21, .24), head);
+      mesh(new THREE.SphereGeometry(.1, 10, 8), red, head.x, head.y, head.z, W);
+      clickable(list, body, { tip: "The watchman at the gong", toast: "The watchman of the clock tower, striking the hour on the great bronze gong. The water clock below marked each hour, and he beat it out so the palace and the town could hear." });
+    }
     // Space or a tap on the ladder climbs it, up from the base's top or down from the platform, the way you'd find it on foot
     const climbLadder = () => {
       const up = WALKER_Y < (TOP + PLAT) / 2, at = T.localToWorld(up ? V(-.6, 0, -1) : V(LX, 0, .9)), look = T.localToWorld(up ? V(GX, 0, GZ) : V(2.2, 0, -1.1));

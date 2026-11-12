@@ -10,14 +10,14 @@
      inside a whitewashed wall with a gate at the front and another toward the town. Across the road from the front gate, in its
      own walled compound, the Hluttaw, the council of state, facing the main entrance, with the palace clock tower.
      The back yard, toward the town, is kept clear for the royal kitchen, bathhouse and lake still to come ---------- */
-  /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in black: a long black silk jacket
-     studded with silver, baggy black trousers, a black headcloth with its tail over the right shoulder, a straw hat slung on the
-     back, a sword on a green cord hung with wool pom-poms, and a spear held upright at the right side. They stand still at the
+  /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in grey: a long grey silk jacket
+     studded with silver, baggy grey trousers, a grey headcloth with its tail over the right shoulder, a straw hat slung on the
+     back, a sword on a green cord hung with wool pom-poms, and a rifle at the order, butt by the right foot. They stand still at the
      gate and about the palace. Every piece but the jacket (which answers to a tap) is baked into shared instanced meshes ---------- */
   function palaceGuards(G, list, spots) {
     const lin = h => new THREE.Color(h).convertSRGBToLinear();
-    const silk = std({ color: lin(0x232328), roughness: .35, metalness: .25 }), trousers = std({ color: lin(0x18181b), roughness: .6 }), cloth = std({ color: lin(0x1c1c1f), roughness: .8 });
-    const knit = std({ color: 0x0e0e10, roughness: .9 }), skin = std({ color: lin(0xe4bf86), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 });
+    const silk = std({ color: lin(0x7c8088), roughness: .4, metalness: .2 }), trousers = std({ color: lin(0x6a6e75), roughness: .6 }), cloth = std({ color: lin(0x8a8d93), roughness: .8 });
+    const knit = std({ color: lin(0x55585e), roughness: .9 }), skin = std({ color: lin(0xe4bf86), roughness: .7 }), ink = std({ color: 0x1a1410, roughness: .6 });
     const silver = std({ color: 0xd8dade, roughness: .25, metalness: .8 }), cord = std({ color: lin(0x2a8a3c), roughness: .7 }), sheath = std({ color: 0x24262a, roughness: .45, metalness: .3 });
     const wood = std({ color: lin(0x5a3a1e), roughness: .6 }), steel = std({ color: 0xc8ccd0, roughness: .3, metalness: .8 }), hiltM = std({ color: lin(0xe8c040), roughness: .8 });
     const WOOL = [0x1f8a3c, 0xd82a2a, 0xf0c830, 0xf4f2ea].map(h => std({ color: lin(h), roughness: .95 }));
@@ -27,11 +27,11 @@
       collar: new THREE.TorusGeometry(.075, .022, 6, 14), stud: new THREE.SphereGeometry(.009, 6, 4), head: new THREE.SphereGeometry(.115, 16, 12), eye: new THREE.SphereGeometry(.016, 8, 6), brow: new THREE.BoxGeometry(.045, .008, .008),
       ear: new THREE.SphereGeometry(.026, 8, 6), nose: new THREE.ConeGeometry(.014, .045, 6), wrap: new THREE.CylinderGeometry(.128, .122, .12, 16), dome: new THREE.SphereGeometry(.125, 14, 8, 0, TAU, 0, Math.PI / 2), tail: new THREE.BoxGeometry(.12, .62, .025),
       hat: new THREE.ConeGeometry(.62, .26, 28, 1, true), rim: new THREE.TorusGeometry(.62, .015, 4, 28), up: unit(.085, .05), lo: unit(.042, .036), hand: new THREE.SphereGeometry(.04, 8, 6),
-      cord: unit(.008, .008), sheath: unit(.02, .016), hilt: unit(.018, .018), pom: new THREE.SphereGeometry(.035, 8, 6), shaft: unit(.018, .018), blade: new THREE.ConeGeometry(.035, .24, 4), tassel: new THREE.CylinderGeometry(.012, .02, .4, 6) };
+      cord: unit(.008, .008), sheath: unit(.02, .016), hilt: unit(.018, .018), pom: new THREE.SphereGeometry(.035, 8, 6), butt: new THREE.BoxGeometry(.05, .3, .13), stock: new THREE.BoxGeometry(.045, .5, .07), mag: new THREE.BoxGeometry(.035, .12, .06), barrel: new THREE.CylinderGeometry(.011, .011, .62, 6), sight: new THREE.BoxGeometry(.01, .03, .015), sling: unit(.006, .006) };
     const Y = V(0, 1, 0), tmp = V(0, 0, 0), P = (x, y, z) => V(x, y, z);
     const span = (o, a, b) => { tmp.subVectors(b, a); const L = tmp.length(); o.position.copy(a); o.quaternion.setFromUnitVectors(Y, tmp.divideScalar(L)); o.scale.y = L; return o; };
     const GG = new THREE.Group(); G.add(GG);
-    const data = { tip: "A guard of the palace", toast: "One of the saopha's guards, in the old Shan dress of the hills all in black: a long black silk jacket studded with silver, baggy black trousers, a black headcloth with its long tail over the shoulder and a great straw hat slung on his back, a sword hung on a green cord with wool pom-poms, and a spear in his hand. They keep the gate and the doors of the halls." };
+    const data = { tip: "A guard of the palace", toast: "One of the saopha's guards, in the old Shan dress of the hills in palace grey: a long grey silk jacket studded with silver, baggy grey trousers, a grey headcloth with its long tail over the shoulder and a great straw hat slung on his back, a sword hung on a green cord with wool pom-poms, and a rifle grounded at his right foot. They keep the gate and the doors of the halls." };
     const guard = (x, y, z, ry) => {
       const B = new THREE.Object3D(); B.position.set(x, y, z); B.rotation.y = ry; GG.add(B);
       const pt = (geo, m, px, py, pz) => part(geo, m, px, py, pz, B);
@@ -50,10 +50,11 @@
       span(pt(GEO.cord, cord), P(-.15, 1.34, .1), P(.2, .88, .2));
       const hilt = P(.17, .98, .26); span(pt(GEO.sheath, sheath), hilt, P(.36, .3, -.05)); span(pt(GEO.hilt, hiltM), P(.13, 1.05, .3), hilt);
       [[.2, .82, .27, 0], [.24, .76, .25, 1], [.18, .74, .28, 3], [.22, .68, .26, 2]].forEach(([px, py, pz, k]) => pt(GEO.pom, WOOL[k], px, py, pz));
-      // the arms: black silk sleeves to the elbow, black knitted forearms; the right hand grips the spear, the left rests on the hilt
+      // the arms: grey silk sleeves to the elbow, knitted forearms; the right hand grips the rifle, the left rests on the hilt
       [[P(-.21, 1.33, 0), P(-.27, 1.07, .04), P(-.25, .86, .13)], [P(.21, 1.33, 0), P(.31, 1.1, .08), P(.17, 1.0, .28)]].forEach(([S, E, H]) => { span(pt(GEO.up, silk), S, E); span(pt(GEO.lo, knit), E, H); pt(GEO.hand, skin, H.x, H.y, H.z); });
-      // the spear, butt on the ground, a red tassel under its steel head
-      span(pt(GEO.shaft, wood), P(-.25, .02, .14), P(-.25, 2.2, .14)); pt(GEO.blade, steel, -.25, 2.32, .14); pt(GEO.tassel, WOOL[1], -.25, 2.0, .14);
+      // the rifle at the order: butt on the ground by the right foot, wooden stock up to the hand, the steel barrel past the shoulder, a sling down its back
+      pt(GEO.butt, wood, -.27, .17, .14); pt(GEO.stock, wood, -.27, .57, .15); pt(GEO.mag, sheath, -.27, .62, .2);
+      pt(GEO.barrel, sheath, -.27, 1.13, .15); pt(GEO.sight, steel, -.27, 1.45, .15); span(pt(GEO.sling, ink), P(-.27, .28, .08), P(-.27, .95, .12));
       sCircle(G, x, z, .32);
     };
     spots.forEach(a => guard(...a));   // [x, y, z, turn] in G's frame
@@ -282,9 +283,9 @@
       const ex = F.localToWorld(V(dx, 0, HZ1 + 1.1)), look = F.localToWorld(V(dx * .5, 0, CF + 6)); PALACE.exits[key] = [[ex.x, ex.z], [look.x, look.z]];
     });
     // the guards: two outside each gate and two inside it facing the walk, two outside the Hluttaw's gate facing the palace, and on each face two at the
-    // main stair's foot, one beside each end stair's foot, two at the centre doors and one at each lesser door (the front's turned
+    // main stair's foot, one beside each end stair's foot (clear of the plinth's end so the hat on his back stays out of it), two at the centre doors and one at each lesser door (the front's turned
     // round about z = ZM; the back without the pair at the main stair's foot, having no main stair)
-    const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - .9, 0, PZ1 - .9, 0], [FX + .9, 0, PZ1 - .9, 0],
+    const faceSpots = [[-LX - 1.7, 0, CF + .6, 0], [LX + 1.7, 0, CF + .6, 0], [-FX - 1.4, 0, PZ1 - .9, 0], [FX + 1.4, 0, PZ1 - .9, 0],
                        [-1.6, PH, HZ1 + .7, 0], [1.6, PH, HZ1 + .7, 0], [-SDX - 1.2, PH, HZ1 + .7, 0], [SDX + 1.2, PH, HZ1 + .7, 0]];
     palaceGuards(G, list, [[-4.4, 0, CZ + 1.1, 0], [4.4, 0, CZ + 1.1, 0], [-2.9, 0, CZ - 1.6, Math.PI / 2], [2.9, 0, CZ - 1.6, -Math.PI / 2],
       [-4.4, 0, -CZB - 1.1, Math.PI], [4.4, 0, -CZB - 1.1, Math.PI], [-2.9, 0, -CZB + 1.6, Math.PI / 2], [2.9, 0, -CZB + 1.6, -Math.PI / 2],

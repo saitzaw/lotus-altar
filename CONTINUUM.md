@@ -55,6 +55,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-12: a watchman at the clock tower's gong; the palace guards in grey with rifles
+
+- Clock tower (`15b-hluttaw-and-clock-tower.js`): the bell and the loose beater are gone; a watchman (indigo jacket, pale
+  headcloth, own tip and toast) stands on the platform at T (GX − .35, GZ + .75) facing the gong, striking its boss with the beater.
+  The platform's walk surface leaves a .35 m circle round him. Static pose, no animation or sound yet.
+- Palace guards (`palaceGuards` in `15-haw-kham.js`): grey jacket, trousers, headcloth and forearms instead of black; the spear is
+  now a rifle at the order (butt by the right foot, dark barrel past the shoulder, sling). Tip text updated.
+- The four guards at the end stairs' feet stood .5 m off the plinth's ends, so the straw hat on their backs (radius .62) went into
+  the wall; they now stand at x = ±(FX + 1.4). Checked all three headlessly.
+
 ### 2026-11-11: the clock tower's ladder works both ways
 
 - The owner couldn't get down: from the platform the ladder ramp can only be entered at its top end, beside the rail. Now the

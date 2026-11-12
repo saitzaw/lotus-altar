@@ -3,6 +3,13 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-12
+
+### Changed
+- A watchman on the clock tower's platform strikes the hours on the gong; the bell is gone.
+- The Haw Kham's guards wear grey and carry rifles instead of spears.
+- The guards at the foot of the Haw Kham's end stairs stand clear of the plinth, so the hats on their backs no longer go into the wall.
+
 ## 2026-11-11
 
 ### Changed
