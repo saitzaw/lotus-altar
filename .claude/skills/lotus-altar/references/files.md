@@ -72,6 +72,7 @@
 | `15-haw-kham.js` | the saopha's palace and its guards, its own top-level builder (called from `36-lion-dragon-dance.js` after `shanMonasteries`); front away from the town, back toward it | `hawKham` `palaceGuards` |
 | `15b-hluttaw-and-clock-tower.js` | the council's own walled compound across the road from the palace's front gate: the Hluttaw on posts facing the main entrance, the clock tower with its stair and gong (called from `hawKham` in the front's frame `BACK`) | `councilCompound` |
 | `15c-town-library.js` | the public library, an old two-storey mansion across the market lane from the Haw Kham, facing it (`LIB`; called from `36-lion-dragon-dance.js` after `hawKham`); exterior only | `townLibrary` |
+| `15d-town-bank.js` | the bank, an old white building with onion-domed corner towers, south of the library on the same side of the market lane, facing the palace (`BANK`; called from `36-lion-dragon-dance.js` after `townLibrary`); exterior only | `townBank` |
 | `16-festival-ground.js` | festival ground and stage | `festivalGround` |
 | `17-kinnara-dance.js` | kinnara/kinnari dancers | `kinnaraDancers` |
 | `18-stage-ensemble.js` | stage musicians (*inside `kinnaraDancers`*) | |

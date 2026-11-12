@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-12
 
 ### Added
+- A bank (ဘဏ်) stands south of the library on the same side of the market lane, facing the Haw Kham: a white building of the saophas' time with an onion-domed tower at each front corner, three tall arches under a gabled centre with a brown pediment and a spire, porches over the wing doors, and oval flower beds edged with white stones round the flag. It can't be entered, and nothing can be paid there.
 - A public library (ပြည်သူ့စာကြည့်တိုက်) stands across the market lane from the Haw Kham, beside the bamboo grove, facing the palace: an old two-storey mansion of cream plaster and red tile with a half-octagon bay, a round bay, a porch under a curved balcony, a lawn with crotons and the flag. It can't be entered yet.
 - The library's name board reads in Shan, Tai Nüa, Burmese, Chinese and English (fonts Noto Sans Tai Le and Noto Serif SC added).
 

@@ -191,6 +191,7 @@
     shanMonasteries(g);
     hawKham(g, 16, 204, Math.PI);   // the saopha's palace, east of the stupa hill's foot, its back and the council's compound toward the town
     townLibrary(g);   // the public library across the market lane from the palace's east wall, facing it
+    townBank(g);   // the bank, south of the library on the same side of the lane, facing the palace too
     streetFrontage(g);
     backStreets(g);
     hillHuts(g);

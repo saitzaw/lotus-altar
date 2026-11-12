@@ -100,6 +100,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Hluttaw (council of state) and the palace clock tower (stair to its top, gong and bell), in their own walled compound across the Hluttaw road from the palace's front gate, facing the main entrance | (16, 276), walls z 262.5…286.5; tower (29.5, 267.5) |
 | The Hluttaw road and the market lane on along the palace's east wall | z 255.5…261.5; x 38.75…43.25 | `LANES` | `10-town.js`, drawn by `backStreets` | `councilCompound` | `15b-hluttaw-and-clock-tower.js` |
 | Public library (exterior), across the market lane from the palace's east wall, facing it, beside the bamboo grove | (60, 197), lawn x 43.8…69, z 178.5…213 | `townLibrary` | `15c-town-library.js` |
+| Bank (exterior), south of the library across the market lane from the palace's east wall, facing it | (60, 235), forecourt x 43.5…67.5, z 215…255 | `townBank` | `15d-town-bank.js` |
 | Festival ground, stage, dancers, ensemble, audience | festival ground (`STAGE`) | `festivalGround`, `kinnaraDancers`, `toDancers`, `stageSinger`, `festivalAudience` | `16-` … `19-*.js` |
 | Village lamps, hut villages | town edges | `hillHuts`, `hutVillage`, `villageLamp` | `22-village-lamps-and-huts.js` |
 | Hospital, road houses | across from the football ground | `hospital`, `hospitalRoadHouses` | `26-hospital-football-school.js` |

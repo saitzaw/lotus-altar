@@ -56,6 +56,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-12: the bank beside the library
+
+- New piece `15d-town-bank.js`, `townBank(g)` (called in `36-lion-dragon-dance.js` right after `townLibrary`), after the owner's
+  photograph of an old white palace-style building with domed corner towers. `BANK` = (60, 235), ry −π/2 like the library: front
+  faces west across the market lane to the palace; forecourt local x ±20 (world z 215…255, the library's lawn ends at 213, the
+  Hluttaw road starts at 255.5), its kerb at world x 43.6. Two storeys (plinth .4, storeys 4.2) with arched windows, eight-sided
+  corner towers of three stepped storeys under lathe-turned onion domes, a centre block brought forward 2.6 m with three dark
+  arches, a slate gable with a brown pediment and spire, flat porches on posts over the wing doors (black boards over them as in
+  the photo), red-earth forecourt, oval flower beds ringed with white stones, flag (`flagPole`), name board `bankBoard` in Burmese
+  ဘဏ်, Chinese 银行 and English (`BANK_NAMES`). Exterior only. Checked headlessly from the lane and from the Hluttaw road corner.
+- Ask the owner for the bank's Shan (and Tai Nüa) name for its board, as given for the library.
+
 ### 2026-11-12: the public library across the lane from the Haw Kham
 
 - New piece `15c-town-library.js`, `townLibrary(g)` (called in `36-lion-dragon-dance.js` right after `hawKham`), after the owner's
