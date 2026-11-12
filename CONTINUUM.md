@@ -55,6 +55,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-12: the public library across the lane from the Haw Kham
+
+- New piece `15c-town-library.js`, `townLibrary(g)` (called in `36-lion-dragon-dance.js` right after `hawKham`), after the owner's
+  photograph of an old saopha-era mansion. `LIB` = (60, 197), ry −π/2: front (local +z) faces west to the palace across the
+  market lane (lawn ends at x 43.8, the lane at 43.25); its left end (local −x, the verandah wing) toward the bamboo grove (lawn
+  starts at z 178.5, the grove's leaf floor ends at 178). Two storeys (plinth .4, storeys 3.6), half-octagon bay, round bay, porch
+  with a curved balcony, right wing on posts, left one-storey verandah with a terrace, red tile hips (`tinHipRoof` with a tile
+  texture), chimney, lawn, shrubs, flag (`flagPole`), name board `civicSign` in Burmese "ပြည်သူ့စာကြည့်တိုက်" / "Public Library".
+  Verandah floors are walkable at .4. Exterior only: no interior mode yet. Checked headlessly from the lane and the palace side.
+
 ### 2026-11-12: a watchman at the clock tower's gong; the palace guards in grey with rifles
 
 - Clock tower (`15b-hluttaw-and-clock-tower.js`): the bell and the loose beater are gone; a watchman (indigo jacket, pale

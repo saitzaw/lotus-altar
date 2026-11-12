@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-12
 
+### Added
+- A public library (ပြည်သူ့စာကြည့်တိုက်) stands across the market lane from the Haw Kham, beside the bamboo grove, facing the palace: an old two-storey mansion of cream plaster and red tile with a half-octagon bay, a round bay, a porch under a curved balcony, a lawn with crotons and the flag. It can't be entered yet.
+
 ### Changed
 - A watchman on the clock tower's platform strikes the hours on the gong; the bell is gone.
 - The Haw Kham's guards wear grey and carry rifles instead of spears.
