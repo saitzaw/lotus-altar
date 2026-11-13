@@ -2,6 +2,7 @@
      pattern, tall pointed windows, two banks of wooden pews either side of the aisle, ceiling fans turning under the beams, and
      at the front a raised dais with the pulpit, the choir's chairs and the keyboard, a plain wooden cross on a red hanging behind,
      and the communion table with the Bible and flowers below it ---------- */
+  const PIANO = { x: -3.6, z: -3.95, bench: .55 };   // the grand piano on the dais, its keyboard toward the pulpit; the bench this far out from it
   const CHURCH = { rows: [-.6, .45, 1.5, 2.55, 3.6, 4.65], banks: [[-5.8, -1], [1, 5.8]], dais: -2.6 };
   function churchHall(g, n) {
     picks[n] = picks[n] || []; updaters[n] = updaters[n] || [];
@@ -37,9 +38,9 @@
     }));
     // the pews, two banks either side of the aisle, facing the dais
     CHURCH.banks.forEach(([x0, x1]) => {
-      const w = x1 - x0, cx = (x0 + x1) / 2, seat = new THREE.BoxGeometry(w, .07, .42), back = new THREE.BoxGeometry(w, .5, .05), end = new THREE.BoxGeometry(.07, .9, .55);
+      const w = x1 - x0, cx = (x0 + x1) / 2, seat = new THREE.BoxGeometry(w, .07, .42), back = new THREE.BoxGeometry(w, .42, .05), end = new THREE.BoxGeometry(.07, .9, .55);
       CHURCH.rows.forEach(z => {
-        part(seat, wood, cx, .45, z, g); part(back, wood, cx, .78, z + .22, g);
+        part(seat, wood, cx, .45, z, g); part(back, wood, cx, .74, z + .22, g);
         [x0, x1].forEach(x => part(end, dark, x, .45, z + .02, g));
       });
     });
@@ -55,16 +56,14 @@
     mesh(new THREE.BoxGeometry(1.1, 1.1, .6), wood, 0, DY + .55, -3.5, g);
     mesh(new THREE.BoxGeometry(.8, .7, .02), band(2, 1), 0, DY + .55, -3.19, g);
     mesh(new THREE.BoxGeometry(1.2, .06, .7), dark, 0, DY + 1.12, -3.5, g).rotation.x = .25;
-    // the choir's chairs either side of the pulpit, and the keyboard on its stand
+    // the choir's chairs on the right of the pulpit, and the grand piano on the left
     const cSeat = new THREE.BoxGeometry(.45, .05, .45), cBack = new THREE.BoxGeometry(.45, .5, .04), cLeg = new THREE.BoxGeometry(.04, .45, .04);
-    [-1, 1].forEach(sd => [-4.7, -3.9].forEach(z => [2.2, 2.9, 3.6, 4.3].forEach(ax => {
-      const x = sd * ax, y = DY;
+    [-4.7, -3.9].forEach(z => [2.2, 2.9, 3.6, 4.3].forEach(ax => {
+      const x = ax, y = DY;
       part(cSeat, dark, x, y + .45, z, g); part(cBack, dark, x, y + .72, z - .21, g);
       [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]].forEach(([lx, lz]) => part(cLeg, dark, x + lx, y + .225, z + lz, g));
-    })));
-    mesh(new THREE.BoxGeometry(1.2, .1, .35), std({ color: 0x1a1a1c, roughness: .4 }), -5.4, DY + .85, -3.2, g);
-    mesh(new THREE.BoxGeometry(1.05, .02, .14), std({ color: 0xf2f2f0, roughness: .4 }), -5.4, DY + .91, -3.11, g);
-    [-1, 1].forEach(sd => { const leg = mesh(new THREE.BoxGeometry(.04, .95, .04), dark, -5.4 + sd * .3, DY + .42, -3.2, g); leg.rotation.z = sd * .5; });
+    }));
+    grandPiano(g, list, DY);
     // the communion table below the dais: a white cloth, the open Bible, and flowers either side
     mesh(new THREE.BoxGeometry(1.8, .8, .6), wood, 0, .4, -2.15, g);
     mesh(new THREE.BoxGeometry(1.84, .02, .64), cloth, 0, .81, -2.15, g);
@@ -76,6 +75,21 @@
       for (let k = 0; k < 7; k++) { const a = k / 7 * TAU; part(bud, k % 3 ? bloom : green, sd * .7 + Math.sin(a) * .1, 1.15 + (k % 2) * .08, -2.2 + Math.cos(a) * .1, g); }
     });
     bakeParts(g);
+    // the morning sun through the east windows: shafts of light slanting down across the pews, and the patches where they land
+    const sun = V(-.75, -.6, -.28), shaftM = new THREE.MeshBasicMaterial({ color: 0xffdca0, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+    const patchM = shaftM.clone();
+    onDaylight(d => { shaftM.opacity = .07 * d; patchM.opacity = .16 * d; shaftM.visible = patchM.visible = d > .05; });
+    [-3.4, -.6, 2.2, 5].forEach(wz => {
+      const top = [[1.8, -.48], [1.8, .48], [4.2, .48], [4.2, -.48]].map(([y, dz]) => V(7.44, y, wz + dz)), foot = top.map(p => p.clone().addScaledVector(sun, p.y / -sun.y - .002));
+      const pos = [], quad = (a, b, c, d) => pos.push(...[a, b, c, a, c, d].flatMap(p => [p.x, p.y, p.z]));
+      for (let k = 0; k < 4; k++) quad(top[k], top[(k + 1) % 4], foot[(k + 1) % 4], foot[k]);
+      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      flat(mesh(geo, shaftM, 0, 0, 0, g)).renderOrder = 2;
+      const pg = new THREE.BufferGeometry(), pp = []; [foot[0], foot[1], foot[2], foot[0], foot[2], foot[3]].forEach(p => pp.push(p.x, .012, p.z));
+      pg.setAttribute("position", new THREE.Float32BufferAttribute(pp, 3)); flat(mesh(pg, patchM, 0, 0, 0, g)).renderOrder = 1;
+    });
+    // the Sunday service: the congregation, the pastor, the choir and the pianist
+    updaters[n].push(churchService(g, list, DY));
     // ceiling fans turning under the beams, and lamps hanging between them
     const fans = [];
     [[-3.4, .9], [3.4, .9], [-3.4, 3.6], [3.4, 3.6]].forEach(([x, z]) => {
@@ -102,3 +116,23 @@
     const side = new THREE.DirectionalLight(0x9ab0e0, .3); side.position.set(-6, 4, -1); g.add(side);
   }
 
+  // a grand piano in black lacquer, its lid propped open: the case is a flat outline with the curved treble side, on three legs
+  function grandPiano(g, list, DY) {
+    const P = new THREE.Group(); P.position.set(PIANO.x, DY, PIANO.z); P.rotation.y = Math.PI / 2; g.add(P);   // the keyboard faces +z in P
+    const black = std({ color: 0x0a0a0c, roughness: .25 }), ivory = std({ color: 0xf2f0ea, roughness: .4 }), brass = M.brass;
+    const sh = new THREE.Shape(); sh.moveTo(-.7, 0); sh.lineTo(.7, 0); sh.lineTo(.7, .5); sh.quadraticCurveTo(.25, .75, .2, 1.25); sh.quadraticCurveTo(.15, 1.75, -.3, 1.8); sh.lineTo(-.7, 1.8); sh.lineTo(-.7, 0);
+    const slab = depth => { const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false, curveSegments: 3 }); geo.rotateX(-Math.PI / 2); return geo; };
+    const data = { tip: "The grand piano", toast: "The church's grand piano. It leads the hymns on Sunday, the choir practises round it in the week, and at Christmas it plays for the carols late into the night." };
+    clickable(list, mesh(slab(.3), black, 0, .62, 0, P), data);
+    const lid = new THREE.Group(); lid.position.set(-.7, .925, 0); lid.rotation.z = .45; P.add(lid);
+    mesh(slab(.02), black, .7, 0, 0, lid);
+    mesh(new THREE.CylinderGeometry(.01, .01, .7, 4), brass, .45, 1.2, -1, P).rotation.z = -.35;   // the lid's prop
+    mesh(new THREE.BoxGeometry(1.4, .1, .22), black, 0, .66, .1, P);   // the keybed
+    mesh(new THREE.BoxGeometry(1.24, .03, .16), ivory, 0, .725, .11, P);
+    for (let k = 0; k < 18; k++) if (k % 7 !== 2 && k % 7 !== 6) mesh(new THREE.BoxGeometry(.03, .03, .09), black, -.6 + k * .07, .745, .07, P).castShadow = false;
+    mesh(new THREE.BoxGeometry(.6, .28, .02), black, 0, 1.06, -.1, P).rotation.x = -.25;   // the music desk
+    [[-.6, -.12], [.6, -.12], [-.45, -1.6]].forEach(([x, z]) => mesh(new THREE.CylinderGeometry(.05, .04, .62, 6), black, x, .31, z, P));
+    mesh(new THREE.BoxGeometry(.18, .5, .06), black, 0, .3, -.15, P); mesh(new THREE.BoxGeometry(.16, .02, .08), brass, 0, .05, -.1, P);   // the lyre and its pedals
+    mesh(new THREE.BoxGeometry(.8, .06, .35), black, 0, .5, PIANO.bench, P);   // the bench
+    [[-.35, -.13], [.35, -.13], [-.35, .13], [.35, .13]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.04, .47, .04), black, x, .235, PIANO.bench + z, P));
+  }

@@ -96,8 +96,12 @@ function drillNow() {
   const show = DRILL_FORCE !== undefined ? DRILL_FORCE : !season ? null : at(C.dragon) ? "dragon" : at(C.lion) ? "lion" : null;
   return { season: season || !!show, newYear: ny, show };
 }
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow();
-setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); festNote(); }, 3e4);
+// the Sunday service in the Kachin Baptist church (CONFIG.service): on that weekday, in its hours, on the temple's clock
+const SERVICE_FORCE = forced("service");
+const serviceNow = () => SERVICE_FORCE !== null ? SERVICE_FORCE
+  : new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, weekday: "short" }).format(Date.now()) === CONFIG.service.day && inHours(CONFIG.service);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow();
+setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

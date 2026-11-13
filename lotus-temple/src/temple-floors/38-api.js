@@ -53,6 +53,7 @@
     // who dances on the festival stage: "solo" (the kinnara alone, a bigger crowd), "pair" (kinnara and kinnari), "to",
     // "twoTo" (the white and the yellow to), "toKinnara" (the two to with the kinnara alone, a bigger crowd), or null for none
     setDancers(show) { FOLK.dance = show; },
+    setService(on) { FOLK.service = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

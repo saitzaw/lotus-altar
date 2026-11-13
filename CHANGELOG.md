@@ -5,6 +5,13 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-14
 
+### Added
+- A Sunday morning service in the Kachin Baptist church, Sundays 9–11:30 AM ICT (`?service=1` shows it at any time): about sixty people in the pews, elders, young people and families, heads bowed while the pastor prays at the pulpit. The women wear the Kachin dress, a black jacket studded with silver bosses over a red woven skirt banded in black, yellow and green; the men come in dark suits and coats or dark patterned shirts, with a red woven shoulder bag beside them on the pew. The choir stands on the dais in red and black with their hymn books, and a pianist plays the new grand piano.
+- Shafts of morning sun slant through the church's east windows across the pews by day.
+
+### Changed
+- A grand piano in black lacquer stands on the left of the church's dais in place of the keyboard, and the choir's chairs are all on the right. The pew backs are a little lower.
+
 ### Fixed
 - The drummers, gong player and cymbal player on the festival ground's stage now leave when there is no show, instead of standing on the empty stage outside the dance hours.
 

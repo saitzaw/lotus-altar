@@ -63,6 +63,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: a Sunday service in the Kachin church
+
+- Added `churchService` (`src/temple-floors/05c-church-service.js`), from a description of a low-poly game shot of a Kachin
+  church service: the congregation (seeded, about 60 seated figures in one vertex-coloured mesh), the pastor at the pulpit, a
+  choir of nine standing on the dais's right, a pianist. Shown while `FOLK.service`, set each frame by `temple.setService` from
+  `serviceNow()` in `07-festivals-and-weather.js` (`CONFIG.service`: Sunday 9–11:30 ICT; `?service=1|0` forces it).
+- `churchHall` now has a grand piano (`grandPiano`, `PIANO`) in place of the keyboard, choir chairs on the right only,
+  slightly lower pew backs, and additive sunbeam prisms from the east windows that fade with daylight.
+- Checked headless (`?service=1`, day) from the back of the nave and from the dais: renders, no console errors.
+- To check: the Kachin dress is simplified (black jacket with silver bosses, red skirt with black/yellow/green bands); a
+  Kachin viewer might want the skirt's pattern or the silver closer to life. The toasts use no Jinghpaw words.
+
 ### 2026-11-14: the festival stage's musicians leave outside the show hours
 
 - The long drummers, the gong player and the cymbal player (`band` in `18-stage-ensemble.js`) were hidden only while the singer

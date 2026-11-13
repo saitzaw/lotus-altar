@@ -48,7 +48,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)
   const BAND = [], STAGE = [0, 0];   // the festival stage's ensemble: strokes waiting to be heard, [kind, loudness, pitches or drum, when it fell (performance.now(), s)]; the stage's centre in the world
-  const FOLK = { out: false, umbrellas: false, dance: null, drill: null };   // dance: who is on the festival stage, "solo", "pair", "to", "twoTo", "toKinnara" or null; drill: "dragon", "lion" or null on the kung fu ground
+  const FOLK = { out: false, umbrellas: false, dance: null, drill: null, service: false };   // service: the Sunday service is on in the Kachin church; dance: who is on the festival stage, "solo", "pair", "to", "twoTo", "toKinnara" or null; drill: "dragon", "lion" or null on the kung fu ground
   // the beat officer (set from the main script): `walking` while a visitor is on foot outside; `news` is the latest of spotted,
   // safe, lost or arrested, until the main script reads it (see beatOfficer)
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };

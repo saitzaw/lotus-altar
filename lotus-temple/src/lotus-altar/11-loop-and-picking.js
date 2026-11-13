@@ -71,6 +71,7 @@ function frame() {
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
   temple.setDancers(danceOn);
+  temple.setService(serviceOn);
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);
