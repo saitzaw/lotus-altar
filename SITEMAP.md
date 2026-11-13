@@ -70,7 +70,7 @@ Every indoor place except floor 1 is built **lazily** the first time it's visite
 | `shop` | 法物流通處 Temple shop | `shop` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `quarters` | 寮房 Monks' dining and rest room | `quarters` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `kyaung` | Shan monastery shrine hall (ၵျွင်းၵွင်းမူးၶမ်း) | `kyaungHall` | `temple-floors/04-kyaung-shrine-hall.js` | yes (Shan ledge) |
-| `kyaungLow` | the lower Shan monastery's hall for sermons and gatherings, no image (no Shan name yet; `nav: false`) | `lowerKyaungHall` | `temple-floors/04b-lower-kyaung-hall.js` | no |
+| `kyaungLow` | the lower Shan monastery's hall for sermons and gatherings, no image (ၵျွင်းလူင်ဝဵင်းၵဝ်; `nav: false`) | `lowerKyaungHall` | `temple-floors/04b-lower-kyaung-hall.js` | no |
 | `church` | Kachin Baptist church | `churchHall` | `temple-floors/05-church-interior.js` | no (church) |
 | `haw` | Haw Kham throne room | `hawHall` | `temple-floors/05b-haw-kham-throne-room.js` | no (throne, no image) |
 | `hawJustice`, `hawMonks`, `hawLibrary`, `hawDining`, `hawOpera` | Haw Kham hall of justice, hall of the monks; at the back the literature, dining and opera halls (no nav button) | `hawHall(g, n, kind)` | `temple-floors/05b-haw-kham-throne-room.js` | no |

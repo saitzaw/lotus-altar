@@ -21,7 +21,7 @@
     return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east, eastReach };   // `to`: the street corner the stair faces
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
-  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", kyaungLow: null, haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
+  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", kyaungLow: "ၵျွင်းလူင်ဝဵင်းၵဝ်", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
   // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, with an optional line of English beneath
   function shanBoardFace(shan, en = "") {
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 300;

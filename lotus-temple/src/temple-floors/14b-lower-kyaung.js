@@ -8,7 +8,7 @@
      The doors from the porch lead to its hall (place `kyaungLow`), a hall for gatherings and sermons, with no image ---------- */
   function lowerKyaung(H) {
     const list = picks.pagoda, s = lowerKyaungSpot(), { teak, teakDark, roofM, white, frameW, pane, hip } = shanCarpentry();
-    const name = SHAN_NAMES.kyaungLow;   // its Shan name, once the owner gives it; until then no name board
+    const name = SHAN_NAMES.kyaungLow;   // its Shan name, from the owner, lettered on the board over the middle of its front
     const B = new THREE.Group(); B.position.set(s.x, s.y, s.z); B.rotation.y = Math.PI; H.add(B);   // its front (local +z) faces down the hill, like the stair
     const L = s.L, D = s.D, hd = D / 2, FH = 2.6, WH = 3.0, yW = FH + WH, XA = 7;   // floor and wall heights; the hall runs x -L/2…XA, the wing XA…L/2
     const SX = 9.5, SWd = 2.4, n = 12, tread = .36, rise = FH / n, run = n * tread;   // the wing's stair: its centre, width and steps

@@ -37,6 +37,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Have a Shan speaker check the lower monastery's name ၵျွင်းလူင်ဝဵင်းၵဝ် on the stupa hill.
 - Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
 - Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the to dance) and the romanisation "ka to" in its toast.
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
@@ -68,8 +69,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   pillars, mats and the monks' raised dais (three seats with fans, a gilded sermon seat). All the monastery's windows, outside and
   in, are square. `nav: false`, so it is reached only on foot; `indoorBlocked` has its own case (`LOW_HALL`); `EXIT_SPOT.kyaungLow`
   finds the monastery by `key`.
-- Waiting on the owner: the monastery's Shan name. Set `SHAN_NAMES.kyaungLow` (and `shn` in `CONFIG.places.kyaungLow`) and its name
-  board appears on the middle clerestory. Log the wording here for a native speaker to check.
+- Its Shan name, from the owner: ၵျွင်းလူင်ဝဵင်းၵဝ် (`SHAN_NAMES.kyaungLow`, `shn` in `CONFIG.places.kyaungLow`), on a board on
+  the middle clerestory's front. We read it as "the great monastery of the old town" (ၵျွင်း monastery, လူင် great, ဝဵင်း town,
+  ၵဝ် old); that gloss is ours and is not shown in the site. Have a Shan speaker check the spelling.
 - Checked headless: renders from the street, the hill stair and the porch; walk heights on the stair (3.75 → 6.35 m) and porch;
   entering the hall and the hall itself. Not yet seen by eye in a browser.
 
