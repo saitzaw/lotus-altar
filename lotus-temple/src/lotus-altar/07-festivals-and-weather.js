@@ -100,8 +100,11 @@ function drillNow() {
 const SERVICE_FORCE = forced("service");
 const serviceNow = () => SERVICE_FORCE !== null ? SERVICE_FORCE
   : new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, weekday: "short" }).format(Date.now()) === CONFIG.service.day && inHours(CONFIG.service);
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow();
-setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); festNote(); }, 3e4);
+// the morning market (CONFIG.morningMarket): villagers selling on the ground at the seven-day market, early in the morning
+const MORNING_FORCE = forced("morningMarket");
+const morningNow = () => MORNING_FORCE !== null ? MORNING_FORCE : inHours(CONFIG.morningMarket);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow();
+setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

@@ -60,6 +60,9 @@ const CONFIG = {
   // townsfolk: ten people in the seven-day market and five on the roads, out from `from` until they go home at `until` o'clock on the temple's clock;
   // they put up umbrellas once the rain is heavier than `umbrella` (0–1). ?townsfolk=1 or ?townsfolk=0 forces them out or in
   townsfolk: { from: 18, until: 22, umbrella: .3 },
+  // the morning market: villagers sit on the ground along a lane of red earth at the seven-day market with greens, beans, chillies,
+  // limes and avocados from their fields, from `from` until `until` o'clock on the temple's clock. ?morningMarket=1 or =0 forces it
+  morningMarket: { from: 5, until: 9 },
   guardHats: .02,   // the palace guards put on the straw hats from their backs once the rain is heavier than this (0–1)
   // the Sunday morning service in the Kachin Baptist church: the pews full, the pastor praying at the pulpit, the choir and the pianist
   // on the dais, on `day` from `from` until `until` o'clock on the temple's clock. ?service=1 or ?service=0 forces it on or off

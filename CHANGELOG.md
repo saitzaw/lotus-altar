@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-14
 
 ### Added
+- A morning market at the seven-day market, 5–9 AM ICT (`?morningMarket=1` shows it at any time): along a lane of red earth behind the stalls, village women sit on the ground in two rows with their goods on plastic sheets, banana leaves and sacks: greens, spring onions, bean sprouts in bags, avocados, limes, baskets of chillies, sacks of beans and rice, ginger and lemongrass. They wear cardigans and checked shirts over the longyi, towel turbans or wide straw hats and thanaka; a few sit on plastic stools under big sun umbrellas, shoppers with woven bags walk between them, and hurricane lamps burn until it is light.
 - A Sunday morning service in the Kachin Baptist church, Sundays 9–11:30 AM ICT (`?service=1` shows it at any time): about sixty people in the pews, elders, young people and families, heads bowed while the pastor prays at the pulpit. The women wear the Kachin dress, a black jacket studded with silver bosses over a red woven skirt banded in black, yellow and green; the men come in dark suits and coats or dark patterned shirts, with a red woven shoulder bag beside them on the pew. The choir stands on the dais in red and black with their hymn books, and a pianist plays the new grand piano.
 - Shafts of morning sun slant through the church's east windows across the pews by day.
 

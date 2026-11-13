@@ -73,6 +73,7 @@ function frame() {
   temple.setGuardHats(wx.rain > CONFIG.guardHats);
   temple.setDancers(danceOn);
   temple.setService(serviceOn);
+  temple.setMorningMarket(morningOn);
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);

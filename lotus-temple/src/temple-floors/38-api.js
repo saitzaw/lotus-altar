@@ -56,6 +56,8 @@
     // "twoTo" (the white and the yellow to), "toKinnara" (the two to with the kinnara alone, a bigger crowd), or null for none
     setDancers(show) { FOLK.dance = show; },
     setService(on) { FOLK.service = on; },
+    // the morning market's sellers on the ground at the seven-day market, 5–9 am
+    setMorningMarket(on) { FOLK.morning = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

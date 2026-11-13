@@ -95,6 +95,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Front street | z ≈ 54, x −100…145 | `streetFrontage` | `20-front-street.js` |
 | Back streets | behind the front street | `backStreets` | `28-kachin-church-and-back-streets.js`, `21-back-street-houses.js` |
 | Seven-day market | x 43…104, z −14…47.4 | `sevenDayMarket` | `12-market.js` |
+| Morning market (5–9 AM ICT), in the seven-day market | lane x 76.3…79.7, z −12…14 | `morningMarket` | `12b-morning-market.js` |
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
 | Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (its own weathered teak, rust, inlay and fretwork, and `gableB`; `pyatthat`, `hip` from `13b-shan-carpentry.js`) |

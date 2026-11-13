@@ -187,6 +187,7 @@
     trainingGround(21, -1, 16, 12);
     shanTown(g);
     sevenDayMarket(g);
+    morningMarket(g);   // villagers selling on the ground there, 5–9 am
     shanStupaHill(g);
     shanMonasteries(g);
     hawKham(g, 16, 204, Math.PI);   // the saopha's palace, east of the stupa hill's foot, its back and the council's compound toward the town

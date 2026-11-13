@@ -63,6 +63,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: a morning market at the seven-day market
+
+- Added `morningMarket` (`src/temple-floors/12b-morning-market.js`, called after `sevenDayMarket`), from the owner's four photos of
+  Northern Shan morning markets: about 22 sellers seated on the ground (some on stools) in two rows either side of a red-earth lane
+  at x 78, z −10.5…12.5 (the open ground between the opera's benches and the gambling hall), their goods on sheets and leaves, seven
+  standing shoppers and hurricane-lamp glows. Two seller meshes plus one shopper mesh, vertex-coloured, shown while `FOLK.morning`,
+  set each frame by `temple.setMorningMarket` from `morningNow()` (`CONFIG.morningMarket`: 5–9 ICT; `?morningMarket=1|0`). The
+  lane itself stays all day. No colliders: the sellers aren't there all day, so a walker can pass through them.
+- Its colours are written as on a photo and raised to the power 2.2 (`solid`) before drawing, since lowPoly's vertex colours
+  otherwise render pale.
+
 ### 2026-11-14: the palace guards put their hats on in the rain
 
 - `palaceGuards` (`src/temple-floors/15-haw-kham.js`) now bakes a second straw hat on each guard's head, in its own material

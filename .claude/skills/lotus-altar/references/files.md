@@ -68,6 +68,7 @@
 | `10-town.js` | Shan town road and houses, river crossing | `TOWN` `LANES` `streetLight` `shanHouse` `shanTown` `riverCrossing` |
 | `11-waterfall-and-stream.js` | waterfall, paddy fields | `FALLS` `waterfall` `paddyFields` |
 | `12-market.js` | seven-day market | `sevenDayMarket` |
+| `12b-morning-market.js` | the morning market, 5–9 AM: sellers on the ground along a red-earth lane behind the stalls, shoppers (shown while `FOLK.morning`) | `morningMarket` |
 | `13-stupa-hill.js` | stupa hill and **terrain** (height/walkable ground) | `HILL` `groundAt` `walkAt` `terrainAt` `MON` `KINNARA` `AUDIENCE` `shanStupaHill` |
 | `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials, the carved gable, the pyatthat and a hipped roof, shared by the monasteries and the Haw Kham (made once) | `shanCarpentry` `hip` |
 | `14-shan-monasteries.js` | Shan teak monastery on the hill; its window layout, shared with the hall inside | `shanMonasteries` `kyaungWindows` `kwOval` `kwArch` |
