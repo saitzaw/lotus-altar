@@ -45,7 +45,7 @@
       return false;
     },
     setDaylight(d) { daylight = d; dayParts.forEach(fn => fn(d)); },
-    // Halloween night: `on` lets the ghost out, `out` (0–1) puts out the houses' and huts' lights; `ghost` is where it is, while out
+    // Halloween night: `on` lets the ghost out, `out` (0–1) puts out the houses' lights; `ghost` is where it is, while out
     setHalloween({ on, out }) { FEST.on = on; if (out !== FEST.out) { FEST.out = out; dayParts.forEach(fn => fn(daylight)); } },
     get ghost() { return FEST.ghost || null; },
     // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains

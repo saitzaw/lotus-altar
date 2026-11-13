@@ -145,7 +145,7 @@
   // the third monastery (wihanKyaung), on the same lower terrace past the second one's east end, squared to the terrace's curve:
   // a its angle round the hill from the stair (radians, toward the east stair), r the radius of its centre, L its length along
   // the terrace, D its depth, run its front stair. Placed by hand: 5 m from the second monastery, 3 m below the festival ground's
-  // retaining wall, 4 m from the east stair's wall, its stair's foot on the terrace footpath (hillHuts runs the path on to it)
+  // retaining wall, 4 m from the east stair's wall, its stair's foot on the terrace footpath (hillFootpath runs the path on to it)
   const WIHAN = { a: .908, r: 58, L: 26, D: 11, SX: 6, run: 3.6 };
   function wihanSpot() {
     const { a, r } = WIHAN, x = Math.sin(a) * r, z = -Math.cos(a) * r, ry = Math.PI - a;

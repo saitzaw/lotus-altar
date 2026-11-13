@@ -13,7 +13,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 - Site deploys with Vercel from `lotus-temple/` (build: `bash build-dist.sh`, output `dist/`), automatically on every push
   to `main` (the Vercel check shows on the commit's GitHub status).
-- Halloween festival is active Oct 27 – Nov 1: houses and village huts go dark at 9 PM ICT until 5 AM, a friendly ghost
+- Halloween festival is active Oct 27 – Nov 1: houses go dark at 9 PM ICT until 5 AM, a friendly ghost
   walks the roads, first-person walkers carry a torch. Force with `?halloween=1` / `?halloween=0`.
 - Weather outside follows northern Thai seasons, picked per 3-hour spell from the date (`CONFIG.weather`, no live API):
   clear, cloudy, rain (streaks, thunder), mist, smoky haze. Force with `?weather=rain|clear|cloudy|mist|haze`.
@@ -62,6 +62,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-13: the huts round the stupa hill's foot taken down
+
+- The ten bamboo huts on the stupa hill's lowest terrace are gone. Their footpath, village lamps and wires stay;
+  `hillHuts` is now `hillFootpath`, and `22-village-lamps-and-huts.js` is `22-village-lamps.js`.
+- With no huts left anywhere, `villageHut`, its mat and thatch materials, `HUT_TIP` and the huts' oil lamps (`hutLamp`,
+  `hutGlows`, put out on Halloween night) are removed. The field hut by the paddies (`11-waterfall-and-stream.js`) is
+  separate and stays. Checked in a headless render from beside the third monastery: no huts, no console errors.
 
 ### 2026-11-13: five-language signs for the blood bank and the emergency room
 

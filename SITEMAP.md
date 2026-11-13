@@ -106,7 +106,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Public library (exterior), across the market lane from the palace's east wall, facing it, beside the bamboo grove | (60, 197), lawn x 43.8…69, z 178.5…213 | `townLibrary` | `15c-town-library.js` |
 | Bank (exterior), south of the library across the market lane from the palace's east wall, facing it | (60, 235), forecourt x 43.5…67.5, z 215…255 | `townBank` | `15d-town-bank.js` |
 | Festival ground, stage, dancers, ensemble, audience | festival ground (`STAGE`) | `festivalGround`, `kinnaraDancers`, `toDancers`, `stageSinger`, `festivalAudience` | `16-` … `19-*.js` |
-| Village lamps, hill huts, hospital lane | town edges; lane x −98.5…−95.5, z 5…47.6 | `hillHuts`, `hospitalLane`, `villageLamp` | `22-village-lamps-and-huts.js` |
+| Village lamps, hill-foot footpath, hospital lane | town edges; lane x −98.5…−95.5, z 5…47.6 | `hillFootpath`, `hospitalLane`, `villageLamp` | `22-village-lamps.js` |
 | General hospital, road houses | main block x −119…−85, z −19…−5; wing x −94…−85.5, z −5…12 (`HOSP`) | `hospital`, `hospitalMonument`, `bloodBank`, `nursingCollege`, `hospitalRoadHouses` | `26-hospital-football-school.js` |
 | Football ground | x −182…−131, z 4…68 | `footballGround` | `26-hospital-football-school.js` |
 | High school | x 46–98, z 111–152 | `highSchool` | `26-hospital-football-school.js` |

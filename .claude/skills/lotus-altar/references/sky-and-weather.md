@@ -19,7 +19,7 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 
 ## Halloween
 
-Runs Oct 27 – Nov 1 (`CONFIG.halloween`). Houses and village huts go dark at 9 PM ICT until 5 AM, a friendly ghost walks
+Runs Oct 27 – Nov 1 (`CONFIG.halloween`). Houses go dark at 9 PM ICT until 5 AM, a friendly ghost walks
 the roads. `?halloween=1` / `?halloween=0` force it.
 
 ## The torch

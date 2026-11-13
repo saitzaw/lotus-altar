@@ -84,7 +84,7 @@
 | `19-dance-audience.js` | audience | `festivalAudience` |
 | `20-front-street.js` | houses along the front street | `streetFrontage` |
 | `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |
-| `22-village-lamps-and-huts.js` | pole lamps, wires, bamboo huts, the hospital lane | `villageLamp` `villageHut` `hospitalLane` |
+| `22-village-lamps.js` | pole lamps, wires, the hill-foot footpath, the hospital lane | `villageLamp` `hillFootpath` `hospitalLane` |
 | `23-halloween-ghost.js` | Halloween ghost | `halloweenGhost` |
 | `24-townsfolk.js` | evening townsfolk | `townsfolk` |
 | `25-beat-officer.js` | beat officer (kept commented out at the call site) | `SAFE` `beatOfficer` |

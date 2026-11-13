@@ -194,7 +194,7 @@
     townBank(g);   // the bank, south of the library on the same side of the lane, facing the palace too
     streetFrontage(g);
     backStreets(g);
-    hillHuts(g);
+    hillFootpath(g);
     hospitalLane(g);
     hospitalRoadHouses(g);
     hospital(g);

@@ -43,7 +43,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   let daylight = 0;
   const dayParts = [];
   const onDaylight = fn => { dayParts.push(fn); fn(daylight); };
-  // Halloween night (set from the main script): `out` 0–1 as the houses and village huts put their lights out at 9 pm,
+  // Halloween night (set from the main script): `out` 0–1 as the houses put their lights out at 9 pm,
   // `on` while the friendly ghost walks the roads; the pole lights it passes flicker (see halloweenGhost)
   const FEST = { on: false, out: 0, eye: null };
   // townsfolk (set from the main script): `out` from 6 pm to 10 pm, `umbrellas` up while it rains (see townsfolk)

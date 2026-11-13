@@ -53,7 +53,7 @@ const CONFIG = {
   lanterns: { color: 0xb0180c, glow: 0xd0200a, glowStrength: .55 },
   // where the temple stands, for the real sun and moon; times are shown in Indochina Time (ICT, UTC+7)
   sky: { lat: 13.75, lon: 100.5, tz: "Asia/Bangkok", place: "Bangkok" },
-  // the Halloween festival: on these nights ([month, day] on the temple's clock) the houses and village huts put their lights out
+  // the Halloween festival: on these nights ([month, day] on the temple's clock) the houses put their lights out
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off
   halloween: { from: [10, 27], to: [11, 1], outHour: 21, untilHour: 5 },
