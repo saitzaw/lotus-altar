@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-14
+
+### Fixed
+- The drummers, gong player and cymbal player on the festival ground's stage now leave when there is no show, instead of standing on the empty stage outside the dance hours.
+
 ## 2026-11-13
 
 ### Added

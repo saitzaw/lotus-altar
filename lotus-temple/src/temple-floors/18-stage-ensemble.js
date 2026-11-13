@@ -277,8 +277,8 @@
       const alone = show === "solo" || show === "toKinnara";   // the kinnara dancing alone: on his own, or between the two to
       pair[0].D.visible = alone || show === "pair"; pair[1].D.visible = show === "pair";   // the band plays for the to too
       // the singer stands alone between the dances, with no band and no sound: the players step off with their drums and cymbals,
-      // leaving the gongs in their case, and no stroke is played
-      const off = show === "singer"; band.forEach(b => b.D.visible = !off);
+      // leaving the gongs in their case, and no stroke is played; out of the show hours the stage is empty but for the gong case
+      const off = !show || show === "singer"; band.forEach(b => b.D.visible = !off);
       if (!show || off) return;
       const d = dt * motion, q0 = t / BAR - .5, c0 = hn + ht / BAR;
       t += d;

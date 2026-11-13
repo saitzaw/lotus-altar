@@ -63,6 +63,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the festival stage's musicians leave outside the show hours
+
+- The long drummers, the gong player and the cymbal player (`band` in `18-stage-ensemble.js`) were hidden only while the singer
+  was on, so they stood on the empty stage whenever no dance was scheduled. They now go whenever `FOLK.dance` is null too; the gong
+  case stays. The lion-dance crew on the kung fu ground already hid outside practice.
+
 ### 2026-11-13: the hill monastery rebuilt after Shwe Yan Pyay
 
 - Owner sent three more Shwe Yan Pyay photos and chose all four of: windows and walls, roofs and gables, wood colour, stair and
