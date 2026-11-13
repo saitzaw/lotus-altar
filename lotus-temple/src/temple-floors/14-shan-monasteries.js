@@ -1,5 +1,5 @@
   /* ---------- Shan teak monasteries (kyaung) beside the stupa hill, after Shwe Yan Pyay: a hall raised on rows of teak posts,
-     dark plank walls with oval and round-topped arched windows in carved teak frames, the doors standing open, a verandah railing, clustered gable roofs of rusty corrugated iron with carved
+     dark plank walls with oval and round-topped arched windows in carved teak frames, the doors closed, a verandah railing, clustered gable roofs of rusty corrugated iron with carved
      fretwork gable boards, a many-tiered pyatthat tower over the shrine room, and a white masonry stair guarded by naga ---------- */
   function shanMonasteries(g) {
     const list = picks.pagoda;
@@ -91,8 +91,8 @@
       G.add(post, foot); post.castShadow = true;
       mesh(new THREE.BoxGeometry(W, .3, D), darkM, 0, FH, 0, G);
       // the hall: plank walls in a grid of moulded panels, cut, as at Shwe Yan Pyay, with tall round-topped arched windows (some open,
-      // some with their panelled shutters closed), a carved fan over each, and an oval window either side of the door; the doorway
-      // left open, so you see into the dim shrine room: its floor, red pillars and the gilded image at the back
+      // some with their panelled shutters closed), a carved fan over each, and an oval window either side of the door; the door
+      // closed; inside, the dim shrine room: its floor, red pillars and the gilded image at the back
       const WT = .16, ORX = .48, ORY = .75, OY = 1.6, AW = .38, AH = 2.0, AB = .55;   // WT: the walls' thickness; ORX, ORY, OY: an oval's half sizes and centre above the floor; AW, AH, AB: an arch's half width, height and sill
       const P2 = (a, b) => new THREE.Vector2(a, b);
       const ovalPts = (rx, ry, cx = 0, cy = 0) => { const p = []; for (let i = 0; i < 32; i++) { const a = i / 32 * TAU; p.push(P2(cx + rx * Math.sin(a), cy + ry * Math.cos(a))); } return p; };
@@ -135,7 +135,10 @@
       const face = (len, wins, door, wx, wz, ry) => {   // one wall's outer face: its windows, and the mouldings that frame them in panels
         const o = new THREE.Group(); o.position.set(wx, FH + .15, wz); o.rotation.y = ry; G.add(o);
         wins.forEach(w => win(o, w));
-        [.1, .4, WH - .12].forEach(y => { part(railG, darkM, 0, y, .025, o).scale.x = len; });
+        [.1, .4, WH - .12].forEach(y => {   // the low rails stop either side of the doorway
+          if (door && y < 2.4) { const L = len / 2 - .8; [-1, 1].forEach(sd => { part(railG, darkM, sd * (.8 + L / 2), y, .025, o).scale.x = L; }); }
+          else part(railG, darkM, 0, y, .025, o).scale.x = len;
+        });
         const stiles = [-len / 2 + .06, len / 2 - .06, ...(door ? [-.95, .95] : [])];
         for (let i = 1; i < wins.length; i++) if (wins[i].x - wins[i - 1].x < 2) stiles.push((wins[i].x + wins[i - 1].x) / 2);
         stiles.forEach(x => { part(stileG, darkM, x, WH / 2, .025, o).scale.y = WH - .1; });
@@ -164,12 +167,12 @@
         mesh(new THREE.ConeGeometry(.04, .14, 8), M.gold, 0, iy + 2.1, bz + .63, G);
         [-1, 1].forEach(sd => { const a = mesh(new THREE.CylinderGeometry(.06, .07, .55, 8), M.gold, sd * .3, iy + 1.25, bz + .72, G); a.rotation.z = sd * .25; a.rotation.x = -.3; });
       }
-      // the doorway into the shrine hall, its two teak leaves swung open inward, in a plain gilded frame
+      // the doorway into the shrine hall, its two panelled teak leaves closed, in a plain gilded frame
       const doorParts = [];
       const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.4), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
       door.position.set(0, FH + 1.36, ID / 2 + .02); G.add(door); doorParts.push(door);   // an unseen sheet across the doorway, to click
       [-1, 1].forEach(sd => {
-        const h = new THREE.Group(); h.position.set(sd * .7, FH + 1.36, ID / 2 - WT - .03); h.rotation.y = -sd * 1.95; G.add(h);
+        const h = new THREE.Group(); h.position.set(sd * .7, FH + 1.36, ID / 2 - .06); G.add(h);
         doorParts.push(mesh(new THREE.BoxGeometry(.7, 2.38, .06), teakDark, -sd * .35, 0, 0, h));
         [-.6, .6].forEach(py => doorParts.push(mesh(new THREE.BoxGeometry(.5, .8, .02), frameM, -sd * .35, py, .035, h)));   // raised panels
       });
