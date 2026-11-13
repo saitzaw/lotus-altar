@@ -44,7 +44,6 @@
     [-1, 1].forEach(sd => [-2.6, .7, 4.1].forEach(z => {
       const o = new THREE.Group(); o.position.set(sd * 7.46, 0, z); o.rotation.y = -sd * Math.PI / 2; g.add(o);
       mesh(new THREE.BoxGeometry(1.3, 2.8, .06), gold, 0, 3, .01, o); mesh(new THREE.PlaneGeometry(1.06, 2.56), pane, 0, 3, .05, o);
-      const p = mesh(new THREE.ConeGeometry(.85, .7, 4), gold, 0, 4.75, .02, o); p.rotation.y = Math.PI / 4; p.scale.z = .08;
     }));
     // the pillars: red lacquer, gold bands, gilt lotus capitals, white footings
     const footG = new THREE.BoxGeometry(.66, .22, .66), shaftG = new THREE.CylinderGeometry(.24, .26, HH - .2, 16), bandG = new THREE.CylinderGeometry(.275, .275, .16, 16), capG = new THREE.CylinderGeometry(.36, .25, .4, 16);
@@ -281,14 +280,13 @@
         c.fillStyle = "#8a6a3a"; c.fillRect(0, s2 * .86, s2, s2 * .14);
       });
       mesh(new THREE.PlaneGeometry(6.6, 3.8), std({ map: scene, roughness: .9 }), 0, 2.75, -5.46, Op);
-      // the proscenium: gilt posts and a gilt beam with a pointed crest, red curtains gathered to either side
+      // the proscenium: gilt posts and a gilt beam, red curtains gathered to either side
       [-1, 1].forEach(sd => {
         mesh(new THREE.BoxGeometry(.3, 4.2, .3), gold, sd * 3.35, 2.9, SF - .1, Op);
         const cur = mesh(new THREE.CylinderGeometry(.35, .55, 3.6, 12, 1, false, 0, Math.PI), std({ color: 0x8a0e10, roughness: .8, side: THREE.DoubleSide }), sd * 2.95, 2.6, SF - .3, Op); cur.rotation.y = sd > 0 ? Math.PI / 2 : -Math.PI / 2;
       });
       mesh(new THREE.BoxGeometry(7, .5, .3), gold, 0, 5.05, SF - .1, Op);
       mesh(new THREE.BoxGeometry(6.6, .8, .06), std({ color: 0x8a0e10, roughness: .8 }), 0, 4.45, SF - .2, Op);   // the valance
-      const crest = mesh(new THREE.ConeGeometry(1.3, .9, 4), gold, 0, 5.75, SF - .1, Op); crest.rotation.y = Math.PI / 4; crest.scale.z = .1;
       // footlights: little oil lamps along the stage's front edge, glowing
       const flameM = std({ color: 0xffd890, emissive: 0xffb040, emissiveIntensity: 1 });
       for (let x = -3; x <= 3.01; x += .75) { mesh(new THREE.CylinderGeometry(.06, .04, .06, 10), gold, x, .83, SF + .1, Op); mesh(new THREE.SphereGeometry(.035, 8, 6), flameM, x, .9, SF + .1, Op).castShadow = false; }

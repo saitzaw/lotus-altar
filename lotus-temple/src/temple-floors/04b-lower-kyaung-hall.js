@@ -58,7 +58,6 @@
     [[1.5, .3, 1.3, .15, red], [1.6, .05, 1.4, .32, gold], [1.3, .35, 1.1, .52, red], [1.4, .05, 1.2, .72, gold]].forEach(([w, h, d, y, m]) => dais.push(mesh(new THREE.BoxGeometry(w, h, d), m, 0, y, 0, seat)));
     dais.push(mesh(new THREE.BoxGeometry(1.3, 1.1, .12), red, 0, 1.3, -.55, seat));
     dais.push(mesh(new THREE.BoxGeometry(1.4, .06, .16), gold, 0, 1.86, -.55, seat));
-    const crest = mesh(new THREE.ConeGeometry(.6, .5, 4), gold, 0, 2.1, -.55, seat); crest.rotation.y = Math.PI / 4; crest.scale.z = .12; dais.push(crest);
     dais.push(mesh(new THREE.CylinderGeometry(.36, .38, .14, 16), cushion, 0, .82, .05, seat));
     dais.forEach(m => clickable(list, m, { tip: "The monks' dais", toast: "The monks sit on the raised dais, above the lay people on the mats below. From the sermon seat in the middle a monk gives the talk on the Dhamma and the precepts on the holy days." }));
     bakeParts(g);

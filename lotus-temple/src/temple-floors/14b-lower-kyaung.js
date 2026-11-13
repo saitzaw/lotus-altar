@@ -74,7 +74,6 @@
     mesh(new THREE.BoxGeometry(.02, 2.2, .02), M.gold, XA + .1, FH + 1.15, DZ, B);
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.45, .1), M.gold, XA + .06, FH + 1.22, DZ + sd * .75, B));
     mesh(new THREE.BoxGeometry(.12, .1, 1.6), M.gold, XA + .06, FH + 2.45, DZ, B);
-    const ped = mesh(new THREE.ConeGeometry(.7, .45, 4), M.gold, XA + .06, FH + 2.72, DZ, B);   // low enough to clear the porch roof ped.rotation.set(0, Math.PI / 4, 0); ped.scale.x = .12;
     // the porch railing: a balustrade along the wing's end and its front, open where the stair arrives
     const balG = new THREE.BoxGeometry(.05, .75, .05);
     const rail = (x0, z0, x1, z1) => {

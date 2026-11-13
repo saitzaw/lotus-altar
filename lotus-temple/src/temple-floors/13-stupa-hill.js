@@ -304,7 +304,6 @@
       const face = shanBoardFace(SHAN_NAMES.stupa), BW = 3.4, BH = BW * 300 / 1024, by = GATE_H + .1 + BH / 2;
       mesh(new THREE.BoxGeometry(SW + 1.8 + .9, .2, .3), M.gold, 0, GATE_H + .1, -rBase - .2, H);
       clickable(list, mesh(new THREE.BoxGeometry(BW, BH, .1), [M.lacquer, M.lacquer, M.lacquer, M.lacquer, face, face], 0, by, -rBase - .2, H), { tip: `${SHAN_NAMES.stupa} · the main stupa`, toast: `${SHAN_NAMES.stupa}, the main stupa of the hill: climb the stair past the monastery ${SHAN_NAMES.kyaung} to the white-and-gold stupa among the Shan stupas at the top.` });
-      mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
     }
     // the main stupa: a stepped white terrace, a white bell and a gilded spire with its hti
     const gold = M.gold, MS = new THREE.Group(); MS.position.set(0, top, 0); H.add(MS);
@@ -315,7 +314,7 @@
     [[11, .6], [9, 1.2], [7.4, 1.8]].forEach(([w, yy]) => mesh(new THREE.BoxGeometry(w, .6, w), whiteWash, 0, yy - .3, 0, MS));
     for (let i = 0; i < 6; i++) { const y1 = (i + 1) * .3; mesh(new THREE.BoxGeometry(2.4, y1, .52), whiteWash, 0, y1 / 2, -6.6 + i * .5, MS); }
     mesh(new THREE.BoxGeometry(5.6, 3.2, 5.6), whiteWash, 0, 3.4, 0, MS);
-    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.8, .9, 4), gold, Math.sin(a) * 2.85, 4.55, Math.cos(a) * 2.85, MS); pd.rotation.y = a; pd.scale.z = .15; });
+    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; });
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.ConeGeometry(.3, 2.0, 8), gold, a * 2.55, 6.0, b * 2.55, MS));
     MS.add(new THREE.Mesh(lath([[0, 5], [2.4, 5], [2.3, 5.8], [1.8, 7.0], [1.4, 7.6], [0, 7.6]], 32), whiteWash));
     const rings = []; for (let i = 0; i <= 16; i++) rings.push([1.3 - i * .055 + (i % 2 ? .12 : 0), 7.6 + i * .2]);

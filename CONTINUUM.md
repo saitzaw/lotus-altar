@@ -57,11 +57,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
-### 2026-11-13: no pediment over the upper monastery's door
+### 2026-11-13: no gilt cone pediments over doors and windows
 
 - The gilt pointed pediment over the upper monastery's doorway (`14-shan-monasteries.js`) is gone: it rendered skewed (a
   4-sided cone squashed before its 45° turn), and Shan monasteries don't put one there. The door keeps its plain gilded frame.
-  The Haw Kham throne room (`05b-haw-kham-throne-room.js`) still has the same cone pediment.
+- Then, at the owner's word, every other gilt cone pediment or crest built the same skewed way went too: over the Haw Kham's
+  three front doors (`15-haw-kham.js`), its throne room's side windows and stage proscenium (`05b`), the kyaung hall's way-out
+  door (`04`), the preacher's seat in the lower kyaung hall (`04b`), the lower monastery's side door (`14b`), and on the stupa
+  hill the name board over the entrance and the main stupa's four niches (`13-stupa-hill.js`). Kept: the small stone pediments
+  over the Kakku-style stupas' niches, which are built correctly and belong to those stupas.
 
 ### 2026-11-13: open oval windows and an open door on the upper monastery
 

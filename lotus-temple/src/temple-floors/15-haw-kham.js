@@ -208,19 +208,17 @@
       // tall windows in gilt frames along the wall, lamplit at night
       const win = (wx, wz, r) => { const o = new THREE.Group(); o.position.set(wx, PH + 1.55, wz); o.rotation.y = r; F.add(o); mesh(new THREE.BoxGeometry(1.1, 2, .06), M.trim, 0, 0, .02, o); mesh(new THREE.PlaneGeometry(.86, 1.76), pane, 0, 0, .06, o); };
       for (let i = 0; i < 12; i++) { const wx = -HX + (i + .5) * 2 * HX / 12; if (Math.abs(wx) > 1.6 && Math.abs(Math.abs(wx) - SDX) > .5) win(wx, HZ1, 0); }
-      // the centre doors, gilt-framed under a pointed gilt pediment, and the name board above them
+      // the centre doors, gilt-framed, and the name board above them
       const door = mesh(new THREE.BoxGeometry(1.8, 2.8, .1), red, 0, PH + 1.4, HZ1 + .03, F);
       [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.14, 2.9, .14), M.gold, sd * .95, PH + 1.45, HZ1 + .05, F));
       mesh(new THREE.BoxGeometry(2.1, .14, .14), M.gold, 0, PH + 2.85, HZ1 + .05, F);
       [-.45, .45].forEach(dx => mesh(new THREE.BoxGeometry(.6, 2.3, .02), M.trim, dx, PH + 1.4, HZ1 + .09, F));
-      const ped = mesh(new THREE.ConeGeometry(1.1, .8, 4), M.gold, 0, PH + 3.35, HZ1 + .05, F); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
       doors.push([door, ...halls[1], F, 0]);
       // the lesser doors either side
       [[-SDX, halls[0]], [SDX, halls[2]]].forEach(([dx, hall]) => {
         const d = mesh(new THREE.BoxGeometry(1.4, 2.5, .1), red, dx, PH + 1.25, HZ1 + .03, F);
         [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.12, 2.6, .14), M.gold, dx + sd * .74, PH + 1.3, HZ1 + .05, F));
         mesh(new THREE.BoxGeometry(1.6, .12, .14), M.gold, dx, PH + 2.56, HZ1 + .05, F);
-        const pd = mesh(new THREE.ConeGeometry(.85, .6, 4), M.gold, dx, PH + 2.92, HZ1 + .05, F); pd.rotation.y = Math.PI / 4; pd.scale.z = .12;
         doors.push([d, ...hall, F, dx]);
       });
       const BW = 3.2, BH = BW * 300 / 1024, board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, shanBoardFace(SHAN_NAMES.haw, "Haw Kham"), teakDark], 0, PH + 3.85 + BH / 2, HZ1 + .06, F);

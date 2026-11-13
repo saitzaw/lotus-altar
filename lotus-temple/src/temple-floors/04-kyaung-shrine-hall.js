@@ -167,7 +167,6 @@
       mesh(new THREE.BoxGeometry(.12, 2.7, .14), gold, sd * 1.06, 1.35, 0, D0);
     });
     mesh(new THREE.BoxGeometry(2.3, .14, .14), gold, 0, 2.7, 0, D0);
-    const ped = mesh(new THREE.ConeGeometry(1.1, .8, 4), gold, 0, 3.2, 0, D0); ped.rotation.y = Math.PI / 4; ped.scale.z = .1;
     // lights: warm lamplight, the key on the image from the front, a glow behind the throne, cool light from the windows
     g.add(new THREE.HemisphereLight(0xffd9a8, 0x2a1208, .36));
     const key = new THREE.SpotLight(0xffd6a0, 1.5, 24, .6, .6, 1); key.position.set(2.4, 5.6, 5.5); key.target.position.set(0, 1.8, -1.6); g.add(key, key.target);
