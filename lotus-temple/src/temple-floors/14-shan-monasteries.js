@@ -167,4 +167,5 @@
     kyaung(ms.x, ms.z, Math.PI / 2, MON.W, MON.D, true, H, ms.y, MON.SC, ms.reach, ms.edge);
     festivalGround(H);
     lowerKyaung(H);
+    wihanKyaung(H);
   }

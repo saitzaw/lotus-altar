@@ -21,7 +21,7 @@
     return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east, eastReach };   // `to`: the street corner the stair faces
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
-  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", kyaungLow: "ၵျွင်းလူင်ဝဵင်းၵဝ်", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
+  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", kyaungLow: "ၵျွင်းလူင်ဝဵင်းၵဝ်", wihan: "ဝိႁၢၼ်ႇၵုင်းသႃႇ", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
   // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, with an optional line of English beneath
   function shanBoardFace(shan, en = "") {
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 300;
@@ -142,6 +142,16 @@
   // terrace's edge (the path runs on past its front corner); its back corner nearest the stair stands on the foot of the slope
   const LOW_KYAUNG = { x: 18.5, z: -55, L: 24, D: 8 };
   function lowerKyaungSpot() { return { ...LOW_KYAUNG, y: HILL.terraces[1].y }; }
+  // the third monastery (wihanKyaung), on the same lower terrace past the second one's east end, squared to the terrace's curve:
+  // a its angle round the hill from the stair (radians, toward the east stair), r the radius of its centre, L its length along
+  // the terrace, D its depth, run its front stair. Placed by hand: 5 m from the second monastery, 3 m below the festival ground's
+  // retaining wall, 4 m from the east stair's wall, its stair's foot on the terrace footpath (hillHuts runs the path on to it)
+  const WIHAN = { a: .908, r: 58, L: 26, D: 11, SX: 6, run: 3.6 };
+  function wihanSpot() {
+    const { a, r } = WIHAN, x = Math.sin(a) * r, z = -Math.cos(a) * r, ry = Math.PI - a;
+    const fx = x + Math.cos(ry) * WIHAN.SX + Math.sin(ry) * (WIHAN.D / 2 + WIHAN.run), fz = z - Math.sin(ry) * WIHAN.SX + Math.cos(ry) * (WIHAN.D / 2 + WIHAN.run);
+    return { ...WIHAN, x, z, ry, y: HILL.terraces[1].y, footA: Math.atan2(fx, -fz) };   // footA: its stair foot's angle round the hill
+  }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
   // floor height); the kinnara dances alone in the afternoon, the pair in the evening, with the to between, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22 };   // stage floor height (m), circle radius (m), turn speed (rad/s)

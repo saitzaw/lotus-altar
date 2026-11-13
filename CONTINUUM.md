@@ -37,6 +37,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Check the 5F arms, the 6F statue and the wish-tree Buddha by eye in a browser (headless renders can't finish the statues).
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
+- Have a Shan speaker check the third monastery's name ဝိႁၢၼ်ႇၵုင်းသႃႇ (`SHAN_NAMES.wihan`). Decide whether it gets a hall inside.
 - Have a Shan speaker check the lower monastery's name ၵျွင်းလူင်ဝဵင်းၵဝ် on the stupa hill.
 - Have a Shan speaker check the hospital's name ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, and a Tai Nüa reader its Tai Le line ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ (`HOSP_NAMES`).
 - Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
@@ -57,6 +58,24 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-13: a third monastery, ဝိႁၢၼ်ႇၵုင်းသႃႇ, next to the second
+
+- New piece `14c-wihan-kyaung.js`, `wihanKyaung(H)` (called from `shanMonasteries` after `lowerKyaung`), after the owner's
+  photograph. Placed by `WIHAN` / `wihanSpot()` in `13-stupa-hill.js` on the lower terrace (y 3.75), squared to the terrace's
+  curve: its centre 58 m from the hill's centre at .908 rad round from the main stair toward the east stair; 26 × 11 m. About 5 m
+  from the second monastery's east end, 3 m from the festival ground's retaining wall above, 4 m from the east stair's wall.
+- Left (toward the east stair): a two-storey hall of cream plaster in a brown timber frame, a yellow band at the floor line,
+  blue shutters below, glazed sashes with hoods above, blue doors; three hipped iron tiers with two pale blue clerestories of
+  windows. Right (toward the second monastery): a wing on red-brown posts, a plastered store at the back of the open ground
+  floor, the upper room behind a verandah with a white balustrade, cream fretwork valances under the eaves and the floor, a
+  gabled porch over the wooden stair (local x 6), a blue tower with red flowers on the wing's roof with the name board, and the
+  Myanmar flag (`flagPole`) and the Buddhist flag at the wing's end. Not mirrored from the photo.
+- Walkable: the stair (3.75 → 6.75 m) and the verandah; the rest blocks. No interior: its doors are not clickable.
+- The lower terrace's footpath (`hillHuts`) now runs on east to its stair's foot (`wihanSpot().footA`).
+- Name board in Shan only, from the owner: ဝိႁၢၼ်ႇၵုင်းသႃႇ (`SHAN_NAMES.wihan`). ဝိႁၢၼ်ႇ reads as vihāra; we don't gloss ၵုင်းသႃႇ.
+- Checked headless: from below the terrace, from the east-stair side, and on the verandah; walk heights logged. Not yet seen
+  by eye in a browser.
 
 ### 2026-11-13: the hospital rebuilt as the five-storey general hospital
 

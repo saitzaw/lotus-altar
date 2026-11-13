@@ -99,6 +99,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
 | Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (shared materials, `gable`, `pyatthat`, `hip` in `13b-shan-carpentry.js`) |
 | Lower Shan monastery outside | hill's lower terrace, below the festival ground (`LOW_KYAUNG`) | `lowerKyaung` | `14b-lower-kyaung.js` |
+| Third Shan monastery ဝိႁၢၼ်ႇၵုင်းသႃႇ outside (no interior) | hill's lower terrace, past the second monastery toward the east stair (`WIHAN`, `wihanSpot`) | `wihanKyaung` | `14c-wihan-kyaung.js` |
 | Haw Kham palace outside, its guards (front away from the town, back toward it; back yard kept for the kitchen, bathhouse and lake) | (16, 204), walls z 166…254 | `hawKham`, `palaceGuards` | `15-haw-kham.js` |
 | Hluttaw (council of state) and the palace clock tower (stair to its top, gong and bell), in their own walled compound across the Hluttaw road from the palace's front gate, facing the main entrance | (16, 276), walls z 262.5…286.5; tower (29.5, 267.5) |
 | The Hluttaw road and the market lane on along the palace's east wall | z 255.5…261.5; x 38.75…43.25 | `LANES` | `10-town.js`, drawn by `backStreets` | `councilCompound` | `15b-hluttaw-and-clock-tower.js` |

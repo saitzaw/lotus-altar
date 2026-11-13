@@ -71,6 +71,7 @@
 | `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials, the carved gable, the pyatthat and a hipped roof, shared by the monasteries and the Haw Kham (made once) | `shanCarpentry` `hip` |
 | `14-shan-monasteries.js` | Shan teak monasteries | `shanMonasteries` |
 | `14b-lower-kyaung.js` | the second monastery, on the hill's lower terrace below the festival ground, after the owner's photograph; its door leads to `kyaungLow` | `lowerKyaung` |
+| `14c-wihan-kyaung.js` | the third monastery ဝိႁၢၼ်ႇၵုင်းသႃႇ, on the lower terrace past the second, after the owner's photograph: plaster hall under three roof tiers, verandah wing on posts, stair porch, blue tower with the name board, flags; outside only | `wihanKyaung` |
 | `15-haw-kham.js` | the saopha's palace and its guards, its own top-level builder (called from `36-lion-dragon-dance.js` after `shanMonasteries`); front away from the town, back toward it | `hawKham` `palaceGuards` |
 | `15b-hluttaw-and-clock-tower.js` | the council's own walled compound across the road from the palace's front gate: the Hluttaw on posts facing the main entrance, the clock tower with its stair and gong (called from `hawKham` in the front's frame `BACK`) | `councilCompound` |
 | `15c-town-library.js` | the public library, an old two-storey mansion across the market lane from the Haw Kham, facing it (`LIB`; called from `36-lion-dragon-dance.js` after `hawKham`); exterior only | `townLibrary` |

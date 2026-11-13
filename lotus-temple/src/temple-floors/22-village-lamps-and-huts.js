@@ -146,9 +146,9 @@
       const a = th + o, W = 4.2 + (i % 3) * .4, D = 3.8 + (i % 2) * .4, [x, z] = at(a, t.r1 - .2 + D / 2);   // verandah edge 1.6 m in from the terrace edge
       villageHut(g, x, z, Math.atan2(-Math.cos(a), -Math.sin(a)), { W, D, seed: 500 + i, lift: .55 });
     });
-    // the footpath along the terrace, stopping either side of the stair landing
+    // the footpath along the terrace, stopping either side of the stair landing; east of it, on to the foot of the third monastery's stair
     const PR = t.r1 - 3.6, path = std({ color: 0x8a7458, roughness: 1, side: THREE.DoubleSide });
-    [[th - 1.55, 1.5], [th + .05, .4]].forEach(([a0, len]) => {
+    [[th - 1.55, 1.5], [th + .05, wihanSpot().footA - .05]].forEach(([a0, len]) => {
       const m = flat(mesh(new THREE.RingGeometry(PR - .8, PR + .8, Math.ceil(len * 40), 1, a0, len), path, cx, t.y - .05, cz, g));
       m.rotation.x = Math.PI / 2; m.receiveShadow = true;
     });

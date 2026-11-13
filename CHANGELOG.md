@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-13
 
+### Added
+- A third Shan monastery on the stupa hill, ဝိႁၢၼ်ႇၵုင်းသႃႇ, on the lower terrace next to the second one, after a photograph of a northern Shan monastery: a two-storey hall of cream plaster in a brown timber frame with blue shutters, under three tiers of rusty iron roofs with pale blue clerestories, and a wing on red-brown posts with a long verandah you can climb to by its wooden stair. A little blue tower on the wing's roof carries the name board, and the flag of Myanmar and the Buddhist flag fly at its end. The terrace footpath now runs on to its stair. Outside only for now.
+
 ### Changed
 - The township hospital is now the town's public general hospital: a modern five-storey block with a five-storey wing beside the hut village's lane, a glass entrance hall under a drive-in canopy, and its name board in Shan, Tai Nüa, English and Chinese on the canopy and the roof. Two huts were taken down to make room, and a small garden stands in the place of one.
 
