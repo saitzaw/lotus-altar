@@ -63,6 +63,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-13: the hill monastery rebuilt after Shwe Yan Pyay
+
+- Owner sent three more Shwe Yan Pyay photos and chose all four of: windows and walls, roofs and gables, wood colour, stair and
+  railing. All of it is local to `kyaung()` in `14-shan-monasteries.js`; the shared carpentry in `13b` (used by the Haw Kham,
+  Hluttaw and lower monastery) is untouched. Footprint, walkable verandah and stair, interior, door, board text and pyatthat stay.
+- Walls: weathered plank texture, rails and stiles in panels; front has ovals at ±1.7 m and arches outward every 1.4 m; sides
+  arch-arch-oval-arch-arch; a quarter of arches shut (seeded `rng(29)`). Roofs: a `hip` skirt over the verandah, an inlaid frieze
+  box, `gableB` gables (middle 5.8 m with a second tier, two 3.2 m side ones) with alpha-tested fretwork boards (`laceT`, own depth
+  material for shadows). Stair: pinnacle merlons, red-and-gold lotus posts at the top, simple naga heads at the foot.
+- Open: the naga heads are simple; the owner may want them closer to the photo's chinthe-naga.
+
 ### 2026-11-13: the hill monastery's windows redrawn after Shwe Yan Pyay
 
 - Owner sent photos of Shwe Yan Pyay and asked for the windows only, nothing else. In `kyaung()` (`14-shan-monasteries.js`)

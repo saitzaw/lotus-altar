@@ -99,3 +99,5 @@ Traps:
   Set `g.gain.value = 0` first.
 - A copyrighted recording with no license (most YouTube uploads) can be measured for tuning, but don't ship it or a sample of
   it. A citation doesn't make it allowed.
+- A material `color` is linear, so it renders much lighter than the same hex in a canvas texture: `0x1e0e07` comes out a
+  mid orange-brown in sunlight. For near-black wood use about `0x0c0503`; canvas colours (sRGB) look as written.

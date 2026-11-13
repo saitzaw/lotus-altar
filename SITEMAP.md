@@ -97,7 +97,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Seven-day market | x 43…104, z −14…47.4 | `sevenDayMarket` | `12-market.js` |
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
-| Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (shared materials, `gable`, `pyatthat`, `hip` in `13b-shan-carpentry.js`) |
+| Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (its own weathered teak, rust, inlay and fretwork, and `gableB`; `pyatthat`, `hip` from `13b-shan-carpentry.js`) |
 | Lower Shan monastery outside | hill's lower terrace, below the festival ground (`LOW_KYAUNG`) | `lowerKyaung` | `14b-lower-kyaung.js` |
 | Third Shan monastery ဝိႁၢၼ်ႇၵုင်းသႃႇ outside (no interior) | hill's lower terrace, past the second monastery toward the east stair (`WIHAN`, `wihanSpot`) | `wihanKyaung` | `14c-wihan-kyaung.js` |
 | Haw Kham palace outside, its guards (front away from the town, back toward it; back yard kept for the kitchen, bathhouse and lake) | (16, 204), walls z 166…254 | `hawKham`, `palaceGuards` | `15-haw-kham.js` |
