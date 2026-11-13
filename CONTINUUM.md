@@ -63,6 +63,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the palace guards put their hats on in the rain
+
+- `palaceGuards` (`src/temple-floors/15-haw-kham.js`) now bakes a second straw hat on each guard's head, in its own material
+  (`strawOn`), so it comes out as separate instanced meshes. `GUARD_HATS` (closure helpers) holds both sets;
+  `temple.setGuardHats(rain)` swaps them, called each frame with `wx.rain > CONFIG.guardHats` (.02, any rain).
+  Check with `?weather=rain`.
+
 ### 2026-11-14: a Sunday service in the Kachin church
 
 - Added `churchService` (`src/temple-floors/05c-church-service.js`), from a description of a low-poly game shot of a Kachin

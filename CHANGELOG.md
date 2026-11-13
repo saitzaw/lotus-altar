@@ -10,6 +10,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 - Shafts of morning sun slant through the church's east windows across the pews by day.
 
 ### Changed
+- When it rains, the guards at the saopha's palace put on the straw hats they carry slung on their backs.
 - A grand piano in black lacquer stands on the left of the church's dais in place of the keyboard, and the choir's chairs are all on the right. The pew backs are a little lower.
 
 ### Fixed

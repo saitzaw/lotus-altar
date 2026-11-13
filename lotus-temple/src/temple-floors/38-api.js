@@ -50,6 +50,8 @@
     get ghost() { return FEST.ghost || null; },
     // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains
     setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
+    // the palace guards put their straw hats on while it rains, and sling them on their backs again after
+    setGuardHats(rain) { if (rain === GUARD_HATS.rain) return; GUARD_HATS.rain = rain; GUARD_HATS.back.forEach(o => o.visible = !rain); GUARD_HATS.on.forEach(o => o.visible = rain); },
     // who dances on the festival stage: "solo" (the kinnara alone, a bigger crowd), "pair" (kinnara and kinnari), "to",
     // "twoTo" (the white and the yellow to), "toKinnara" (the two to with the kinnara alone, a bigger crowd), or null for none
     setDancers(show) { FOLK.dance = show; },

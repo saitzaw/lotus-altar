@@ -12,7 +12,7 @@
      The back yard, toward the town, is kept clear for the royal kitchen, bathhouse and lake still to come ---------- */
   /* ---------- the saopha's guards, dressed like the Shan singer on the festival stage but all in grey: a long grey silk jacket
      studded with silver, baggy grey trousers, a grey headcloth with its tail over the right shoulder, a straw hat slung on the
-     back, a sword on a green cord hung with wool pom-poms, and a rifle at the order, butt by the right foot. They stand still at the
+     back (put on over the headcloth while it rains, see GUARD_HATS), a sword on a green cord hung with wool pom-poms, and a rifle at the order, butt by the right foot. They stand still at the
      gate and about the palace. Every piece but the jacket (which answers to a tap) is baked into shared instanced meshes ---------- */
   function palaceGuards(G, list, spots) {
     const lin = h => new THREE.Color(h).convertSRGBToLinear();
@@ -22,6 +22,7 @@
     const wood = std({ color: lin(0x5a3a1e), roughness: .6 }), steel = std({ color: 0xc8ccd0, roughness: .3, metalness: .8 }), hiltM = std({ color: lin(0xe8c040), roughness: .8 });
     const WOOL = [0x1f8a3c, 0xd82a2a, 0xf0c830, 0xf4f2ea].map(h => std({ color: lin(h), roughness: .95 }));
     const straw = std({ map: canvasTex(128, (c, s) => { c.fillStyle = "#d8b868"; c.fillRect(0, 0, s, s); for (let y = 0; y < s; y += 4) { c.fillStyle = y & 4 ? "rgba(150,110,40,.35)" : "rgba(255,240,180,.35)"; c.fillRect(0, y, s, 2); } }), roughness: .85, side: THREE.DoubleSide });
+    const strawOn = straw.clone();   // the same hat worn on the head, its own material so it bakes apart and can be shown in the rain
     const unit = (r0, r1) => { const geo = new THREE.CylinderGeometry(r1, r0, 1, 8); geo.translate(0, .5, 0); return geo; };
     const GEO = { leg: new THREE.CylinderGeometry(.14, .12, .84, 10), slip: new THREE.BoxGeometry(.1, .05, .24), jacket: new THREE.CylinderGeometry(.18, .26, .72, 14), neck: new THREE.CylinderGeometry(.06, .07, .12, 10),
       collar: new THREE.TorusGeometry(.075, .022, 6, 14), stud: new THREE.SphereGeometry(.009, 6, 4), head: new THREE.SphereGeometry(.115, 16, 12), eye: new THREE.SphereGeometry(.016, 8, 6), brow: new THREE.BoxGeometry(.045, .008, .008),
@@ -46,6 +47,7 @@
       pt(GEO.wrap, cloth, 0, 1.65, -.005); pt(GEO.dome, cloth, 0, 1.7, -.005).scale.y = .55;
       pt(GEO.tail, cloth, -.12, 1.33, -.02);
       pt(GEO.hat, straw, 0, 1.0, -.36).rotation.x = -Math.PI / 2 + .12; pt(GEO.rim, straw, 0, 1.0, -.23).rotation.x = .12;
+      pt(GEO.hat, strawOn, 0, 1.75, -.005); pt(GEO.rim, strawOn, 0, 1.62, -.005).rotation.x = Math.PI / 2;   // and on the head, its crown over the headcloth
       // the sword on its cord from the right shoulder to the left hip, its hilt forward at the waist under a bunch of pom-poms
       span(pt(GEO.cord, cord), P(-.15, 1.34, .1), P(.2, .88, .2));
       const hilt = P(.17, .98, .26); span(pt(GEO.sheath, sheath), hilt, P(.36, .3, -.05)); span(pt(GEO.hilt, hiltM), P(.13, 1.05, .3), hilt);
@@ -59,6 +61,7 @@
     };
     spots.forEach(a => guard(...a));   // [x, y, z, turn] in G's frame
     bakeParts(GG);
+    GG.children.forEach(o => { if (o.material === straw) GUARD_HATS.back.push(o); else if (o.material === strawOn) { o.visible = false; GUARD_HATS.on.push(o); } });
   }
   function hawKham(g, x, z, ry) {
     const list = picks.pagoda, { teak, teakDark, white, pane, gable, pyatthat } = shanCarpentry();

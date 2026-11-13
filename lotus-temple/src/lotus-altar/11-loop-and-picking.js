@@ -70,6 +70,7 @@ function frame() {
   festStep(dt);
   weatherStep(dt);
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
+  temple.setGuardHats(wx.rain > CONFIG.guardHats);
   temple.setDancers(danceOn);
   temple.setService(serviceOn);
   temple.setLionDragon(drill.show);
