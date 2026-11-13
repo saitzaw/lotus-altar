@@ -164,12 +164,16 @@
   // a small village of bamboo huts west of the town, off the street, either side of a dirt lane lit by lamps on bamboo poles,
   // with banana clumps and shade trees in the yards
   function hutVillage(g) {
-    const X = -97, Z0 = 2.4, Z1 = 47.6,   // the lane runs from the street to the hospital's forecourt
+    const X = -97, Z0 = 5, Z1 = 47.6,   // the lane runs from the street to the hospital's forecourt
       dirt = std({ color: 0x8a7458, roughness: 1 });
     flat(mesh(new THREE.BoxGeometry(3, .04, Z1 - Z0), dirt, X, .03, (Z0 + Z1) / 2, g)).receiveShadow = true;
-    [[X - 6.2, 40, Math.PI / 2], [X - 6.2, 30, Math.PI / 2], [X - 6.6, 19, Math.PI / 2], [X - 6.2, 8.5, Math.PI / 2],
-     [X + 6.2, 36, -Math.PI / 2], [X + 6.4, 24.5, -Math.PI / 2], [X + 6.2, 15, -Math.PI / 2]]
-      .forEach(([x, z, ry], i) => {
+    // the two huts nearest the hospital were taken down when it was rebuilt (its south wing and garden stand there); their
+    // places stay in the list as null so the other huts keep their seeds
+    [[X - 6.2, 40, Math.PI / 2], [X - 6.2, 30, Math.PI / 2], [X - 6.6, 19, Math.PI / 2], null,
+     [X + 6.2, 36, -Math.PI / 2], [X + 6.4, 24.5, -Math.PI / 2], null]
+      .forEach((p, i) => {
+        if (!p) return;
+        const [x, z, ry] = p;
         const W = 4.4 + (i % 3) * .4, D = 3.8 + (i % 2) * .5, seed = 600 + i, sd = ry > 0 ? -1 : 1;   // sd: the side of the lane it stands on
         villageHut(g, x, z, ry, { W, D, seed });
         // its yard, fenced from the lane edge to a little behind the hut, with the gate in front of the ladder
@@ -177,8 +181,8 @@
         yardFence(g, Math.min(front, back), Math.max(front, back), z - hw, z + hw, sd < 0 ? "+x" : "-x", sd < 0 ? z - lx : z + lx);
       });
     lampWires(g, [44, 30, 18, 6].map(z => villageLamp(g, X + 1.9, 0, z, Math.PI, true)));   // in the gaps between the east huts' ladders
-    [[X - 4, 46], [X + 4, 45], [X - 11, 25], [X - 11.5, 36], [X + 5, 4], [X - 4, 2]].forEach(([x, z], i) => banana(g, x, z, 700 + i));
-    [[X - 12.5, 30.2], [X - 12, 21.1], [X + 2.5, 1]].forEach(([x, z], i) => tree(g, x, z, .85 + i * .08, 720 + i));   // the first two in the gaps between the road houses
+    [[X - 4, 46], [X + 4, 45], [X - 11, 25], [X - 11.5, 36]].forEach(([x, z], i) => banana(g, x, z, 700 + i));
+    [[X - 12.5, 30.2], [X - 12, 21.1]].forEach(([x, z], i) => tree(g, x, z, .85 + i * .08, 720 + i));   // in the gaps between the road houses
   }
   // a village yard fence of split bamboo: posts about a metre apart carrying two rails, round the rectangle x0..x1, z0..z1, with
   // a gate 1.4 m wide in the `side` ("+x" or "-x") centred on gz, between two taller posts

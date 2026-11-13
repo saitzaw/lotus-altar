@@ -87,7 +87,7 @@
 | `23-halloween-ghost.js` | Halloween ghost | `halloweenGhost` |
 | `24-townsfolk.js` | evening townsfolk | `townsfolk` |
 | `25-beat-officer.js` | beat officer (kept commented out at the call site) | `SAFE` `beatOfficer` |
-| `26-hospital-football-school.js` | civic building kit, hospital, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `footballGround` `highSchool` |
+| `26-hospital-football-school.js` | civic building kit, hospital, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `hospitalBoardMat` `footballGround` `highSchool` |
 | `27-bamboo-fuel-fire-police.js` | bamboo, fuel station, fire and police stations, welcome board | `bambooGrove` `hillFootBamboo` `fuelStation` `fireAndPolice` `WELCOME` |
 | `28-kachin-church-and-back-streets.js` | church outside and compound; back lanes | `kachinChurch` `churchCompound` `backStreets` |
 | `29-forest-and-hills.js` | forest band and hills | `mountainsAndForest` |

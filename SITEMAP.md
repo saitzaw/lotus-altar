@@ -106,7 +106,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Bank (exterior), south of the library across the market lane from the palace's east wall, facing it | (60, 235), forecourt x 43.5…67.5, z 215…255 | `townBank` | `15d-town-bank.js` |
 | Festival ground, stage, dancers, ensemble, audience | festival ground (`STAGE`) | `festivalGround`, `kinnaraDancers`, `toDancers`, `stageSinger`, `festivalAudience` | `16-` … `19-*.js` |
 | Village lamps, hut villages | town edges | `hillHuts`, `hutVillage`, `villageLamp` | `22-village-lamps-and-huts.js` |
-| Hospital, road houses | across from the football ground | `hospital`, `hospitalRoadHouses` | `26-hospital-football-school.js` |
+| General hospital, road houses | main block x −119…−85, z −19…−5; wing x −94…−85.5, z −5…12 (`HOSP`) | `hospital`, `hospitalRoadHouses` | `26-hospital-football-school.js` |
 | Football ground | x −182…−131, z 4…68 | `footballGround` | `26-hospital-football-school.js` |
 | High school | x 46–98, z 111–152 | `highSchool` | `26-hospital-football-school.js` |
 | Bamboo grove, hill-foot bamboo | x 44–100, z 153–178; round the hill | `bambooGrove`, `hillFootBamboo` | `27-bamboo-fuel-fire-police.js` |

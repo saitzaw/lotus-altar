@@ -38,6 +38,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Hall name 降魔殿 for the Victorious Buddha is our choice ("hall of subduing Māra"); have someone confirm it reads well.
 
 - Have a Shan speaker check the lower monastery's name ၵျွင်းလူင်ဝဵင်းၵဝ် on the stupa hill.
+- Have a Shan speaker check the hospital's name ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, and a Tai Nüa reader its Tai Le line ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ (`HOSP_NAMES`).
 - Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
 - Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the to dance) and the romanisation "ka to" in its toast.
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
@@ -56,6 +57,22 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-13: the hospital rebuilt as the five-storey general hospital
+
+- `hospital(g)` in `26-hospital-football-school.js` now builds the town's main hospital (`HOSP` holds its place and size): a
+  modern main block of five storeys, 34 × 14 m, x −119…−85, z −19…−5 (its back to the stream, its west end clear of the
+  waterfall's cliff at x < −119.9), and a five-storey wing 17 × 8.5 m turned to face the hut village's lane, x −94…−85.5,
+  z −5…12. Flat roofs with parapets, white walls with blue bands, and one ribbon of glass round each floor (new `strip`
+  option of `civic()`, an instanced unit box stretched per side). A full-height glass entrance hall between white fins, a
+  drive-in canopy on two steel columns with an ambulance under it, a second ambulance, benches, the flag, red crosses on the
+  roof's front, a lift house and water tanks on the roof, and the emergency door with a Burmese/English sign (အရေးပေါ်ဌာန) on
+  the wing.
+- Name board (`hospitalBoardMat`, wording in `HOSP_NAMES`, given by the owner), on the canopy and again big on the roof:
+  Shan ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, Tai Nüa (Tai Le script) ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ, "Public General Hospital", 人民医院.
+- Two huts taken down to make room (the west hut at z 8.5 and the east hut at z 15; their places are `null` in
+  `hutVillage`'s list so the other huts keep their seeds), with the banana clumps and tree that stood in the new forecourt.
+  The lane now starts at z 5. A small garden with two trees and benches stands where the west hut was.
 
 ### 2026-11-13: no gilt cone pediments over doors and windows
 

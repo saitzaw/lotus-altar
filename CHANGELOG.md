@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-13
 
+### Changed
+- The township hospital is now the town's public general hospital: a modern five-storey block with a five-storey wing beside the hut village's lane, a glass entrance hall under a drive-in canopy, and its name board in Shan, Tai Nüa, English and Chinese on the canopy and the roof. Two huts were taken down to make room, and a small garden stands in the place of one.
+
 ### Added
 - A second Shan teak monastery on the stupa hill, on the lower terrace below the festival ground, after a photograph of a northern Shan kyaung: a long hall on posts with square windows and open cream shutters, rusty iron roofs with a white scalloped edge, red-and-gold clerestories and gables. Climb its wooden stair to the porch and go into its hall, where the monks give sermons from their raised dais; there is no Buddha image inside.
 

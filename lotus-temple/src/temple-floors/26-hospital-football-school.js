@@ -1,4 +1,4 @@
-  /* ---------- the town's public buildings, in the plain painted concrete of Shan State towns today: the township hospital by the
+  /* ---------- the town's public buildings, in the plain painted concrete of Shan State towns today: the general hospital by the
      hut village, the high school south of the daily market, a fuel station on the road out past the bridge, and the fire station
      and police station side by side on the street east of the seven-day market ---------- */
   const civicWin = new THREE.BoxGeometry(1.2, 1.4, .08);
@@ -13,7 +13,17 @@
     if (data) clickable(picks.pagoda, body, data);
     sRect(h, -W / 2 - .3, W / 2 + .3, -D / 2 - .3, D / 2 + corridor + .3);
     const wins = [], nx = Math.max(1, Math.floor((W - 1.4) / 2.6)), nz = Math.max(1, Math.floor((D - 1.4) / 2.6));
-    for (let f = 0; f < floors; f++) {
+    if (o.strip) {   // a modern block: one long band of glass round each floor instead of separate windows (stretched instances of a unit box)
+      const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), townGlass, floors * 4), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+      for (let f = 0; f < floors; f++) {
+        const y0 = .3 + f * FH;
+        mesh(new THREE.BoxGeometry(W + .12, .22, D + .12), trim, 0, y0 + FH - .11, 0, h);
+        [[0, D / 2, W - 1.6, 0], [0, -D / 2, W - 1.6, 0], [W / 2, 0, D - 1.6, 1], [-W / 2, 0, D - 1.6, 1]].forEach(([px, pz, len, side], k) =>
+          im.setMatrixAt(f * 4 + k, m4.compose(V(px, y0 + 1.75, pz), q, side ? V(.1, 1.5, len) : V(len, 1.5, .1))));
+      }
+      h.add(im);
+    }
+    else for (let f = 0; f < floors; f++) {
       const y0 = .3 + f * FH;
       mesh(new THREE.BoxGeometry(W + .12, .22, D + .12), trim, 0, y0 + FH - .11, 0, h);
       for (let i = 0; i < nx; i++) {
@@ -23,9 +33,11 @@
       }
       for (let i = 0; i < nz; i++) { const pz = -D / 2 + D * (i + .5) / nz; wins.push([W / 2 + .02, y0 + 1.7, pz, Math.PI / 2], [-W / 2 - .02, y0 + 1.7, pz, Math.PI / 2]); }
     }
-    const im = new THREE.InstancedMesh(civicWin, townGlass, wins.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
-    wins.forEach(([px, py, pz, a], i) => im.setMatrixAt(i, m4.compose(V(px, py, pz), q.setFromAxisAngle(V(0, 1, 0), a), V(1, 1, 1))));
-    h.add(im);
+    if (wins.length) {
+      const im = new THREE.InstancedMesh(civicWin, townGlass, wins.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+      wins.forEach(([px, py, pz, a], i) => im.setMatrixAt(i, m4.compose(V(px, py, pz), q.setFromAxisAngle(V(0, 1, 0), a), V(1, 1, 1))));
+      h.add(im);
+    }
     if (o.door) mesh(new THREE.BoxGeometry(2, 2.4, .1), townGlass, 0, 1.5, D / 2 + .03, h);
     if (corridor) {   // the open corridor: a floor slab on each storey, a parapet along the front (open on the ground floor), columns
       const zc = D / 2 + corridor / 2, zf = D / 2 + corridor - .1, n = Math.max(2, Math.round(W / 4));
@@ -99,25 +111,83 @@
   const civicWhite = std({ color: 0xf4f2ec, roughness: .85 }), civicCream = std({ color: 0xf0e2b8, roughness: .85 });
   const civicGreen = std({ color: 0x2f7a4a, roughness: .7 }), civicBlue = std({ color: 0x2a4a8a, roughness: .7 }), civicRed = std({ color: 0xb8281e, roughness: .6 });
   const forecourt = std({ color: 0x9a968e, roughness: .9 });
-  // ဆေးရုံ, the township hospital: two storeys with an open corridor along the front, a drive-in porch with a red cross, an
-  // ambulance at the door; its forecourt closes the north end of the hut village's lane
+  // ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, the public general hospital, the main hospital for the town and the villages round it: a modern block of five
+  // storeys in white with blue bands and long ribbons of glass, its back to the stream and its west end clear of the waterfall's cliff;
+  // a five-storey wing running south beside the hut village's lane, on the ground where two huts stood; a full-height glass entrance
+  // hall under a drive-in canopy, the name board in four scripts on the canopy and again on the roof, red crosses on the roof's front,
+  // ambulances in the forecourt and a small garden for the patients' families
+  const HOSP_NAMES = { shan: "ႁူင်းယႃလူင်ၵူၼ်းမိူင်း", taiNua: "ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ", en: "Public General Hospital", zh: "人民医院" };   // as given by the site's owner
+  const HOSP = { x: -102, z: -12, W: 34, D: 14, floors: 5, wing: { x: -89.75, z: 3.5, W: 17, D: 8.5 } };   // the main block's centre and size; the south wing's (turned to face the lane)
+  // the name board: Shan, Tai Nüa (in Tai Le script), English and Chinese in white on hospital blue, a red cross in a white square at
+  // each end; one material for both boards, faintly lit at night
+  function hospitalBoardMat() {
+    const cv = document.createElement("canvas"); cv.width = 1280; cv.height = 512;
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    const MY = '"Noto Sans Myanmar", "Myanmar Text", sans-serif', N = HOSP_NAMES;
+    const LINES = [[N.shan, `600 76px ${MY}`, 104], [N.taiNua, '400 64px "Noto Sans Tai Le", "Microsoft Tai Le", sans-serif', 222], [N.en, '600 56px "Figtree", sans-serif', 326], [N.zh, '600 84px "Noto Serif SC", "Noto Serif TC", "Songti SC", serif', 428]];
+    const paint = () => {
+      const c = cv.getContext("2d");
+      c.fillStyle = "#1f4a8a"; c.fillRect(0, 0, 1280, 512); c.strokeStyle = "#fff"; c.lineWidth = 12; c.strokeRect(8, 8, 1264, 496);
+      [96, 1184].forEach(x => { c.fillStyle = "#fff"; c.fillRect(x - 64, 192, 128, 128); c.fillStyle = "#c8261c"; c.fillRect(x - 46, 238, 92, 36); c.fillRect(x - 18, 210, 36, 92); });
+      c.fillStyle = "#fff"; c.textAlign = "center"; c.textBaseline = "middle";
+      LINES.forEach(([s, font, ly]) => { c.font = font; c.fillText(s, 640, ly, 940); });
+      t.needsUpdate = true;
+    };
+    paint();
+    if (document.fonts && document.fonts.load) Promise.all(LINES.map(([s, font]) => document.fonts.load(font, s).catch(() => {}))).then(paint);
+    const m = std({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .3, roughness: .6, side: THREE.DoubleSide });
+    onDaylight(d => { m.emissiveIntensity = .3 + .6 * (1 - d); });
+    return m;
+  }
   function hospital(g) {
-    const X = -103, Z = -14, data = { tip: "The township hospital", toast: "The township hospital serves the town and the villages round it: an outpatient hall and wards on two floors, opening onto long open corridors where families wait. The ambulance stands ready at the porch." };
-    flat(mesh(new THREE.BoxGeometry(33.5, .05, 9.8), forecourt, X - 1.75, .03, -2.4, g)).receiveShadow = true;   // out west to meet the road up from the street
-    const { h } = civic(g, X, Z, 0, { W: 26, D: 9, floors: 2, wall: civicWhite, trim: civicBlue, roof: ROOFS[2](1), corridor: 2.4, door: true, data });
-    // the porch over the drive: a slab on two columns, a red cross on its fascia, the sign above
-    const pz = 4.5 + 2.4 + 2.4;
-    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(8, .9, 4.8), civicWhite, 0, 3.75, pz, h), data);
-    [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(.35, 3.4, .35), civicWhite, sd * 3.7, 1.7, pz + 2.2, h); sCircle(h, sd * 3.7, pz + 2.2, .25); });
-    mesh(new THREE.BoxGeometry(.8, .24, .06), civicRed, 0, 3.75, pz + 2.43, h); mesh(new THREE.BoxGeometry(.24, .8, .06), civicRed, 0, 3.75, pz + 2.43, h);
+    const { x: X, z: Z, W, D, floors, wing } = HOSP, N = HOSP_NAMES, F = Z + D / 2, FH = 3.3;   // F: the main block's front
+    const data = { tip: `The general hospital · ${N.shan}`, toast: `${N.shan} in Shan, ${N.taiNua} in Tai Nüa, ${N.zh} in Chinese: the public general hospital, the main hospital for the town and the villages round it. Five floors of wards, operating theatres and clinics, with outpatients and the emergency room off the glass entrance hall. Families wait on the benches in the forecourt and the garden, and the ambulances stand ready by the door.` };
+    flat(mesh(new THREE.BoxGeometry(27.5, .05, 10.3), forecourt, -107.75, .03, F + 5, g)).receiveShadow = true;   // the forecourt, out west to meet the road up from the street
+    const { h, top } = civic(g, X, Z, 0, { W, D, floors, wall: civicWhite, trim: civicBlue, strip: true, data });
+    const { h: wh } = civic(g, wing.x, wing.z, -Math.PI / 2, { W: wing.W, D: wing.D, floors, wall: civicWhite, trim: civicBlue, strip: true, data });
+    // the entrance hall: glass from the ground to above the roof between white fins, a floor edge at each storey, sliding doors
+    const HW = 8, HD = 1.4, ZH = D / 2 + HD / 2;
+    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(HW, top + .6, HD), townGlass, 0, (top + .6) / 2, ZH, h), data);
+    for (let i = 0; i <= 4; i++) mesh(new THREE.BoxGeometry(.18, top + 1, .3), civicWhite, -HW / 2 + i * HW / 4, (top + 1) / 2, D / 2 + HD + .05, h);
+    for (let f = 1; f <= floors; f++) mesh(new THREE.BoxGeometry(HW + .2, .24, HD + .1), civicWhite, 0, .3 + f * FH - .12, ZH, h);
+    mesh(new THREE.BoxGeometry(HW + .3, .3, HD + .2), civicBlue, 0, top + .75, ZH, h);
+    mesh(new THREE.BoxGeometry(3.2, 2.6, .06), windscreen, 0, 1.6, D / 2 + HD + .2, h);
+    sRect(h, -HW / 2 - .2, HW / 2 + .2, D / 2, D / 2 + HD + .2);
+    // the drive-in canopy: a slab cantilevered from the hall on two slim steel columns, lit underneath at night, the name board on its front
+    const CZ = D / 2 + HD + 2.6, CY = 4.4;
+    clickable(picks.pagoda, mesh(new THREE.BoxGeometry(13, .4, 5.4), civicWhite, 0, CY, CZ, h), data);
+    mesh(new THREE.BoxGeometry(13.1, .14, 5.5), civicBlue, 0, CY + .2, CZ, h);
+    [-1, 1].forEach(sd => { mesh(new THREE.CylinderGeometry(.14, .14, CY, 10), steel, sd * 5.6, CY / 2, CZ + 2.2, h); sCircle(h, sd * 5.6, CZ + 2.2, .25); });
     const porchLight = std({ color: 0xfff8e8, emissive: 0xfff0d0, emissiveIntensity: 0 });
     onDaylight(d => porchLight.emissiveIntensity = .9 * (1 - d));
-    mesh(new THREE.BoxGeometry(6, .05, 3), porchLight, 0, 3.3, pz, h);
-    civicSign(h, "ဆေးရုံ", "Township Hospital", "#ffffff", "#1f4a8a", 5.5, 0, 5.1, pz + 2);   // standing on the porch
-    const rc = new THREE.Group(); rc.position.set(0, 9.1, 4.5 + 1.2); h.add(rc);   // a big red cross on the roof's front
-    mesh(new THREE.BoxGeometry(2.4, 2.4, .2), civicWhite, 0, 0, 0, rc); mesh(new THREE.BoxGeometry(1.8, .55, .25), civicRed, 0, 0, 0, rc); mesh(new THREE.BoxGeometry(.55, 1.8, .25), civicRed, 0, 0, 0, rc);
-    vehicle(g, X + 1.2, .2, Math.PI / 2, { L: 5.2, H: 2.6, body: civicWhite, stripe: civicRed });
-    [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(2.2, .1, .5), M.wood, X + sd * 8, .45, -6.4, g); sRect(g, X + sd * 8 - 1.1, X + sd * 8 + 1.1, -6.65, -6.15); });   // benches for the waiting
+    mesh(new THREE.BoxGeometry(10, .05, 3.6), porchLight, 0, CY - .22, CZ, h);
+    const board = hospitalBoardMat();
+    flat(mesh(new THREE.PlaneGeometry(8.5, 8.5 * 512 / 1280), board, 0, CY + .2 + 1.75, CZ + 2.6, h));
+    // the roof: the name board again, big, on steel posts along the front; a red cross at each end; the lift house and water tanks
+    const RB = 17, RH = RB * 512 / 1280;
+    clickable(picks.pagoda, flat(mesh(new THREE.PlaneGeometry(RB, RH), board, 0, top + 1.3 + RH / 2, D / 2 - .5, h)), data);
+    [-6, 0, 6].forEach(px => mesh(new THREE.BoxGeometry(.2, RH + 1.3, .2), steel, px, top + (RH + 1.3) / 2, D / 2 - .7, h));
+    [-1, 1].forEach(sd => {
+      const rc = new THREE.Group(); rc.position.set(sd * (W / 2 - 2.2), top + 2.4, D / 2 - .4); h.add(rc);
+      mesh(new THREE.BoxGeometry(3, 3, .2), civicWhite, 0, 0, 0, rc); mesh(new THREE.BoxGeometry(2.3, .7, .25), civicRed, 0, 0, 0, rc); mesh(new THREE.BoxGeometry(.7, 2.3, .25), civicRed, 0, 0, 0, rc);
+      mesh(new THREE.BoxGeometry(.2, 1, .2), steel, 0, -1.7, -.2, rc);
+    });
+    mesh(new THREE.BoxGeometry(7, 3.2, 4.5), civicWhite, 7, top + 1.6, -2.5, h); mesh(new THREE.BoxGeometry(7.1, .3, 4.6), civicBlue, 7, top + 3.05, -2.5, h);
+    [-12, -9.4].forEach(px => { mesh(new THREE.CylinderGeometry(1.1, 1.1, 2, 14), std({ color: 0x3a3a3c, roughness: .6 }), px, top + 1.6, -3.5, h); mesh(new THREE.BoxGeometry(2, .6, 2), concrete, px, top + .4, -3.5, h); });
+    TALL.push({ x0: X - RB / 2 - 1, x1: X + RB / 2 + 1, z0: F - 3, z1: F + 1, h: top + RH + 2.5 });
+    // the wing's own door off the lane, the emergency room, with its sign above (the wing's front faces west; its local x runs south)
+    mesh(new THREE.BoxGeometry(2.6, 2.5, .06), windscreen, -5.5, 1.55, wing.D / 2 + .07, wh);
+    clickable(picks.pagoda, civicSign(wh, "အရေးပေါ်ဌာန", "Emergency", "#c8261c", "#ffffff", 3.4, -5.5, 3.75, wing.D / 2 + .15), data);
+    // ambulances (one under the canopy at the door, one parked), benches for the waiting, the flag at the forecourt's edge
+    vehicle(g, X + 1, F + CZ - D / 2 - .4, Math.PI / 2, { L: 5.2, H: 2.6, body: civicWhite, stripe: civicRed });
+    vehicle(g, -116, F + 2.6, Math.PI / 2, { L: 5.2, H: 2.6, body: civicWhite, stripe: civicRed });
+    const bench = (x, z, ry) => { const b = mesh(new THREE.BoxGeometry(2.2, .1, .5), M.wood, x, .45, z, g); b.rotation.y = ry; [-.9, .9].forEach(dx => mesh(new THREE.BoxGeometry(.08, .45, .45), steel, x + dx * Math.cos(ry), .22, z - dx * Math.sin(ry), g)); sCircle(g, x, z, 1.1); };
+    [-111.5, -92.5 - 3].forEach(x => bench(x, F + .9, 0));
+    flagPole(g, -120, F + 8.6, 10);
+    // the garden where the westmost hut of the lane stood: a lawn with two shade trees and benches facing the hospital
+    flat(mesh(new THREE.BoxGeometry(10, .05, 8.2), std({ color: 0x5f8a42, roughness: 1 }), -104.5, .035, 10, g)).receiveShadow = true;
+    tree(g, -107, 12, .8, 795); tree(g, -101.5, 13, .72, 796);
+    [-106.5, -102].forEach(x => bench(x, 7, Math.PI));
   }
   // မြို့နယ်အားကစားကွင်း, the township football ground across the road from the hospital, sized for a small town: a grass pitch
   // on a laterite running track inside a painted wall, a covered stand of concrete tiers along the road side, three low open
