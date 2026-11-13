@@ -63,6 +63,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-13: the hill monastery's windows redrawn after Shwe Yan Pyay
+
+- Owner sent photos of Shwe Yan Pyay and asked for the windows only, nothing else. In `kyaung()` (`14-shan-monasteries.js`)
+  the pointed, drop-shaped openings are now true ovals, and the windows at each end of a wall (counted inward, every other one)
+  are round-topped arches with a seven-ray carved fan above. Arches on the positive side of their wall have their panelled
+  shutters closed. Window positions, wall sizes and everything else are unchanged. Checked in a headless render (front and side).
+
 ### 2026-11-13: the huts round the stupa hill's foot taken down
 
 - The ten bamboo huts on the stupa hill's lowest terrace are gone. Their footpath, village lamps and wires stay;
