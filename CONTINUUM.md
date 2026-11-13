@@ -56,6 +56,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-13: a second monastery below the festival ground
+
+- New piece `14b-lower-kyaung.js`, `lowerKyaung(H)` (called from `shanMonasteries` after `festivalGround`), after the owner's
+  photograph of a northern Shan kyaung. Placed by `LOW_KYAUNG` in `13-stupa-hill.js` on the lower terrace, below the festival
+  ground: 4.9 m from its retaining wall, 4.3 m from the hill stair's wall, stair foot short of the terrace footpath. The photo's
+  layout is mirrored so the wing and stair face the hill stair. `hip()` (a hipped roof) now lives in `shanCarpentry()`; the Haw
+  Kham still has its own copy.
+- Interior: place `kyaungLow` reuses `kyaungHall` (same image hall, its own offerings); `nav: false`, so it is reached only on foot.
+  `indoorBlocked` treats it like `kyaung`; `EXIT_SPOT.kyaungLow` finds the monastery by `key`.
+- Waiting on the owner: the monastery's Shan name. Set `SHAN_NAMES.kyaungLow` (and `shn` in `CONFIG.places.kyaungLow`) and its name
+  board appears on the middle clerestory. Log the wording here for a native speaker to check.
+- Checked headless: renders from the street, the hill stair and the porch; walk heights on the stair (3.75 → 6.35 m) and porch;
+  entering the hall. Not yet seen by eye in a browser.
+
 ### 2026-11-12: the bank beside the library
 
 - New piece `15d-town-bank.js`, `townBank(g)` (called in `36-lion-dragon-dance.js` right after `townLibrary`), after the owner's

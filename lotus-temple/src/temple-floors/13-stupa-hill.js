@@ -21,7 +21,7 @@
     return { cx: -88, cz: 140, top, rTop, rBase, prof, terraces, to: [-45, 61], east, eastReach };   // `to`: the street corner the stair faces
   })();
   // the Shan names of the hill's main stupa and its monastery (Shan wording from the site's owner; have a native speaker check)
-  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
+  const SHAN_NAMES = { stupa: "ၽြႃးမုင်ႈမိူင်း", kyaung: "ၵျွင်းၵွင်းမူးၶမ်း", kyaungLow: null, haw: "ႁေႃၶမ်း", saopha: "ၸဝ်ႈၾႃႉ", council: "ႁူင်းႁေႃၸုမ်းၽွင်းမိူင်း" };
   // a name board's face: gold Shan lettering on red-brown lacquer in a double gold frame, with an optional line of English beneath
   function shanBoardFace(shan, en = "") {
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 300;
@@ -136,6 +136,12 @@
     const t = HILL.terraces[0], rm = (t.r0 + t.r1) / 2, T = 26;
     return { x: SW_ / 2 + .36 + 1 + T / 2, z: -rm, ry: Math.PI, y: t.y, R: 16, T };   // past the stair wall and a metre of grass, then half the field
   }
+  // the second monastery (lowerKyaung), on the lower terrace below the festival ground, square to the stair and facing down the hill
+  // like it: x, z its centre in the hill's frame, L its length along the terrace, D its depth. Placed by hand to keep 5 m from the
+  // festival ground's retaining wall above, 4 m from the hill stair's wall, and its stair's foot short of the footpath along the
+  // terrace's edge (the path runs on past its front corner); its back corner nearest the stair stands on the foot of the slope
+  const LOW_KYAUNG = { x: 18.5, z: -55, L: 24, D: 8 };
+  function lowerKyaungSpot() { return { ...LOW_KYAUNG, y: HILL.terraces[1].y }; }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
   // floor height); the kinnara dances alone in the afternoon, the pair in the evening, with the to between, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22 };   // stage floor height (m), circle radius (m), turn speed (rad/s)

@@ -109,7 +109,7 @@
       // keep the outside camera above it
       G.updateMatrixWorld(true);
       const ex = G.localToWorld(V(0, 0, D / 2 - .5)), look = G.localToWorld(V(0, 0, D / 2 + run + 8));   // where you come out: on the verandah before the doors, facing the stair
-      MONASTERIES.push({ G, W, D, run, foot: G.localToWorld(V(0, 0, D / 2 + run + 1.5)), door: G.localToWorld(V(0, 0, 0)), exit: [[ex.x, ex.z], [look.x, look.z]] });
+      MONASTERIES.push({ key: "kyaung", G, W, D, run, foot: G.localToWorld(V(0, 0, D / 2 + run + 1.5)), door: G.localToWorld(V(0, 0, 0)), exit: [[ex.x, ex.z], [look.x, look.z]] });
       const xs = [], zs = [];
       [[-W / 2 - 1, -D / 2 - 1], [W / 2 + 1, -D / 2 - 1], [-W / 2 - 1, D / 2 + run + 1], [W / 2 + 1, D / 2 + run + 1]].forEach(([lx, lz]) => { const w = G.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
       TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: y0 + (tower ? 22 : 14) * sc });
@@ -119,4 +119,5 @@
     const H = HILL.group, ms = monasterySpot();
     kyaung(ms.x, ms.z, Math.PI / 2, MON.W, MON.D, true, H, ms.y, MON.SC, ms.reach, ms.edge);
     festivalGround(H);
+    lowerKyaung(H);
   }

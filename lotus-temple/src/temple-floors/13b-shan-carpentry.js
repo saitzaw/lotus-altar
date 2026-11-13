@@ -57,5 +57,16 @@
       mesh(new THREE.ConeGeometry(.28, 2.6, 8), M.gold, cx, y + 1.7, cz, G);
       mesh(new THREE.CylinderGeometry(.015, .015, 1.0, 4), M.gold, cx, y + 3.4, cz, G);
     }
-    return CARPENTRY = { teak, teakDark, roofM, white, frameW, pane, flame, gable, pyatthat };
+    // a hipped roof from the eave rectangle o = [x0, x1, z0, z1] at y0 up to the top rectangle t at y1 (a ridge when t is zero wide
+    // one way); the corrugations run down the slopes, a metre to a tile
+    const hipM = std({ map: corrugated("#6a3a24", "#8e5838", "#40200f"), roughness: .5, metalness: .35, side: THREE.DoubleSide });
+    function hip(G, o, t, y0, y1) {
+      const pos = [], uv = [], O = (i, j) => [o[i], y0, o[j]], T = (i, j) => [t[i], y1, t[j]];
+      const quad = (pts, alongX) => [0, 1, 2, 0, 2, 3].forEach(k => { const p = pts[k]; pos.push(...p); uv.push(alongX ? p[0] : p[2], alongX ? p[2] : p[0]); });
+      quad([O(0, 3), O(1, 3), T(1, 3), T(0, 3)], true); quad([O(1, 2), O(0, 2), T(0, 2), T(1, 2)], true);
+      quad([O(0, 2), O(0, 3), T(0, 3), T(0, 2)], false); quad([O(1, 3), O(1, 2), T(1, 2), T(1, 3)], false);
+      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
+      return mesh(geo, hipM, 0, 0, 0, G);
+    }
+    return CARPENTRY = { teak, teakDark, roofM, white, frameW, pane, flame, gable, pyatthat, hip };
   }

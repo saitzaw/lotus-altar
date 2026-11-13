@@ -28,6 +28,7 @@ flowchart TD
   PAGODA -->|door| SHOP["shop · 法物流通處 Temple shop"]
   SHOP -->|upstairs| QUART["quarters · 寮房 Monks' room"]
   PAGODA -->|monastery door, stupa hill| KYAUNG["kyaung · Shan monastery shrine hall"]
+  PAGODA -->|lower monastery's porch door, stupa hill| KYAUNGLOW["kyaungLow · the lower Shan monastery's shrine hall"]
   PAGODA -->|church door| CHURCH["church · Kachin Baptist church"]
   PAGODA -->|palace door| HAW["haw · Haw Kham throne room"]
   PAGODA -->|palace left door| HAWJ["hawJustice · Haw Kham hall of justice"]
@@ -69,6 +70,7 @@ Every indoor place except floor 1 is built **lazily** the first time it's visite
 | `shop` | 法物流通處 Temple shop | `shop` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `quarters` | 寮房 Monks' dining and rest room | `quarters` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `kyaung` | Shan monastery shrine hall (ၵျွင်းၵွင်းမူးၶမ်း) | `kyaungHall` | `temple-floors/04-kyaung-shrine-hall.js` | yes (Shan ledge) |
+| `kyaungLow` | the lower Shan monastery's shrine hall (no Shan name yet; `nav: false`) | `kyaungHall` (shared) | `temple-floors/04-kyaung-shrine-hall.js` | yes (Shan ledge) |
 | `church` | Kachin Baptist church | `churchHall` | `temple-floors/05-church-interior.js` | no (church) |
 | `haw` | Haw Kham throne room | `hawHall` | `temple-floors/05b-haw-kham-throne-room.js` | no (throne, no image) |
 | `hawJustice`, `hawMonks`, `hawLibrary`, `hawDining`, `hawOpera` | Haw Kham hall of justice, hall of the monks; at the back the literature, dining and opera halls (no nav button) | `hawHall(g, n, kind)` | `temple-floors/05b-haw-kham-throne-room.js` | no |
@@ -95,7 +97,8 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Seven-day market | x 43…104, z −14…47.4 | `sevenDayMarket` | `12-market.js` |
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
-| Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (shared materials, `gable`, `pyatthat` in `13b-shan-carpentry.js`) |
+| Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (shared materials, `gable`, `pyatthat`, `hip` in `13b-shan-carpentry.js`) |
+| Lower Shan monastery outside | hill's lower terrace, below the festival ground (`LOW_KYAUNG`) | `lowerKyaung` | `14b-lower-kyaung.js` |
 | Haw Kham palace outside, its guards (front away from the town, back toward it; back yard kept for the kitchen, bathhouse and lake) | (16, 204), walls z 166…254 | `hawKham`, `palaceGuards` | `15-haw-kham.js` |
 | Hluttaw (council of state) and the palace clock tower (stair to its top, gong and bell), in their own walled compound across the Hluttaw road from the palace's front gate, facing the main entrance | (16, 276), walls z 262.5…286.5; tower (29.5, 267.5) |
 | The Hluttaw road and the market lane on along the palace's east wall | z 255.5…261.5; x 38.75…43.25 | `LANES` | `10-town.js`, drawn by `backStreets` | `councilCompound` | `15b-hluttaw-and-clock-tower.js` |
