@@ -202,9 +202,11 @@
     mesh(new THREE.BoxGeometry(7, 3.2, 4.5), civicWhite, 7, top + 1.6, -2.5, h); mesh(new THREE.BoxGeometry(7.1, .3, 4.6), civicBlue, 7, top + 3.05, -2.5, h);
     [-12, -9.4].forEach(px => { mesh(new THREE.CylinderGeometry(1.1, 1.1, 2, 14), std({ color: 0x3a3a3c, roughness: .6 }), px, top + 1.6, -3.5, h); mesh(new THREE.BoxGeometry(2, .6, 2), concrete, px, top + .4, -3.5, h); });
     TALL.push({ x0: X - 16, x1: X + 16, z0: F - 3, z1: F + 1, h: top + 4.5 });
-    // the wing's own door off the lane, the emergency room, with its sign above (the wing's front faces west; its local x runs south)
+    // the wing's own door off the forecourt, the emergency room, with its five-line sign on posts just south of it (the wing's front
+    // faces west; its local x runs south, so the door at local x −5.5 is at world z wing.z − 5.5)
     mesh(new THREE.BoxGeometry(2.6, 2.5, .06), windscreen, -5.5, 1.55, wing.D / 2 + .07, wh);
-    clickable(picks.pagoda, civicSign(wh, "အရေးပေါ်ဌာန", "Emergency", "#c8261c", "#ffffff", 3.4, -5.5, 3.75, wing.D / 2 + .15), data);
+    const er = { tip: `The emergency room · ${ER_NAMES.shan}`, toast: `${ER_NAMES.shan} in Shan, ${ER_NAMES.my} in Burmese, ${ER_NAMES.taiNua} in Tai Nüa, ${ER_NAMES.zh} in Chinese: the hospital's emergency room, open day and night, its door on the forecourt where the ambulances come in.` };
+    fiveLineSign(g, ER_NAMES, "#c8261c", "#ffffff", 2.4, wing.x - wing.D / 2 - 1.1, wing.z - 2.6, -Math.PI / 2, er);
     // ambulances (one under the canopy at the door, one parked), benches for the waiting, the flag at the forecourt's edge
     vehicle(g, X + 1, F + CZ - D / 2 - .4, Math.PI / 2, { L: 5.2, H: 2.6, body: civicWhite, stripe: civicRed });
     vehicle(g, -116, F + 2.6, Math.PI / 2, { L: 5.2, H: 2.6, body: civicWhite, stripe: civicRed });
@@ -228,13 +230,42 @@
     if (data) clickable(picks.pagoda, sb, data);
     return sb;
   }
+  // a five-line board on two steel posts: Shan, Burmese, Tai Nüa (in Tai Le script), English and Chinese, `fg` on `bg` in an `fg`
+  // frame, faintly lit at night, readable from both sides; front faces local +z after turning by ry
+  function fiveLineSign(g, N, bg, fg, w, x, z, ry, data) {
+    const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 640;
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    const MY = '"Noto Sans Myanmar", "Myanmar Text", sans-serif';
+    const LINES = [[N.shan, `600 76px ${MY}`, 100], [N.my, `600 70px ${MY}`, 222], [N.taiNua, '400 66px "Noto Sans Tai Le", "Microsoft Tai Le", sans-serif', 334], [N.en, '600 58px "Figtree", sans-serif', 436], [N.zh, '600 82px "Noto Serif SC", "Noto Serif TC", "Songti SC", serif', 546]];
+    const paint = () => {
+      const c = cv.getContext("2d");
+      c.fillStyle = bg; c.fillRect(0, 0, 1024, 640); c.strokeStyle = fg; c.lineWidth = 12; c.strokeRect(8, 8, 1008, 624);
+      c.fillStyle = fg; c.textAlign = "center"; c.textBaseline = "middle";
+      LINES.forEach(([str, font, ly]) => { c.font = font; c.fillText(str, 512, ly, 960); });
+      t.needsUpdate = true;
+    };
+    paint();
+    if (document.fonts && document.fonts.load) Promise.all(LINES.map(([str, font]) => document.fonts.load(font, str).catch(() => {}))).then(paint);
+    const m = std({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .3, roughness: .6, side: THREE.DoubleSide });
+    onDaylight(d => { m.emissiveIntensity = .3 + .5 * (1 - d); });
+    const p = new THREE.Group(); p.position.set(x, 0, z); p.rotation.y = ry; g.add(p);
+    const hb = w * 640 / 1024, y = 1.1 + hb / 2;
+    [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.08, y + hb / 2, .08), steel, sd * (w / 2 - .2), (y + hb / 2) / 2, -.06, p));
+    sRect(p, -w / 2, w / 2, -.15, .1);
+    const sb = flat(mesh(new THREE.PlaneGeometry(w, hb), m, 0, y, 0, p));
+    if (data) clickable(picks.pagoda, sb, data);
+    return sb;
+  }
+  // the blood bank's and the emergency room's names, as given by the site's owner (Shan and Tai Nüa) or ours (Burmese, English, Chinese)
+  const BLOOD_NAMES = { shan: "ယေးလိူတ်ႈ", my: "သွေးဘဏ်", taiNua: "ᥓᥣᥛᥱ ᥘᥫᥖᥲ", en: "Blood Bank", zh: "血库" };
+  const ER_NAMES = { shan: "ၶိုၵ်ႉၶၵ်ႉ", my: "အရေးပေါ်ဌာန", taiNua: "ᥑᥪᥐᥱ ᥑᥐᥱ", en: "Emergency", zh: "急诊" };
   // သွေးဘဏ်, the blood bank, on the west side of the lane where the huts stood, facing the lane: two storeys of white with red bands
-  // under a red tin roof, its sign on posts by the lane
+  // under a red tin roof, its five-line sign on posts by the lane
   function bloodBank(g) {
-    const X = -104.5, Z = 29, data = { tip: "The blood bank · သွေးဘဏ်", toast: "The hospital's blood bank, where donors from the town and the villages give blood, and where it is tested, stored cold and sent up the lane to the wards and the operating theatres." };
+    const X = -104.5, Z = 29, N = BLOOD_NAMES, data = { tip: `The blood bank · ${N.shan}`, toast: `${N.shan} in Shan, ${N.my} in Burmese, ${N.taiNua} in Tai Nüa, ${N.zh} in Chinese: the hospital's blood bank, where donors from the town and the villages give blood, and where it is tested, stored cold and sent up the lane to the wards and the operating theatres.` };
     civic(g, X, Z, Math.PI / 2, { W: 22, D: 9, floors: 2, wall: civicWhite, trim: civicRed, roof: ROOFS[1](1), door: true, data });
     flat(mesh(new THREE.BoxGeometry(1, .05, 3), forecourt, X + 5, .035, Z, g));   // the path from the door to the lane
-    postSign(g, "သွေးဘဏ်", "Blood Bank", "#c8261c", "#ffffff", 2.8, -99.1, Z - 4, Math.PI / 2, data);
+    fiveLineSign(g, N, "#c8261c", "#ffffff", 2.8, -99.1, Z - 4, Math.PI / 2, data);
   }
   // သူနာပြုသင်တန်းကျောင်း, the nursing college, on the east side of the lane where the huts stood, facing the lane: after the
   // building in the owner's photograph of a hill-town hospital, two long storeys of rubble-stone walling with dark wooden casement

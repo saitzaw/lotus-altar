@@ -40,6 +40,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker check the third monastery's name ဝိႁၢၼ်ႇၵုင်းသႃႇ (`SHAN_NAMES.wihan`). Decide whether it gets a hall inside.
 - Have a Shan speaker check the lower monastery's name ၵျွင်းလူင်ဝဵင်းၵဝ် on the stupa hill.
 - Have a Shan speaker check the hospital's name ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, and a Tai Nüa reader its Tai Le line ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ (`HOSP_NAMES`).
+- Have a Shan speaker check ယေးလိူတ်ႈ (blood bank) and ၶိုၵ်ႉၶၵ်ႉ (emergency), and a Tai Nüa reader ᥓᥣᥛᥱ ᥘᥫᥖᥲ and ᥑᥪᥐᥱ ᥑᥐᥱ
+  (`BLOOD_NAMES`, `ER_NAMES`, given by the owner). The Chinese 血库 and 急诊 are ours.
 - The nursing college's name (သူနာပြုသင်တန်းကျောင်း, "Nursing Training College") is our choice for the owner's "training college";
   ask the owner whether they meant another kind of college.
 - Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
@@ -60,6 +62,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-13: five-language signs for the blood bank and the emergency room
+
+- New `fiveLineSign` (in `26-hospital-football-school.js`): a board on two steel posts with Shan, Burmese, Tai Nüa, English and
+  Chinese lines. The blood bank's sign by the lane uses it (`BLOOD_NAMES`: ယေးလိူတ်ႈ, သွေးဘဏ်, ᥓᥣᥛᥱ ᥘᥫᥖᥲ, Blood Bank, 血库).
+- The emergency sign came off the wing's wall onto posts just south of its door, on the forecourt (`ER_NAMES`: ၶိုၵ်ႉၶၵ်ႉ,
+  အရေးပေါ်ဌာန, ᥑᥪᥐᥱ ᥑᥐᥱ, Emergency, 急诊), and is clickable with its own tip.
+- Shan and Tai Nüa wording given by the owner; Burmese, English and Chinese are ours.
 
 ### 2026-11-13: the hospital's name monument, the blood bank and the nursing college
 
