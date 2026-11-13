@@ -63,9 +63,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   4-sided cone squashed before its 45° turn), and Shan monasteries don't put one there. The door keeps its plain gilded frame.
 - Then, at the owner's word, every other gilt cone pediment or crest built the same skewed way went too: over the Haw Kham's
   three front doors (`15-haw-kham.js`), its throne room's side windows and stage proscenium (`05b`), the kyaung hall's way-out
-  door (`04`), the preacher's seat in the lower kyaung hall (`04b`), the lower monastery's side door (`14b`), and on the stupa
-  hill the name board over the entrance and the main stupa's four niches (`13-stupa-hill.js`). Kept: the small stone pediments
-  over the Kakku-style stupas' niches, which are built correctly and belong to those stupas.
+  door (`04`), the preacher's seat in the lower kyaung hall (`04b`) and the lower monastery's side door (`14b`). Kept, at the
+  owner's word: everything on the stupa hill (`13-stupa-hill.js`), i.e. the gilt point over the entrance name board, the main
+  stupa's four niche pediments and the stone pediments over the Kakku-style stupas' niches.
 
 ### 2026-11-13: open oval windows and an open door on the upper monastery
 
