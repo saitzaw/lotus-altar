@@ -57,6 +57,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-13: no pediment over the upper monastery's door
+
+- The gilt pointed pediment over the upper monastery's doorway (`14-shan-monasteries.js`) is gone: it rendered skewed (a
+  4-sided cone squashed before its 45° turn), and Shan monasteries don't put one there. The door keeps its plain gilded frame.
+  The Haw Kham throne room (`05b-haw-kham-throne-room.js`) still has the same cone pediment.
+
 ### 2026-11-13: open oval windows and an open door on the upper monastery
 
 - The upper Shan monastery (`ၵျွင်းၵွင်းမူးၶမ်း`, `14-shan-monasteries.js`) had solid walls with white torus rings over dark panes.

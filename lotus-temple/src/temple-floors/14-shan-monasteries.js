@@ -92,7 +92,7 @@
         mesh(new THREE.ConeGeometry(.04, .14, 8), M.gold, 0, iy + 2.1, bz + .63, G);
         [-1, 1].forEach(sd => { const a = mesh(new THREE.CylinderGeometry(.06, .07, .55, 8), M.gold, sd * .3, iy + 1.25, bz + .72, G); a.rotation.z = sd * .25; a.rotation.x = -.3; });
       }
-      // the doorway into the shrine hall, its two teak leaves swung open inward, in a gilded frame under a carved pointed pediment
+      // the doorway into the shrine hall, its two teak leaves swung open inward, in a plain gilded frame
       const doorParts = [];
       const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.4), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
       door.position.set(0, FH + 1.36, ID / 2 + .02); G.add(door); doorParts.push(door);   // an unseen sheet across the doorway, to click
@@ -103,7 +103,6 @@
       });
       [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.1, 2.5, .14), M.gold, sd * .75, FH + 1.4, ID / 2 + .05, G));
       mesh(new THREE.BoxGeometry(1.6, .1, .14), M.gold, 0, FH + 2.6, ID / 2 + .05, G);
-      const ped = mesh(new THREE.ConeGeometry(.85, .7, 4), M.gold, 0, FH + 3.0, ID / 2 + .05, G); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
       // the verandah railing round the platform edge, open where the stair arrives
       const rail = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), teakDark, 400); let k = 0;
       const put = (px, py, pz, a, b, c) => rail.setMatrixAt(k++, m4.compose(V(px, py, pz), new THREE.Quaternion(), V(a, b, c)));
