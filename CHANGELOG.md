@@ -6,7 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-13
 
 ### Added
-- A second Shan teak monastery on the stupa hill, on the lower terrace below the festival ground, after a photograph of a northern Shan kyaung: a long hall on posts with open cream shutters, rusty iron roofs with a white scalloped edge, red-and-gold clerestories and gables. Climb its wooden stair to the porch and go in to its shrine hall to make offerings.
+- A second Shan teak monastery on the stupa hill, on the lower terrace below the festival ground, after a photograph of a northern Shan kyaung: a long hall on posts with square windows and open cream shutters, rusty iron roofs with a white scalloped edge, red-and-gold clerestories and gables. Climb its wooden stair to the porch and go into its hall, where the monks give sermons from their raised dais; there is no Buddha image inside.
 
 ## 2026-11-12
 

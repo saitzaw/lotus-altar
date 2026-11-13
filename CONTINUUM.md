@@ -63,12 +63,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   ground: 4.9 m from its retaining wall, 4.3 m from the hill stair's wall, stair foot short of the terrace footpath. The photo's
   layout is mirrored so the wing and stair face the hill stair. `hip()` (a hipped roof) now lives in `shanCarpentry()`; the Haw
   Kham still has its own copy.
-- Interior: place `kyaungLow` reuses `kyaungHall` (same image hall, its own offerings); `nav: false`, so it is reached only on foot.
-  `indoorBlocked` treats it like `kyaung`; `EXIT_SPOT.kyaungLow` finds the monastery by `key`.
+- Interior: place `kyaungLow` is its own hall, `lowerKyaungHall` in `04b-lower-kyaung-hall.js`. At the owner's request it has no
+  Buddha image, so it is not a statue hall and gets no `shrine()` altar: a hall for sermons and gatherings with square windows, red
+  pillars, mats and the monks' raised dais (three seats with fans, a gilded sermon seat). All the monastery's windows, outside and
+  in, are square. `nav: false`, so it is reached only on foot; `indoorBlocked` has its own case (`LOW_HALL`); `EXIT_SPOT.kyaungLow`
+  finds the monastery by `key`.
 - Waiting on the owner: the monastery's Shan name. Set `SHAN_NAMES.kyaungLow` (and `shn` in `CONFIG.places.kyaungLow`) and its name
   board appears on the middle clerestory. Log the wording here for a native speaker to check.
 - Checked headless: renders from the street, the hill stair and the porch; walk heights on the stair (3.75 → 6.35 m) and porch;
-  entering the hall. Not yet seen by eye in a browser.
+  entering the hall and the hall itself. Not yet seen by eye in a browser.
 
 ### 2026-11-12: the bank beside the library
 

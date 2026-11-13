@@ -25,11 +25,11 @@
     // inside a hall: is (x, z) taken by furniture, columns or the stair room?
     indoorBlocked(mode, x, z) {
       const c = (cx, cz, r) => Math.hypot(x - cx, z - cz) < r + PAD, rc = (x0, x1, z0, z1) => x > x0 - PAD && x < x1 + PAD && z > z0 - PAD && z < z1 + PAD;
+      if (mode === "kyaungLow") return LOW_HALL.pillars.some(([cx, cz]) => c(cx, cz, .25)) || z < LOW_HALL.dais + .1;   // the lower monastery's hall: its pillars and the monks' dais
       if (mode !== "church" && !HAW.rooms[mode] && [...INNER_COLUMNS, ...CORNER_COLUMNS].some(([cx, cz]) => c(cx, cz, .3))) return true;   // the church has no columns
       if (typeof mode === "number" && rc(STAIR_ROOM.x0, STAIR_ROOM.x1, STAIR_ROOM.z0, STAIR_ROOM.z1)) return true;
-      const ky = mode === "kyaung" || mode === "kyaungLow";   // the two Shan monasteries share one shrine hall
-      if ([1, 4, 5, 6, 7, "library"].includes(mode) || ky) {   // the statue on its pedestal, the offering table, the censer and the candle stands
-        if (ky) { if (rc(-2.2, 2.2, -3.5, 1.2)) return true; }   // the Shan throne's broad plinth; no table or stands
+      if ([1, 4, 5, 6, 7, "library", "kyaung"].includes(mode)) {   // the statue on its pedestal, the offering table, the censer and the candle stands
+        if (mode === "kyaung") { if (rc(-2.2, 2.2, -3.5, 1.2)) return true; }   // the Shan throne's broad plinth; no table or stands
         else if (c(0, -1.7, 1.75) || rc(-1.6, 1.6, .25, 1.25) || rc(-1.4, 1.4, 1.6, 2.3)) return true;
         if (mode === 1 && rc(-.8, .8, 2.5, 3.1)) return true;   // the kneeling bench
       }
@@ -40,7 +40,7 @@
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);
       if (mode === "church") return CHURCH.banks.some(([x0, x1]) => rc(x0, x1, CHURCH.rows[0] - .25, CHURCH.rows[CHURCH.rows.length - 1] + .3)) || rc(-.9, .9, -2.45, -1.85) || z < CHURCH.dais;   // the pews, the communion table, the dais
-      if (ky) return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || KYAUNG.urns.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, flower urns
+      if (mode === "kyaung") return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || KYAUNG.urns.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, flower urns
       if (HAW.rooms[mode]) return HAW.pillars.some(([cx, cz]) => c(cx, cz, .3)) || HAW.rooms[mode].some(r => rc(...r));   // the pillars; the dais and what stands before it
       return false;
     },

@@ -1,11 +1,11 @@
   /* ---------- the second Shan monastery, on the stupa hill's lower terrace below the festival ground, after the owner's photograph
      of a northern Shan kyaung: a long teak hall raised on rows of posts over an open ground floor, dark plank walls with
-     rectangular windows whose cream shutters stand open (red curtains in some), roofs of rusty corrugated iron edged with a
+     square windows whose cream shutters stand open (red curtains in some), roofs of rusty corrugated iron edged with a
      scalloped white valance. Over the shrine end a three-tier roof: two hipped roofs, each on a clerestory band of red panels
      framed in yellow, and a steep red-and-gold gable on top; over the middle a two-tier hipped roof with a little gable crown;
      and at the end nearest the hill stair a lower wing: an open porch at the top of a wooden stair, and behind it a small tower of
      stacked gables. The photograph has the wing on the left; here it is on the right, toward the hill stair it is reached from.
-     The doors from the porch lead to its shrine hall (place `kyaungLow`) ---------- */
+     The doors from the porch lead to its hall (place `kyaungLow`), a hall for gatherings and sermons, with no image ---------- */
   function lowerKyaung(H) {
     const list = picks.pagoda, s = lowerKyaungSpot(), { teak, teakDark, roofM, white, frameW, pane, hip } = shanCarpentry();
     const name = SHAN_NAMES.kyaungLow;   // its Shan name, once the owner gives it; until then no name board
@@ -56,19 +56,19 @@
     // the walls: the long hall, and the wing's room behind the porch
     mesh(new THREE.BoxGeometry(XA + L / 2, WH, D), teak, (XA - L / 2) / 2, FH + WH / 2, 0, B);
     mesh(new THREE.BoxGeometry(L / 2 - XA, WH, hd), teak, (XA + L / 2) / 2, FH + WH / 2, -hd / 2, B);
-    // windows: a lamplit pane in a cream frame, two shutters standing open, a red curtain drawn across some
-    const frameG = new THREE.BoxGeometry(1.0, 1.4, .08), paneG = new THREE.PlaneGeometry(.8, 1.2), leafG = new THREE.BoxGeometry(.42, 1.2, .04), curtG = new THREE.PlaneGeometry(.4, 1.15);
+    // square windows: a lamplit pane in a cream frame, two shutters standing open, a red curtain drawn across some
+    const frameG = new THREE.BoxGeometry(1.2, 1.2, .08), paneG = new THREE.PlaneGeometry(1.0, 1.0), leafG = new THREE.BoxGeometry(.5, 1.0, .04), curtG = new THREE.PlaneGeometry(.48, .96);
     let wn = 0;
     const win = (x, z, ry) => {
       const o = new THREE.Group(); o.position.set(x, FH + 1.55, z); o.rotation.y = ry; B.add(o);
       part(frameG, frameW, 0, 0, .05, o); part(paneG, pane, 0, 0, .1, o);
-      const a = .9; [-1, 1].forEach(sd => { part(leafG, shutterM, sd * (.5 + .21 * Math.cos(a)), 0, .1 + .21 * Math.sin(a), o).rotation.y = -sd * a; });
-      if (wn++ % 3 === 1) part(curtG, curtainM, -.18, 0, .105, o);
+      const a = .9; [-1, 1].forEach(sd => { part(leafG, shutterM, sd * (.6 + .25 * Math.cos(a)), 0, .1 + .25 * Math.sin(a), o).rotation.y = -sd * a; });
+      if (wn++ % 3 === 1) part(curtG, curtainM, -.24, 0, .105, o);
     };
     for (let i = 0; i < 8; i++) { const x = -L / 2 + 1 + i * 2.35; win(x, hd, 0); win(x, -hd, Math.PI); }
     [-2.2, 0, 2.2].forEach(z => win(-L / 2, z, -Math.PI / 2));
     win(10.6, 0, 0); win(L / 2, -hd / 2, Math.PI / 2); [8.6, 10.8].forEach(x => win(x, -hd, Math.PI));
-    // the doors into the shrine hall, in the hall's end wall at the back of the porch: two teak leaves in a gilded frame
+    // the doors into the hall, in its end wall at the back of the porch: two teak leaves in a gilded frame
     const DZ = hd / 2;
     const door = mesh(new THREE.BoxGeometry(.08, 2.3, 1.4), teakDark, XA + .05, FH + 1.15, DZ, B);
     mesh(new THREE.BoxGeometry(.02, 2.2, .02), M.gold, XA + .1, FH + 1.15, DZ, B);
@@ -125,9 +125,9 @@
     sRect(B, -L / 2, L / 2, -hd, hd);
     // tapping it
     const tip = name ? `${name} · a Shan teak monastery` : "A Shan teak monastery below the festival ground";
-    const toast = `${name ? name + ": a" : "A"} Shan teak monastery on the lower terrace of the stupa hill, below the festival ground. Climb the wooden stair to the porch; the doors there open into its shrine hall.`;
+    const toast = `${name ? name + ": a" : "A"} Shan teak monastery on the lower terrace of the stupa hill, below the festival ground. Climb the wooden stair to the porch; the doors there open into its hall, where the monks give sermons and the village gathers.`;
     B.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, { tip, toast }); });
-    clickable(list, door, { floor: "kyaungLow", tip: `Enter the shrine hall${name ? " of " + name : ""}` });
+    clickable(list, door, { floor: "kyaungLow", tip: `Enter the hall${name ? " of " + name : ""}` });
     if (board) board.userData.toast = toast;
     // where you come out: on the porch before the doors, facing out over the stair; and keep the outside camera above it
     B.updateMatrixWorld(true);
