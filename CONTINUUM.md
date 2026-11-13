@@ -40,6 +40,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker check the third monastery's name ဝိႁၢၼ်ႇၵုင်းသႃႇ (`SHAN_NAMES.wihan`). Decide whether it gets a hall inside.
 - Have a Shan speaker check the lower monastery's name ၵျွင်းလူင်ဝဵင်းၵဝ် on the stupa hill.
 - Have a Shan speaker check the hospital's name ႁူင်းယႃလူင်ၵူၼ်းမိူင်း, and a Tai Nüa reader its Tai Le line ᥞᥨᥒᥰ ᥕᥣ ᥘᥨᥒᥴ ᥐᥨᥢᥰ ᥛᥫᥒᥰ (`HOSP_NAMES`).
+- The nursing college's name (သူနာပြုသင်တန်းကျောင်း, "Nursing Training College") is our choice for the owner's "training college";
+  ask the owner whether they meant another kind of college.
 - Have a Shan speaker check the hills' name လွႆသၢမ်သိပ်း (Loi Sam Sip, glossed "the thirty hills") and its spelling.
 - Have a Shan speaker check တၢင်းၵႃႈတူဝ်း (the to dance) and the romanisation "ka to" in its toast.
 - Have a Shan speaker check မွင်း (the row of gongs on the festival stage).
@@ -58,6 +60,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 ## Log
+
+### 2026-11-13: the hospital's name monument, the blood bank and the nursing college
+
+- The hospital's name boards are off the building (canopy and roof). The name now stands on `hospitalMonument` at the forecourt's
+  south-west corner (`HOSP.sign`, facing down the road), after the owner's photograph of a hill-town hospital gate: a white arched
+  panel with raised bronze letters between rubble-stone pillars with white caps, on a stone base, a half-round raised lawn bed in
+  front. Five lines (`HOSP_NAMES`): Shan, Burmese ပြည်သူ့ဆေးရုံကြီး (the owner typed ပြည့်သူဆေးရုံကြိး; written here as on the photo's
+  sign), Tai Nüa, English, Chinese. The flag moved to the forecourt's west edge.
+- All the hut village's remaining huts are gone, with their yard fences (`yardFence` removed). `hutVillage` is now `hospitalLane`:
+  the dirt lane, its lamps and two banana clumps at its mouth.
+- West of the lane: `bloodBank` (သွေးဘဏ်), a two-storey `civic` block, white with red bands and a red tin roof, x −109…−100,
+  z 18…40, facing the lane. East of it: `nursingCollege` (`COLLEGE`), only the building from the owner's photograph: two long
+  storeys of rubble stone (`fieldStoneTex`, `stoneMat`), dark wooden casement windows (`part()`s), a blue corrugated hip roof on
+  blue eaves with a small front gable at its north end; x −94…−85.5, z 15…44. Each has its sign on posts by the lane (`postSign`).
 
 ### 2026-11-13: a third monastery, ဝိႁၢၼ်ႇၵုင်းသႃႇ, next to the second
 

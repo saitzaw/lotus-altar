@@ -195,7 +195,7 @@
     streetFrontage(g);
     backStreets(g);
     hillHuts(g);
-    hutVillage(g);
+    hospitalLane(g);
     hospitalRoadHouses(g);
     hospital(g);
     footballGround(g);

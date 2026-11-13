@@ -84,11 +84,11 @@
 | `19-dance-audience.js` | audience | `festivalAudience` |
 | `20-front-street.js` | houses along the front street | `streetFrontage` |
 | `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |
-| `22-village-lamps-and-huts.js` | pole lamps, wires, bamboo huts, hut village | `villageLamp` `villageHut` `hutVillage` |
+| `22-village-lamps-and-huts.js` | pole lamps, wires, bamboo huts, the hospital lane | `villageLamp` `villageHut` `hospitalLane` |
 | `23-halloween-ghost.js` | Halloween ghost | `halloweenGhost` |
 | `24-townsfolk.js` | evening townsfolk | `townsfolk` |
 | `25-beat-officer.js` | beat officer (kept commented out at the call site) | `SAFE` `beatOfficer` |
-| `26-hospital-football-school.js` | civic building kit, hospital, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `hospitalBoardMat` `footballGround` `highSchool` |
+| `26-hospital-football-school.js` | civic building kit, hospital and its monument, blood bank, nursing college, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `hospitalMonument` `bloodBank` `nursingCollege` `postSign` `footballGround` `highSchool` |
 | `27-bamboo-fuel-fire-police.js` | bamboo, fuel station, fire and police stations, welcome board | `bambooGrove` `hillFootBamboo` `fuelStation` `fireAndPolice` `WELCOME` |
 | `28-kachin-church-and-back-streets.js` | church outside and compound; back lanes | `kachinChurch` `churchCompound` `backStreets` |
 | `29-forest-and-hills.js` | forest band and hills | `mountainsAndForest` |
