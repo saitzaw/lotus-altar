@@ -57,6 +57,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-13: open oval windows and an open door on the upper monastery
+
+- The upper Shan monastery (`ၵျွင်းၵွင်းမူးၶမ်း`, `14-shan-monasteries.js`) had solid walls with white torus rings over dark panes.
+  Its front and side walls are now extruded plank shapes with real openings. Each oval window has a slightly pointed top, after
+  the owner's Shwe Yan Pyay photo, set in a carved dark-teak frame with a lighter bead and a sill. The doorway is open, with
+  both teak leaves swung inward.
+- Behind the openings is a glimpse of the shrine room, not the real hall: plank walls, floor and ceiling (lamplit at night), two
+  rows of red pillars banded in gold, a red hanging, and a simple gilded seated image on a gilded throne with a blue halo.
+  Clicking the doorway (an unseen sheet) or either door leaf still enters the `kyaung` hall.
+- Unchanged: the lower monastery's square windows and the oval windows inside the shrine hall interior
+  (`04-kyaung-shrine-hall.js`), which still have white frames.
+
 ### 2026-11-13: a second monastery below the festival ground
 
 - New piece `14b-lower-kyaung.js`, `lowerKyaung(H)` (called from `shanMonasteries` after `festivalGround`), after the owner's

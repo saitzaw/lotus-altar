@@ -1,9 +1,9 @@
   /* ---------- Shan teak monasteries (kyaung) beside the stupa hill, after Shwe Yan Pyay: a hall raised on rows of teak posts,
-     dark plank walls with oval windows framed in white, a verandah railing, tiered gable roofs of rusty corrugated iron with carved
+     dark plank walls with open oval windows in carved teak frames, the doors standing open, a verandah railing, tiered gable roofs of rusty corrugated iron with carved
      gable ends and flame finials, a many-tiered pyatthat tower over the shrine room, and a white masonry stair with spiky walls ---------- */
   function shanMonasteries(g) {
     const list = picks.pagoda;
-    const { teak, teakDark, roofM, white, frameW, pane, flame, gable, pyatthat } = shanCarpentry();
+    const { teak, teakDark, roofM, white, flame, gable, pyatthat } = shanCarpentry();
     function kyaung(x, z, ry, W, D, tower, parent = g, y0 = 0, sc = 1, reach = 0, edge = 0) {
       const G = new THREE.Group(); G.position.set(x, y0, z); G.rotation.y = ry; G.scale.setScalar(sc); parent.add(G);
       const PX = W / 2 + MON.PM, PZ = D / 2 + MON.PM;   // the plinth's half sizes
@@ -42,21 +42,68 @@
       posts.forEach(([px, pz], i) => { post.setMatrixAt(i, m4.makeTranslation(px, FH / 2, pz)); foot.setMatrixAt(i, m4.makeTranslation(px, .12, pz)); });
       G.add(post, foot); post.castShadow = true;
       mesh(new THREE.BoxGeometry(W, .3, D), teakDark, 0, FH, 0, G);
-      // the hall: plank walls, oval windows framed in white on the front and sides
-      const walls = mesh(new THREE.BoxGeometry(IW, WH, ID), teak, 0, FH + WH / 2, 0, G);
-      const oval = (wx, wz, ry2) => {
-        const o = new THREE.Group(); o.position.set(wx, FH + WH * .5, wz); o.rotation.y = ry2; G.add(o);
-        const p = mesh(new THREE.CircleGeometry(.5, 24), pane, 0, 0, .02, o); p.scale.y = 1.5;
-        const f = mesh(new THREE.TorusGeometry(.5, .08, 6, 24), frameW, 0, 0, .04, o); f.scale.y = 1.5;
+      // the hall: plank walls cut with open oval windows, carved teak frames with a pointed crown, as at Shwe Yan Pyay, and the
+      // doorway left open, so you see into the dim shrine room: its floor, red pillars and the gilded image at the back
+      const WT = .16, OY = WH * .5, ORX = .5, ORY = .75;   // WT: the walls' thickness; OY: the windows' centre above the floor
+      const ovalPts = (rx, ry, peak, cx = 0, cy = 0) => { const p = []; for (let i = 0; i < 32; i++) { const a = i / 32 * TAU, c = Math.cos(a); p.push(new THREE.Vector2(cx + rx * Math.sin(a) * (1 - peak * Math.max(0, c) ** 3), cy + ry * c + peak * ry * Math.max(0, c) ** 8)); } return p; };
+      const plankT = teak.map.clone(); plankT.needsUpdate = true; plankT.repeat.set(.45, .3);
+      const wallM = std({ map: plankT, roughness: .7 });
+      const wallFace = (len, xs, door) => {   // one wall, len long, WH high, with oval holes at xs and a doorway in the middle
+        const s = new THREE.Shape(); s.moveTo(-len / 2, 0); s.lineTo(len / 2, 0); s.lineTo(len / 2, WH); s.lineTo(-len / 2, WH); s.closePath();
+        xs.forEach(x => s.holes.push(new THREE.Path(ovalPts(ORX, ORY, .08, x, OY).reverse())));
+        if (door) s.holes.push(new THREE.Path([[-.7, .02], [-.7, 2.4], [.7, 2.4], [.7, .02]].map(([a, b]) => new THREE.Vector2(a, b))));
+        return new THREE.ExtrudeGeometry(s, { depth: WT, bevelEnabled: false });
       };
-      const nF = Math.max(3, Math.round(IW / 2.6)); for (let i = 0; i < nF; i++) { const wx = -IW / 2 + (i + .5) * IW / nF; if (Math.abs(wx) > .9) oval(wx, ID / 2, 0); }
-      const nS = Math.max(2, Math.round(ID / 2.6)); for (let i = 0; i < nS; i++) [-1, 1].forEach(sd => oval(sd * IW / 2, -ID / 2 + (i + .5) * ID / nS, sd * Math.PI / 2));
-      // the doors into the shrine hall: two teak leaves in a gilded frame under a carved pointed pediment
-      const door = mesh(new THREE.BoxGeometry(1.4, 2.4, .1), teakDark, 0, FH + 1.2, ID / 2 + .03, G);
-      mesh(new THREE.BoxGeometry(.02, 2.3, .02), M.gold, 0, FH + 1.2, ID / 2 + .09, G);
-      [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.1, 2.5, .14), M.gold, sd * .75, FH + 1.25, ID / 2 + .05, G));
-      mesh(new THREE.BoxGeometry(1.6, .1, .14), M.gold, 0, FH + 2.45, ID / 2 + .05, G);
-      const ped = mesh(new THREE.ConeGeometry(.85, .7, 4), M.gold, 0, FH + 2.85, ID / 2 + .05, G); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
+      const frameG = (() => { const s = new THREE.Shape(ovalPts(ORX + .14, ORY + .16, .2)); s.holes.push(new THREE.Path(ovalPts(ORX, ORY, .08).reverse())); return new THREE.ExtrudeGeometry(s, { depth: .07, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 1 }); })();
+      const frameM = std({ color: 0x3e1e0e, roughness: .6 }), beadM = std({ color: 0x6a4026, roughness: .5 });
+      const beadG = (() => { const s = new THREE.Shape(ovalPts(ORX + .04, ORY + .05, .1)); s.holes.push(new THREE.Path(ovalPts(ORX, ORY, .08).reverse())); return new THREE.ExtrudeGeometry(s, { depth: .1, bevelEnabled: false }); })();
+      const frontX = [], nF = Math.max(3, Math.round(IW / 2.6)); for (let i = 0; i < nF; i++) { const wx = -IW / 2 + (i + .5) * IW / nF; if (Math.abs(wx) > .9) frontX.push(wx); }
+      const nS = Math.max(2, Math.round(ID / 2.6)), sideX = []; for (let i = 0; i < nS; i++) sideX.push(-(ID - 2 * WT) / 2 + (i + .5) * (ID - 2 * WT) / nS);
+      mesh(wallFace(IW, frontX, true), wallM, 0, FH + .15, ID / 2 - WT, G);
+      mesh(new THREE.BoxGeometry(IW, WH, WT), wallM, 0, FH + .15 + WH / 2, -ID / 2 + WT / 2, G);   // the back wall, blind
+      const sideW = wallFace(ID - 2 * WT, sideX, false);
+      [-1, 1].forEach(sd => { const m = mesh(sideW, wallM, sd * (IW / 2 - WT), FH + .15, 0, G); m.rotation.y = sd * Math.PI / 2; });
+      const oval = (wx, wz, ry2) => {   // the frame round one opening, proud of the wall's face
+        const o = new THREE.Group(); o.position.set(wx, FH + .15 + OY, wz); o.rotation.y = ry2; G.add(o);
+        mesh(frameG, frameM, 0, 0, 0, o); mesh(beadG, beadM, 0, 0, 0, o);
+        mesh(new THREE.BoxGeometry(1.1, .08, .14), frameM, 0, -ORY - .2, .06, o);   // the sill
+      };
+      frontX.forEach(wx => oval(wx, ID / 2, 0));
+      sideX.forEach(sx => [-1, 1].forEach(sd => oval(sd * IW / 2, -sd * sx, sd * Math.PI / 2)));
+      {   // inside: a dim plank room under a dark ceiling, lamplit at night, two rows of red pillars banded in gold, and the image on his throne
+        const inT = teak.map.clone(); inT.needsUpdate = true; inT.repeat.set(3, 1);
+        const inM = std({ map: inT, color: 0x707070, roughness: .8, side: THREE.BackSide, emissive: 0xffa050, emissiveIntensity: 0 }), redM = std({ color: 0x8a1a10, roughness: .45, emissive: 0x401008, emissiveIntensity: 0 });
+        onDaylight(d => { inM.emissiveIntensity = .12 * (1 - d) + .02; redM.emissiveIntensity = .5 * (1 - d); });
+        const iy = FH + .15, ih = WH - .02;
+        const room = new THREE.Mesh(new THREE.BoxGeometry(IW - 2 * WT - .02, ih, ID - 2 * WT - .02), inM); room.position.set(0, iy + ih / 2, 0); room.receiveShadow = true; G.add(room);
+        const shaft = new THREE.CylinderGeometry(.13, .14, ih, 10), bandG = new THREE.CylinderGeometry(.155, .155, .1, 10);
+        [-IW / 4, IW / 4].forEach(px => [-ID / 4, 0, ID / 4].forEach(pz => { part(shaft, redM, px, iy + ih / 2, pz, G); [.4, ih - .4].forEach(by => part(bandG, M.gold, px, iy + by, pz, G)); }));
+        const bz = -ID / 2 + WT + .02;
+        mesh(new THREE.PlaneGeometry(2.6, ih - .3), redM, 0, iy + (ih - .3) / 2, bz + .01, G);   // the red hanging behind him
+        mesh(new THREE.BoxGeometry(1.5, .7, .9), M.gold, 0, iy + .35, bz + .6, G);   // the gilded throne
+        mesh(new THREE.BoxGeometry(1.7, .08, 1.05), M.gold, 0, iy + .72, bz + .6, G);
+        const halo = mesh(new THREE.CircleGeometry(.36, 20), std({ color: 0x14204a, roughness: .5 }), 0, iy + 2.05, bz + .08, G);
+        mesh(new THREE.TorusGeometry(.38, .03, 6, 24), M.gold, 0, 0, .01, halo);
+        // the image, seated touching the earth: crossed legs, body, shoulders, head with its curls and gilt bud
+        const s = mesh(new THREE.SphereGeometry(.5, 16, 10), M.gold, 0, iy + .9, bz + .7, G); s.scale.set(1, .32, .62);
+        const b = mesh(new THREE.SphereGeometry(.3, 16, 12), M.gold, 0, iy + 1.3, bz + .62, G); b.scale.set(1, 1.45, .75);
+        mesh(new THREE.SphereGeometry(.17, 16, 12), M.gold, 0, iy + 1.9, bz + .64, G);
+        mesh(new THREE.SphereGeometry(.15, 12, 8, 0, TAU, 0, 1.3), std({ color: 0x1a1410, roughness: .6 }), 0, iy + 1.92, bz + .63, G);
+        mesh(new THREE.ConeGeometry(.04, .14, 8), M.gold, 0, iy + 2.1, bz + .63, G);
+        [-1, 1].forEach(sd => { const a = mesh(new THREE.CylinderGeometry(.06, .07, .55, 8), M.gold, sd * .3, iy + 1.25, bz + .72, G); a.rotation.z = sd * .25; a.rotation.x = -.3; });
+      }
+      // the doorway into the shrine hall, its two teak leaves swung open inward, in a gilded frame under a carved pointed pediment
+      const doorParts = [];
+      const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.4), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+      door.position.set(0, FH + 1.36, ID / 2 + .02); G.add(door); doorParts.push(door);   // an unseen sheet across the doorway, to click
+      [-1, 1].forEach(sd => {
+        const h = new THREE.Group(); h.position.set(sd * .7, FH + 1.36, ID / 2 - WT - .03); h.rotation.y = -sd * 1.95; G.add(h);
+        doorParts.push(mesh(new THREE.BoxGeometry(.7, 2.38, .06), teakDark, -sd * .35, 0, 0, h));
+        [-.6, .6].forEach(py => doorParts.push(mesh(new THREE.BoxGeometry(.5, .8, .02), frameM, -sd * .35, py, .035, h)));   // raised panels
+      });
+      [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.1, 2.5, .14), M.gold, sd * .75, FH + 1.4, ID / 2 + .05, G));
+      mesh(new THREE.BoxGeometry(1.6, .1, .14), M.gold, 0, FH + 2.6, ID / 2 + .05, G);
+      const ped = mesh(new THREE.ConeGeometry(.85, .7, 4), M.gold, 0, FH + 3.0, ID / 2 + .05, G); ped.rotation.y = Math.PI / 4; ped.scale.z = .12;
       // the verandah railing round the platform edge, open where the stair arrives
       const rail = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), teakDark, 400); let k = 0;
       const put = (px, py, pz, a, b, c) => rail.setMatrixAt(k++, m4.compose(V(px, py, pz), new THREE.Quaternion(), V(a, b, c)));
@@ -103,8 +150,9 @@
         }
       });
       if (edge) flat(mesh(new THREE.BoxGeometry(SWd, .06, edge + .1), white, 0, .03, R + edge / 2, G));   // the paved walk out to the hill stair
-      G.traverse(o => { if (o.isMesh && o !== door) clickable(list, o, { tip: `${SHAN_NAMES.kyaung} · a Shan teak monastery` }); });
-      clickable(list, door, { floor: "kyaung", tip: `Enter the shrine hall of ${SHAN_NAMES.kyaung}` });
+      bakeParts(G);
+      G.traverse(o => { if (o.isMesh && !doorParts.includes(o)) clickable(list, o, { tip: `${SHAN_NAMES.kyaung} · a Shan teak monastery` }); });
+      doorParts.forEach(o => clickable(list, o, { floor: "kyaung", tip: `Enter the shrine hall of ${SHAN_NAMES.kyaung}` }));
       Object.assign(board.userData, { toast: `${SHAN_NAMES.kyaung}: a Shan teak monastery on the hill of ${SHAN_NAMES.stupa}. Climb its stair to the verandah and the doors of the shrine hall, or walk round it on the paved plinth.` });
       // keep the outside camera above it
       G.updateMatrixWorld(true);
