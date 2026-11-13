@@ -1,6 +1,21 @@
   /* ---------- Shan teak monasteries (kyaung) beside the stupa hill, after Shwe Yan Pyay: a hall raised on rows of teak posts,
      dark plank walls with oval and round-topped arched windows in carved teak frames, the doors closed, a verandah railing, clustered gable roofs of rusty corrugated iron with carved
      fretwork gable boards, a many-tiered pyatthat tower over the shrine room, and a white masonry stair guarded by naga ---------- */
+  /* ---------- the monastery's shrine-hall windows: one layout for its outside walls (kyaung) and for the hall inside (kyaungHall),
+     so every window is in the same place seen from either side. Tall round-topped arches, an oval either side of the door and in
+     the middle of each side, a quarter of the arches shuttered. In the monastery's own units, before it is scaled up: x runs across
+     the front from the middle, and along a side wall from its middle (the side at +x runs back as x grows) ---------- */
+  function kyaungWindows() {
+    const IW = MON.W - 3, ID = MON.D - 3, WT = .16, sideLen = ID - 2 * WT, front = [], side = [], shut = rng(29);
+    for (let x = 1.7, k = 0; x < IW / 2 - .6; x += 1.4, k++) [-1, 1].forEach(sd => front.push({ x: sd * x, oval: k === 0 }));
+    front.sort((a, b) => a.x - b.x);
+    const nS = Math.floor((sideLen - 1.2) / 1.5) + 1; for (let i = 0; i < nS; i++) side.push({ x: (i - (nS - 1) / 2) * 1.5, oval: i === (nS - 1) / 2 });
+    [...front, ...side].forEach(w => w.shut = !w.oval && shut() < .25);
+    return { IW, ID, WT, WH: 3.4, sideLen, front, side, ORX: .48, ORY: .75, OY: 1.6, AW: .38, AH: 2.0, AB: .55 };   // ORX, ORY, OY: an oval's half sizes and centre above the floor; AW, AH, AB: an arch's half width, height and sill
+  }
+  // the outlines of an oval and of a round-topped arch (its foot at cy), as points for a shape
+  function kwOval(rx, ry, cx = 0, cy = 0) { const p = []; for (let i = 0; i < 32; i++) { const a = i / 32 * TAU; p.push(new THREE.Vector2(cx + rx * Math.sin(a), cy + ry * Math.cos(a))); } return p; }
+  function kwArch(hw, h, cx = 0, cy = 0) { const p = [new THREE.Vector2(cx - hw, cy), new THREE.Vector2(cx + hw, cy)]; for (let i = 0; i <= 16; i++) { const a = i / 16 * Math.PI; p.push(new THREE.Vector2(cx + hw * Math.cos(a), cy + h - hw + hw * Math.sin(a))); } return p; }
   function shanMonasteries(g) {
     const list = picks.pagoda;
     const { teak, teakDark, white, pyatthat, hip } = shanCarpentry();
@@ -93,15 +108,7 @@
       // the hall: plank walls in a grid of moulded panels, cut, as at Shwe Yan Pyay, with tall round-topped arched windows (some open,
       // some with their panelled shutters closed), a carved fan over each, and an oval window either side of the door; the door
       // closed; inside, the dim shrine room: its floor, red pillars and the gilded image at the back
-      const WT = .16, ORX = .48, ORY = .75, OY = 1.6, AW = .38, AH = 2.0, AB = .55;   // WT: the walls' thickness; ORX, ORY, OY: an oval's half sizes and centre above the floor; AW, AH, AB: an arch's half width, height and sill
-      const P2 = (a, b) => new THREE.Vector2(a, b);
-      const ovalPts = (rx, ry, cx = 0, cy = 0) => { const p = []; for (let i = 0; i < 32; i++) { const a = i / 32 * TAU; p.push(P2(cx + rx * Math.sin(a), cy + ry * Math.cos(a))); } return p; };
-      const archPts = (hw, h, cx = 0, cy = 0) => { const p = [P2(cx - hw, cy), P2(cx + hw, cy)]; for (let i = 0; i <= 16; i++) { const a = i / 16 * Math.PI; p.push(P2(cx + hw * Math.cos(a), cy + h - hw + hw * Math.sin(a))); } return p; };
-      const sideLen = ID - 2 * WT, frontW = [], sideW = [], shut = rng(29);   // the windows along the front and along each side: { x, oval, shut }
-      for (let x = 1.7, k = 0; x < IW / 2 - .6; x += 1.4, k++) [-1, 1].forEach(sd => frontW.push({ x: sd * x, oval: k === 0 }));
-      frontW.sort((a, b) => a.x - b.x);
-      const nS = Math.floor((sideLen - 1.2) / 1.5) + 1; for (let i = 0; i < nS; i++) sideW.push({ x: (i - (nS - 1) / 2) * 1.5, oval: i === (nS - 1) / 2 });
-      [...frontW, ...sideW].forEach(w => w.shut = !w.oval && shut() < .25);
+      const { WT, ORX, ORY, OY, AW, AH, AB, sideLen, front: frontW, side: sideW } = kyaungWindows(), P2 = (a, b) => new THREE.Vector2(a, b), ovalPts = kwOval, archPts = kwArch;
       const wallFace = (len, wins, door) => {   // one wall, len long, WH high, with window holes and perhaps a doorway in the middle
         const s = new THREE.Shape(); s.moveTo(-len / 2, 0); s.lineTo(len / 2, 0); s.lineTo(len / 2, WH); s.lineTo(-len / 2, WH); s.closePath();
         wins.forEach(w => s.holes.push(new THREE.Path(w.oval ? ovalPts(ORX, ORY, w.x, OY) : archPts(AW, AH, w.x, AB))));
@@ -204,19 +211,19 @@
           const b = mesh(bG, laceM, cx, y - .04 * PH + PH / 2, cz + e * (d / 2 + .03), G); b.customDepthMaterial = laceDepth;
         });
       };
-      const yR = FH + WH, yT = yR + 2.0;   // the walls' top, and the frieze's top where the gables stand
-      hip(G, [-W / 2 - .4, W / 2 + .4, -D / 2 - .4, D / 2 + .4], [-IW / 2, IW / 2, -ID / 2, ID / 2], yR - .35, yR + .9).material = rustTex(false, 1, 1);
+      const yR = FH + WH, yT = yR + 1.5;   // the walls' top, and the frieze's top where the gables stand
+      hip(G, [-W / 2 - .4, W / 2 + .4, -D / 2 - .4, D / 2 + .4], [-IW / 2, IW / 2, -ID / 2, ID / 2], yR - .25, yR + .7).material = rustTex(false, 1, 1);
       const frontF = inlayM(IW / 1.6, 1), sideF = inlayM(ID / 1.6, 1);
       mesh(new THREE.BoxGeometry(IW, yT - yR - .15, ID), [sideF, sideF, darkM, darkM, frontF, frontF], 0, (yR + .15 + yT) / 2, 0, G);
-      gableB(0, yT, 0, 5.8, ID + .6, 2.3);
+      gableB(0, yT, 0, 5.6, ID + .6, 1.8);
       const tierF = inlayM(2, 1);
-      mesh(new THREE.BoxGeometry(2.6, 1.2, ID * .5), [tierF, tierF, darkM, darkM, tierF, tierF], 0, yT + 1.9, -.4, G);   // the second tier, rising through the middle gable
-      gableB(0, yT + 2.5, -.4, 3.6, ID * .5 + .6, 1.4);
-      [-1, 1].forEach(sd => gableB(sd * 4.1, yT, 0, 3.2, ID + .2, 1.5));
-      if (tower) pyatthat(G, 0, yT + 1.5, -ID / 2 + .7, 3.0, 5);
+      mesh(new THREE.BoxGeometry(2.4, .9, ID * .5), [tierF, tierF, darkM, darkM, tierF, tierF], 0, yT + 1.45, -.4, G);   // the second tier, rising through the middle gable
+      gableB(0, yT + 1.9, -.4, 3.2, ID * .5 + .6, 1.1);
+      [-1, 1].forEach(sd => gableB(sd * 4.1, yT, 0, 3.2, ID + .2, 1.2));
+      if (tower) pyatthat(G, 0, yT + 1.2, -ID / 2 + .7, 2.6, 4);
       // the monastery's name board on the frieze, under the middle gable
-      const BW = 3.0, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung);
-      const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], 0, yR + 1.45, ID / 2 + .05, G);
+      const BW = 2.6, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung);
+      const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], 0, yR + 1.1, ID / 2 + .05, G);
       // the white masonry stair down from the verandah, its walls topped with pinnacles, a gold lotus bud on a red post at the top of
       // each wall and a white naga rearing at its foot
       // with `reach`, the stair runs on at the foot as a level paved walk between low coped walls into the hill stair's wall

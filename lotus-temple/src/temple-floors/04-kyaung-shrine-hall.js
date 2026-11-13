@@ -1,5 +1,5 @@
-  /* ---------- ကျောင်း the shrine hall of the Shan monastery on the stupa hill: teak plank walls and floor, oval windows framed in
-     white, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a square gilded throne
+  /* ---------- ကျောင်း the shrine hall of the Shan monastery on the stupa hill: teak plank walls and floor, tall arched and oval windows
+     in dark teak frames, matching the monastery's outside walls, red pillars banded in gold, and at the back a Buddha image in the northern Shan and Lanna manner on a square gilded throne
      set with glass mosaic, before a red hanging worked in gold that fills the back wall, a ring of little lights round the dark blue
      halo behind his head, white parasols and sprays of white flowers either side, a red coffered ceiling over him; the altar before
      him is the Shan way, with no table: water, fruit, lotus, candles and lamps on gilt trays, and incense in a little brass bowl of
@@ -25,14 +25,26 @@
     const beamX = new THREE.BoxGeometry(15, .3, .26), beamZ = new THREE.BoxGeometry(.26, .3, 13);
     [-3.9, -.6, 2.7, 5.9].forEach(z => part(beamX, teakDark, 0, HH - .15, z, g));
     [-3.6, 3.6].forEach(x => part(beamZ, teakDark, x, HH - .15, 1, g));
-    // oval windows framed in white along the side walls: daylight by day, the dark hill at night
+    // the windows, laid out as on the outside walls (kyaungWindows) and scaled to this hall: tall arches and ovals in dark teak
+    // frames along the front and both sides; daylight in the open ones by day, the dark hill at night; the shuttered ones closed
     const pane = std({ color: 0x120a06, roughness: .4, emissive: 0xdde8f2, emissiveIntensity: 0 });
     onDaylight(d => pane.emissiveIntensity = .9 * d + .02);
-    [-1, 1].forEach(sd => [-3, .6, 4.2].forEach(z => {
-      const o = new THREE.Group(); o.position.set(sd * 7.48, 2.6, z); o.rotation.y = -sd * Math.PI / 2; g.add(o);
-      mesh(new THREE.CircleGeometry(.5, 24), pane, 0, 0, .01, o).scale.y = 1.5;
-      mesh(new THREE.TorusGeometry(.5, .08, 6, 24), white, 0, 0, .03, o).scale.y = 1.5;
-    }));
+    const KW = kyaungWindows(), fx = 7.5 / (KW.IW / 2), fz = 6.5 / (KW.ID / 2), ws = 1.5, wy = HH / KW.WH;   // fx, fz: outside to inside across and along; ws: the windows' size; wy: heights
+    const AW = KW.AW * ws, AH = KW.AH * ws, ORX = KW.ORX * ws, ORY = KW.ORY * ws, AB = KW.AB * wy, OY = AB + AH / 2;
+    const frameIn = std({ color: 0x0a0402, roughness: .6 }), leafIn = std({ color: 0x0c0503, roughness: .7 });
+    const ringG = (outer, inner) => { const s = new THREE.Shape(outer); s.holes.push(new THREE.Path(inner)); return new THREE.ShapeGeometry(s); };
+    const archG = new THREE.ShapeGeometry(new THREE.Shape(kwArch(AW, AH))), archRing = ringG(kwArch(AW + .15, AH + .2, 0, -.05), kwArch(AW, AH));
+    const ovalG = new THREE.ShapeGeometry(new THREE.Shape(kwOval(ORX, ORY))), ovalRing = ringG(kwOval(ORX + .15, ORY + .15), kwOval(ORX, ORY));
+    const seamG = new THREE.BoxGeometry(.04, AH - .1, .02), sillG = new THREE.BoxGeometry(1, .08, .16);
+    const winIn = (w, x, z, ry) => {   // one window in the wall at (x, z), facing into the hall
+      const o = new THREE.Group(); o.position.set(x, w.oval ? OY : AB, z); o.rotation.y = ry; g.add(o);
+      flat(part(w.oval ? ovalG : archG, w.shut ? leafIn : pane, 0, 0, .01, o));
+      flat(part(w.oval ? ovalRing : archRing, frameIn, 0, 0, .02, o));
+      if (w.shut) flat(part(seamG, frameIn, 0, (AH - .1) / 2, .025, o));   // where the two shutters meet
+      flat(part(sillG, frameIn, 0, w.oval ? -ORY - .12 : -.06, .06, o)).scale.x = (w.oval ? ORX : AW) * 2 + .4;
+    };
+    KW.front.forEach(w => winIn(w, w.x * fx, 7.48, Math.PI));
+    [-1, 1].forEach(sd => KW.side.forEach(w => winIn(w, sd * 7.48, 1 - sd * w.x * fz, -sd * Math.PI / 2)));
     // the pillars: red lacquer, gold bands, white footings
     const footG = new THREE.BoxGeometry(.6, .2, .6), shaftG = new THREE.CylinderGeometry(.2, .22, HH - .2, 16), bandG = new THREE.CylinderGeometry(.235, .235, .16, 16);
     KYAUNG.pillars.forEach(([x, z]) => {
@@ -133,9 +145,10 @@
     const bannerMs = [["#9a1c18", "#e8c070", "#f4f0e6"], ["#f2ede0", "#9a1c18", "#2a6a3a"], ["#1f5a3a", "#e8c070", "#f2ede0"], ["#2a2a5a", "#d8a640", "#c83a2a"]]
       .map(c => std({ map: banner(...c), roughness: .9, side: THREE.DoubleSide }));
     const rodG = new THREE.CylinderGeometry(.015, .015, .5, 6), tasselG = new THREE.ConeGeometry(.05, .3, 6);
-    [-1, 1].forEach(sd => [-4.6, -1.2, 2.4, 5.8].forEach((z, i) => [-.3, .3].forEach((dz, j) => {
+    const sideZ = KW.side.map(w => 1 + w.x * fz).sort((a, b) => a - b), bannerZ = sideZ.slice(1).map((z, i) => (z + sideZ[i]) / 2);   // midway between the windows
+    [-1, 1].forEach(sd => bannerZ.forEach((z, i) => [-.22, .22].forEach((dz, j) => {
       const h = 2.2 + ((i + j) % 3) * .35, x = sd * 7.42, zz = z + dz, m = bannerMs[(i * 2 + j + (sd > 0 ? 1 : 0)) % 4];
-      const b = flat(mesh(new THREE.PlaneGeometry(.36, h), m, x, 5.9 - h / 2, zz, g)); b.rotation.y = -sd * Math.PI / 2;
+      const b = flat(mesh(new THREE.PlaneGeometry(.3, h), m, x, 5.9 - h / 2, zz, g)); b.rotation.y = -sd * Math.PI / 2;
       part(rodG, teakDark, x, 5.92, zz, g).rotation.x = Math.PI / 2;
       part(tasselG, gold, x, 5.9 - h - .12, zz, g).rotation.x = Math.PI;
     })));

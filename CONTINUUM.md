@@ -74,6 +74,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   material for shadows). Stair: pinnacle merlons, red-and-gold lotus posts at the top, simple naga heads at the foot.
 - Then (owner's ask) the main door's leaves are shut in the doorway (still clickable to enter), and the low panel rails stop
   either side of the door instead of crossing it.
+- Then: roofs scaled down (frieze 1.5 m, gables 1.8/1.2/1.1 m high, pyatthat 4 tiers). The window layout now lives in
+  `kyaungWindows()` (with `kwOval`, `kwArch`) in `14-shan-monasteries.js`; `kyaung()` and the interior `kyaungHall`
+  (`04-kyaung-shrine-hall.js`) both build from it, the outside being the master. Change windows there only.
 - Open: the naga heads are simple; the owner may want them closer to the photo's chinthe-naga.
 
 ### 2026-11-13: the hill monastery's windows redrawn after Shwe Yan Pyay

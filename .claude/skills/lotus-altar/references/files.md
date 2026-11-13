@@ -56,7 +56,7 @@
 | `01-shared-pieces.js` | lanterns, spiral stairs, stair room, front wall, balcony corridor, lattice windows, hall walls, doorways | `lantern` `spiralStairs` `stairRoom` `corridor` `hallWalls` `doorway` |
 | `02-roofs.js` | curved tiled eaves, balustrades, beams, brackets, columns, pedestals, thrones, offering tables | `curvedEave` `tiledEave` `throne` `offeringTable` |
 | `03-hall-2f-lamps-and-lotus-hall.js` | 2F Hall of a Thousand Lamps; 蓮華寺 interior | `lampHall` `library` |
-| `04-kyaung-shrine-hall.js` | Shan monastery shrine hall interior | `KYAUNG` `kyaungHall` |
+| `04-kyaung-shrine-hall.js` | Shan monastery shrine hall interior (windows from `kyaungWindows()` in `14-shan-monasteries.js`) | `KYAUNG` `kyaungHall` |
 | `04b-lower-kyaung-hall.js` | the lower Shan monastery's hall (`kyaungLow`): no image, the monks' dais and sermon seat, mats, square windows | `lowerKyaungHall` `LOW_HALL` |
 | `05-church-interior.js` | Kachin Baptist church interior | `CHURCH` `churchHall` |
 | `05b-haw-kham-throne-room.js` | the Haw Kham's six halls (`kind`): throne room, hall of justice, hall of the monks; literature, dining and opera halls at the back | `HAW` `hawHall` |
@@ -69,7 +69,7 @@
 | `12-market.js` | seven-day market | `sevenDayMarket` |
 | `13-stupa-hill.js` | stupa hill and **terrain** (height/walkable ground) | `HILL` `groundAt` `walkAt` `terrainAt` `MON` `KINNARA` `AUDIENCE` `shanStupaHill` |
 | `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials, the carved gable, the pyatthat and a hipped roof, shared by the monasteries and the Haw Kham (made once) | `shanCarpentry` `hip` |
-| `14-shan-monasteries.js` | Shan teak monasteries | `shanMonasteries` |
+| `14-shan-monasteries.js` | Shan teak monastery on the hill; its window layout, shared with the hall inside | `shanMonasteries` `kyaungWindows` `kwOval` `kwArch` |
 | `14b-lower-kyaung.js` | the second monastery, on the hill's lower terrace below the festival ground, after the owner's photograph; its door leads to `kyaungLow` | `lowerKyaung` |
 | `14c-wihan-kyaung.js` | the third monastery ဝိႁၢၼ်ႇၵုင်းသႃႇ, on the lower terrace past the second, after the owner's photograph: plaster hall under three roof tiers, verandah wing on posts, stair porch, blue tower with the name board, flags; outside only | `wihanKyaung` |
 | `15-haw-kham.js` | the saopha's palace and its guards, its own top-level builder (called from `36-lion-dragon-dance.js` after `shanMonasteries`); front away from the town, back toward it | `hawKham` `palaceGuards` |
