@@ -68,6 +68,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the market's midday break; the procession ends on arrival
+- From the owner: the seven-day market stops at noon and opens again 5–9 PM; leave every other schedule alone. `CONFIG.stalls` is
+  now a list of windows `[[9, 12], [17, 21]]`. The food street used `FOLK.stalls` too; it now has its own `FOLK.food`
+  (`CONFIG.foodStreet`, 9 AM–10 PM, `temple.setFoodStreet`) so its hours stay as they were. `?stalls=1/0` still forces both.
+  The goods on the stall tables stay out at all hours, as before. The evening townsfolk still browse the market's aisles until 10 PM.
+- The procession sets out at 8 and is over once all have reached the second monastery: `PROCESSION.dwell` 20 min at each of the
+  five stops, `gather` 60 s, so it ends at about 9:50 AM. `CONFIG.procession.until` (11) is only the latest it can run.
+- The earlier "continue with the 2:30 pm" was a misunderstanding; nothing at 2:30 PM. Dropped that open question.
+
 ### 2026-11-14: the procession's route, hours and dancers
 - From the owner: 8–11 AM (`CONFIG.procession`), set out from in front of the gate, go to the Haw Kham road and on to the second
   monastery, kinnara in front, the to (တိုးနယား) at the end, not along the church's street. The route is now worked out in
@@ -78,7 +87,6 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   8 AM ICT) sets the head's place, the stops share the morning and the last 40 min they stand gathered. `?procession=1`: 20 s stops,
   90 s gathered, then it starts again. New low-poly `createKinnaraDancers` (pair, beating wings) and `createToDancer` (white to,
   two dancers' legs, nodding head) for the parade; the stage's own dancers are separate.
-- The owner also said the morning "should continue with the 2:30 pm"; not done yet: ask what happens at 2:30 PM.
 
 ### 2026-11-14: the Poy Sang Long procession
 - New piece `24b-shinlaung-procession.js`: `createShinlaungPair`, `createProcessionRelatives`, `createOfferingPoles` (each returns a

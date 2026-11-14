@@ -6,7 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-14
 
 ### Added
-- Poy Sang Long, the Shan novice ordination procession, 8–11 AM ICT (`?procession=1` shows it at any time, with short stops): it sets out from in front of the temple's gate, goes along the front street, up the market lane, along the palace road past the Haw Kham and up the hill's east stair to the second monastery, stopping to dance on the way and gathering before the monastery at the end; it keeps off the church's street. Kinnara and kinnari dancers lead it and the white to dances at the back; bamboo poles hung with white-wrapped gifts and ribbons lead, then men in pastel silk jackets with fans and monks' bowls, three boys dressed as princes in silk and Shan flower headdresses riding their carriers' shoulders under turning golden parasols, and women in banded skirts carrying folded saffron robes in silver bowls.
+- Poy Sang Long, the Shan novice ordination procession, from 8 AM ICT (`?procession=1` shows it at any time, with short stops): it sets out from in front of the temple's gate, goes along the front street, up the market lane, along the palace road past the Haw Kham and up the hill's east stair to the second monastery, stopping to dance on the way and gathering before the monastery at the end; it keeps off the church's street. Kinnara and kinnari dancers lead it and the white to dances at the back; bamboo poles hung with white-wrapped gifts and ribbons lead, then men in pastel silk jackets with fans and monks' bowls, three boys dressed as princes in silk and Shan flower headdresses riding their carriers' shoulders under turning golden parasols, and women in banded skirts carrying folded saffron robes in silver bowls.
 - The food street's boards are lettered in Shan, Tai Nüa, Chinese and Burmese, with a small English line: a Shan rice shop, a Yunnan Chinese restaurant, Shan noodles and warm tofu, handmade buns and dumplings, and tea with Shan sweets; each Shan counter now shows its own food.
 - A food street between the temple's east wall and the seven-day market, where the row of pines stood: five stalls, Shan under thatch with yellow Burmese boards and steaming pots of noodle broth, Chinese under red-edged tin with red boards, bamboo steamers of buns and dumplings and red lanterns swinging from the eaves. Tables with red and blue plastic stools; Shan, Palaung, Kachin and Yunnanese cooks and diners, each in their own dress, and friends strolling the street (9 AM–10 PM ICT).
 - The four-animal top's hall now has shut doors and a young doorman who asks your age: only visitors 21 and over are let in.
@@ -17,6 +17,8 @@ For working notes and open questions, see `CONTINUUM.md`.
 - Shafts of morning sun slant through the church's east windows across the pews by day.
 
 ### Changed
+- The seven-day market's sellers and shoppers now leave at noon and come back from 5 to 9 PM ICT (it was 9 AM–10 PM); the food street keeps its hours, 9 AM–10 PM.
+- The Poy Sang Long procession sets out at 8 AM and is over once everyone has reached the second monastery, at about 9:50 AM, after stopping to dance at five places on the way.
 - The four-animal top is played on a table, and its bowl is wider so the top stays inside it and under the cover the whole round.
 - When it rains, the guards at the saopha's palace put on the straw hats they carry slung on their backs.
 - A grand piano in black lacquer stands on the left of the church's dais in place of the keyboard, and the choir's chairs are all on the right. The pew backs are a little lower.

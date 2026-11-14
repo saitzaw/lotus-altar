@@ -5,7 +5,7 @@
      eaves. Tables with red and blue plastic stools out front. The people are Shan, Palaung (Ta'ang), Kachin (Jinghpaw) and Yunnanese
      Chinese, each in their own dress, every man in trousers: cooks at the counters, diners at the tables, friends strolling the street.
      The stalls are one flat-shaded mesh and the cooks and diners another; the strollers, the steam and the lanterns move. The people
-     and the steam are there while the market's stalls are open (FOLK.stalls, 9 am–10 pm) ---------- */
+     and the steam are there while the market's stalls are open (FOLK.food, 9 am–10 pm) ---------- */
   const FOOD = { x: 35.8, zs: [35, 25, 15, 5, -5], lanes: [41.4, 42.2, 41.8], z0: -10.5, z1: 40.5 };   // stall centres (x, and z for each), fronts facing the market (+x); the strollers' lines and where they turn
   // the boards' lines, as given by the site's owner: Shan (Tai Yai), Tai Nüa (Dehong Dai, in Tai Le script), Chinese, Burmese, and our
   // English gloss; food is what the stall serves. Shan and Chinese stalls by turns along the street
@@ -268,7 +268,7 @@
     const sm = new THREE.Matrix4(), sq = new THREE.Quaternion(), sv = V(0, 0, 0), ss = V(1, 1, 1);
     let st = 0;
     updaters.pagoda.push((dt, t, motion) => {
-      const on = FOLK.stalls;
+      const on = FOLK.food;
       if (folkMesh.visible !== on) folkMesh.visible = strollG.visible = steam.visible = on;
       lanterns.forEach(l => { l.piv.rotation.z = Math.sin(t * 1.3 + l.ph) * .07 * motion; l.piv.rotation.x = Math.sin(t * .9 + l.ph * 2) * .04 * motion; });
       if (!on) return;

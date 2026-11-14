@@ -63,12 +63,15 @@ const CONFIG = {
   // the morning market: villagers sit on the ground along a lane of red earth at the seven-day market with greens, beans, chillies,
   // limes and avocados from their fields, from `from` until `until` o'clock on the temple's clock. ?morningMarket=1 or =0 forces it
   morningMarket: { from: 5, until: 9 },
-  // the seven-day market's stalls: a seller at every stall and shoppers in the aisles from `from` until `until` o'clock on the temple's
-  // clock (the morning market has gone home by then). ?stalls=1 or ?stalls=0 forces them
-  stalls: { from: 9, until: 22 },
+  // the seven-day market's stalls: a seller at every stall and shoppers in the aisles in each [from, until] window, in hours on the temple's
+  // clock: 9 am to noon, closed over the middle of the day, open again 5 to 9 pm (the morning market has gone home by 9). ?stalls=1 or ?stalls=0 forces them
+  stalls: [[9, 12], [17, 21]],
+  // the food street's cooks, diners and strollers, from `from` until `until` o'clock (?stalls=1 or ?stalls=0 forces them too)
+  foodStreet: { from: 9, until: 22 },
   // Poy Sang Long, the Shan novice ordination procession: kinnara dancers, gift poles, the boys on their carriers' shoulders under golden
   // parasols, the families and the to walk from the temple's gate to the second monastery on the stupa hill, stopping to dance on the way,
-  // from `from` until `until` o'clock on the temple's clock. ?procession=1 forces it on with short stops (and =0 off)
+  // setting out at `from` o'clock on the temple's clock; it ends once they have all reached the monastery (`until` is only the latest it
+  // can run). ?procession=1 forces it on with short stops (and =0 off)
   procession: { from: 8, until: 11 },
   guardHats: .02,   // the palace guards put on the straw hats from their backs once the rain is heavier than this (0–1)
   // the Sunday morning service in the Kachin Baptist church: the pews full, the pastor praying at the pulpit, the choir and the pianist

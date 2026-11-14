@@ -5,7 +5,7 @@
      bags hung behind; towers of woven bamboo baskets and wide bamboo hats). A seller stands behind every table, or sits on a stool:
      Shan men in loose Shan trousers, a side-fastened jacket and a towel turban, women in a fitted Shan blouse and a banded longyi under
      a wide woven bamboo hat; shoppers fill the aisles with woven bags and baskets, some with a child. Low-poly and flat-shaded: all the
-     goods are one mesh, all the people another, shown while the stalls are open (FOLK.stalls, 9 am–10 pm); nobody blocks the aisles ---------- */
+     goods are one mesh, all the people another, shown while the stalls are open (FOLK.stalls, 9 am–noon and 5–9 pm); nobody blocks the aisles ---------- */
   function marketStalls(g, stalls, list) {
     const r = rng(7707), pk = l => l[(r() * l.length) | 0];
     const goodsM = std({ vertexColors: true, flatShading: true, roughness: .8 }), folkM = std({ vertexColors: true, flatShading: true, roughness: .85 });

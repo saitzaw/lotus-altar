@@ -96,7 +96,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Back streets | behind the front street | `backStreets` | `28-kachin-church-and-back-streets.js`, `21-back-street-houses.js` |
 | Seven-day market | x 43…104, z −14…47.4 | `sevenDayMarket` | `12-market.js` |
 | Morning market (5–9 AM ICT), in the seven-day market | lane x 76.3…79.7, z −12…14 | `morningMarket` | `12b-morning-market.js` |
-| Stall sellers and shoppers (9 AM–10 PM ICT), goods on every stall table, in the seven-day market | aisles x 52, 68, 84, z 17…43 | `marketStalls` | `12c-market-stalls.js` |
+| Stall sellers and shoppers (9 AM–noon and 5–9 PM ICT), goods on every stall table, in the seven-day market | aisles x 52, 68, 84, z 17…43 | `marketStalls` | `12c-market-stalls.js` |
 | Food street: five Shan and Chinese food stalls (boards in Shan, Tai Nüa, Chinese, Burmese) facing the seven-day market, cooks, diners and strollers (people 9 AM–10 PM ICT) | x 33.6…43, z −11…41 (stalls at x 35.8, z −5…35) | `foodStreet` | `12d-food-street.js` |
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
@@ -119,7 +119,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Old banyan | (36.4, 65.4) | `banyan` | `21-back-street-houses.js` |
 | Forest band and hills | z < −98; hills 150–190 m out | `mountainsAndForest` | `29-forest-and-hills.js` |
 | Townsfolk (evening), Halloween ghost | roads, market | `townsfolk`, `halloweenGhost` | `24-townsfolk.js`, `23-halloween-ghost.js` |
-| Poy Sang Long procession (8–11 AM) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
+| Poy Sang Long procession (from 8 AM until all have reached the second monastery, about 9:50) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
 
 ## Suggested performance routes
 

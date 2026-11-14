@@ -5,15 +5,15 @@
      bowls and folded robes, and the to dances at the back. From 8 to 11 in the morning (FOLK.procession, CONFIG.procession,
      ?procession=1/0) they set out from in front of the temple's gate, go east along the front street, up the market lane, west
      along the palace lane past the Haw Kham, up the east stair's first flight onto the hill's lower terrace and along its footpath
-     to the second monastery (lowerKyaung), stopping on the way to dance; they keep off the church's street.
+     to the second monastery (lowerKyaung), stopping on the way to dance; once they have all arrived the procession is over. They keep off the church's street.
      Everyone is low-poly and flat-shaded (MeshStandardMaterial, flatShading), each figure one mesh of vertex colours; the trouser
      legs are one instanced mesh and step as they walk ---------- */
   const PROCESSION = {
     speed: .45,    // metres a second while walking
     stride: 1.3,   // metres a full step takes (left and right)
     far: 170,      // hidden when the walker is farther than this from the head of the procession
-    gather: 2400,  // seconds they stand gathered before the monastery at the end of the morning (the stops on the way share the rest)
-    hours: 3,      // how long the morning lasts (CONFIG.procession, 8–11 am)
+    dwell: 1200,   // seconds they stop to dance at each of the five places on the way (setting out at 8, they arrive at about 9:50)
+    gather: 60,    // seconds after the head reaches the monastery, everyone in place, before the procession is over
     test: { dwell: 20, gather: 90 }   // with ?procession=1: short stops, and it starts again from the gate after gathering
   };
   // the materials and small part-makers every builder below shares (made once, on the first call)
@@ -326,20 +326,19 @@
     const at = s => { s = Math.min(L, Math.max(0, s)); let i = 1; while (i < cum.length - 1 && cum[i] < s) i++; const u = (s - cum[i - 1]) / (cum[i] - cum[i - 1] || 1); out[0] = W[i - 1][0] + (W[i][0] - W[i - 1][0]) * u; out[1] = W[i - 1][1] + (W[i][1] - W[i - 1][1]) * u; return out; };
     const sOf = k => cum[k];
     // where they stop to dance: before the gate, at the market lane's corner, by the school gate, before the Haw Kham's gate,
-    // at the foot of the east stair; then on to the monastery, where they gather until the morning ends
+    // at the foot of the east stair; then on to the monastery; once they have all arrived it is over
     const S0 = sOf(1), stops = [S0, sOf(2), sOf(2) + (122 - 54), sOf(3) + (41 - 16), sOf(5)], sHill = sOf(4);
     const plan = (dwell, gather) => {
       const keys = []; let t = 0;
       stops.forEach((s, i) => { keys.push([t, s]); t += dwell; keys.push([t, s]); const nx = i + 1 < stops.length ? stops[i + 1] : L; t += (nx - s) / PROCESSION.speed; });
       keys.push([t, L]); return { keys, total: t + gather };
     };
-    const walkTime = (L - S0) / PROCESSION.speed;
-    const REAL = plan(Math.max(0, (PROCESSION.hours * 3600 - PROCESSION.gather - walkTime) / stops.length), PROCESSION.gather), TEST = plan(PROCESSION.test.dwell, PROCESSION.test.gather);
+    const REAL = plan(PROCESSION.dwell, PROCESSION.gather), TEST = plan(PROCESSION.test.dwell, PROCESSION.test.gather);
     const headAt = (P, t) => { const k = P.keys; if (t <= 0) return k[0][1]; for (let i = 1; i < k.length; i++) if (t < k[i][0]) { const [ta, sa] = k[i - 1], [tb, sb] = k[i]; return sa + (sb - sa) * (t - ta) / (tb - ta || 1); } return L; };
     const zero = new THREE.Matrix4().makeScale(0, 0, 0), hip = new THREE.Matrix4(), rot = new THREE.Matrix4(), m = new THREE.Matrix4();
     let testT = 0, head = S0, dance = 0;
     updaters.pagoda.push((dt, t, motion) => {
-      const on = FOLK.procession, eye = FEST.eye;
+      const on = FOLK.procession && (FOLK.processionAt === null || FOLK.processionAt < REAL.total), eye = FEST.eye;   // over once they have all arrived
       if (!on) { if (root.visible) root.visible = false; testT = 0; return; }
       dt = Math.min(dt, .1);
       if (FOLK.processionAt === null) { testT = (testT + dt) % TEST.total; head = headAt(TEST, testT); }

@@ -58,8 +58,10 @@
     setService(on) { FOLK.service = on; },
     // the morning market's sellers on the ground at the seven-day market, 5–9 am
     setMorningMarket(on) { FOLK.morning = on; },
-    // the sellers at the seven-day market's stalls and the shoppers in its aisles, 9 am–10 pm
+    // the sellers at the seven-day market's stalls and the shoppers in its aisles, 9 am–noon and 5–9 pm
     setStalls(on) { FOLK.stalls = on; },
+    // the food street's cooks, diners and strollers, 9 am–10 pm
+    setFoodStreet(on) { FOLK.food = on; },
     // the Poy Sang Long procession from the gate to the second monastery, 8–11 am: `at` the seconds since it set out, or null to
     // run its short test timetable (?procession=1)
     setProcession(on, at) { FOLK.procession = on; FOLK.processionAt = at; },
