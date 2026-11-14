@@ -210,6 +210,61 @@
     return unit;
   }
 
+  /* ---------- the streamer poles behind the gift poles: men and boys of the village in everyday clothes, saffron Shan suits, white
+     and pale blue shirts, some in bamboo hats, each holding up a slender bamboo dressed all the way up with cut-paper flags and
+     knots of paper and ribbon streamers in white, pink, purple and blue, a spray of paper at the top. `kinds` lists the row from
+     left to right: "pole" for a streamer pole, "parasol" for a yellow paper parasol with a fringe of paper strips on a short
+     bamboo. Each sways as it is carried. Returns a group, front +z ---------- */
+  function createStreamerPoles(kinds = ["pole", "pole", "pole"], seed = 1) {
+    const K = procKit(), r = rng(9600 + seed), pk = l => l[(r() * l.length) | 0];
+    const unit = new THREE.Group(), walkers = [], poles = [];
+    const PAPER = [0xf6f4ee, 0xf6f4ee, 0xf4b4c8, 0xe86aa8, 0x9a62c0, 0x8ab8e8, 0xf0c428, 0xd82a30];
+    const DRESS = [[0xe08a2a, 0xe08a2a], [0xf2f0ea, 0xd8c088], [0xa8c8e0, 0x2e3446], [0x2a3450, 0x2a3450], [0xf2f0ea, 0xe5a93b]];
+    kinds.forEach((kind, k) => {
+      const x = (k - (kinds.length - 1) / 2) * 1.4, skin = pk(P_SKIN), [top, trousers] = pk(DRESS), p = [];
+      procBody(p, { top, trousers, skin, long: top === trousers });
+      const hat = r();
+      if (hat < .35) p.push([K.cone(.27, .17, 10), 0xd8b868, 0, 1.72, .03, .2], [K.cyl(.272, .272, .014, 10), 0xb89848, 0, 1.64, .015, .2]);   // a bamboo hat
+      else if (hat < .65) procHeadwrap(p, pk([0xf2f0ea, 0xf2dc78, 0xe08a2a]));
+      else p.push([K.ball(.12, 1), P_HAIR, 0, 1.58, -.025]);   // bare-headed, short hair
+      procArm(p, 1, top, skin, [.24, 1.12, .12], [.035, 1.38, .3]); procArm(p, -1, top, skin, [-.24, .98, .1], [-.035, 1.05, .3]);
+      const bearer = procFigure(p, K.procM, trousers, .3, x, (k % 2) * .25); unit.add(bearer); walkers.push(bearer);
+      // the bamboo, about the bearer's grip so it sways from his hands
+      const pp = [], BAMBOO = 0xc8c078, NODE = 0x98944a, tall = kind === "pole" ? 4.4 + r() * .6 : 1.9;
+      pp.push(K.rod([0, -.7, 0], [0, tall, 0], .026, .018, BAMBOO, 6));
+      for (let y = -.4; y < tall - .2; y += .5) pp.push([K.cyl(.028, .028, .02, 6), NODE, 0, y, 0]);
+      let shade = null;
+      if (kind === "pole") {
+        // up the pole: paper flags standing out at all angles, and knots with paper and ribbon streamers hanging from them
+        for (let i = 0; i < 30; i++) {
+          const y = .9 + (tall - 1.2) * (i + r()) / 30, a = r() * TAU, c = pk(PAPER);
+          if (r() < .45) { const w = .2 + r() * .14; pp.push([K.box(w, .07 + r() * .05, .005), c, Math.cos(a) * (w / 2 + .02), y, -Math.sin(a) * (w / 2 + .02), 0, a, (r() - .3) * .9]); }
+          else {
+            const ox = Math.cos(a) * .05, oz = -Math.sin(a) * .05;
+            pp.push([K.ball(.032), c, ox, y, oz]);
+            const n = 2 + (r() * 3 | 0);
+            for (let q = 0; q < n; q++) { const L = .25 + r() * .45; pp.push([K.box(.03, L, .005), q ? pk(PAPER) : c, ox + (q - n / 2) * .025, y - L / 2 - .02, oz, (r() - .5) * .3, r() * TAU, (r() - .5) * .35]); }
+          }
+        }
+        // a spray of paper strips at the top
+        for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, L = .3 + r() * .2; pp.push([K.box(.035, L, .005), pk(PAPER), Math.cos(a) * .08, tall + L * .35, -Math.sin(a) * .08, 0, a, -.5]); }
+        pp.push([K.ball(.04), P_GOLD, 0, tall + .02, 0]);
+      } else {
+        // a yellow paper parasol: the canopy, a small top tier, ribs underneath and a fringe of paper strips round the rim
+        const sp = [], YEL = 0xf4c838, DEEP = 0xd8a020, R = .46;
+        sp.push([K.cone(R, .2, 14, true), YEL, 0, 0, 0], [K.cone(.2, .12, 10, true), DEEP, 0, .14, 0], [K.ball(.03), P_GOLD, 0, .22, 0]);
+        for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; sp.push(K.rod([0, .08, 0], [Math.sin(a) * R * .95, -.09, Math.cos(a) * R * .95], .006, .006, 0x8a6a30, 3)); }
+        for (let i = 0; i < 28; i++) { const a = i / 28 * TAU, L = .14 + (i % 2) * .06; sp.push([K.box(.04, L, .004), i % 7 ? YEL : 0xf6f4ee, Math.sin(a) * R, -.1 - L / 2, Math.cos(a) * R, 0, a, 0]); }
+        shade = K.solid(sp, K.shadeM); shade.position.set(0, tall + .02, 0);
+      }
+      const pole = K.solid(pp, K.procM); pole.position.set(0, 1.2, .3); bearer.add(pole);
+      if (shade) pole.add(shade);
+      pole.userData.seed = r() * TAU; poles.push(pole);
+    });
+    unit.userData = { walkers, shades: [], poles };
+    return unit;
+  }
+
 
   const PROC_INFO = {
     kinnara: { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "The kinnara and kinnari, the half-bird lovers of the Himavanta forest, dance at the head of the procession in their masks and green-and-gold dress, opening and folding their great sequinned wings as they go." },
@@ -249,7 +304,8 @@
     return unit;
   }
 
-  /* ---------- the whole procession, in marching order: the kinnara pair, the gift poles, the men with fans and bowls, the three
+  /* ---------- the whole procession, in marching order: the kinnara pair, the gift poles, the streamer poles and yellow paper
+     parasols, the men with fans and bowls, the three
      boys on their carriers' shoulders under their parasols, the women with the robes, the men at the back, then the to. Their
      way and their stops are worked out from the town's lanes and the hill (built before this); the head's place comes from the
      temple's clock, so every visitor sees them in the same place ---------- */
@@ -259,11 +315,12 @@
     const order = [
       [createKinnaraDancers(root), 0],
       [createOfferingPoles(1, 1), 4.5], [createOfferingPoles(2, 2), 6.9],
-      [createProcessionRelatives("men", 1), 9.5], [createProcessionRelatives("men", 2), 11],
-      [createShinlaungPair(1), 14], [createShinlaungPair(2), 17.8], [createShinlaungPair(3), 21.6],
-      [createProcessionRelatives("women", 1), 25.1], [createProcessionRelatives("women", 2), 26.5], [createProcessionRelatives("women", 3), 27.9],
-      [createProcessionRelatives("men", 3), 29.7],
-      [createToDancer(root), 33.5]
+      [createStreamerPoles(["pole", "pole", "pole"], 1), 9.1], [createStreamerPoles(["parasol", "pole", "parasol"], 2), 10.7], [createStreamerPoles(["pole", "pole", "pole"], 3), 12.3],
+      [createProcessionRelatives("men", 1), 14.8], [createProcessionRelatives("men", 2), 16.3],
+      [createShinlaungPair(1), 19.3], [createShinlaungPair(2), 23.1], [createShinlaungPair(3), 26.9],
+      [createProcessionRelatives("women", 1), 30.4], [createProcessionRelatives("women", 2), 31.8], [createProcessionRelatives("women", 3), 33.2],
+      [createProcessionRelatives("men", 3), 35],
+      [createToDancer(root), 38.8]
     ];
     order.forEach(([u, back]) => { if (u.userData.squeeze === undefined) u.userData.squeeze = !u.userData.shades.length; });
     const units = order.map(([u, back]) => { u.userData.back = back; root.add(u); return u; });
@@ -272,7 +329,7 @@
     const legs = new THREE.InstancedMesh(K.legGeo, K.procM, walkers.length * 2);
     legs.frustumCulled = false; legs.castShadow = false; root.add(legs);
     walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); if (f.userData.lag === undefined) f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
-    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Kinnara dancers lead, bamboo poles hung with gifts follow, the families come behind with fans, monks' bowls and saffron robes for the new novices, and the to dances at the back. The great festival comes in the dry season, in March and April." };
+    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Kinnara dancers lead, bamboo poles hung with gifts follow, then tall poles dressed in paper streamers and yellow paper parasols, the families come behind with fans, monks' bowls and saffron robes for the new novices, and the to dances at the back. The great festival comes in the dry season, in March and April." };
     walkers.forEach(f => { const d = f.userData; if (d.body) clickable(picks.pagoda, d.body, data); if (d.boy) clickable(picks.pagoda, d.boy, data); });
 
     /* the way: the line of them waits along the front street west of the gate, the head in front of it; east to the market lane,

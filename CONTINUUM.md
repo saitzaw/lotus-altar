@@ -68,6 +68,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: streamer poles and yellow paper parasols in the procession
+- From the owner's photo of a Poy Sang Long: behind the gift poles now walk three rows of three (`createStreamerPoles(kinds, seed)`
+  in `24b-shinlaung-procession.js`): villagers in saffron Shan suits, white or pale blue shirts, some in bamboo hats or headwraps,
+  holding slender bamboos dressed all the way up with cut-paper flags and knots of paper and ribbon streamers, a spray of paper at
+  the top; the middle row has two yellow paper parasols with paper-strip fringes on short bamboos. Everyone behind moved back
+  5.3 m (the to is now 38.8 m behind the head). Checked in a headless render with `?procession=1`.
+
 ### 2026-11-14: the procession's kinnara and to are the stage dancers
 - From the owner: use the original kinnara, kinnari and to in the Poy Sang Long procession, as they are more precise. The
   procession's own low-poly kinnara pair and to are gone. The stage kinnara's costume and rig moved out of `kinnaraDancers` into
