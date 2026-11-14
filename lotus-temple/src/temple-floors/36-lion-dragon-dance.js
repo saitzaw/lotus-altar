@@ -209,6 +209,7 @@
     welcomeSign(g);
     halloweenGhost(g);
     townsfolk(g);
+    createShinlaungProcession(g);   // Poy Sang Long, the novice ordination procession, round the block opposite the gate in the morning
     // beatOfficer(g);   // the beat officer is commented out (see the main script)
     // 溪, the stream behind the compound: it winds across the land beyond the pines on the far side of the back wall,
     // between grassy banks edged with stones, with rocks, reeds and a stone slab bridge; the water flows to the east

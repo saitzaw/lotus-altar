@@ -64,7 +64,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Have a Shan speaker and a Tai Nüa reader check the food street's board names (`FOOD_SIGNS` in `12d-food-street.js`, given by
   the owner), e.g. လၢၼ်ႉၶဝ်ႈၽၵ်းတႆး / ᥘᥣᥢᥳᥑᥝᥲᥚᥐᥴᥖᥭᥰ; the English lines are ours.
 
+- Have a Shan speaker check ပွႆးသၢင်ႇလွင်း (Poy Sang Long) in the procession's hover tip (`24b-shinlaung-procession.js`).
+
 ## Log
+
+### 2026-11-14: the Poy Sang Long procession
+- New piece `24b-shinlaung-procession.js`: `createShinlaungPair`, `createProcessionRelatives`, `createOfferingPoles` (each returns a
+  `THREE.Group`, front +z) and `createShinlaungProcession(g)`, which sets them in marching order (`PROCESSION`) and walks them round
+  the block opposite the gate (front street east, market lane north, the lane behind the plaza west, back past the plaza), block on
+  their right. Shown 8 AM–noon ICT (`CONFIG.procession`, `?procession=1/0`, `FOLK.procession`, `temple.setProcession`). Walking bob
+  and sway, stepping instanced legs, swaying gift poles, slowly turning parasols; all scaled by `motion`.
+- Shan wording to check: ပွႆးသၢင်ႇလွင်း (Poy Sang Long) in the hover tip; the Burmese ရှင်ပြုပွဲ and ခမောက် (the carrier's hat) are ours.
 
 ### 2026-11-14: the food street's boards in four languages
 - Each food stall's board (`FOOD_SIGNS` in `12d-food-street.js`) now carries, in small letters, the owner's Shan, Tai Nüa (Tai Le),

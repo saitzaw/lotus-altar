@@ -66,6 +66,9 @@ const CONFIG = {
   // the seven-day market's stalls: a seller at every stall and shoppers in the aisles from `from` until `until` o'clock on the temple's
   // clock (the morning market has gone home by then). ?stalls=1 or ?stalls=0 forces them
   stalls: { from: 9, until: 22 },
+  // Poy Sang Long, the Shan novice ordination procession: the boys on their carriers' shoulders under golden parasols, the gift poles
+  // and the families walk round the block opposite the gate from `from` until `until` o'clock on the temple's clock. ?procession=1 or =0 forces it
+  procession: { from: 8, until: 12 },
   guardHats: .02,   // the palace guards put on the straw hats from their backs once the rain is heavier than this (0–1)
   // the Sunday morning service in the Kachin Baptist church: the pews full, the pastor praying at the pulpit, the choir and the pianist
   // on the dais, on `day` from `from` until `until` o'clock on the temple's clock. ?service=1 or ?service=0 forces it on or off

@@ -91,6 +91,7 @@
 | `22-village-lamps.js` | pole lamps, wires, the hill-foot footpath, the hospital lane | `villageLamp` `hillFootpath` `hospitalLane` |
 | `23-halloween-ghost.js` | Halloween ghost | `halloweenGhost` |
 | `24-townsfolk.js` | evening townsfolk | `townsfolk` |
+| `24b-shinlaung-procession.js` | Poy Sang Long, the Shan novice ordination procession, round the block opposite the gate (`PROCESSION.way`) 8 AM–noon (`FOLK.procession`, `CONFIG.procession`, `?procession=1/0`): gift poles, men with fans and monks' bowls, three boys on their carriers' shoulders under turning golden parasols, women with robes; flat-shaded vertex-colour figures, legs one instanced mesh; called from the outdoor build after `townsfolk` | `createShinlaungPair` `createProcessionRelatives` `createOfferingPoles` `createShinlaungProcession` `PROCESSION` |
 | `25-beat-officer.js` | beat officer (kept commented out at the call site) | `SAFE` `beatOfficer` |
 | `26-hospital-football-school.js` | civic building kit, hospital and its monument, blood bank, nursing college, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `hospitalMonument` `bloodBank` `nursingCollege` `postSign` `fiveLineSign` `footballGround` `highSchool` |
 | `27-bamboo-fuel-fire-police.js` | bamboo, fuel station, fire and police stations, welcome board | `bambooGrove` `hillFootBamboo` `fuelStation` `fireAndPolice` `WELCOME` |
