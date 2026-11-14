@@ -3,8 +3,7 @@
      timber frame, blue shutters below and glazed windows above, under a three-tier roof of rusty corrugated iron with two
      clerestories of pale blue planks between the tiers; on the right a wing raised on red-brown posts, its upper floor a long
      verandah with a white balustrade and cream fretwork valances under the eaves and the floor, a gabled porch over the wooden
-     stair up to it, and on the wing's roof a little blue tower with red flowers and the name board under its gable. The flag of
-     Myanmar and the Buddhist flag fly at the wing's end. Outside only: its doors don't open yet ---------- */
+     stair up to it, and on the wing's roof a little blue tower with red flowers and the name board under its gable. Outside only: its doors don't open yet ---------- */
   function wihanKyaung(H) {
     const list = picks.pagoda, s = wihanSpot(), { roofM, hip } = shanCarpentry(), name = SHAN_NAMES.wihan;
     const B = new THREE.Group(); B.position.set(s.x, s.y, s.z); B.rotation.y = s.ry; H.add(B);   // its front (local +z) faces down the hill
@@ -132,18 +131,6 @@
     blueGable(TX, ty + TH, TZ, TW + .6, TD + .4, 1.7);
     let board = null;
     if (name) { const BW = 1.9, BH = BW * 300 / 1024; board = mesh(new THREE.BoxGeometry(BW, BH, .06), [dark, dark, dark, dark, shanBoardFace(name), dark], TX + .55, ty + TH * .62, TZ + TD / 2 + .06, B); }
-    // the flags at the wing's end: the flag of Myanmar, and the Buddhist flag (blue, yellow, red, white, orange and the five together)
-    flagPole(B, hl + 1.2, hd + 2.6, 8);
-    {
-      const bt = canvasTex(128, (c, sz) => {
-        const cols = ["#0050c8", "#ffd800", "#d8202a", "#ffffff", "#ff8a00"], w = sz / 6;
-        cols.forEach((col, i) => { c.fillStyle = col; c.fillRect(i * w, 0, w + 1, sz); });
-        cols.forEach((col, i) => { c.fillStyle = col; c.fillRect(5 * w, i * sz / 5, w + 1, sz / 5 + 1); });
-      });
-      const x = hl + 2.5, z = hd + 1.4, PH = 8.6;
-      mesh(new THREE.CylinderGeometry(.06, .08, PH, 8), white, x, PH / 2, z, B); sCircle(B, x, z, .15);
-      flat(mesh(new THREE.PlaneGeometry(1.8, 1.2), std({ map: bt, roughness: .7, side: THREE.DoubleSide }), x + .95, PH - .7, z, B));
-    }
     bakeParts(B);
     // walkable: up the stair onto the verandah; the porch posts, the hall and the wing block
     sRect(B, SX - SWd / 2 + .1, SX + SWd / 2 - .1, hd - .15, hd + run, (lx, lz) => FH * (1 - Math.max(0, lz - hd) / run));
@@ -152,7 +139,7 @@
     sRect(B, -hl, hl, -hd, hd);
     // tapping it
     const tip = name ? `${name} · a Shan monastery` : "A Shan monastery on the hill's lower terrace";
-    const toast = `${name ? name + ": a" : "A"} Shan monastery on the lower terrace of the stupa hill: a hall of plaster and timber under three tiers of iron roofs, and a wing on posts whose verandah you reach by the wooden stair. The flag of Myanmar and the Buddhist flag fly at its end.`;
+    const toast = `${name ? name + ": a" : "A"} Shan monastery on the lower terrace of the stupa hill: a hall of plaster and timber under three tiers of iron roofs, and a wing on posts whose verandah you reach by the wooden stair.`;
     B.traverse(o => { if (o.isMesh) clickable(list, o, { tip, toast }); });
     // keep the outside camera above it
     B.updateMatrixWorld(true);

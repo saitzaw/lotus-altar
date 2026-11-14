@@ -59,14 +59,13 @@
       const m = flat(mesh(new THREE.RingGeometry(PR - .8, PR + .8, Math.ceil(len * 40), 1, a0, len), path, cx, t.y - .05, cz, g));
       m.rotation.x = Math.PI / 2; m.receiveShadow = true;
     });
-    // lamps along the slope side of the path, their arms out over it
+    // lamps along the slope side of the path, their arms out over it; none east of the stair, where the terrace walk runs
     const lamps = [];
-    [-1.4, -1.2, -1.0, -.82, -.65, -.48, -.31, -.12, .12, .3].forEach(o => {
+    [-1.4, -1.2, -1.0, -.82, -.65, -.48, -.31, -.12].forEach(o => {
       const a = th + o, [x, z] = at(a, PR + 1.3);
       lamps.push([o, villageLamp(g, x, t.y - .08, z, Math.atan2(Math.sin(a), -Math.cos(a)))]);
     });
-    lampWires(g, lamps.filter(([o]) => o < 0).map(l => l[1]));
-    lampWires(g, lamps.filter(([o]) => o > 0).map(l => l[1]));
+    lampWires(g, lamps.map(l => l[1]));
   }
   // the lane from the street up to the hospital's forecourt, between the blood bank and the nursing college (where a small village
   // of bamboo huts once stood), lit by lamps on bamboo poles, with a banana clump either side of its mouth

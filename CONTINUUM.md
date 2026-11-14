@@ -84,6 +84,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   lower kyaung's straight front (`LOW_KYAUNG`) wherever that monastery stands behind, and the 65.2 m arc past it; the footpath
   lamps in front of it stand on the paving. Walkable through several `sRect`s, one per ~0.35 rad piece, so no box reaches far
   over the terrace. Nine lamp posts on the parapet. Checked in a headless render from the main stair's gate and a `walkAt` probe.
+- Then, from the owner's marked screenshot: took out the third monastery's two flag poles (Myanmar and Buddhist flags, with their
+  walk circles) and the two village lamps east of the main stair in `hillFootpath` (offsets .12 and .3, and their wire run).
 
 ### 2026-11-14: the Shan band walks at the back of the procession
 - From the owner: the long drums, gongs and cymbal player follow the to, like the festival stage's ensemble, the gongs carried by

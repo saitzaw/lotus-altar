@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-14
 
+### Removed
+- The flag poles at the third Shan monastery's wing, and the two street-lamp poles (with their wires) in front of the second monastery, so the terrace walk there is clear.
+
 ### Added
 - A paved terrace walk in front of the second and third Shan monasteries on the stupa hill: the lower terrace now runs on out over the slope toward the bamboo, on a whitewashed retaining wall with a gilt-capped parapet and lamp posts, so you can walk right up to the bamboo safely. It runs from the main hill stair, across the front of the second monastery, to the east stair. The bamboo is unchanged.
 - The Shan band walks at the back of the Poy Sang Long, playing as on the festival stage: two long drummers, a cymbal player, and the case of gongs hung under a bamboo pole carried by two men while a third walks beside it and plays; you hear them from where they are.
