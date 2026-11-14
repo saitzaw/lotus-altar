@@ -10,18 +10,19 @@
     const earth = std({ color: 0x8a7a62, roughness: 1 });
     onDaylight(d => earth.color.copy(lerpC(0x3a3228, 0x4e4234, d)));
     clickable(list, flat(mesh(new THREE.BoxGeometry(X1 - X0, .06, Z1 - Z0), earth, (X0 + X1) / 2, .03, (Z0 + Z1) / 2, g)), { market: true, tip: "Walk into the seven-day market" });
-    const bambooM = std({ color: 0xb8a060, roughness: .8 }), wood = std({ color: 0x7a5a3a, roughness: .7 }), steelM = std({ color: 0x5a5e62, roughness: .4, metalness: .7 });
-    const TARPS = [0x2a6ac0, 0xe0702a, 0x2f8a4a, 0xc02a2a, 0xe8c030, 0x8a3ab0].map(c => std({ color: c, roughness: .7, side: THREE.DoubleSide }));
-    const GOODS = [0xc8402e, 0xf0881c, 0x8ab83a, 0xe8d050, 0x6a4a2a, 0xf4f0e4, 0x3a6ac0, 0xd04a8a].map(c => std({ color: c, roughness: .6 }));
+    const bambooM = std({ color: 0xb8a060, roughness: .8, flatShading: true }), wood = std({ color: 0x7a5a3a, roughness: .7, flatShading: true }), steelM = std({ color: 0x5a5e62, roughness: .4, metalness: .7, flatShading: true });
+    const TARPS = [0x2a6ac0, 0xe0702a, 0x2f8a4a, 0xc02a2a, 0xe8c030, 0x8a3ab0].map(c => std({ color: c, roughness: .7, side: THREE.DoubleSide, flatShading: true }));
+    const stalls = [];   // where each stall stands, for its goods, seller and shoppers (marketStalls)
     const bulbs = [];
     const bulb = (x, y, z, col = 0xffe0a0) => { const b = glowSprite(col, .9, .8); b.material.fog = false; b.position.set(x, y, z); g.add(b); bulbs.push(b); };
     const string = (a, b, n, sag) => { for (let i = 0; i <= n; i++) { const t = i / n; bulb(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t - Math.sin(Math.PI * t) * sag, a.z + (b.z - a.z) * t, [0xffe0a0, 0xff9a6a, 0xa0d0ff, 0xb0ffb0][i % 4]); } };
-    // stalls: bamboo poles, a sloping tarp, a table of goods; a few use a big umbrella instead
+    // stalls: bamboo poles, a sloping tarp, a table (its goods and seller are in marketStalls); a few use a big umbrella instead
     function stall(x, z, face) {
       const s = new THREE.Group(); s.position.set(x, 0, z); s.rotation.y = face; g.add(s);
       sRect(s, -1.6, 1.6, -1.3, 1.3);
-      const W = 3.0, D = 2.4, tarp = TARPS[(r() * TARPS.length) | 0];
-      if (r() < .2) {   // umbrella stall
+      const W = 3.0, D = 2.4, tarp = TARPS[(r() * TARPS.length) | 0], umb = r() < .2;
+      stalls.push({ x, z, face, umb });
+      if (umb) {   // umbrella stall
         mesh(new THREE.CylinderGeometry(.04, .04, 2.6, 6), steelM, 0, 1.3, -.2, s);
         const um = mesh(new THREE.ConeGeometry(1.7, .6, 8, 1, true), tarp, 0, 2.7, -.2, s); um.castShadow = false;
       } else {
@@ -30,18 +31,10 @@
       }
       mesh(new THREE.BoxGeometry(W - .3, .08, D - .9), wood, 0, .8, .2, s);
       [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.BoxGeometry(.06, .8, .06), wood, a * (W / 2 - .3), .4, .2 + b * (D / 2 - .55), s));
-      const kind = (r() * 4) | 0;
-      for (let i = 0; i < 9; i++) {
-        const gx = -W / 2 + .45 + (i % 5) * .5, gz = (i < 5 ? .0 : .45) + .1, m = GOODS[(r() * GOODS.length) | 0];
-        if (kind === 0) mesh(new THREE.SphereGeometry(.13, 10, 8), m, gx, .97, gz, s);                                 // fruit and vegetables
-        else if (kind === 1) { const b = mesh(new THREE.CylinderGeometry(.2, .15, .18, 10), bambooM, gx, .93, gz, s); mesh(new THREE.SphereGeometry(.15, 8, 6), m, gx, 1.02, gz, s); }   // baskets of beans and spices
-        else if (kind === 2) mesh(new THREE.BoxGeometry(.4, .1 + r() * .15, .35), m, gx, .9, gz, s);                // folded cloth and longyi
-        else mesh(new THREE.BoxGeometry(.3, .25, .25), m, gx, .97, gz, s);                                           // packets and household goods
-      }
-      for (let k = 0; k < 2; k++) mesh(new THREE.CylinderGeometry(.18, .16, .4, 10), GOODS[(r() * GOODS.length) | 0], -W / 2 + .4 + k * .45, .2, -D / 2 + .5, s);   // sacks on the ground
     }
     const AISLES = [52, 68, 84], ZS = [18.6, 22.4, 26.2, 30, 33.8, 37.6, 41.4];
     AISLES.forEach(ax => ZS.forEach(z => { stall(ax - 3.2, z, Math.PI / 2); stall(ax + 3.2, z, -Math.PI / 2); }));
+    marketStalls(g, stalls, list);
     AISLES.forEach(ax => [0, 1].forEach(sd => string(V(ax - 3, 2.6, ZS[0] - 1.5 + sd * 0), V(ax + 3, 2.6, ZS[0] - 1.5), 6, .2)));
     AISLES.forEach(ax => string(V(ax, 3.4, ZS[0] - 1.5), V(ax, 3.4, 44), 14, .5));
     // the gambling hall (ကစားဝိုင်း) on the market's east edge: a closed hall of painted plank walls under a corrugated roof, a wide

@@ -58,6 +58,8 @@
     setService(on) { FOLK.service = on; },
     // the morning market's sellers on the ground at the seven-day market, 5–9 am
     setMorningMarket(on) { FOLK.morning = on; },
+    // the sellers at the seven-day market's stalls and the shoppers in its aisles, 9 am–10 pm
+    setStalls(on) { FOLK.stalls = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

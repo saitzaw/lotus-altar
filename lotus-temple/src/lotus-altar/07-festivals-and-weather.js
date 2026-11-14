@@ -103,8 +103,11 @@ const serviceNow = () => SERVICE_FORCE !== null ? SERVICE_FORCE
 // the morning market (CONFIG.morningMarket): villagers selling on the ground at the seven-day market, early in the morning
 const MORNING_FORCE = forced("morningMarket");
 const morningNow = () => MORNING_FORCE !== null ? MORNING_FORCE : inHours(CONFIG.morningMarket);
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow();
-setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); festNote(); }, 3e4);
+// the seven-day market's sellers at their stalls, and shoppers in the aisles (CONFIG.stalls)
+const STALLS_FORCE = forced("stalls");
+const stallsNow = () => STALLS_FORCE !== null ? STALLS_FORCE : inHours(CONFIG.stalls);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow();
+setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

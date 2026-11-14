@@ -63,6 +63,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14
+- Filled and staffed the seven-day market in a low-poly, flat-shaded style (`marketStalls(g, stalls, list)` in
+  `12c-market-stalls.js`, called from `sevenDayMarket`). Every stall table now heaps one kind of goods: fruit and vegetables on
+  bamboo trays (bananas hung behind), dried Shan tea leaf and tea packets, Shan noodles (pot on a clay stove, bowls, rice noodle,
+  condiment jars), baskets of chillies, beans and turmeric, stacked woven cloth with longyi lengths and Shan bags hung behind, or
+  bamboo baskets and wide hats. All goods are one vertex-coloured mesh (the old per-item meshes are gone). A seller stands behind
+  every table (some women on stools): men in loose Shan trousers, side-fastened jackets and towel turbans; women in fitted Shan
+  blouses and banded longyi under wide woven bamboo hats, thanaka on the cheeks. About 40 shoppers stand at stall fronts and in the
+  aisles with Shan bags and baskets, some with a child. People are one mesh, shown 9 AM–10 PM ICT (`CONFIG.stalls`, `FOLK.stalls`,
+  `temple.setStalls`, `?stalls=1/0`); they don't block walkers. Stall poles, tables and tarps are now flat-shaded too.
+  Checked in a headless render (aisle at eye level, behind a stall row, and from above). No new Burmese or Shan text.
+
 ### 2026-11-14: the four-animal top's hall gets a doorman, a table and a bigger betting mat
 
 - The gambling hall's doorway (`12-market.js`) is shut by two red doors with a notice (Burmese အသက် ၂၁ နှစ်အောက် ဝင်ခွင့်မပြု ·

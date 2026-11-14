@@ -69,6 +69,7 @@
 | `11-waterfall-and-stream.js` | waterfall, paddy fields | `FALLS` `waterfall` `paddyFields` |
 | `12-market.js` | seven-day market | `sevenDayMarket` |
 | `12b-morning-market.js` | the morning market, 5–9 AM: sellers on the ground along a red-earth lane behind the stalls, shoppers (shown while `FOLK.morning`) | `morningMarket` |
+| `12c-market-stalls.js` | the seven-day market's goods (one flat-shaded mesh: produce, tea, Shan noodles, spices, cloth, baskets and hats) and its people (a Shan seller at every stall, shoppers in the aisles; shown while `FOLK.stalls`, 9 AM–10 PM, `CONFIG.stalls`, `?stalls=1/0`); called from `sevenDayMarket` with the stall list | `marketStalls` |
 | `13-stupa-hill.js` | stupa hill and **terrain** (height/walkable ground) | `HILL` `groundAt` `walkAt` `terrainAt` `MON` `KINNARA` `AUDIENCE` `shanStupaHill` |
 | `13b-shan-carpentry.js` | the teak, whitewash, glass and iron roof materials, the carved gable, the pyatthat and a hipped roof, shared by the monasteries and the Haw Kham (made once) | `shanCarpentry` `hip` |
 | `14-shan-monasteries.js` | Shan teak monastery on the hill; its window layout, shared with the hall inside | `shanMonasteries` `kyaungWindows` `kwOval` `kwArch` |
