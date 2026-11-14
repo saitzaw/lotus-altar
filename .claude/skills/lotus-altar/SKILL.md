@@ -30,6 +30,8 @@ donate (demo only), and wander a Northern Shan State town, seven-day market, stu
 - Respect `prefers-reduced-motion` (`reduceMotion`) and label buttons for screen readers.
 - Layout randomness uses the seeded `rng(seed)`, never `Math.random()`. `localStorage` is always wrapped in try/catch.
 - Don't edit `dist/` (generated, gitignored).
+- Every timed event and its hours is listed in `SCHEDULE.md` at the repo root; update it whenever you add a timed event or change
+  its hours.
 - Git: commit and push straight to `main`, no feature branches. Subjects are short, imperative, plain English about the
   world ("Move the field hut out of the fuel station forecourt").
 

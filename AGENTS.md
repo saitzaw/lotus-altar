@@ -71,4 +71,6 @@ and visiting the affected place, and watch the browser console for errors.
 - The beat officer (police chase) stays commented out unless the user asks for him back.
 - Respect `prefers-reduced-motion` and label interactive controls for screen readers.
 - Commit and push straight to `main`. Commit subjects are short, imperative and describe the change in the world.
+- `SCHEDULE.md` lists every timed event (markets, procession, stage dances, service, seasons). When you add a timed event or change
+  its hours, update it in the same commit.
 - After a meaningful change, update `CONTINUUM.md`. When you learn a lasting gotcha, add it to `MEMORY.md`.
