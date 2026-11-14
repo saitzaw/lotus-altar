@@ -68,9 +68,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
-### 2026-11-14: a terrace walk between the third monastery and the bamboo
+### 2026-11-14: a terrace walk in front of the second and third monasteries, out to the bamboo
 - From the owner (screenshots from the east stair): a platform between ဝိႁၢၼ်ႇၵုင်းသႃႇ and the hill-foot bamboo, with walls, safe to
-  walk, without moving the bamboo. `wihanWalk()` (`14c-wihan-kyaung.js`, `WIHAN_WALK`) builds a paved annular sector in the hill's
+  walk, without moving the bamboo. `wihanWalk()` (now `terraceWalk()`, `TERRACE_WALK`, in `14c-wihan-kyaung.js`) builds a paved annular sector in the hill's
   frame (angles 0.49…1.261 rad from the main stair, r 65.2…73; the terrace edge is at 70.62, the nearest clumps root ~75 m out) at
   the lower terrace's height + 3 cm, on a whitewashed wall footed at y 1.6, with a 0.95 m parapet and gilt coping along the outer
   edge and both ends over the slope, five lamp posts on it; open uphill to the monastery's stair, the footpath and the east stair's
@@ -79,6 +79,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   reads `walkAt`). Checked in headless renders and a `walkAt` probe.
 - Then, at the owner's word, ran its west end on to the second monastery: `a0` 0.6 → 0.49, just clear of the lower kyaung's
   east-end posts (at about 0.48), so the walk meets it with no gap. Checked in a headless render and a `walkAt` probe.
+- The owner meant the walk to run on in front of the second monastery too: renamed `terraceWalk` / `TERRACE_WALK`, `a0` 0.038
+  (just clear of the main hill stair's wall), built in the hill's frame. Its inner edge follows a line 0.6 m in front of the
+  lower kyaung's straight front (`LOW_KYAUNG`) wherever that monastery stands behind, and the 65.2 m arc past it; the footpath
+  lamps in front of it stand on the paving. Walkable through several `sRect`s, one per ~0.35 rad piece, so no box reaches far
+  over the terrace. Nine lamp posts on the parapet. Checked in a headless render from the main stair's gate and a `walkAt` probe.
 
 ### 2026-11-14: the Shan band walks at the back of the procession
 - From the owner: the long drums, gongs and cymbal player follow the to, like the festival stage's ensemble, the gongs carried by

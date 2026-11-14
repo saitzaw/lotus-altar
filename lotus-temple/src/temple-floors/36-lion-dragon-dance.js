@@ -204,7 +204,7 @@
     highSchool(g);
     bambooGrove(g);
     hillFootBamboo(g);
-    wihanWalk();   // after the bamboo, so its clumps stay where they are
+    terraceWalk();   // after the bamboo, so its clumps stay where they are
     fuelStation(g);
     fireAndPolice(g);
     welcomeSign(g);
