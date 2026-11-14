@@ -162,10 +162,10 @@
   }
   // the terrace walk below the third monastery: the lower terrace carried on out over the slope toward the bamboo at the hill's
   // foot, as a paved platform on a whitewashed retaining wall with a parapet and gilt coping along its outer edge and both ends,
-  // open on the uphill side to the monastery's stair and the footpath. It runs from the gap before the second monastery to just
+  // open on the uphill side to the monastery's stair and the footpath. It runs from the second monastery's east end (just clear of its posts) to just
   // short of the east stair's wall. Built after the bamboo, which keeps its clumps where they were; its outer edge stops short of
   // them (the nearest clumps root about 75 m out). Lamp posts on the parapet glow at night, like the hill stair's.
-  const WIHAN_WALK = { a0: .6, a1: 1.261, r0: 65.2, r1: 73, edge: 70.4, PH: .95, PW: .35 };   // angles round the hill from the main stair (radians), inner and outer radius (m), where the end walls begin (the terrace's edge), parapet height and thickness
+  const WIHAN_WALK = { a0: .49, a1: 1.261, r0: 65.2, r1: 73, edge: 70.4, PH: .95, PW: .35 };   // angles round the hill from the main stair (radians), inner and outer radius (m), where the end walls begin (the terrace's edge), parapet height and thickness
   function wihanWalk() {
     const W = WIHAN_WALK, H = HILL.group, ty = HILL.terraces[1].y, h = (W.a1 - W.a0) / 2, top = ty + .03, PH = W.PH, PW = W.PW;
     const P = new THREE.Group(); P.rotation.y = -(W.a0 + W.a1) / 2; H.add(P);   // its local -z points down the middle of the walk
