@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-14
 
 ### Added
+- The food street's boards are lettered in Shan, Tai Nüa, Chinese and Burmese, with a small English line: a Shan rice shop, a Yunnan Chinese restaurant, Shan noodles and warm tofu, handmade buns and dumplings, and tea with Shan sweets; each Shan counter now shows its own food.
 - A food street between the temple's east wall and the seven-day market, where the row of pines stood: five stalls, Shan under thatch with yellow Burmese boards and steaming pots of noodle broth, Chinese under red-edged tin with red boards, bamboo steamers of buns and dumplings and red lanterns swinging from the eaves. Tables with red and blue plastic stools; Shan, Palaung, Kachin and Yunnanese cooks and diners, each in their own dress, and friends strolling the street (9 AM–10 PM ICT).
 - The four-animal top's hall now has shut doors and a young doorman who asks your age: only visitors 21 and over are let in.
 - A young man sits at the four-animal top's table, playing, with his chips in front of him.

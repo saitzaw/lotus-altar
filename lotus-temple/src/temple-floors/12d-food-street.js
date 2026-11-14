@@ -1,18 +1,20 @@
   /* ---------- the food street: where a row of pines stood between the temple's east wall and the seven-day market, five food stalls
-     face the market across a strip of packed earth, Shan and Chinese by turns. The Shan stalls, under thatch with yellow boards lettered
-     in Burmese: pots of broth steaming on clay charcoal stoves, bowls of Shan noodles, sour rice. The Chinese (Yunnanese and Kokang)
-     stalls, under red-edged tin with red boards lettered in gold: bamboo steamers of buns and dumplings, red lanterns swinging from the
+     face the market across a strip of packed earth, Shan and Chinese by turns. Every board is lettered in Shan, Tai Nüa, Chinese and Burmese.
+     The Shan stalls, under thatch with yellow boards: pots of broth steaming on clay charcoal stoves, rice and curries, Shan noodles
+     and warm tofu, tea and Shan sweets. The Chinese (Yunnanese and Kokang) stalls, under red-edged tin with red boards in gold: bamboo steamers of buns and dumplings, red lanterns swinging from the
      eaves. Tables with red and blue plastic stools out front. The people are Shan, Palaung (Ta'ang), Kachin (Jinghpaw) and Yunnanese
      Chinese, each in their own dress, every man in trousers: cooks at the counters, diners at the tables, friends strolling the street.
      The stalls are one flat-shaded mesh and the cooks and diners another; the strollers, the steam and the lanterns move. The people
      and the steam are there while the market's stalls are open (FOLK.stalls, 9 am–10 pm) ---------- */
   const FOOD = { x: 35.8, zs: [35, 25, 15, 5, -5], lanes: [41.4, 42.2, 41.8], z0: -10.5, z1: 40.5 };   // stall centres (x, and z for each), fronts facing the market (+x); the strollers' lines and where they turn
+  // the boards' lines, as given by the site's owner: Shan (Tai Yai), Tai Nüa (Dehong Dai, in Tai Le script), Chinese, Burmese, and our
+  // English gloss; food is what the stall serves. Shan and Chinese stalls by turns along the street
   const FOOD_SIGNS = [
-    { shan: true, my: "ရှမ်းရိုးရာစားသောက်ဆိုင်", en: "Shan traditional food" },
-    { zh: "云南小吃", en: "Yunnan snacks" },
-    { shan: true, my: "ရှမ်းခေါက်ဆွဲ", en: "Shan noodles" },
-    { zh: "包子 · 饺子", en: "Steamed buns · dumplings" },
-    { shan: true, my: "ရှမ်းထမင်းချဉ်", en: "Shan sour rice" }];
+    { shan: true, food: "rice", shn: "လၢၼ်ႉၶဝ်ႈၽၵ်းတႆး", tdd: "ᥘᥣᥢᥳᥑᥝᥲᥚᥐᥴᥖᥭᥰ", zh: "傣味传统餐厅", my: "ရှမ်းရိုးရာစားသောက်ဆိုင်", en: "Shan rice shop" },
+    { food: "dishes", shn: "လၢၼ်ႉတၢင်းၵိၼ်ၶႄႇ", tdd: "ᥘᥣᥢᥳᥖᥣᥒᥰᥐᥤᥢᥑᥦᥱ", zh: "云南风味中餐厅", my: "တရုတ်ရိုးရာစားသောက်ဆိုင်", en: "Yunnan Chinese restaurant" },
+    { shan: true, food: "noodles", shn: "ၶဝ်ႈသွႆးတႆး လႄႈ ၶဝ်ႈၽိုၼ်း", tdd: "ᥑᥝᥲᥔᥩᥭᥰᥖᥭᥰ ᥘᥦᥲ ᥑᥝᥲᥜᥪᥢᥰ", zh: "傣味米线与豌豆粉", my: "ရှမ်းခေါက်ဆွဲနှင့် တို့ဟူးနွေး", en: "Shan noodles · warm tofu" },
+    { food: "buns", shn: "သႃႇလႃႇပဝ်း လႄႈ ၵျႅဝ်ႉၸိုဝ်ႉ", tdd: "ᥔᥣᥱᥘᥣᥱᥙᥝᥰ", zh: "手工包子与饺子", my: "ပေါက်စီနှင့် ဖက်ထုပ်", en: "Handmade buns · dumplings" },
+    { shan: true, food: "tea", shn: "လၢၼ်ႉၼမ်ႉၼဵင်ႈ လႄႈ ၶဝ်ႈမုၼ်းတႆး", tdd: "ᥘᥣᥢᥳᥘᥛᥳᥘᥥᥒᥲ", zh: "传统茶饮与傣族糕点", my: "လက်ဖက်ရည်နှင့် ရှမ်းမုန့်", en: "Tea · Shan snacks" }];
   function foodStreet(g) {
     const list = picks.pagoda, r = rng(5150), pk = l => l[(r() * l.length) | 0];
     const vcM = std({ vertexColors: true, flatShading: true, roughness: .8 }), folkM = std({ vertexColors: true, flatShading: true, roughness: .85 });
@@ -62,8 +64,17 @@
         [[.2, .6], [.45, .6]].forEach(([x, zz]) => { for (let k = 0; k < 5; k++) P.push([cyl(.09, .055, .05, 8), k === 4 ? 0x3a6ac0 : CHINA, x, TOP + .025 + k * .04, zz]); });
         [0xa8201a, 0x6a8a2a, 0xc89a5a, 0xd8b860].forEach((c, i) => P.push([cyl(.05, .05, .12, 8), c, .85 + i * .14, TOP + .06, .95], [cyl(.052, .052, .025, 8), 0xd83a2a, .85 + i * .14, TOP + .13, .95]));
         P.push([cyl(.3, .26, .05, 10), BAMBOO, 1.9, TOP + .025, .75]);
-        if (sg.my === FOOD_SIGNS[4].my) for (let i = 0; i < 7; i++) P.push([ball(.065, .8), 0xe8a050, 1.9 + Math.cos(i) * .17 * (i ? 1 : 0), TOP + .09, .75 + Math.sin(i) * .17 * (i ? 1 : 0)]);   // sour rice, kneaded into balls
-        else for (let i = 0; i < 6; i++) P.push([ball(.075, .45), 0xf6f2e4, 1.9 + Math.cos(i) * .16 * (i ? 1 : 0), TOP + .08, .75 + Math.sin(i) * .16 * (i ? 1 : 0)]);   // coils of fresh rice noodle
+        if (sg.food === "rice") {   // a heap of rice and three bowls of curry
+          P.push([cone(.2, .16, 8), 0xf6f2e8, 1.9, TOP + .13, .75]);
+          [[1.35, 0xb8642a], [1.35 + .22, 0x6a8a2a], [1.35 + .44, 0xc89a3a]].forEach(([x, c]) => P.push([cyl(.09, .065, .07, 8), CHINA, x - .2, TOP + .035, 1.0], [cyl(.08, .08, .02, 8), c, x - .2, TOP + .065, 1.0]));
+        } else if (sg.food === "noodles") {   // coils of fresh rice noodle, and a pot of warm yellow tofu
+          for (let i = 0; i < 6; i++) P.push([ball(.075, .45), 0xf6f2e4, 1.9 + Math.cos(i) * .16 * (i ? 1 : 0), TOP + .08, .75 + Math.sin(i) * .16 * (i ? 1 : 0)]);
+          P.push([cyl(.17, .15, .2, 8), ALU, 1.35, TOP + .1, .95], [cyl(.16, .16, .02, 8), 0xe8c040, 1.35, TOP + .19, .95]);
+        } else {   // a teapot and cups of tea, a tray of Shan sweets
+          P.push([cyl(.09, .11, .15, 8), 0x2a6a4a, 1.45, TOP + .075, .95], [box(.12, .025, .025), 0x2a6a4a, 1.57, TOP + .1, .95, 0, 0, .5], [cyl(.03, .03, .03, 6), 0x2a6a4a, 1.45, TOP + .165, .95]);
+          [0, 1, 2, 3].forEach(k => P.push([cyl(.035, .03, .05, 6), CHINA, 1.25 + (k % 2) * .1, TOP + .025, .72 + (k >> 1) * .1]));
+          for (let i = 0; i < 9; i++) P.push([box(.09, .05, .09), [0xe8a0b0, 0xf6f0e4, 0x8a5a2a][i % 3], 1.9 + ((i % 3) - 1) * .12, TOP + .075, .75 + (((i / 3) | 0) - 1) * .12]);
+        }
       } else {
         // bamboo steamers stacked on a pot over a gas ring at each end of the counter; plates of buns and dumplings between
         [-1.8, 1.8].forEach(x => {
@@ -91,25 +102,26 @@
     }
     FOOD.zs.forEach((z, i) => stall(z, FOOD_SIGNS[i]));
 
-    // the boards under the front eaves: Burmese in red on yellow for the Shan stalls, Chinese in gold on red, a small English line
+    // the boards under the front eaves, yellow with red for the Shan stalls, red with gold for the Chinese: Shan, Tai Nüa, Chinese and
+    // Burmese in small letters, a line of English below
     FOOD.zs.forEach((z, i) => {
-      const sg = FOOD_SIGNS[i], cv = document.createElement("canvas"); cv.width = 1024; cv.height = 192;
+      const sg = FOOD_SIGNS[i], cv = document.createElement("canvas"); cv.width = 1024; cv.height = 232;
       const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
-      const MY = '"Noto Sans Myanmar", "Myanmar Text", sans-serif', ZH = '"Noto Serif SC", "Noto Serif TC", "Songti SC", serif';
+      const MY = '"Noto Sans Myanmar", "Myanmar Text", sans-serif', LE = '"Noto Sans Tai Le", "Microsoft Tai Le", sans-serif', ZH = '"Noto Serif SC", "Noto Serif TC", "Songti SC", serif';
+      const LINES = [[sg.shn, `600 40px ${MY}`, 38], [sg.tdd, `400 34px ${LE}`, 84], [sg.zh, `600 32px ${ZH}`, 124], [sg.my, `600 29px ${MY}`, 171], [sg.en, '600 20px "Figtree", sans-serif', 211]];
       const paint = () => {
         const c = cv.getContext("2d");
-        c.fillStyle = sg.shan ? "#F4D03F" : "#C0392B"; c.fillRect(0, 0, 1024, 192);
-        c.strokeStyle = sg.shan ? "#8a1a14" : "#f0c040"; c.lineWidth = 10; c.strokeRect(10, 10, 1004, 172);
+        c.fillStyle = sg.shan ? "#F4D03F" : "#C0392B"; c.fillRect(0, 0, 1024, 232);
+        c.strokeStyle = sg.shan ? "#8a1a14" : "#f0c040"; c.lineWidth = 8; c.strokeRect(6, 6, 1012, 220);
         c.textAlign = "center"; c.textBaseline = "middle";
-        c.fillStyle = sg.shan ? "#b01e18" : "#f6d24a"; c.font = sg.shan ? `700 72px ${MY}` : `600 96px ${ZH}`; c.fillText(sg.shan ? sg.my : sg.zh, 512, 80, 960);
-        c.fillStyle = sg.shan ? "#2a1a14" : "#fbe6a8"; c.font = '600 30px "Figtree", sans-serif'; c.fillText(sg.en, 512, 158, 960);
+        LINES.forEach(([str, font, y], k) => { c.font = font; c.fillStyle = sg.shan ? (k === 4 ? "#2a1a14" : "#b01e18") : (k === 4 ? "#fbe6a8" : "#f6d24a"); c.fillText(str, 512, y, 980); });
         t.needsUpdate = true;
       };
       paint();
-      if (document.fonts && document.fonts.load) Promise.all([document.fonts.load(sg.shan ? `700 72px ${MY}` : `600 96px ${ZH}`, sg.my || sg.zh), document.fonts.load('600 30px "Figtree"', sg.en)]).then(paint, () => {});
-      const board = flat(mesh(new THREE.PlaneGeometry(3.8, .71), std({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .25, roughness: .6, side: THREE.DoubleSide }), 0, 0, 0, g));
-      board.position.set(FOOD.x + 1.86, 2.1, z); board.rotation.y = Math.PI / 2;   // faces the market
-      clickable(list, board, { tip: sg.my ? `${sg.my} · ${sg.en}` : `${sg.zh} · ${sg.en}`, toast: sg.shan ? "A Shan food stall: noodles in clear broth or with a tomato and pork topping, sour rice kneaded with tomato and garlic oil, pickled greens and chilli on every table." : "A Chinese stall, Yunnanese and Kokang cooking from over the border: steamed buns and dumplings out of bamboo steamers, rice noodles, pots of tea." });
+      if (document.fonts && document.fonts.load) Promise.all(LINES.map(([str, font]) => document.fonts.load(font, str))).then(paint, () => {});
+      const board = flat(mesh(new THREE.PlaneGeometry(3.8, .86), std({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .25, roughness: .6, side: THREE.DoubleSide }), 0, 0, 0, g));
+      board.position.set(FOOD.x + 1.86, 2.0, z); board.rotation.y = Math.PI / 2;   // faces the market
+      clickable(list, board, { tip: `${sg.shn} · ${sg.en}`, toast: sg.shan ? "A Shan food stall: rice with curries, noodles in clear broth or with a tomato and pork topping, warm yellow tofu, tea and Shan sweets, pickled greens and chilli on every table." : "A Chinese stall, Yunnanese and Kokang cooking from over the border: handmade buns and dumplings out of bamboo steamers, rice noodles, pots of tea." });
     });
 
     /* ---------- the people, built facing +z with their feet at y 0. Every man wears trousers ---------- */
@@ -217,7 +229,7 @@
       stuff.push(...fix(bowl(0, .745, .42), s.m4));
     });
     const stuffMesh = new THREE.Mesh(linear(lowPoly(stuff)), vcM); stuffMesh.castShadow = true; stuffMesh.receiveShadow = true; g.add(stuffMesh);
-    clickable(list, stuffMesh, { tip: "The food street", toast: "Five stalls along the temple's east wall, Shan and Chinese by turns: Shan noodles and sour rice from pots on charcoal, buns and dumplings out of bamboo steamers, and red and blue stools to sit on while you eat." });
+    clickable(list, stuffMesh, { tip: "The food street", toast: "Five stalls along the temple's east wall, Shan and Chinese by turns: rice and curries, Shan noodles and warm tofu, tea and Shan sweets, buns and dumplings out of bamboo steamers, and red and blue stools to sit on while you eat." });
     const folkMesh = new THREE.Mesh(linear(lowPoly(folk)), folkM); folkMesh.castShadow = true; folkMesh.receiveShadow = true; g.add(folkMesh);
     clickable(list, folkMesh, { tip: "Cooks and diners on the food street", toast: "Everyone eats here: Shan in loose trousers and cloth turbans, Palaung women in red hoods and striped skirts with silver hoops at the waist, Kachin women with silver discs on black blouses, Yunnanese cooks in white aprons." });
     folkMesh.raycast = function (ray, out) { if (folkMesh.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };

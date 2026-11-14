@@ -61,7 +61,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Stale comment in `src/lotus-altar/02-hall-and-guanyin.js` (line 38) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
+- Have a Shan speaker and a Tai Nüa reader check the food street's board names (`FOOD_SIGNS` in `12d-food-street.js`, given by
+  the owner), e.g. လၢၼ်ႉၶဝ်ႈၽၵ်းတႆး / ᥘᥣᥢᥳᥑᥝᥲᥚᥐᥴᥖᥭᥰ; the English lines are ours.
+
 ## Log
+
+### 2026-11-14: the food street's boards in four languages
+- Each food stall's board (`FOOD_SIGNS` in `12d-food-street.js`) now carries, in small letters, the owner's Shan, Tai Nüa (Tai Le),
+  Chinese and Burmese names, plus our English line. Along the street from the front: Shan rice shop (rice and curries), Yunnan
+  Chinese restaurant, Shan noodles and warm tofu, handmade buns and dumplings, tea and Shan sweets. The Shan stalls' counters
+  were changed to match (rice heap and curry bowls; noodle coils and a pot of yellow tofu; teapot, cups and a tray of sweets);
+  the sour-rice stall is gone. Boards are a little taller (.86 m). The hover tip shows the Shan name.
 
 ### 2026-11-14: a food street where the east pine row stood
 - Took out the row of pines and trees between the temple's east wall and the seven-day market (in `templeGrounds`, the row's seven
