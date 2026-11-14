@@ -63,6 +63,23 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: a food street where the east pine row stood
+- Took out the row of pines and trees between the temple's east wall and the seven-day market (in `templeGrounds`, the row's seven
+  seeds are still used up, so the back row grows as before) and built a food street there (`foodStreet` in `12d-food-street.js`,
+  `FOOD`, `FOOD_SIGNS`): a packed-earth strip x 33.6…43, z −11…41, five stalls at x 35.8 facing the market, Shan and Chinese by turns.
+  Shan stalls: bamboo frame, thatch, yellow boards in Burmese (ရှမ်းရိုးရာစားသောက်ဆိုင် Shan traditional food, ရှမ်းခေါက်ဆွဲ Shan noodles,
+  ရှမ်းထမင်းချဉ် Shan sour rice), broth pots on clay stoves, noodle bowls, jars. Chinese stalls: corrugated tin with a red fascia,
+  red boards in gold (云南小吃 Yunnan snacks, 包子 · 饺子 buns · dumplings), bamboo steamers, plates of buns and dumplings, two red
+  lanterns each that swing (less with reduced motion) and glow at night. Two tables with four red/blue stools before each stall.
+  People (shown with `FOLK.stalls`, 9 AM–10 PM): Shan, Palaung, Kachin and Yunnanese cooks behind the counters, six diners eating
+  with chopsticks, and three pairs walking up and down the street with swinging limbs. Dress: Shan men in loose trousers, side-
+  fastened jacket and cloth turban; Shan women in blouse and banded skirt; Palaung women in dark velvet jackets edged in red, red
+  striped skirts, silver waist hoops and red hoods; Palaung men in dark jackets and trousers; Kachin women in black blouses with
+  silver discs, red woven skirts, red turbans and a woven bag; Kachin men in white shirts, dark waistcoats, trousers and a red
+  headwrap; Chinese in Mandarin-collar jackets with frog fastenings and dark trousers. No man wears a longyi or paso here.
+  Steam puffs are one instanced mesh. Stalls and tables block walkers. Boards are Burmese, not Shan (no new Shan wording).
+  Checked in a headless render.
+
 ### 2026-11-14
 - Filled and staffed the seven-day market in a low-poly, flat-shaded style (`marketStalls(g, stalls, list)` in
   `12c-market-stalls.js`, called from `sevenDayMarket`). Every stall table now heaps one kind of goods: fruit and vegetables on

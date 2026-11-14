@@ -58,7 +58,7 @@
     [-1, 1].forEach(f => mesh(new THREE.BoxGeometry(len + .2, .1, .04), eaveRed, 0, WH + .05, f * .55, w));
     mesh(new THREE.BoxGeometry(len + .2, .14, .16), ridgeMat, 0, WH + .34, 0, w);
   }
-  // the compound walls, trees in the grounds, and the street outside the gate with its pavements, lamps and trees
+  // the compound walls, trees in the grounds and behind them, and the street outside the gate with its pavements, lamps and trees
   function templeGrounds(g) {
     const FZ = 43, BZ = -16, SX = 33;
     [-1, 1].forEach(sd => templeWall(g, sd * SX, FZ, sd * SX, BZ));
@@ -67,11 +67,12 @@
     let seed = 3;
     [[-26, 8], [-31, 15], [-24, 40.5], [-13, 38.5], [-30.5, 40], [-12, -10], [10, -12], [-24, -10], [30.5, -13], [30, 8], [13, 39], [27, 41], [-6, -13], [6, -13]]
       .forEach(([x, z]) => ginkgo(g, x, z, .85 + ((seed * 7) % 5) * .06, seed++));   // golden ginkgos inside the walls
-    // outside the walls: pines and common trees round the sides and the back
+    // outside the walls: pines and common trees along the back. The east side has the food street (foodStreet), the west side
+    // the town road (see shanTown); the seven places where the east row's trees stood are kept so the back row grows as before
     const outside = [];
-    for (let z = -12; z <= 40; z += 8) outside.push([37.5 + ((z / 8) % 2) * 2, z]);   // east side; the west side has the town road (see shanTown)
+    for (let z = -12; z <= 40; z += 8) outside.push(null);
     for (let x = -36; x <= 36; x += 8) if (Math.abs(x) > 6 && x > -34) outside.push([x, -20.5 - ((x / 8) % 2) * 1.5]);   // the approach to the back gate stays clear
-    outside.forEach(([x, z], i) => (i % 3 === 1 ? tree : pine)(g, x, z, .9 + (i % 4) * .08, seed++));
+    outside.forEach((p, i) => p ? (i % 3 === 1 ? tree : pine)(g, p[0], p[1], .9 + (i % 4) * .08, seed++) : seed++);
     // the street: a stone-paved road between kerbed pavements
     const road = std({ color: 0x2e2b28, roughness: .95 }), pave = std({ color: 0x6a645c, roughness: .9 }), kerb = std({ color: 0x8a847a, roughness: .8 });
     flat(mesh(new THREE.BoxGeometry(273, .04, 8), road, 8.5, .02, 54, g));   // from the corner at x = -128, past the hut village's lane, to 145 past the fire and police stations

@@ -187,6 +187,7 @@
     trainingGround(21, -1, 16, 12);
     shanTown(g);
     sevenDayMarket(g);
+    foodStreet(g);   // Shan and Chinese food stalls between the temple's east wall and the market
     morningMarket(g);   // villagers selling on the ground there, 5–9 am
     shanStupaHill(g);
     shanMonasteries(g);
