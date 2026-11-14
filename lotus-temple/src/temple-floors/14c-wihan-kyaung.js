@@ -160,3 +160,53 @@
     [[-hl - 1.5, -hd - 1.5], [hl + 3.5, -hd - 1.5], [-hl - 1.5, hd + run + .5], [hl + 3.5, hd + run + .5]].forEach(([lx, lz]) => { const w = B.localToWorld(V(lx, 0, lz)); xs.push(w.x); zs.push(w.z); });
     TALL.push({ x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs), h: s.y + 14 });
   }
+  // the terrace walk below the third monastery: the lower terrace carried on out over the slope toward the bamboo at the hill's
+  // foot, as a paved platform on a whitewashed retaining wall with a parapet and gilt coping along its outer edge and both ends,
+  // open on the uphill side to the monastery's stair and the footpath. It runs from the gap before the second monastery to just
+  // short of the east stair's wall. Built after the bamboo, which keeps its clumps where they were; its outer edge stops short of
+  // them (the nearest clumps root about 75 m out). Lamp posts on the parapet glow at night, like the hill stair's.
+  const WIHAN_WALK = { a0: .6, a1: 1.261, r0: 65.2, r1: 73, edge: 70.4, PH: .95, PW: .35 };   // angles round the hill from the main stair (radians), inner and outer radius (m), where the end walls begin (the terrace's edge), parapet height and thickness
+  function wihanWalk() {
+    const W = WIHAN_WALK, H = HILL.group, ty = HILL.terraces[1].y, h = (W.a1 - W.a0) / 2, top = ty + .03, PH = W.PH, PW = W.PW;
+    const P = new THREE.Group(); P.rotation.y = -(W.a0 + W.a1) / 2; H.add(P);   // its local -z points down the middle of the walk
+    const wash = std({ color: 0xf2eee4, roughness: .8 });
+    const pave = canvasTex(256, (c, sz) => { c.fillStyle = "#cfc6b4"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 8; r++) for (let k = 0; k < 8; k++) { const v = 206 + ((r * 3 + k * 5) % 4) * 8; c.fillStyle = `rgb(${v},${v - 5},${v - 16})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
+    pave.wrapS = pave.wrapT = THREE.RepeatWrapping; pave.repeat.set(.25, .25);   // half-metre flags (the top's UVs are in metres)
+    // a slab bounded by two arcs round the hill's centre and two radii, from y0 up to y1
+    const slab = (r0, r1, b0, b1, y0, y1, mat) => {
+      const s = new THREE.Shape(), n = Math.max(2, Math.ceil((b1 - b0) / .008));
+      for (let i = 0; i <= n; i++) { const a = b0 + (b1 - b0) * i / n; i ? s.lineTo(r1 * Math.sin(a), r1 * Math.cos(a)) : s.moveTo(r1 * Math.sin(a), r1 * Math.cos(a)); }
+      for (let i = n; i >= 0; i--) { const a = b0 + (b1 - b0) * i / n; s.lineTo(r0 * Math.sin(a), r0 * Math.cos(a)); }
+      const geo = new THREE.ExtrudeGeometry(s, { depth: y1 - y0, bevelEnabled: false }); geo.rotateX(-Math.PI / 2);
+      return mesh(geo, mat, 0, y0, 0, P);
+    };
+    const deck = slab(W.r0, W.r1, -h, h, 1.6, top, [std({ map: pave, roughness: .85 }), wash]);   // the paving on its retaining wall, footed below the slope
+    deck.castShadow = false; deck.receiveShadow = true;
+    clickable(picks.pagoda, deck, { tip: "The terrace walk", toast: "The lower terrace carried on out over the slope in front of the monastery, paved and walled, with a parapet to lean on and the bamboo at the hill's foot just beyond it." });
+    // the parapet along the outer edge and at both ends over the slope, capped in gilt
+    const da = r => PW / r;   // an end wall's thickness as an angle
+    slab(W.r1 - PW, W.r1, -h, h, top, top + PH, wash);
+    slab(W.r1 - PW - .07, W.r1 + .07, -h - .001, h + .001, top + PH, top + PH + .12, M.trim);
+    [-1, 1].forEach(sd => {
+      const [b0, b1] = sd < 0 ? [-h, -h + da(W.edge)] : [h - da(W.edge), h];
+      slab(W.edge, W.r1 - PW, b0, b1, top, top + PH, wash);
+      slab(W.edge - .07, W.r1 - PW, sd < 0 ? b0 - .001 : b0 - .0005, sd < 0 ? b1 + .0005 : b1 + .001, top + PH, top + PH + .12, M.trim);
+    });
+    // lamp posts on the parapet
+    for (let i = 0; i < 5; i++) {
+      const a = -h + .03 + i * (2 * h - .06) / 4, rr = W.r1 - PW / 2, x = rr * Math.sin(a), z = -rr * Math.cos(a);
+      mesh(new THREE.BoxGeometry(.3, .6, .3), wash, x, top + PH + .42, z, P).rotation.y = -a;
+      const gl = glowSprite(0xffd8a0, 1.1, .8); gl.material.fog = false; gl.position.set(x, top + PH + .82, z); P.add(gl);
+      onDaylight(d => gl.material.opacity = .85 * (1 - d) + .05);
+    }
+    // walkable: the paving at the terrace's height, the parapet and end walls block; round it, inside the same rectangle, the land
+    const PAD_ = .35, land = (lx, lz) => terrainAt(HILL.cx + lx, HILL.cz + lz);   // the hill is round, so only the radius matters
+    sRect(P, -(W.r1 + .6) * Math.sin(h + .02), (W.r1 + .6) * Math.sin(h + .02), -(W.r1 + .6), -W.r0 * Math.cos(h + .02), (lx, lz) => {
+      const r = Math.hypot(lx, lz), a = Math.atan2(lx, -lz);
+      if (r < W.r0 || r > W.r1 + .07 + PAD_ || Math.abs(a) > h + (.07 + PAD_) / r) return land(lx, lz);
+      if (r > W.r1 - PW - PAD_) return null;
+      if (r > W.edge - .07 - PAD_ && Math.abs(a) > h - (PW + PAD_) / r) return null;
+      if (r > W.r1 + .07 || Math.abs(a) > h) return land(lx, lz);
+      return top;
+    });
+  }

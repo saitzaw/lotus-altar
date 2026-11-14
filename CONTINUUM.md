@@ -68,6 +68,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: a terrace walk between the third monastery and the bamboo
+- From the owner (screenshots from the east stair): a platform between ဝိႁၢၼ်ႇၵုင်းသႃႇ and the hill-foot bamboo, with walls, safe to
+  walk, without moving the bamboo. `wihanWalk()` (`14c-wihan-kyaung.js`, `WIHAN_WALK`) builds a paved annular sector in the hill's
+  frame (angles 0.6…1.261 rad from the main stair, r 65.2…73; the terrace edge is at 70.62, the nearest clumps root ~75 m out) at
+  the lower terrace's height + 3 cm, on a whitewashed wall footed at y 1.6, with a 0.95 m parapet and gilt coping along the outer
+  edge and both ends over the slope, five lamp posts on it; open uphill to the monastery's stair, the footpath and the east stair's
+  landing. Walkable through one `sRect` whose height function gives the paving, blocks the walls, and returns `terrainAt` elsewhere
+  in its box. Called right after `hillFootBamboo` so the clumps (placed by `surfAt`) stay put. The procession walks over it (it
+  reads `walkAt`). Checked in headless renders and a `walkAt` probe.
+
 ### 2026-11-14: the Shan band walks at the back of the procession
 - From the owner: the long drums, gongs and cymbal player follow the to, like the festival stage's ensemble, the gongs carried by
   two men and played by a third. The stage's players and instruments moved out of `kinnaraDancers` into a cached `ensembleKit()`
