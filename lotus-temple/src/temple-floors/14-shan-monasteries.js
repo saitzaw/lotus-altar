@@ -212,7 +212,7 @@
         });
       };
       const yR = FH + WH, yT = yR + 1.5;   // the walls' top, and the frieze's top where the gables stand
-      hip(G, [-W / 2 - .4, W / 2 + .4, -D / 2 - .4, D / 2 + .4], [-IW / 2, IW / 2, -ID / 2, ID / 2], yR - .25, yR + .7).material = rustTex(false, 1, 1);
+      hip(G, [-W / 2 - .4, W / 2 + .4, -D / 2 - .4, D / 2 + .4], [-IW / 2, IW / 2, -ID / 2, ID / 2], yR - .4, yR + .1).material = rustTex(false, 1, 1);   // its top tucks under the frieze, its eaves clear the stair's lotus buds
       const frontF = inlayM(IW / 1.6, 1), sideF = inlayM(ID / 1.6, 1);
       mesh(new THREE.BoxGeometry(IW, yT - yR - .15, ID), [sideF, sideF, darkM, darkM, frontF, frontF], 0, (yR + .15 + yT) / 2, 0, G);
       gableB(0, yT, 0, 5.6, ID + .6, 1.8);
