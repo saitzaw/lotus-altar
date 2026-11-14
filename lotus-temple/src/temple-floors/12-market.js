@@ -143,6 +143,30 @@
     mesh(new THREE.BoxGeometry(TW1 - TW0, .06, TD * 2), wood, (TW0 + TW1) / 2, .26 + TH - .03, 0, hall);
     [[TW0 + .1, -TD + .1], [TW0 + .1, TD - .1], [TW1 - .1, -TD + .1], [TW1 - .1, TD - .1]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.08, TH - .06, .08), wood, x, .26 + (TH - .06) / 2, z, hall));
     [[-2.0, -.9], [-2.0, 0], [-2.0, .9], ...[-.8, .3, 1.4].flatMap(x => [[x, -2.0], [x, 2.0]])].forEach(([x, z], k) => mesh(new THREE.CylinderGeometry(.19, .15, .46, 10), k % 2 ? stool : stool2, x, .26 + .23, z, hall));
+    // a player at the table: a young man on the middle stool of the north side, leaning on the table edge with his chips in front of
+    // him, watching the bowl. One flat-shaded mesh, built facing +z (towards the table) from the floor up
+    const plParts = [], pp = (w, h, d, col, x, y, z) => plParts.push([new THREE.BoxGeometry(w, h, d), col, x, y, z]);
+    const SKIN_P = 0xd8a47a, SHIRT = 0x2f5a6a, DENIM = 0x34466a, HAIR_P = 0x16120f, ST = .72;   // ST: the stool top
+    [-1, 1].forEach(e => {
+      pp(.15, .14, .44, DENIM, e * .1, ST + .07, .16);                   // thighs on the stool
+      pp(.13, .46, .14, DENIM, e * .1, .26 + .23 + .03, .36);            // shins down to the floor
+      pp(.12, .07, .25, 0x2a2a2e, e * .1, .295, .42);                    // black trainers
+      pp(.1, .3, .12, SHIRT, e * .25, ST + .5, .06);                     // upper arms
+      pp(.1, .09, .36, SHIRT, e * .21, 1.1, .3);                         // forearms resting on the table's edge
+      pp(.08, .07, .1, SKIN_P, e * .17, 1.1, .52);                       // hands
+    });
+    pp(.38, .05, .22, 0x1a1a1a, 0, ST + .12, 0);                         // belt
+    pp(.4, .52, .23, SHIRT, 0, ST + .4, .03);                            // a teal T-shirt, leaning a little forward
+    pp(.1, .08, .1, SKIN_P, 0, ST + .7, .06);                            // neck
+    pp(.22, .26, .23, SKIN_P, 0, ST + .86, .08);                         // head
+    [-1, 1].forEach(e => { pp(.03, .06, .05, SKIN_P, e * .125, ST + .86, .08); pp(.04, .035, .012, 0x2a1c18, e * .05, ST + .87, .197); pp(.06, .015, .012, HAIR_P, e * .05, ST + .915, .197); });   // ears, eyes, brows
+    pp(.06, .014, .01, 0x8a3a30, 0, ST + .78, .196);                     // mouth
+    pp(.24, .1, .25, HAIR_P, 0, ST + 1.02, .07); pp(.24, .16, .06, HAIR_P, 0, ST + .91, -.04); pp(.22, .06, .05, HAIR_P, 0, ST + 1.0, .19);   // short hair, a little longer on top
+    [[.2, 0x2a8a4a, 3], [.32, 0xc0302a, 4], [-.22, 0xf0ece0, 2]].forEach(([x, col, n]) => { for (let i = 0; i < n; i++) plParts.push([new THREE.CylinderGeometry(.065, .065, .016, 12), col, x, 1.05 + i * .017, .7]); });   // his chips on the table
+    const plGeo = lowPoly(plParts), plCol = plGeo.attributes.color;
+    for (let i = 0; i < plCol.array.length; i++) plCol.array[i] = Math.pow(plCol.array[i], 2.2);
+    const player = new THREE.Mesh(plGeo, std({ vertexColors: true, flatShading: true, roughness: .85 }));
+    player.castShadow = true; player.position.set(.3, 0, -2.0); player.rotation.y = -.15; hall.add(player);
     [[-3, -4], [3, -4], [-3, 4], [3, 4], [0, 0]].forEach(([x, z]) => { mesh(new THREE.CylinderGeometry(.006, .006, .8, 4), steelM, x, GH - .15, z, hall); const b = glowSprite(0xfff0c8, .9, .9); b.material.fog = false; b.position.set(x, GH - .6, z); hall.add(b); });
     const inner = new THREE.PointLight(0xffd8a0, 1.6, 14, 2); inner.position.set(0, GH - .4, 0); hall.add(inner);
     hall.traverse(o => { if (o.isMesh && !o.userData.tip) clickable(list, o, tdata); });

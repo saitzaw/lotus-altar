@@ -77,6 +77,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   each animal 3 to 1; Red, Black, Rooster · Eel and Pig · Frog 1 to 1 (the pair strips are drawn half red, half black). Stacks
   show on the mat (`game.setChips`); winnings stay a moment after the cover lifts. "Same again", "Clear bets"; closing refunds
   chips not yet spun. Refill is now 100 tokens. API changed: `spin(wagers)`, `onResult(face, outcome)`.
+- A player sits at the table: a young man in a teal T-shirt and jeans on the north side's middle stool (hall-local .3, −2.0),
+  leaning on the edge with his chips in front of him. One static lowPoly mesh; it doesn't block walkers.
 - Burmese lines added (doorman, notice): worth a check by a native speaker. No Shan wording.
 
 ### 2026-11-14: a morning market at the seven-day market
