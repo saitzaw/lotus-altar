@@ -19,7 +19,7 @@
     // [x0, x1, z0, z1], the festival stage, the old banyan, the paddies [x0, x1, z0, z1], the forest's edge, the waterfall's foot
     sounds: { stupa: [HILL.cx, HILL.top + 8, HILL.cz], bell: [-17, -1.5], gong: [24.5, 26], compound: [-33, 33, -16, 43],
               stage: STAGE, banyan: [36.4, 65.4], fields: [-104, 64, -94, -42], forestZ: -98, falls: [FALLS.x - FALLS.R + 2.6, FALLS.z] },
-    takeBand() { return BAND.splice(0); },   // the stage ensemble's strokes (long drum, gongs, cymbals) since the last call, for the ambience
+    takeBand() { return BAND.splice(0); },   // the Shan ensemble's strokes (long drum, gongs, cymbals; the stage's and the procession band's) since the last call, for the ambience
     get pavilionSeat() { return PAV_SEAT; },
     get corridorRing() { return CORRIDOR_RING; },
     // inside a hall: is (x, z) taken by furniture, columns or the stair room?

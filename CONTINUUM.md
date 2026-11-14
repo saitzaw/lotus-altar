@@ -68,6 +68,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the Shan band walks at the back of the procession
+- From the owner: the long drums, gongs and cymbal player follow the to, like the festival stage's ensemble, the gongs carried by
+  two men and played by a third. The stage's players and instruments moved out of `kinnaraDancers` into a cached `ensembleKit()`
+  (`16b-shan-ensemble-kit.js`), with the song (`frame`, `strokes`) and a `sound` that queues strokes in `BAND`; the stage band
+  is built from it unchanged. `createProcessionBand(root)` makes two units: the drummers side by side with the cymbals behind
+  (43.3 m back), and the gong case hung under a bamboo pole on two carriers' left shoulders, its gongs toward the player who
+  walks beside its back end pushing the rod (47.4 m; `squeeze: false`; the hand fit misses by under 3 mm). The musicians have no
+  legs of their own (`musician(..., legs = false)`), the procession's instanced legs walk for them. The band plays the stage's song
+  on the procession's `dance` clock, so the kinnara keep time with it, and each stroke carries the band's world x, z so
+  `ambStep` fades it by distance from the band (stage strokes still fade from `S.stage`). The route now starts at x = −56 so
+  the whole line fits along the front street while waiting at the gate (the tail is ~49 m behind the head).
+  Checked in headless renders with `?procession=1&dancers=pair` (stage band too).
+
 ### 2026-11-14: the kinnara pair walk just ahead of the to
 - From the owner: the kinnara and kinnari now dance near the back of the Poy Sang Long, 34.3 m behind the head, just in front
   of the to (38.8 m); the gift poles lead (0 m) and everyone else moved up 4.5 m. Their toast and the procession's toast say so.

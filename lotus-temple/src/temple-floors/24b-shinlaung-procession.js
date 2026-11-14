@@ -266,6 +266,62 @@
   }
 
 
+  /* ---------- the Shan ensemble walking at the back of the procession, the festival stage's players and instruments
+     (ensembleKit) on their feet: two long drummers side by side with their drums slung, the cymbal player behind them, then the
+     case of gongs hung under a bamboo pole that two men carry on their shoulders, one before it and one behind, while the third
+     walks beside it pushing the beaters' rod. They play the stage's song, and the kinnara ahead keep to it. Returns two units,
+     [drums and cymbals, gongs], each front +z ---------- */
+  function createProcessionBand(root) {
+    const E = ensembleKit(), K = procKit(), shown = () => root.visible, list = picks.pagoda, here = V(0, 0, 0), r = rng(9700), pk = l => l[(r() * l.length) | 0];
+    const TAN = 0xd8a878, TAN_LOW = 0xc89868;
+    const walking = (D, units) => { D.userData = { body: null, legCol: new THREE.Color(TAN_LOW).convertSRGBToLinear(), swing: .3, phase: 0, legs: true }; units.push(D); };
+    // the drums, and the cymbals behind them (the drums' tails run back past each drummer's left leg)
+    const front = new THREE.Group(), fw = [];
+    const drummers = [E.longDrummer(front, -.85, 0, 0, 0, 0xe88a8a, false), E.longDrummer(front, .45, 0, 0, 0, 0xf0f0e8, false)];
+    drummers.forEach(d => { E.gate(d.D, list, E.INFO.drums, shown); walking(d.D, fw); });
+    const cym = E.cymbaler(front, -.15, 0, -1.55, 0, 0xe8c040, false); E.gate(cym.D, list, E.INFO.cym, shown); walking(cym.D, fw);
+    // the gongs: the case hung under the pole, its gongs toward the player on the right of the way, the big gong and the rod's
+    // grip toward the back
+    const back = new THREE.Group(), bw = [], CY = .3, PY = 1.43, PX = -.1, PZ = 1.85;
+    const gc = E.gongCase(back, 0, CY, 0, -Math.PI / 2);
+    const gp = [];
+    // the two carriers in Shan tan, the pole on the left shoulder, a hand up on it
+    [1.45, -1.45].forEach(z => {
+      const p = [], skin = pk(P_SKIN);
+      procBody(p, { top: TAN, trousers: TAN_LOW, skin, long: true }); procHeadwrap(p, pk([0xf2f0ea, 0xe88a8a, 0xf2dc78]));
+      procArm(p, 1, TAN, skin, [.33, 1.13, .12], [.19, 1.37, .16], true); procArm(p, -1, TAN, skin, [-.24, 1.03, .03], [-.25, .78, .08], true);
+      const f = procFigure(p, K.procM, TAN_LOW, .3, PX - .19, z); back.add(f); bw.push(f);
+    });
+    // the bamboo pole, and the cords from it down to the tops of the case's end posts (leaning back with the case)
+    const lean = .14, postH = gc.TOP + .32, py = CY + postH * Math.cos(lean), px = -postH * Math.sin(lean);
+    const pp = [K.rod([PX, PY, -PZ], [PX, PY, PZ], .03, .03, 0xb8b468, 7)];
+    for (let y = -PZ + .3; y < PZ; y += .5) pp.push([K.cyl(.033, .033, .02, 7), 0x8a8a40, PX, PY, y, Math.PI / 2]);
+    [-1, 1].forEach(sd => { const z = sd * (gc.L / 2 + .02); pp.push(K.rod([px, py, z], [PX, PY - .02, z], .007, .007, 0x5a3a20, 4)); });
+    const pole = K.solid(pp, K.procM); back.add(pole);
+    // the player walking beside the case, his right hand on the rod's grip, pushing on each stroke
+    const m = E.musician(back, .46, 0, -1.3, 0, 0xe8a040, false, null, true, false), hand = m.arm(-1), free = m.arm(1);
+    mesh(new THREE.SphereGeometry(.045, 8, 6), E.skin, 0, -.28, 0, hand.e); mesh(new THREE.SphereGeometry(.045, 8, 6), E.skin, 0, -.28, 0, free.e);
+    E.setArm(free, .15, .12, .35);
+    back.updateMatrixWorld(true);
+    const player = E.gongPlayer(gc, m.D, hand.e.children[hand.e.children.length - 1], hand);
+    const gongInfo = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း) in their painted case, hung under a bamboo pole that two men carry on their shoulders through the town. The third walks beside them and sounds all five at once, pushing the rod that joins the padded beaters, so the gongs ring as one chord, with the long drums (ၵွင်ယၢဝ်း) and the cymbals (ၸၢပ်ႈ) of the Shan ensemble at the back of the Poy Sang Long." };
+    E.gate(m.D, list, gongInfo, shown); E.gate(gc.F, list, gongInfo, shown); walking(m.D, bw);
+    // the song: the drums lead and the cymbals and gongs answer, heard from where the band is
+    let c = null;
+    const play = (kind, v, who = 0, due = 0) => {
+      if (kind === "gong") player.hit(); else if (kind === "cym") cym.hit(); else drummers[who].hit(kind, v);
+      front.getWorldPosition(here); E.sound(kind, v, who, due, [here.x, here.z]);
+    };
+    front.userData = { walkers: fw, shades: [], poles: [], step: (dt, motion, t) => {
+      const c1 = t / PROCESSION.bar; if (c !== null && c1 > c) E.strokes(c, c1, E.frame, PROCESSION.bar / Math.max(motion, .01), play); c = c1;
+      drummers.forEach(d => d.step(dt * motion)); cym.step(dt * motion);
+    } };
+    back.userData = { walkers: bw, shades: [], poles: [], squeeze: false, gongMiss: player.poses.map(q => q[0]), step: (dt, motion) => {
+      const k = player.step(dt * motion); m.B.rotation.z = k * .03; m.hd.rotation.x = .1;   // leaning into the push
+    } };
+    return [front, back];
+  }
+
   const PROC_INFO = {
     kinnara: { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "The kinnara and kinnari, the half-bird lovers of the Himavanta forest, dance near the back of the procession, just ahead of the to, in their masks and green-and-gold dress, opening and folding their great sequinned wings as they go." },
     to: { tip: "The to · တၢင်းၵႃႈတူဝ်း · တိုးနယား", toast: "The to (တိုးနယား in Burmese), a gentle deer-faced beast of the Himavanta forest, danced by two men in one shaggy coat, prances, nods and shakes its mane at the back of the procession." }
@@ -311,6 +367,7 @@
      temple's clock, so every visitor sees them in the same place ---------- */
   function createShinlaungProcession(g) {
     const K = procKit(), root = new THREE.Group(); root.userData.noCull = true; root.visible = false; g.add(root);
+    const [drums, gongs] = createProcessionBand(root);
     // the marching order: [unit, metres behind the head]
     const order = [
       [createOfferingPoles(1, 1), 0], [createOfferingPoles(2, 2), 2.4],
@@ -320,7 +377,8 @@
       [createProcessionRelatives("women", 1), 25.9], [createProcessionRelatives("women", 2), 27.3], [createProcessionRelatives("women", 3), 28.7],
       [createProcessionRelatives("men", 3), 30.5],
       [createKinnaraDancers(root), 34.3],
-      [createToDancer(root), 38.8]
+      [createToDancer(root), 38.8],
+      [drums, 43.3], [gongs, 47.4]
     ];
     order.forEach(([u, back]) => { if (u.userData.squeeze === undefined) u.userData.squeeze = !u.userData.shades.length; });
     const units = order.map(([u, back]) => { u.userData.back = back; root.add(u); return u; });
@@ -340,7 +398,7 @@
     const onHill = a => { const v = V(Math.sin(a) * PR, 0, -Math.cos(a) * PR).applyMatrix4(H.matrix); return [v.x, v.z]; };
     const PL = LANES[4], laneZ = (PL.z0 + PL.z1) / 2, E = HILL.east, along = r => [HILL.cx + E[0] * r, HILL.cz + E[1] * r];
     const landing = along(PR), lv = V(landing[0], 0, landing[1]).applyMatrix4(Hinv), aE = Math.atan2(lv.x, -lv.z), aEnd = Math.asin(6 / PR);
-    const W = [[-40, 54], [0, 54], [41, 54], [41, laneZ], [PL.x0, laneZ], along(HILL.rBase + .6), landing];
+    const W = [[-56, 54], [0, 54], [41, 54], [41, laneZ], [PL.x0, laneZ], along(HILL.rBase + .6), landing];
     const nArc = Math.max(2, Math.ceil(Math.abs(aE - aEnd) * PR / 3));
     for (let i = 1; i <= nArc; i++) W.push(onHill(aE + (aEnd - aE) * i / nArc));
     const cum = [0];

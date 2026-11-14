@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-14
 
 ### Added
+- The Shan band walks at the back of the Poy Sang Long, playing as on the festival stage: two long drummers, a cymbal player, and the case of gongs hung under a bamboo pole carried by two men while a third walks beside it and plays; you hear them from where they are.
 - The Poy Sang Long's kinnara and kinnari now dance near the back, just ahead of the to; the gift poles lead the procession.
 - In the Poy Sang Long procession, behind the gift poles, villagers now carry tall bamboos dressed all the way up in paper flags and streamers, and yellow paper parasols with fringes of paper strips.
 - Poy Sang Long, the Shan novice ordination procession, from 8 AM ICT (`?procession=1` shows it at any time, with short stops): it sets out from in front of the temple's gate, goes along the front street, up the market lane, along the palace road past the Haw Kham and up the hill's east stair to the second monastery, stopping to dance on the way and gathering before the monastery at the end; it keeps off the church's street. Kinnara and kinnari dancers lead it and the white to dances at the back; bamboo poles hung with white-wrapped gifts and ribbons lead, then men in pastel silk jackets with fans and monks' bowls, three boys dressed as princes in silk and Shan flower headdresses riding their carriers' shoulders under turning golden parasols, and women in banded skirts carrying folded saffron robes in silver bowls.
