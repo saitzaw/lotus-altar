@@ -16,6 +16,8 @@ lesson when you learn one, and delete a lesson once it stops being true.
   previous function (here `toDancers` landed inside `kinnaraDancers` and was "not defined"). Prefix a new piece with the
   number of the piece before it plus a letter (`18b-`), and check its place with `grep -n "function name" dist/*.js`.
 
+- r128's `BufferGeometry` has no `applyQuaternion` (added later); `node --check` can't see that, only the page does. Use
+  `geo.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q))`.
 - `CONFIG` lives in `lotus-altar.js` and isn't passed to `TempleFloors(ctx)`. Tweakable values for outdoor places in
   `temple-floors.js` go in a local constant next to the builder (`HILL`, `MON`, `FALLS`).
 - The near hills (`peak()` in `mountainsAndForest`, a ring 150–165 m out) are wide cones, radius 30–46 m, so their feet
