@@ -75,7 +75,7 @@ function frame() {
   temple.setService(serviceOn);
   temple.setMorningMarket(morningOn);
   temple.setStalls(stallsOn);
-  temple.setProcession(processionOn);
+  temple.setProcession(processionOn, processionAt());
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);

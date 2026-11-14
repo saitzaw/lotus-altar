@@ -1,16 +1,20 @@
   /* ---------- Poy Sang Long (ပွႆးသၢင်ႇလွင်း, Burmese ရှင်ပြုပွဲ), the Shan novice ordination procession: before the boys are ordained
      as novices they are dressed as princes, after the Buddha who left his palace, and carried through the town on the shoulders
      of their uncles and older cousins, never letting their feet touch the ground, under tall golden parasols. Bamboo poles hung
-     with white-wrapped gifts and coloured streamers lead the way; the families follow with fans, monks' bowls and folded robes.
-     Here they go round the block opposite the temple's gate in the morning (FOLK.procession, CONFIG.procession, ?procession=1/0):
-     east along the front street, up the market lane, back along the lane behind the plaza, so that the block stays on their right.
+     with white-wrapped gifts and coloured streamers follow the kinnara dancers at the front; the families follow with fans, monks'
+     bowls and folded robes, and the to dances at the back. From 8 to 11 in the morning (FOLK.procession, CONFIG.procession,
+     ?procession=1/0) they set out from in front of the temple's gate, go east along the front street, up the market lane, west
+     along the palace lane past the Haw Kham, up the east stair's first flight onto the hill's lower terrace and along its footpath
+     to the second monastery (lowerKyaung), stopping on the way to dance; they keep off the church's street.
      Everyone is low-poly and flat-shaded (MeshStandardMaterial, flatShading), each figure one mesh of vertex colours; the trouser
      legs are one instanced mesh and step as they walk ---------- */
   const PROCESSION = {
-    way: [[0, 54], [41, 54], [41, 77.5], [0, 77.5], [0, 72], [4.6, 69.5], [4.6, 61], [0, 54]],   // the loop of roads they walk, in order
-    speed: .45,   // metres a second
-    stride: 1.3,  // metres a full step takes (left and right)
-    far: 150      // hidden when the walker is farther than this from the block
+    speed: .45,    // metres a second while walking
+    stride: 1.3,   // metres a full step takes (left and right)
+    far: 170,      // hidden when the walker is farther than this from the head of the procession
+    gather: 2400,  // seconds they stand gathered before the monastery at the end of the morning (the stops on the way share the rest)
+    hours: 3,      // how long the morning lasts (CONFIG.procession, 8–11 am)
+    test: { dwell: 20, gather: 90 }   // with ?procession=1: short stops, and it starts again from the gate after gathering
   };
   // the materials and small part-makers every builder below shares (made once, on the first call)
   let _proc = null;
@@ -203,51 +207,174 @@
     return unit;
   }
 
-  /* ---------- the whole procession, in marching order behind the poles: the men with fans and bowls, the three boys on
-     their carriers' shoulders under their parasols, the women with the robes; walking round PROCESSION.way while FOLK.procession ---------- */
+
+  /* ---------- the kinnara and kinnari dancing at the head of the procession (ၵႃႈၼူၵ်ႉ, ka nok): half-bird dancers in green and gold
+     with human-faced masks and gold crowns, white stockings, a fanned tail at the back and great feathered wings on their arms,
+     which they open and fold as they go. Returns a group of the two, front +z ---------- */
+  function createKinnaraDancers(seed = 1) {
+    const K = procKit(), unit = new THREE.Group(), walkers = [], wings = [];
+    const GREEN = 0x1f7a3c, GOLD = 0xe8c040, RED = 0xc02a2a, MASK = 0xf0dcc0, WHITE = 0xf4f0e6;
+    [[.8, false], [-.8, true]].forEach(([x, kinnari]) => {
+      const p = [], skin = 0xc89a70;
+      [[.55, GOLD], [.63, GREEN], [.71, GOLD], [.79, GREEN], [.87, GOLD]].forEach(([y, c], i) => p.push([K.cyl(.17 + i * -.004, .25 - i * .02, .085, 10), c, 0, y, 0]));   // the short skirt in bands
+      p.push([K.cyl(.255, .255, .03, 10), RED, 0, .52, 0], [K.cyl(.17, .17, .05, 10), RED, 0, .93, 0]);   // red at the hem and the belt
+      p.push([K.cyl(.15, .17, .42, 9), GREEN, 0, 1.13, 0], [K.box(.2, .22, .03), GOLD, 0, 1.15, .155], [K.cyl(.21, .2, .05, 10), GOLD, 0, 1.33, 0]);   // the bodice, a gold breastplate, the collar
+      p.push([K.ball(.07), GREEN, -.19, 1.3, 0], [K.ball(.07), GREEN, .19, 1.3, 0]);
+      // the fanned tail at the back of the waist, tilted back
+      for (let i = 0; i < 9; i++) { const ph = (i - 4) * .22, L = .55 - Math.abs(i - 4) * .04, q = K.box(.075, L, .012); q.translate(0, L / 2, 0); q.rotateZ(ph); q.rotateX(-.55); q.translate(0, .9, -.2); p.push([q, [GREEN, GOLD, RED][i % 3]]); }
+      // the mask: a pale face, dark eyes and brows, red lips, the hair behind; a gold crown with a tall spire (a lower one for the kinnari)
+      p.push([K.cyl(.045, .05, .09, 6), skin, 0, 1.39, 0], [K.ball(.118, 1), MASK, 0, 1.53, 0], [K.ball(.12, 1), P_HAIR, 0, 1.55, -.04]);
+      [-1, 1].forEach(sd => p.push([K.box(.035, .02, .01), P_INK, sd * .043, 1.545, .107], [K.box(.045, .01, .01), P_INK, sd * .045, 1.575, .1]));
+      p.push([K.box(.05, .016, .01), RED, 0, 1.475, .102], [K.cyl(.12, .12, .05, 10), GOLD, 0, 1.63, 0], [K.cone(kinnari ? .07 : .09, kinnari ? .22 : .38, 6), GOLD, 0, kinnari ? 1.76 : 1.84, 0], [K.ball(.025), RED, 0, 1.64, .12]);
+      const f = procFigure(p, K.silkM, WHITE, .45, x); unit.add(f); walkers.push(f);
+      // the wings, each about its shoulder: the green sleeve out to the hand, feathers fanning out and down from it
+      [-1, 1].forEach(sd => {
+        const wp = [], hand = [sd * .5, -.12, .12];
+        wp.push(K.rod([0, 0, 0], hand, .045, .036, GREEN), [K.ball(.04), skin, ...hand]);
+        for (let i = 0; i < 8; i++) {
+          const ph = -1.35 + i * .2, L = .48 + i * .04, q = K.box(L, .075, .012); q.translate(L / 2, 0, 0); q.rotateZ(sd > 0 ? ph : Math.PI - ph); q.translate(sd * .04, -.03, -.05);
+          wp.push([q, [GREEN, GOLD, GREEN, RED, GOLD, GREEN, GOLD, GREEN][i]]);
+        }
+        const w = K.solid(wp, K.silkM);
+        w.position.set(sd * .19, 1.3, -.02); w.userData.sd = sd; f.add(w); wings.push(w);
+      });
+      f.userData.dancer = true; f.userData.lag = seed + (kinnari ? 1.7 : 0);
+    });
+    unit.userData = { walkers, shades: [], poles: [], wings, squeeze: true, dance: "kinnara" };
+    return unit;
+  }
+
+  /* ---------- the to (တၢင်းၵႃႈတူဝ်း, Burmese တိုးနယား) dancing at the back of the procession: the deer-faced beast with branched
+     gold antlers, danced by two men inside one shaggy white coat trimmed in gold, green and red, the front one holding up the
+     neck and the head, which nods and looks about, the back one under the rump; only their four white-trousered legs show.
+     Returns a group, front +z ---------- */
+  function createToDancer() {
+    const K = procKit(), unit = new THREE.Group(), walkers = [];
+    const COAT = 0xf4f1ea, SHADE = 0xd8d4ca, GOLD = 0xe8b830, GREEN = 0x2a8a4a, RED = 0xc02a2a;
+    // the two men's legs: two walkers with no body of their own
+    [.5, -.55].forEach((z, i) => { const f = new THREE.Group(); f.position.set(0, 0, z); f.userData = { legCol: new THREE.Color(COAT).convertSRGBToLinear(), swing: .4, legs: true, lag: i * 1.6 }; unit.add(f); walkers.push(f); });
+    const beast = new THREE.Group(); unit.add(beast);
+    const bp = [];
+    const barrel = K.cyl(.36, .36, 1.3, 10); barrel.rotateX(Math.PI / 2); bp.push([barrel, COAT, 0, 1.08, -.05]);
+    bp.push([K.ball(.37, 1), COAT, 0, 1.06, -.72], [K.ball(.36, 1), COAT, 0, 1.12, .62]);   // the rump and the chest
+    for (let i = 0; i < 14; i++) [-1, 1].forEach(sd => { const z = -.85 + i * .12; bp.push([K.cone(.05, .28, 4), i % 2 ? SHADE : COAT, sd * .33, .72, z, Math.PI]); });   // the shaggy coat hanging at the sides
+    for (let i = 0; i < 12; i++) [-1, 1].forEach(sd => { const z = -.8 + i * .14; bp.push([K.ball(.045), [GOLD, GREEN, RED][i % 3], sd * .37, .88, z]); });   // the trim of scallops along the flanks
+    bp.push([K.cone(.08, .35, 6), COAT, 0, 1.38, -1.05, -.9], [K.ball(.05), GOLD, 0, 1.52, -1.18]);   // the tail, a gold tuft
+    const body = K.solid(bp, K.procM); beast.add(body);
+    // the neck and head, about the front man's hands, so it nods
+    const neck = new THREE.Group(); neck.position.set(0, 1.3, .78); beast.add(neck);
+    const hp = [];
+    hp.push(K.rod([0, -.1, -.05], [0, .62, .28], .17, .12, COAT, 8), [new THREE.TorusGeometry(.17, .035, 4, 10), RED, 0, .05, .02, Math.PI / 2 - .4], [K.ball(.05), GOLD, 0, -.05, .18]);   // the long neck, a red garland and its bell
+    const skull = K.ball(.17, 1); skull.scale(1, .95, 1.3); hp.push([skull, COAT, 0, .72, .38]);
+    hp.push([K.cone(.1, .3, 7), COAT, 0, .66, .6, Math.PI / 2], [K.ball(.045), RED, 0, .66, .76]);   // the muzzle and a red nose
+    [-1, 1].forEach(sd => {
+      hp.push([K.ball(.035), P_INK, sd * .1, .78, .5], [new THREE.TorusGeometry(.04, .01, 4, 8), GOLD, sd * .1, .78, .51], [K.cone(.045, .16, 4), COAT, sd * .15, .86, .3, 0, 0, -sd * 1.1]);   // eyes ringed in gold, ears
+      const a = [sd * .07, .86, .34], b = [sd * .22, 1.2, .26], c = [sd * .3, 1.38, .18];   // the branched antlers
+      hp.push(K.rod(a, b, .02, .016, GOLD, 5), K.rod(b, c, .016, .012, GOLD, 5), K.rod(b, [sd * .38, 1.2, .34], .012, .01, GOLD, 4), K.rod([sd * .16, 1.08, .3], [sd * .06, 1.26, .36], .012, .01, GOLD, 4));
+    });
+    neck.add(K.solid(hp, K.procM));
+    unit.userData = { walkers, shades: [], poles: [], beast, neck, body, dance: "to" };
+    return unit;
+  }
+
+  /* ---------- the whole procession, in marching order: the kinnara pair, the gift poles, the men with fans and bowls, the three
+     boys on their carriers' shoulders under their parasols, the women with the robes, the men at the back, then the to. Their
+     way and their stops are worked out from the town's lanes and the hill (built before this); the head's place comes from the
+     temple's clock, so every visitor sees them in the same place ---------- */
   function createShinlaungProcession(g) {
     const K = procKit(), root = new THREE.Group(); root.userData.noCull = true; root.visible = false; g.add(root);
     // the marching order: [unit, metres behind the head]
     const order = [
-      [createOfferingPoles(1, 1), 0], [createOfferingPoles(2, 2), 2.4],
-      [createProcessionRelatives("men", 1), 5], [createProcessionRelatives("men", 2), 6.5],
-      [createShinlaungPair(1), 9.5], [createShinlaungPair(2), 13.3], [createShinlaungPair(3), 17.1],
-      [createProcessionRelatives("women", 1), 20.6], [createProcessionRelatives("women", 2), 22], [createProcessionRelatives("women", 3), 23.4],
-      [createProcessionRelatives("men", 3), 25.2]
+      [createKinnaraDancers(1), 0],
+      [createOfferingPoles(1, 1), 4.5], [createOfferingPoles(2, 2), 6.9],
+      [createProcessionRelatives("men", 1), 9.5], [createProcessionRelatives("men", 2), 11],
+      [createShinlaungPair(1), 14], [createShinlaungPair(2), 17.8], [createShinlaungPair(3), 21.6],
+      [createProcessionRelatives("women", 1), 25.1], [createProcessionRelatives("women", 2), 26.5], [createProcessionRelatives("women", 3), 27.9],
+      [createProcessionRelatives("men", 3), 29.7],
+      [createToDancer(), 33.5]
     ];
+    order.forEach(([u, back]) => { if (u.userData.squeeze === undefined) u.userData.squeeze = !u.userData.shades.length && !u.userData.beast; });
     const units = order.map(([u, back]) => { u.userData.back = back; root.add(u); return u; });
-    const walkers = []; units.forEach(u => u.userData.walkers.forEach(f => { f.userData.unit = u; walkers.push(f); }));
+    const walkers = []; units.forEach(u => u.userData.walkers.forEach(f => { f.userData.unit = u; f.userData.x0 = f.position.x; walkers.push(f); }));
     // the trouser legs of everyone, two to a walker, as one instanced mesh
     const legs = new THREE.InstancedMesh(K.legGeo, K.procM, walkers.length * 2);
     legs.frustumCulled = false; legs.castShadow = false; root.add(legs);
-    walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
-    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried round the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols. Bamboo poles hung with gifts lead the way; the families follow with fans, monks' bowls and saffron robes for the new novices. The great festival comes in the dry season, in March and April." };
-    walkers.forEach(f => { clickable(picks.pagoda, f.userData.body, data); if (f.userData.boy) clickable(picks.pagoda, f.userData.boy, data); });
-    // the loop: corner points and the distance round to each
-    const W = PROCESSION.way, cum = [0];
+    walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); if (f.userData.lag === undefined) f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
+    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Kinnara dancers lead, bamboo poles hung with gifts follow, the families come behind with fans, monks' bowls and saffron robes for the new novices, and the to dances at the back. The great festival comes in the dry season, in March and April." };
+    const kData = { tip: "Kinnara dancers · ၵႃႈၼူၵ်ႉ", toast: "The kinnara and kinnari, the half-bird lovers of the Himavanta forest, dance at the head of the procession, opening and folding their wings." };
+    const tData = { tip: "The to · တၢင်းၵႃႈတူဝ်း · တိုးနယား", toast: "The to (တိုးနယား in Burmese), a gentle deer-faced beast of the Himavanta forest, danced by two men in one shaggy coat, nods and frolics at the back of the procession." };
+    walkers.forEach(f => {
+      const d = f.userData, u = d.unit.userData, info = u.dance === "kinnara" ? kData : data;
+      if (d.body) clickable(picks.pagoda, d.body, info); if (d.boy) clickable(picks.pagoda, d.boy, info);
+    });
+    units.forEach(u => { if (u.userData.beast) { clickable(picks.pagoda, u.userData.body, tData); clickable(picks.pagoda, u.userData.neck.children[0], tData); } });
+
+    /* the way: the line of them waits along the front street west of the gate, the head in front of it; east to the market lane,
+       up it past the school, west along the palace lane to the east stair, up its first flight to the lower terrace, and round
+       the terrace's footpath to the second monastery, ending short of the main stair so the boys stop before its door */
+    const H = HILL.group; H.updateMatrix();
+    const Hinv = new THREE.Matrix4().copy(H.matrix).invert(), t1 = HILL.terraces[1], PR = t1.r1 - 3.6;
+    const onHill = a => { const v = V(Math.sin(a) * PR, 0, -Math.cos(a) * PR).applyMatrix4(H.matrix); return [v.x, v.z]; };
+    const PL = LANES[4], laneZ = (PL.z0 + PL.z1) / 2, E = HILL.east, along = r => [HILL.cx + E[0] * r, HILL.cz + E[1] * r];
+    const landing = along(PR), lv = V(landing[0], 0, landing[1]).applyMatrix4(Hinv), aE = Math.atan2(lv.x, -lv.z), aEnd = Math.asin(6 / PR);
+    const W = [[-40, 54], [0, 54], [41, 54], [41, laneZ], [PL.x0, laneZ], along(HILL.rBase + .6), landing];
+    const nArc = Math.max(2, Math.ceil(Math.abs(aE - aEnd) * PR / 3));
+    for (let i = 1; i <= nArc; i++) W.push(onHill(aE + (aEnd - aE) * i / nArc));
+    const cum = [0];
     for (let i = 1; i < W.length; i++) cum.push(cum[i - 1] + Math.hypot(W[i][0] - W[i - 1][0], W[i][1] - W[i - 1][1]));
     const L = cum[cum.length - 1], out = [0, 0];
-    const at = s => { s = ((s % L) + L) % L; let i = 1; while (cum[i] < s) i++; const u = (s - cum[i - 1]) / (cum[i] - cum[i - 1]); out[0] = W[i - 1][0] + (W[i][0] - W[i - 1][0]) * u; out[1] = W[i - 1][1] + (W[i][1] - W[i - 1][1]) * u; return out; };
-    const mid = W.reduce((a, [x, z]) => [a[0] + x / W.length, a[1] + z / W.length], [0, 0]);
+    const at = s => { s = Math.min(L, Math.max(0, s)); let i = 1; while (i < cum.length - 1 && cum[i] < s) i++; const u = (s - cum[i - 1]) / (cum[i] - cum[i - 1] || 1); out[0] = W[i - 1][0] + (W[i][0] - W[i - 1][0]) * u; out[1] = W[i - 1][1] + (W[i][1] - W[i - 1][1]) * u; return out; };
+    const sOf = k => cum[k];
+    // where they stop to dance: before the gate, at the market lane's corner, by the school gate, before the Haw Kham's gate,
+    // at the foot of the east stair; then on to the monastery, where they gather until the morning ends
+    const S0 = sOf(1), stops = [S0, sOf(2), sOf(2) + (122 - 54), sOf(3) + (41 - 16), sOf(5)], sHill = sOf(4);
+    const plan = (dwell, gather) => {
+      const keys = []; let t = 0;
+      stops.forEach((s, i) => { keys.push([t, s]); t += dwell; keys.push([t, s]); const nx = i + 1 < stops.length ? stops[i + 1] : L; t += (nx - s) / PROCESSION.speed; });
+      keys.push([t, L]); return { keys, total: t + gather };
+    };
+    const walkTime = (L - S0) / PROCESSION.speed;
+    const REAL = plan(Math.max(0, (PROCESSION.hours * 3600 - PROCESSION.gather - walkTime) / stops.length), PROCESSION.gather), TEST = plan(PROCESSION.test.dwell, PROCESSION.test.gather);
+    const headAt = (P, t) => { const k = P.keys; if (t <= 0) return k[0][1]; for (let i = 1; i < k.length; i++) if (t < k[i][0]) { const [ta, sa] = k[i - 1], [tb, sb] = k[i]; return sa + (sb - sa) * (t - ta) / (tb - ta || 1); } return L; };
     const zero = new THREE.Matrix4().makeScale(0, 0, 0), hip = new THREE.Matrix4(), rot = new THREE.Matrix4(), m = new THREE.Matrix4();
-    let head = 0;
+    let testT = 0, head = S0, dance = 0;
     updaters.pagoda.push((dt, t, motion) => {
-      const eye = FEST.eye, show = FOLK.procession && (!eye || Math.hypot(eye.x - mid[0], eye.z - mid[1]) < PROCESSION.far);
+      const on = FOLK.procession, eye = FEST.eye;
+      if (!on) { if (root.visible) root.visible = false; testT = 0; return; }
+      dt = Math.min(dt, .1);
+      if (FOLK.processionAt === null) { testT = (testT + dt) % TEST.total; head = headAt(TEST, testT); }
+      else head = headAt(REAL, FOLK.processionAt);
+      const [hx, hz] = at(head), show = !eye || Math.hypot(eye.x - hx, eye.z - hz) < PROCESSION.far;
       if (root.visible !== show) root.visible = show;
       if (!show) return;
-      head = (head + PROCESSION.speed * Math.min(dt, .1)) % L;
+      dance += dt * motion;
       units.forEach(u => {
-        const s = head - u.userData.back, [ax, az] = at(s - 1.2), [bx, bz] = at(s + 1.2), [x, z] = at(s);
+        const ud = u.userData, s = head - ud.back, [ax, az] = at(s - 1.2), [bx, bz] = at(s + 1.2), [x, z] = at(s);
         const w = walkAt(x, z);
         u.position.set(x, w === null ? terrainAt(x, z) : w, z); u.rotation.y = Math.atan2(bx - ax, bz - az);
-        u.userData.walkers.forEach(f => {
+        const sq = ud.squeeze ? 1 - .4 * Math.min(1, Math.max(0, (s - sHill + 6) / 6)) : 1;   // closer together on the hill's narrow ways
+        ud.walkers.forEach(f => {
           const d = f.userData, ph = (s / PROCESSION.stride) * TAU + d.lag;
-          f.position.y = Math.abs(Math.cos(ph)) * .035 * motion; f.rotation.z = Math.sin(ph) * .025 * motion;
+          f.position.x = d.x0 * sq;
+          if (d.dancer) {   // the kinnara: a light springing step, turning this way and that, the wings beating slowly
+            const k = dance * 2.2 + d.lag;
+            f.position.y = Math.abs(Math.sin(k)) * .08 * motion; f.rotation.y = Math.sin(dance * .9 + d.lag) * .6 * motion;
+            f.children.forEach(c => { if (c.userData.sd) { c.rotation.z = c.userData.sd * (.25 + .45 * Math.sin(k)) * Math.max(motion, .3); c.rotation.y = -c.userData.sd * .35 * (1 + Math.sin(k * .5)) * .5; } });
+            d.phase = k;
+          } else {
+            f.position.y = d.body ? Math.abs(Math.cos(ph)) * .035 * motion : 0; f.rotation.z = d.body ? Math.sin(ph) * .025 * motion : 0;
+            d.phase = ph;
+          }
           if (d.boy) d.boy.rotation.z = Math.sin(ph + .8) * .04 * motion;
-          d.phase = ph;
         });
-        u.userData.shades.forEach(sh => { sh.rotation.y += dt * .5 * motion; });
-        u.userData.poles.forEach(p => { const q = p.userData.seed; p.rotation.z = (Math.sin(t * 1.1 + q) * .045 + Math.sin(head * 2.4 + q) * .015) * motion; p.rotation.x = Math.sin(t * .8 + q * 1.7) * .03 * motion; });
+        if (ud.beast) {   // the to: a bouncing gait, the head nodding and looking about
+          const k = dance * 2.6;
+          ud.beast.position.y = Math.abs(Math.sin(k)) * .06 * motion; ud.beast.rotation.z = Math.sin(k * .5) * .05 * motion; ud.beast.rotation.y = Math.sin(dance * .7) * .12 * motion;
+          ud.neck.rotation.x = Math.sin(k) * .14 * motion; ud.neck.rotation.y = Math.sin(dance * .45) * .4 * motion;
+          ud.walkers.forEach(f => { f.userData.phase = k + f.userData.lag; });
+        }
+        ud.shades.forEach(sh => { sh.rotation.y += dt * .5 * motion; });
+        ud.poles.forEach(p => { const q = p.userData.seed; p.rotation.z = (Math.sin(t * 1.1 + q) * .045 + Math.sin(head * 2.4 + q) * .015) * motion; p.rotation.x = Math.sin(t * .8 + q * 1.7) * .03 * motion; });
         u.updateMatrix();
       });
       walkers.forEach((f, i) => {

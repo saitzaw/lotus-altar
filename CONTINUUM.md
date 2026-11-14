@@ -68,11 +68,23 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the procession's route, hours and dancers
+- From the owner: 8–11 AM (`CONFIG.procession`), set out from in front of the gate, go to the Haw Kham road and on to the second
+  monastery, kinnara in front, the to (တိုးနယား) at the end, not along the church's street. The route is now worked out in
+  `createShinlaungProcession` from `LANES` and `HILL`: line up along the front street west of the gate, head at (0, 54); east to the
+  market lane; up it; west along the palace lane; up the east stair's first flight; round the lower terrace's footpath (`PR`, as
+  `hillFootpath`) to just short of the main stair, so the boys stop before the second monastery. Stops to dance: the gate, the
+  market-lane corner, the school gate, the Haw Kham's gate, the east stair's foot; the clock (`FOLK.processionAt`, seconds since
+  8 AM ICT) sets the head's place, the stops share the morning and the last 40 min they stand gathered. `?procession=1`: 20 s stops,
+  90 s gathered, then it starts again. New low-poly `createKinnaraDancers` (pair, beating wings) and `createToDancer` (white to,
+  two dancers' legs, nodding head) for the parade; the stage's own dancers are separate.
+- The owner also said the morning "should continue with the 2:30 pm"; not done yet: ask what happens at 2:30 PM.
+
 ### 2026-11-14: the Poy Sang Long procession
 - New piece `24b-shinlaung-procession.js`: `createShinlaungPair`, `createProcessionRelatives`, `createOfferingPoles` (each returns a
   `THREE.Group`, front +z) and `createShinlaungProcession(g)`, which sets them in marching order (`PROCESSION`) and walks them round
   the block opposite the gate (front street east, market lane north, the lane behind the plaza west, back past the plaza), block on
-  their right. Shown 8 AM–noon ICT (`CONFIG.procession`, `?procession=1/0`, `FOLK.procession`, `temple.setProcession`). Walking bob
+  their right. Shown 8–11 AM ICT (`CONFIG.procession`, `?procession=1/0`, `FOLK.procession`, `temple.setProcession`). Walking bob
   and sway, stepping instanced legs, swaying gift poles, slowly turning parasols; all scaled by `motion`.
 - Shan wording to check: ပွႆးသၢင်ႇလွင်း (Poy Sang Long) in the hover tip; the Burmese ရှင်ပြုပွဲ and ခမောက် (the carrier's hat) are ours.
 

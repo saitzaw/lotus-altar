@@ -109,6 +109,8 @@ const stallsNow = () => STALLS_FORCE !== null ? STALLS_FORCE : inHours(CONFIG.st
 // the Poy Sang Long procession round the block opposite the gate (CONFIG.procession)
 const PROCESSION_FORCE = forced("procession");
 const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : inHours(CONFIG.procession);
+// how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
+const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
 let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), processionOn = processionNow();
 setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); processionOn = processionNow(); festNote(); }, 3e4);
 
