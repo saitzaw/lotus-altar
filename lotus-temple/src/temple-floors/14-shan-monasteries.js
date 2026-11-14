@@ -221,9 +221,9 @@
       gableB(0, yT + 1.9, -.4, 3.2, ID * .5 + .6, 1.1);
       [-1, 1].forEach(sd => gableB(sd * 4.1, yT, 0, 3.2, ID + .2, 1.2));
       if (tower) pyatthat(G, 0, yT + 1.2, -ID / 2 + .7, 2.6, 4);
-      // the monastery's name board on the frieze, under the middle gable
-      const BW = 2.6, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung);
-      const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], 0, yR + 1.1, ID / 2 + .05, G);
+      // the monastery's name board over the doorway, between the gilded lintel and the top rail
+      const BW = 2.2, BH = BW * 300 / 1024, nameFace = shanBoardFace(SHAN_NAMES.kyaung);
+      const board = mesh(new THREE.BoxGeometry(BW, BH, .08), [teakDark, teakDark, teakDark, teakDark, nameFace, teakDark], 0, FH + 3.02, ID / 2 + .08, G);
       // the white masonry stair down from the verandah, its walls topped with pinnacles, a gold lotus bud on a red post at the top of
       // each wall and a white naga rearing at its foot
       // with `reach`, the stair runs on at the foot as a level paved walk between low coped walls into the hill stair's wall
