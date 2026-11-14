@@ -45,12 +45,16 @@
     AISLES.forEach(ax => [0, 1].forEach(sd => string(V(ax - 3, 2.6, ZS[0] - 1.5 + sd * 0), V(ax + 3, 2.6, ZS[0] - 1.5), 6, .2)));
     AISLES.forEach(ax => string(V(ax, 3.4, ZS[0] - 1.5), V(ax, 3.4, 44), 14, .5));
     // the gambling hall (ကစားဝိုင်း) on the market's east edge: a closed hall of painted plank walls under a corrugated roof, a wide
-    // doorway onto the aisles with the sign above it, and inside only the four-animal top (လေးကောင်ဂျင်) on its mat, lit by bulbs
+    // doorway onto the aisles with the sign above it, shut by a pair of red doors with a young doorman in front who lets in only those
+    // 21 and over; inside only the four-animal top (လေးကောင်ဂျင်) on its betting mat on a table, lit by bulbs
     const stool = std({ color: 0xc8302a, roughness: .5 }), stool2 = std({ color: 0x2a6ac0, roughness: .5 });
     const GX = 96, GZ = 8, GW = 12, GD = 14, GH = 3.6;   // centre, width (x), depth (z), wall height
-    const tdata = { fourTop: true, tip: "လေးကောင်ဂျင် · the four-animal top · play with festival tokens" };
+    const tdata = { fourTop: true, tip: "လေးကောင်ဂျင် · the four-animal top · festival tokens, 21 and over" };
     const hall = new THREE.Group(); hall.position.set(GX, 0, GZ); g.add(hall);
-    sCircle(hall, 0, 0, 1.25);                                         // the game and its stools
+    const TW0 = -1.45, TW1 = 2.35, TD = 1.45, TH = .78;                 // the table: x from TW0 to TW1 (the banker's end, where the cover rests), z ±TD, its top TH above the floor
+    let doorOpen = false;
+    sRect(hall, TW0, TW1, -TD, TD);                                     // the table
+    sRect(hall, -GW / 2 - .3, -GW / 2 + .3, -2.0, 2.0, () => doorOpen ? .25 : null);   // the doors: shut until the doorman lets you in
     sRect(hall, -GW / 2, GW / 2, -GD / 2 - .1, -GD / 2 + .1); sRect(hall, -GW / 2, GW / 2, GD / 2 - .1, GD / 2 + .1);
     sRect(hall, GW / 2 - .1, GW / 2 + .1, -GD / 2, GD / 2);
     sRect(hall, -GW / 2 - .1, -GW / 2 + .1, -GD / 2, -2.0); sRect(hall, -GW / 2 - .1, -GW / 2 + .1, 2.0, GD / 2);   // the doorway is |z| < 2
@@ -65,6 +69,51 @@
     [-1, 1].forEach(sd => { const len = (GD - DOOR) / 2; mesh(new THREE.BoxGeometry(.2, GH, len), wallM, -GW / 2, GH / 2 + .25, sd * (DOOR / 2 + len / 2), hall); });
     mesh(new THREE.BoxGeometry(.2, .9, DOOR), wallM, -GW / 2, GH - .2, 0, hall);   // over the doorway
     [-1, 1].forEach(sd => mesh(new THREE.BoxGeometry(.28, GH, .28), trimW, -GW / 2, GH / 2 + .25, sd * DOOR / 2, hall));
+    // the doors: two red plank leaves hung on the door posts, with raised panels, brass ring pulls and a notice; they swing inward
+    const doorM = std({ color: 0x7a2a1e, roughness: .6 }), panelM = std({ color: 0x96382a, roughness: .55 }), brass = std({ color: 0xc8a050, roughness: .35, metalness: .7 });
+    const LEAF = DOOR / 2 - .14, LH = 2.7;
+    const leaves = [-1, 1].map(sd => {
+      const hinge = new THREE.Group(); hinge.position.set(-GW / 2, .25, sd * (DOOR / 2 - .14)); hall.add(hinge);
+      mesh(new THREE.BoxGeometry(.07, LH, LEAF), doorM, 0, LH / 2, -sd * LEAF / 2, hinge);
+      [.65, 1.95].forEach(y => mesh(new THREE.BoxGeometry(.02, .95, LEAF - .36), panelM, -.045, y, -sd * LEAF / 2, hinge));
+      const ring = mesh(new THREE.TorusGeometry(.06, .012, 6, 14), brass, -.06, 1.3, -sd * (LEAF - .14), hinge); ring.rotation.y = Math.PI / 2;
+      return { hinge, sd };
+    });
+    const notice = writing(512, 200, (c, cw, ch) => {
+      c.fillStyle = "#f4ecd8"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#b81c1c"; c.lineWidth = 12; c.strokeRect(8, 8, cw - 16, ch - 16);
+      c.fillStyle = "#b81c1c"; c.textAlign = "center"; c.textBaseline = "middle";
+      c.font = '600 34px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText("အသက် ၂၁ နှစ်အောက် ဝင်ခွင့်မပြု", cw / 2, 76);
+      c.font = '600 40px "Figtree", sans-serif'; c.fillText("Under 21 · no entry", cw / 2, 150);
+    });
+    if (document.fonts && document.fonts.load) document.fonts.load('600 34px "Noto Sans Myanmar"', "ဝင်ခွင့်").then(() => { notice.needsUpdate = true; }, () => {});
+    const nb = flat(mesh(new THREE.PlaneGeometry(1.2, .47), std({ map: notice, roughness: .7 }), -.06, 1.75, LEAF / 2, leaves[0].hinge)); nb.rotation.y = -Math.PI / 2;
+    // the doorman: a young man in a black jacket over a white T-shirt, jeans and trainers, standing in front of the doors with his arms
+    // folded; tap him (or the hall) to show your age. One flat-shaded mesh, facing +z before it is turned to face the aisles
+    const doormanParts = [];
+    const dp = (w, h, d, col, x, y, z) => doormanParts.push([new THREE.BoxGeometry(w, h, d), col, x, y, z]);
+    const SKIN_D = 0xc8946a, JACKET = 0x1e1e24, JEANS = 0x2a3a5a, HAIR_D = 0x16120f;
+    [-1, 1].forEach(e => { dp(.12, .07, .27, 0xf0f0ec, e * .1, .035, .03); dp(.15, .86, .17, JEANS, e * .1, .5, 0); });   // white trainers, jeans
+    dp(.38, .05, .22, 0x1a1a1a, 0, .93, 0);                                                                         // belt
+    dp(.42, .56, .25, JACKET, 0, 1.23, 0); dp(.14, .5, .02, 0xf2f0ea, 0, 1.22, .126);                              // jacket, open over a white T-shirt
+    [-1, 1].forEach(e => dp(.11, .32, .13, JACKET, e * .26, 1.33, .01));                                            // upper arms
+    dp(.46, .1, .11, JACKET, 0, 1.15, .17); [-1, 1].forEach(e => dp(.08, .08, .09, SKIN_D, e * .19, 1.17, .21));    // arms folded across, the hands showing
+    dp(.1, .08, .1, SKIN_D, 0, 1.55, 0); dp(.22, .27, .23, SKIN_D, 0, 1.71, 0);                                    // neck, head
+    [-1, 1].forEach(e => { dp(.03, .06, .05, SKIN_D, e * .125, 1.71, 0); dp(.04, .035, .012, 0x2a1c18, e * .05, 1.73, .117); dp(.06, .015, .012, HAIR_D, e * .05, 1.775, .117); });   // ears, eyes, brows
+    dp(.07, .014, .01, 0x8a3a30, 0, 1.635, .116);                                                                   // mouth
+    dp(.24, .07, .25, HAIR_D, 0, 1.865, -.005); dp(.24, .2, .06, HAIR_D, 0, 1.75, -.105); dp(.22, .05, .04, HAIR_D, 0, 1.84, .1);   // short hair
+    const dmGeo = lowPoly(doormanParts), dmCol = dmGeo.attributes.color;
+    for (let i = 0; i < dmCol.array.length; i++) dmCol.array[i] = Math.pow(dmCol.array[i], 2.2);   // lowPoly reads the colours as linear
+    const doorman = new THREE.Mesh(dmGeo, std({ vertexColors: true, flatShading: true, roughness: .85 }));
+    doorman.castShadow = true; doorman.position.set(-GW / 2 - .8, 0, 0); doorman.rotation.y = -Math.PI / 2; hall.add(doorman);
+    clickable(list, doorman, { fourTop: true, tip: "The doorman · 21 and over only" });
+    // let the visitor in: the doorman steps aside and turns to the door, and the doors swing open (they stay open after that)
+    const admit = () => {
+      if (doorOpen) return 0;
+      doorOpen = true;
+      const d = reduceMotion ? .01 : 1.1, z0 = doorman.position.z, r0 = doorman.rotation.y;
+      tween(d, t => { const e = easeOut(t); leaves.forEach(l => l.hinge.rotation.y = -l.sd * 1.5 * e); doorman.position.z = z0 + (-DOOR / 2 - .9 - z0) * e; doorman.rotation.y = r0 + .9 * e; });
+      return d * 1000;
+    };
     // windows with green shutters folded open, high on the side walls
     [-1, 1].forEach(sd => [-3.5, 0, 3.5].forEach(x => { mesh(new THREE.BoxGeometry(1.3, 1.0, .25), trimW, x, 2.5, sd * GD / 2, hall); mesh(new THREE.BoxGeometry(1.1, .8, .26), std({ color: 0x1a0e08, emissive: 0xffc070, emissiveIntensity: .6 }), x, 2.5, sd * GD / 2, hall); }));
     // a low-pitched corrugated roof with deep eaves, ridge along x
@@ -78,18 +127,22 @@
       c.fillStyle = "#b81c1c"; c.fillRect(0, 0, cw, ch); c.strokeStyle = "#f2d27a"; c.lineWidth = 10; c.strokeRect(6, 6, cw - 12, ch - 12);
       c.fillStyle = "#fff4d0"; c.textAlign = "center"; c.textBaseline = "middle";
       c.font = '600 58px "Noto Sans Myanmar", "Myanmar Text", sans-serif'; c.fillText("လေးကောင်ဂျင်", cw / 2, 58);
-      c.font = '600 34px "Figtree", sans-serif'; c.fillText("Four-animal top · come in", cw / 2, 122);
+      c.font = '600 34px "Figtree", sans-serif'; c.fillText("Four-animal top · 21 and over", cw / 2, 122);
     });
     if (document.fonts && document.fonts.load) document.fonts.load('600 58px "Noto Sans Myanmar"', "ဂျင်").then(() => { sign.needsUpdate = true; }, () => {});
     const sb = flat(mesh(new THREE.PlaneGeometry(3.4, 1.06), std({ map: sign, emissive: 0xffffff, emissiveMap: sign, emissiveIntensity: .45, roughness: .6, side: THREE.DoubleSide }), -GW / 2 - .14, GH + .9, 0, hall));
     sb.rotation.y = -Math.PI / 2; clickable(list, sb, tdata);
     // inside: the game on its mat in the middle, stools round it, bulbs overhead and a warm light day and night
     if (window.FourFaceTopGame) {
-      fourTop = new FourFaceTopGame(g, V(GX, .27, GZ));
+      fourTop = new FourFaceTopGame(g, V(GX, .26 + TH + .001, GZ));
+      fourTop.admit = admit; Object.defineProperty(fourTop, "doorOpen", { get: () => doorOpen });
       fourTop.picks.forEach(m => clickable(list, m, tdata));
       updaters.pagoda.push(dt => fourTop.update(dt));
     }
-    for (let k = 0; k < 10; k++) { const a = k / 10 * TAU + .2; mesh(new THREE.CylinderGeometry(.2, .16, .32, 10), k % 2 ? stool : stool2, Math.cos(a) * 1.9, .42, Math.sin(a) * 1.9, hall); }
+    // the table: a plain wooden top on four legs, and stools for the players along three sides; the banker's end is the east one
+    mesh(new THREE.BoxGeometry(TW1 - TW0, .06, TD * 2), wood, (TW0 + TW1) / 2, .26 + TH - .03, 0, hall);
+    [[TW0 + .1, -TD + .1], [TW0 + .1, TD - .1], [TW1 - .1, -TD + .1], [TW1 - .1, TD - .1]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.08, TH - .06, .08), wood, x, .26 + (TH - .06) / 2, z, hall));
+    [[-2.0, -.9], [-2.0, 0], [-2.0, .9], ...[-.8, .3, 1.4].flatMap(x => [[x, -2.0], [x, 2.0]])].forEach(([x, z], k) => mesh(new THREE.CylinderGeometry(.19, .15, .46, 10), k % 2 ? stool : stool2, x, .26 + .23, z, hall));
     [[-3, -4], [3, -4], [-3, 4], [3, 4], [0, 0]].forEach(([x, z]) => { mesh(new THREE.CylinderGeometry(.006, .006, .8, 4), steelM, x, GH - .15, z, hall); const b = glowSprite(0xfff0c8, .9, .9); b.material.fog = false; b.position.set(x, GH - .6, z); hall.add(b); });
     const inner = new THREE.PointLight(0xffd8a0, 1.6, 14, 2); inner.position.set(0, GH - .4, 0); hall.add(inner);
     hall.traverse(o => { if (o.isMesh && !o.userData.tip) clickable(list, o, tdata); });

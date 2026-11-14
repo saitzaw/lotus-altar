@@ -6,7 +6,7 @@
 | `src/lotus-altar/*.js` | Main app, one IIFE cut into topic files; joined into `dist/lotus-altar.js`. Map below |
 | `src/temple-floors/*.js` | `window.TempleFloors(ctx)`: floors 2–7, side buildings, the whole outdoor world and terrain, cut into topic files; joined into `dist/temple-floors.js`. Each floor is built lazily on first visit. Its returned object (`38-api.js`) is the API the main script uses (`show`, `update`, `cull`, `activate`, `sounds`, …). Map below |
 | `statue-sculpt.js` | Statues as signed distance fields meshed with surface nets, run in a Web Worker (falls back to main thread). Figures: `guanyin`, `qianshou` (gilded Guanyin; her thousand arms are instanced meshes in `07-halls-3f-5f-4f.js`), `medicine`, `shakyamuni`, `jaya` (Victorious Buddha, with a Shan-style flame finial), `maitreya`, `lion`, `lionL` |
-| `four-face-top.js` | `FourFaceTopGame`: self-contained Shan four-animal spinning-top mini-game. Festival tokens only, never money |
+| `four-face-top.js` | `FourFaceTopGame`: self-contained Shan four-animal spinning-top mini-game on its table mat; `BETS` (eight spots), `spin(wagers)`, `setChips`. Festival tokens only, never money |
 | `lotus-altar.css` | Styles; colour tokens like `--lotus`, `--water`, `--saffron`, `--flame`, `--smoke` |
 | `build-dist.sh` | Joins `src/<name>/*.js` in file-name order into `dist/<name>.js`, runs `node --check` on them, wraps the HTML body in a full document into `dist/index.html` and copies the other assets (and `guanyin.glb` if present) |
 | `vercel.json` | Vercel build config |
@@ -41,7 +41,7 @@
 | `06-sun-and-moon.js` | real sun/moon positions and moon phase | `Astro` `updateCelestial` `moonTexture` |
 | `07-festivals-and-weather.js` | Halloween, townsfolk hours, stage dance schedule (kinnara, to) and lion/dragon schedule, beat officer (commented out), day/night sky, weather | `festNow` `folkNow` `danceNow` `drillNow` `skyColors` `applySky` `weatherNow` `weatherStep` |
 | `08-sound.js` | WebAudio ambience and the festival stage ensemble | `ambStart` `ambStep` `templeBell` `longDrum` `stageGong` `stageCymbals` |
-| `09-top-game-and-action-bar.js` | four-animal top hook-up; action bar sheets | `openTopGame` `openSheet` `setPanel` |
+| `09-top-game-and-action-bar.js` | four-animal top hook-up: the doorman's age check (21+), chips and bets; action bar sheets | `openTopGame` `openDoorCheck` `tgPlace` `openSheet` `setPanel` |
 | `10-walking.js` | first-person walking, market at eye level, pavilion bench, flying between places | `enterWalk` `walkStep` `KEYMAP` `goTo` |
 | `11-loop-and-picking.js` | resize, **frame loop**, tap/hover picking | `frame` `pick` `useObject` |
 | `12-ui.js` | shop, bag, offering and donation UI, toasts | `render` `renderLog` `offerAll` `toast` |

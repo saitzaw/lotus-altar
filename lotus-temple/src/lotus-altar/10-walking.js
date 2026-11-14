@@ -27,7 +27,7 @@ function enterWalk(at, look, where) {
   tween(reduceMotion ? .01 : 1.8, t => { const e = easeInOut(t); camera.position.lerpVectors(p0, p1, e); controls.target.lerpVectors(t0, t1, e); }, () => lookFrom(p1, t1));
   $("marketBtn").hidden = true; $("fpBtn").hidden = true; $("leaveMarketBtn").hidden = false; $("outsideBtn").hidden = true; $("walkPad").hidden = false;
   $("where").innerHTML = where;
-  $("hint").textContent = "First-person view. Drag to look around. Walk with the arrow keys, W A S D or the pad. Tap a door or building to go in. At night, T or the torch button switches your torch on and off. The four-animal top (လေးကောင်ဂျင်) is in the gambling hall on the east edge of the seven-day market.";
+  $("hint").textContent = "First-person view. Drag to look around. Walk with the arrow keys, W A S D or the pad. Tap a door or building to go in. At night, T or the torch button switches your torch on and off. The four-animal top (လေးကောင်ဂျင်) is in the gambling hall on the east edge of the seven-day market (21 and over; the doorman asks your age).";
 }
 function enterMarket() { const M = temple.market; if (M) enterWalk(M.entry, M.look, `<b lang="my">ဈေး</b>The seven-day market`); }
 function enterFirstPerson() { enterWalk([0, 52], [0, 40], "Walking the temple grounds"); }

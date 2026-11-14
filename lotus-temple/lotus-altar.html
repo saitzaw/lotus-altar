@@ -32,11 +32,17 @@
     <div class="fade" id="fade" hidden><div class="fade-card"><span class="fade-name" id="fadeName"></span></div></div>
     <div class="topgame" id="topGame" hidden role="dialog" aria-labelledby="tgTitle">
       <div class="tg-head"><h3 id="tgTitle"><b lang="my">လေးကောင်ဂျင်</b> Four-animal top</h3><button type="button" class="tg-x" id="tgClose" aria-label="Close the game">×</button></div>
-      <p class="hint">A market-night folk game of Northern Shan State, played here for festival tokens only. Back one animal (pays 3 to 1) or a colour (pays 1 to 1), then spin.</p>
-      <div class="tg-faces" id="tgFaces" role="radiogroup" aria-label="Your pick"></div>
-      <div class="tg-row"><span>Stake</span><div class="step"><button type="button" id="tgLess" aria-label="Lower stake"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12"/></svg></button><output id="tgStake">1</output><button type="button" id="tgMore" aria-label="Raise stake"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12M12 6v12"/></svg></button></div><span class="tg-tokens"><b id="tgTokens">20</b> tokens</span></div>
+      <p class="hint">A market-night folk game of Northern Shan State, played here for festival tokens only. Pick a chip, put chips on any spots on the mat, then spin. One animal pays 3 to 1; Red, Black, Rooster · Eel or Pig · Frog pays 1 to 1.</p>
+      <div class="tg-chips" id="tgChips" role="radiogroup" aria-label="Chip value"></div>
+      <div class="tg-board" id="tgBoard" role="group" aria-label="The betting mat"></div>
+      <div class="tg-row"><button type="button" class="btn ghost tg-small" id="tgClear">Clear bets</button><button type="button" class="btn ghost tg-small" id="tgRepeat">Same again</button><span class="tg-tokens">On the mat <b id="tgBet">0</b> · <b id="tgTokens">20</b> tokens</span></div>
       <button type="button" class="btn" id="tgSpin">Spin the top</button>
       <p class="tg-msg" id="tgMsg" aria-live="polite"></p>
+    </div>
+    <div class="topgame tg-door" id="tgDoor" hidden role="dialog" aria-labelledby="tgDoorTitle">
+      <div class="tg-head"><h3 id="tgDoorTitle"><b lang="my">တံခါးစောင့်</b> The doorman</h3><button type="button" class="tg-x" id="tgDoorClose" aria-label="Walk away from the door">×</button></div>
+      <p class="tg-msg" id="tgDoorSay" aria-live="polite"></p>
+      <form class="tg-row" id="tgAgeForm"><label for="tgAge">Your age</label><input id="tgAge" type="number" min="1" max="120" inputmode="numeric" required><button type="submit" class="btn tg-small">Show him</button></form>
     </div>
     <div class="walkpad" id="walkPad" role="group" aria-label="Walk">
       <button type="button" data-move="f" aria-label="Walk forward"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button>

@@ -63,6 +63,22 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the four-animal top's hall gets a doorman, a table and a bigger betting mat
+
+- The gambling hall's doorway (`12-market.js`) is shut by two red doors with a notice (Burmese အသက် ၂၁ နှစ်အောက် ဝင်ခွင့်မပြု ·
+  "Under 21 · no entry"), and a young man (doorman, one lowPoly mesh) stands in front. Tapping him, the hall or the game opens
+  `#tgDoor`: he asks your age; 21 and over, he steps aside and the doors swing open (`fourTop.admit()`, `fourTop.doorOpen`);
+  under 21, he refuses and remembers it until the page is reloaded (`tgRefused`). The doorway's walk blocker is an `sRect`
+  whose height function returns null while the doors are shut. Nothing is stored, so the check comes again on each visit.
+- The game now sits on a table (TW0…TW1 × ±TD, top .78 m) with stools on three sides; the cover rests mouth down at the
+  banker's (east) end. Bowl widened to .46 m and the top shrunk (.2 m body, short spindle) so it stays inside the bowl and
+  under the cover the whole round; before, the spindle poked through the cover and lay out over the bowl's rim.
+- Betting (`FourFaceTopGame.BETS`, `09-top-game-and-action-bar.js`): chips of 1/5/10/25 on any of eight spots at once:
+  each animal 3 to 1; Red, Black, Rooster · Eel and Pig · Frog 1 to 1 (the pair strips are drawn half red, half black). Stacks
+  show on the mat (`game.setChips`); winnings stay a moment after the cover lifts. "Same again", "Clear bets"; closing refunds
+  chips not yet spun. Refill is now 100 tokens. API changed: `spin(wagers)`, `onResult(face, outcome)`.
+- Burmese lines added (doorman, notice): worth a check by a native speaker. No Shan wording.
+
 ### 2026-11-14: a morning market at the seven-day market
 
 - Added `morningMarket` (`src/temple-floors/12b-morning-market.js`, called after `sevenDayMarket`), from the owner's four photos of
