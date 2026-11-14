@@ -68,6 +68,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the kinnara pair walk just ahead of the to
+- From the owner: the kinnara and kinnari now dance near the back of the Poy Sang Long, 34.3 m behind the head, just in front
+  of the to (38.8 m); the gift poles lead (0 m) and everyone else moved up 4.5 m. Their toast and the procession's toast say so.
+
 ### 2026-11-14: streamer poles and yellow paper parasols in the procession
 - From the owner's photo of a Poy Sang Long: behind the gift poles now walk three rows of three (`createStreamerPoles(kinds, seed)`
   in `24b-shinlaung-procession.js`): villagers in saffron Shan suits, white or pale blue shirts, some in bamboo hats or headwraps,

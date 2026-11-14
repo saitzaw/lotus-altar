@@ -11,7 +11,7 @@ hours change, update this file in the same commit.
 | Time | What happens | Where | `CONFIG` |
 |---|---|---|---|
 | 5:00 – 9:00 AM | Morning market: village women sell greens, chillies and limes on the ground | Seven-day market | `morningMarket` |
-| 8:00 – about 9:50 AM | Shinlaung procession (Poy Sang Long): kinnara in front, gift poles, the boys on their carriers' shoulders, the families, the to at the back. It stops 20 min to dance at five places and ends when everyone reaches the monastery | Gate → front street → market lane → Haw Kham road → second monastery | `procession` |
+| 8:00 – about 9:50 AM | Shinlaung procession (Poy Sang Long): gift poles and streamer poles in front, the boys on their carriers' shoulders, the families, then the kinnara, the to at the back. It stops 20 min to dance at five places and ends when everyone reaches the monastery | Gate → front street → market lane → Haw Kham road → second monastery | `procession` |
 | 9:00 AM – 12:00 noon | Seven-day market: sellers at the stalls, shoppers in the aisles | Seven-day market | `stalls` |
 | 9:00 AM – 10:00 PM | Food street: cooks, diners, strollers | Food street, beside the market | `foodStreet` |
 | 2:00 – 3:30 PM | Kinnara dances alone (the biggest crowd) | Festival stage, stupa hill | `dancers.solo` |

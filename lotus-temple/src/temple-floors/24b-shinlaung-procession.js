@@ -1,8 +1,8 @@
   /* ---------- Poy Sang Long (ပွႆးသၢင်ႇလွင်း, Burmese ရှင်ပြုပွဲ), the Shan novice ordination procession: before the boys are ordained
      as novices they are dressed as princes, after the Buddha who left his palace, and carried through the town on the shoulders
      of their uncles and older cousins, never letting their feet touch the ground, under tall golden parasols. Bamboo poles hung
-     with white-wrapped gifts and coloured streamers follow the kinnara dancers at the front; the families follow with fans, monks'
-     bowls and folded robes, and the to dances at the back. From 8 to 11 in the morning (FOLK.procession, CONFIG.procession,
+     with white-wrapped gifts and coloured streamers lead; the families follow with fans, monks' bowls and folded robes, then the
+     kinnara dancers, and the to dances at the back. From 8 to 11 in the morning (FOLK.procession, CONFIG.procession,
      ?procession=1/0) they set out from in front of the temple's gate, go east along the front street, up the market lane, west
      along the palace lane past the Haw Kham, up the east stair's first flight onto the hill's lower terrace and along its footpath
      to the second monastery (lowerKyaung), stopping on the way to dance; once they have all arrived the procession is over. They keep off the church's street.
@@ -267,10 +267,10 @@
 
 
   const PROC_INFO = {
-    kinnara: { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "The kinnara and kinnari, the half-bird lovers of the Himavanta forest, dance at the head of the procession in their masks and green-and-gold dress, opening and folding their great sequinned wings as they go." },
+    kinnara: { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "The kinnara and kinnari, the half-bird lovers of the Himavanta forest, dance near the back of the procession, just ahead of the to, in their masks and green-and-gold dress, opening and folding their great sequinned wings as they go." },
     to: { tip: "The to · တၢင်းၵႃႈတူဝ်း · တိုးနယား", toast: "The to (တိုးနယား in Burmese), a gentle deer-faced beast of the Himavanta forest, danced by two men in one shaggy coat, prances, nods and shakes its mane at the back of the procession." }
   };
-  /* ---------- the kinnara and kinnari dancing at the head of the procession (ၵႃႈၼူၵ်ႉ, ka nok): the same masked pair as on the
+  /* ---------- the kinnara and kinnari dancing near the back of the procession, just ahead of the to (ၵႃႈၼူၵ်ႉ, ka nok): the same masked pair as on the
      festival stage (kinnaraKit), side by side, dipping into their knees on the beat, stepping, turning toward each other and away
      and opening and folding their wings bar by bar, hers a breath after his. `root` is the procession; they are clickable while it
      shows. Returns a group, front +z, with a step to run each frame ---------- */
@@ -304,22 +304,22 @@
     return unit;
   }
 
-  /* ---------- the whole procession, in marching order: the kinnara pair, the gift poles, the streamer poles and yellow paper
-     parasols, the men with fans and bowls, the three
-     boys on their carriers' shoulders under their parasols, the women with the robes, the men at the back, then the to. Their
+  /* ---------- the whole procession, in marching order: the gift poles, the streamer poles and yellow paper parasols, the men
+     with fans and bowls, the three boys on their carriers' shoulders under their parasols, the women with the robes, the men at
+     the back, the kinnara pair, then the to. Their
      way and their stops are worked out from the town's lanes and the hill (built before this); the head's place comes from the
      temple's clock, so every visitor sees them in the same place ---------- */
   function createShinlaungProcession(g) {
     const K = procKit(), root = new THREE.Group(); root.userData.noCull = true; root.visible = false; g.add(root);
     // the marching order: [unit, metres behind the head]
     const order = [
-      [createKinnaraDancers(root), 0],
-      [createOfferingPoles(1, 1), 4.5], [createOfferingPoles(2, 2), 6.9],
-      [createStreamerPoles(["pole", "pole", "pole"], 1), 9.1], [createStreamerPoles(["parasol", "pole", "parasol"], 2), 10.7], [createStreamerPoles(["pole", "pole", "pole"], 3), 12.3],
-      [createProcessionRelatives("men", 1), 14.8], [createProcessionRelatives("men", 2), 16.3],
-      [createShinlaungPair(1), 19.3], [createShinlaungPair(2), 23.1], [createShinlaungPair(3), 26.9],
-      [createProcessionRelatives("women", 1), 30.4], [createProcessionRelatives("women", 2), 31.8], [createProcessionRelatives("women", 3), 33.2],
-      [createProcessionRelatives("men", 3), 35],
+      [createOfferingPoles(1, 1), 0], [createOfferingPoles(2, 2), 2.4],
+      [createStreamerPoles(["pole", "pole", "pole"], 1), 4.6], [createStreamerPoles(["parasol", "pole", "parasol"], 2), 6.2], [createStreamerPoles(["pole", "pole", "pole"], 3), 7.8],
+      [createProcessionRelatives("men", 1), 10.3], [createProcessionRelatives("men", 2), 11.8],
+      [createShinlaungPair(1), 14.8], [createShinlaungPair(2), 18.6], [createShinlaungPair(3), 22.4],
+      [createProcessionRelatives("women", 1), 25.9], [createProcessionRelatives("women", 2), 27.3], [createProcessionRelatives("women", 3), 28.7],
+      [createProcessionRelatives("men", 3), 30.5],
+      [createKinnaraDancers(root), 34.3],
       [createToDancer(root), 38.8]
     ];
     order.forEach(([u, back]) => { if (u.userData.squeeze === undefined) u.userData.squeeze = !u.userData.shades.length; });
@@ -329,7 +329,7 @@
     const legs = new THREE.InstancedMesh(K.legGeo, K.procM, walkers.length * 2);
     legs.frustumCulled = false; legs.castShadow = false; root.add(legs);
     walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); if (f.userData.lag === undefined) f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
-    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Kinnara dancers lead, bamboo poles hung with gifts follow, then tall poles dressed in paper streamers and yellow paper parasols, the families come behind with fans, monks' bowls and saffron robes for the new novices, and the to dances at the back. The great festival comes in the dry season, in March and April." };
+    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Bamboo poles hung with gifts lead, then tall poles dressed in paper streamers and yellow paper parasols; the families come behind with fans, monks' bowls and saffron robes for the new novices, then the kinnara dancers, and the to dances at the back. The great festival comes in the dry season, in March and April." };
     walkers.forEach(f => { const d = f.userData; if (d.body) clickable(picks.pagoda, d.body, data); if (d.boy) clickable(picks.pagoda, d.boy, data); });
 
     /* the way: the line of them waits along the front street west of the gate, the head in front of it; east to the market lane,
