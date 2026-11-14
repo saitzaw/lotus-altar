@@ -68,6 +68,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-14: the procession's kinnara and to are the stage dancers
+- From the owner: use the original kinnara, kinnari and to in the Poy Sang Long procession, as they are more precise. The
+  procession's own low-poly kinnara pair and to are gone. The stage kinnara's costume and rig moved out of `kinnaraDancers` into
+  a shared, cached `kinnaraKit()` (`17-kinnara-dance.js`: `dancer(male, G, list, data, shown)`, `setLeg`, `setArm`,
+  `fanWings(d, flut, t)`, `dressSwing`, `drop`); the stage uses it unchanged. `createKinnaraDancers(root)` puts the masked pair
+  side by side (`PROCESSION.kinnaraGap` 1.7 m out from the middle, squeezed on the hill) and dances them as the stage pair do,
+  in time with `PROCESSION.bar`. `toDancers` takes a sixth `walk` argument ({ data, shown }) for the white to at the back: on
+  the ground at the unit's origin, always shown, its figures kept, its stage path and full turns left out. Both are clickable
+  only while the procession shows. Checked in a headless render with `?procession=1`.
+
 ### 2026-11-14: the market's midday break; the procession ends on arrival
 - From the owner: the seven-day market stops at noon and opens again 5–9 PM; leave every other schedule alone. `CONFIG.stalls` is
   now a list of windows `[[9, 12], [17, 21]]`. The food street used `FOLK.stalls` too; it now has its own `FOLK.food`

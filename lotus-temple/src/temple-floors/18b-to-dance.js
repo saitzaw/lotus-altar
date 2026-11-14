@@ -3,12 +3,15 @@
      neck and the head, the back one bent under the rump, trimmed in gold, green and red after the site owner's photo and the
      recording they sent (YouTube _U-imZ1KuM8). With `yellow` it is the second to, in a yellow coat, which joins the white one for the
      two to (show "twoTo") and the closing dance with the kinnara ("toKinnara"). It keeps time with the ensemble: kinnaraDancers hands
-     over the bar count, and each bar is one figure. Returns the step to run each frame ---------- */
-  function toDancers(G, list, cx, cz, yellow) {
-    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "The to dance · တၢင်းၵႃႈတူဝ်း · တိုးနယား", toast: "Ka to (တၢင်းၵႃႈတူဝ်း; in Burmese တိုးနယား, to naya), the Shan dance of the to, a gentle beast of the Himavanta forest with a deer's face and branched antlers. Two dancers share one white costume trimmed with gold, green and red: the one in front holds up the long neck and the head, the one behind bends under the rump. In the story the creatures of the forest came out dancing to welcome the Buddha down from the Tavatimsa heaven at the end of the rains retreat, and the Shan still dance the to and the kinnara at their festivals. To the long drums (ၵွင်ယၢဝ်း), the gongs (မွင်း) and the cymbals (ၸၢပ်ႈ) it prances, bows its head to the crowd, rears up and crouches, shakes its mane and wags its tail." };
+     over the bar count, and each bar is one figure. With `walk` ({ data, shown }) it is the to at the back of the Poy Sang Long
+     procession instead: at G's origin on the ground, always shown, its own path and turns left to the procession, clickable with
+     walk.data while walk.shown(). Returns the step to run each frame ---------- */
+  function toDancers(G, list, cx, cz, yellow, walk) {
+    const C = { ...KINNARA, x: cx, z: cz, ...(walk ? { y: 0 } : {}) }; let data = { tip: "The to dance · တၢင်းၵႃႈတူဝ်း · တိုးနယား", toast: "Ka to (တၢင်းၵႃႈတူဝ်း; in Burmese တိုးနယား, to naya), the Shan dance of the to, a gentle beast of the Himavanta forest with a deer's face and branched antlers. Two dancers share one white costume trimmed with gold, green and red: the one in front holds up the long neck and the head, the one behind bends under the rump. In the story the creatures of the forest came out dancing to welcome the Buddha down from the Tavatimsa heaven at the end of the rains retreat, and the Shan still dance the to and the kinnara at their festivals. To the long drums (ၵွင်ယၢဝ်း), the gongs (မွင်း) and the cymbals (ၸၢပ်ႈ) it prances, bows its head to the crowd, rears up and crouches, shakes its mane and wags its tail." };
     const lin = h => new THREE.Color(h).convertSRGBToLinear();
     // the coat: white, or the second to's yellow, whose trim has white scallops in place of gold so it shows
     const COAT = yellow ? { ground: "#eebf2e", hair: ["rgba(190,140,20,.5)", "rgba(255,226,120,.8)"], scallop: "#f6f4ee" } : { ground: "#f4f1ea", hair: ["rgba(200,196,186,.5)", "rgba(255,255,255,.8)"], scallop: "#e8b830" };
+    if (walk) data = walk.data;
     if (yellow) data.tip = "The yellow to · တၢင်းၵႃႈတူဝ်း · တိုးနယား";
     // a trim as on the photo, drawn along a line on a cloth: a green cord edged with gold scallops dotted red
     const trim = (c, x0, y0, x1, y1, w) => {
@@ -104,7 +107,7 @@
       b = tine(b, .14, .016, .05, sd * .3);
       tine(b, .09, .011, .7, -sd * .45);
     });
-    A.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (A.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
+    A.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (walk ? walk.shown() : A.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
     // a leg's joints: hip swing (+ back, - forward), knee bend, and the ankle, which keeps the paw level unless `point` tips it
     const setLeg = (l, hip, knee, point = 0) => { l.hip.rotation.x = hip; l.knee.rotation.x = knee; l.ankle.rotation.x = -(hip + knee) + point; };
     /* the figures, one to a bar of the drum, round a phrase of sixteen (FIG), each starting and ending in the same stance so one runs
@@ -125,7 +128,8 @@
       pp += db * RATE[f] * 6 * u * (1 - u);
       const show = FOLK.dance, sd = yellow ? 1 : -1;
       let x, z, head0;
-      if (show === "twoTo") { const a = pp * .32 + (yellow ? Math.PI : 0); x = C.x + Math.cos(a) * 2.4; z = C.z - .2 + Math.sin(a) * 1.1; head0 = Math.atan2(-2.4 * Math.sin(a), 1.1 * Math.cos(a)); }   // round the oval, facing along it
+      if (walk) { x = C.x; z = C.z; head0 = Math.sin(pp * .3) * .3; }   // in the procession: looking this way and that as it goes
+      else if (show === "twoTo") { const a = pp * .32 + (yellow ? Math.PI : 0); x = C.x + Math.cos(a) * 2.4; z = C.z - .2 + Math.sin(a) * 1.1; head0 = Math.atan2(-2.4 * Math.sin(a), 1.1 * Math.cos(a)); }   // round the oval, facing along it
       else if (show === "toKinnara") { x = C.x + sd * 3.4 + Math.sin(pp * .5) * .4; z = C.z - .3 + Math.sin(pp * .35) * .6; head0 = -sd * .45 + Math.sin(pp * .3) * .25; }   // at its own side, turned in toward the kinnara and the crowd
       else { x = C.x + Math.sin(pp * .35) * 2.2; z = C.z - .25 + Math.sin(pp * .7) * .5; head0 = Math.atan2(.77 * Math.cos(pp * .35), .35 * Math.cos(pp * .7)); }   // facing the way it travels
       let fB = .12, bB = .3, rise = 0, neckT = .3, nod = 0, yaw = 0, sway = 0, hop = 0, spin = 0, wag = .25, shake = 0;
@@ -134,7 +138,7 @@
       else if (f === "s") { sway = .1 * Math.sin(TAU * 2 * u) * env; yaw = .6 * Math.sin(TAU * u); wag = 1; shake = env; }
       else if (f === "r") { bB += .8 * env2; rise = .1 * env2; neckT -= .3 * env2; nod = -.35 * env2; shake = .5 * env2; }
       else if (f === "h") { const air = bump(u, .35, .7); hop = .14 * air; fB += .3 * bump(u, .05, .35) + .3 * bump(u, .7, 1) - .1 * air; bB += .3 * bump(u, .05, .35) + .3 * bump(u, .7, 1) - .2 * air; }
-      else if (f === "t") spin = show === "to" ? smooth(u) * TAU : .5 * Math.sin(TAU * u);
+      else if (f === "t") spin = show === "to" && !walk ? smooth(u) * TAU : .5 * Math.sin(TAU * u);
       else if (f === "c") { fB += .7 * env2; bB += .6 * env2; neckT += .8 * env2; nod = .45 * env2; yaw = .3 * Math.sin(TAU * 2 * u) * env; }
       // in a bow or a shake it turns its head toward the crowd
       if (f === "n" || f === "s") { const rel = Math.atan2(Math.sin(-head0), Math.cos(-head0)); yaw += Math.max(-.8, Math.min(.8, rel)) * env; }
@@ -160,7 +164,7 @@
     A.visible = false;
     return (dt, motion, bar) => {
       const show = FOLK.dance;
-      A.visible = bar !== undefined && (show === "twoTo" || show === "toKinnara" || (!yellow && show === "to"));
+      A.visible = walk ? true : bar !== undefined && (show === "twoTo" || show === "toKinnara" || (!yellow && show === "to"));
       if (!A.visible) { last = null; return; }
       t += dt * motion;
       pose(bar);

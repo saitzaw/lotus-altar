@@ -1,8 +1,10 @@
   /* ---------- the kinnara and kinnari dance, ka nok in Shan (ၵႃႈၼူၵ်ႉ, Burmese ကိန္နရာ ကိန္နရီ အက) on the festival ground's pavilion stage, in the evening: a pair of
      half-bird dancers in green and gold, in human-faced masks, with great fanned wings on their backs, opened with their arms like a peacock's tail, circling each other and opening
      and folding their wings. Returns the step to run each frame ---------- */
-  function kinnaraDancers(G, list, cx, cz) {
-    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
+  /* the kinnara and kinnari costumes, shared by the stage dance below and the Poy Sang Long procession (made once, on the first call) */
+  let _kin = null;
+  function kinnaraKit() {
+    if (_kin) return _kin;
     const lin = h => new THREE.Color(h).convertSRGBToLinear();   // plain colours to match the sRGB cloth textures
     const green = std({ color: lin(0x1f7a3c), roughness: .45, metalness: .2 });
     const stripes = canvasTex(64, (c, s) => { c.fillStyle = "#1f7a3c"; c.fillRect(0, 0, s, s); c.fillStyle = "#e8c040"; for (let y = 4; y < s; y += 10) c.fillRect(0, y, s, 3); });
@@ -61,7 +63,8 @@
     // joints: a leg is a hip, a knee and an ankle; an arm a shoulder, an elbow and a wrist
     const THIGH = .42, SHIN = .42;   // thigh, and shin with foot (m): the hip is .84 m up
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
-    function dancer(male) {
+    // a dancer (male: the kinnara, else the kinnari) added to G, clickable in `list` with `data` while `shown()`
+    function dancer(male, G, list, data, shown) {
       const D = new THREE.Group(), B = new THREE.Group(); D.add(B);
       // the upper body pivots at the hips (U) so the dancer can lean without his feet sliding; T holds its parts at their heights
       const U = new THREE.Group(); U.position.y = .84; B.add(U);
@@ -135,8 +138,8 @@
       // five wedges spread either side of straight up (MID), a little behind the side wings
       const mid = new THREE.Group(); mid.position.set(0, 1.26, -.22); T.add(mid);
       MID.forEach((a, i) => { feather(mid, 3, -i * .006).rotation.z = Math.PI + a; });
-      // hidden while they're off the stage, and then not clickable either
-      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
+      // clickable only while shown: on the stage while it is visible, in the procession while the procession is
+      D.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, data); o.raycast = function (ray, out) { if (shown ? shown() : D.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); }; } });
       G.add(D);
       return { D, B, U, legs, arms, fan, male, apron };
     }
@@ -147,7 +150,22 @@
     // the apron hangs plumb from the waist whatever the body's lean, and swings forward over whichever thigh is lifted; hers stands off her longyi
     const dressSwing = d => { d.apron.rotation.x = d.legs ? Math.min(-.04, d.legs[0].hip.rotation.x - .06, d.legs[1].hip.rotation.x - .06) - d.U.rotation.x : -.09 - d.U.rotation.x; };
     const setArm = (r, lift, fwd, elbow, wrist, fingers) => { const sd = r.sd; r.lift = lift; r.a.rotation.z = sd * lift; r.a.rotation.x = fwd; r.elbow.rotation.z = sd * elbow; r.wrist.rotation.z = sd * wrist; r.fingers.rotation.z = sd * fingers; };
-    const pair = [dancer(true), dancer(false)];
+    // the wings fan open with the arms: the lowest wedge lies along the arm (never so low that it drags on the floor), and the rest
+    // spread from it up to the middle fan's edge as far as the arm is raised, so a lowered arm closes them; the arm reaching forward
+    // cups the fan round the dancer. `flut` sets the wedges trembling, as the dancer shakes them at the top of an opening
+    const fanWings = (d, flut, t) => d.fan.forEach(w => {
+      const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .6 - a) * o, n = w.leaves.length - 1;
+      w.W.rotation.x = w.r.a.rotation.x * .6;
+      w.leaves.forEach((L, k) => { L.rotation.z = w.sd * (a + (top - a) * k / n + flut * .05 * Math.sin(t * 16 + k * 1.3 + w.sd)); });
+      w.links.forEach((L, j) => { L.rotation.z = w.sd * (top + (EDGE - top) * (j + 1) / (LINKS + 1) + flut * .03 * Math.sin(t * 16 + j + w.sd)); });   // spread across the gap to the middle fan
+    });
+    _kin = { lin, skin, ink, red, dancer, setLeg, setArm, fanWings, dressSwing, drop, THIGH, SHIN };
+    return _kin;
+  }
+  function kinnaraDancers(G, list, cx, cz) {
+    const C = { ...KINNARA, x: cx, z: cz }, data = { tip: "Kinnara and kinnari dancers · ၵႃႈၼူၵ်ႉ", toast: "Ka nok (ၵႃႈၼူၵ်ႉ), the Shan bird dance. The kinnara and kinnari are the half-bird lovers of the Himavanta forest, never parted. At the full-moon festivals a masked pair dances them on the ground before the monastery, opening and folding their great wings to the Shan ensemble: two long drums (ၵွင်ယၢဝ်း), a row of gongs (မွင်း) and cymbals (ၸၢပ်ႈ). The kinnara lands on the drum's deep stroke and the gongs; in the evening the pair open their wings over one bar and fold them over the next." };
+    const { lin, skin, ink, red, dancer, setLeg, setArm, fanWings, dressSwing, drop, THIGH, SHIN } = kinnaraKit();
+    const pair = [dancer(true, G, list, data), dancer(false, G, list, data)];
     let t = 0;
     // the opening of the epic, in the afternoon: the kinnara alone, danced after the Dehong Dai and Shan kinnara of Yunnan (M Time,
     // YouTube gNkFn3owbgQ). Each bar of the long drum is one figure, round a phrase of sixteen (FIG): s, a step on bent, turned-out
@@ -163,15 +181,6 @@
     const hopH = n => fig(n) === "L" ? (n & 16 ? .24 : .16) : 0, airT = h => h ? Math.sqrt(8 * h / GRAV) : 0;   // a leap's height (m), higher every other phrase
     const bump = (x, a, b) => x > a && x < b ? Math.sin(Math.PI * (x - a) / (b - a)) : 0, smooth = x => x * x * (3 - 2 * x);
     let hn = 0, ht = 0, pp = 0;   // which bar, the time into it, and how far along his path
-    // the wings fan open with the arms: the lowest wedge lies along the arm (never so low that it drags on the floor), and the rest
-    // spread from it up to the middle fan's edge as far as the arm is raised, so a lowered arm closes them; the arm reaching forward
-    // cups the fan round the dancer. `flut` sets the wedges trembling, as the dancer shakes them at the top of an opening
-    const fanWings = (d, flut) => d.fan.forEach(w => {
-      const a = Math.max(.7, w.r.lift), o = Math.min(1, Math.max(0, (w.r.lift - .3) / .8)), top = a + (Math.PI - .6 - a) * o, n = w.leaves.length - 1;
-      w.W.rotation.x = w.r.a.rotation.x * .6;
-      w.leaves.forEach((L, k) => { L.rotation.z = w.sd * (a + (top - a) * k / n + flut * .05 * Math.sin(t * 16 + k * 1.3 + w.sd)); });
-      w.links.forEach((L, j) => { L.rotation.z = w.sd * (top + (EDGE - top) * (j + 1) / (LINKS + 1) + flut * .03 * Math.sin(t * 16 + j + w.sd)); });   // spread across the gap to the middle fan
-    });
     const solo = dt => {
       const d = pair[0]; ht += dt;
       while (ht > BAR) { ht -= BAR; hn++; }
@@ -207,7 +216,7 @@
       });
       // the arms carry the wings, held long, the elbow soft, the hands curled back, trembling with the wings
       d.arms.forEach(r => { const tr = flut * Math.sin(t * 14 + r.sd); setArm(r, (r.sd > 0 ? aR : aL) + tr * .05, fwd + tuck * .15, .15 + Math.sin(t * 1.5 + r.sd) * .08, .25 + tr * .12, .6 + Math.sin(t * 1.5 + r.sd) * .1); });
-      fanWings(d, flut); dressSwing(d);
+      fanWings(d, flut, t); dressSwing(d);
     };
     const pose = () => pair.forEach((d, i) => {
       const a = t * C.turn + i * Math.PI, x = C.x + Math.cos(a) * C.r, z = C.z + Math.sin(a) * C.r;
@@ -224,5 +233,5 @@
       } else d.B.position.y = -dip * .03;   // she sinks a little on the beats, her feet hidden by the longyi
       const wave = Math.sin(t * 1.2 + i * .8 - .7);   // the elbow and wrist trailing the opening and folding
       d.arms.forEach(r => setArm(r, .5 + open, -.5 + open * .3, .25 - wave * .25, .3 - wave * .25, .6 + dip * .2));
-      fanWings(d, 0); dressSwing(d);   // the wings fold and open with the arms
+      fanWings(d, 0, t); dressSwing(d);   // the wings fold and open with the arms
     });
