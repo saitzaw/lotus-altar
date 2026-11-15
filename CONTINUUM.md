@@ -68,6 +68,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: the Poy Sang Long gathers at the second monastery until 10
+
+- The procession no longer vanishes on arrival. From arrival (about 9:25 AM; the five stops are now 15 min, `PROCESSION.dwell`
+  900) until `CONFIG.procession.until` (now 10), each unit walks its own short way (`afterWay` in `24b-shinlaung-procession.js`)
+  to a place in `GATHER` (hill-frame x, z): the three boys on their carriers' shoulders in a row before the second monastery's
+  stair, the families and pole bearers crowded round and behind them on the terrace walk, all facing the monastery; the kinnara,
+  the to and the band go on along the footpath, up the main hill stair's flight and out onto the festival ground, in a line in
+  front of the stage, still dancing and playing. `?procession=1` gathers for 4 min before starting again.
+- Checked in headless Chromium at 9:45 ICT: crowd and festival line in place, no console errors.
+
 ### 2026-11-15: pagoda balcony corners cleaned up
 
 - The owner saw ugly pieces on the upper floors' balcony corridor (迴廊). They were bits of the hall poking through its outer walls:

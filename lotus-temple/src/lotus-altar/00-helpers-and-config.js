@@ -71,9 +71,9 @@ const CONFIG = {
   foodStreet: { from: 9, until: 22 },
   // Poy Sang Long, the Shan novice ordination procession: kinnara dancers, gift poles, the boys on their carriers' shoulders under golden
   // parasols, the families and the to walk from the temple's gate to the second monastery on the stupa hill, stopping to dance on the way,
-  // setting out at `from` o'clock on the temple's clock; it ends once they have all reached the monastery (`until` is only the latest it
-  // can run). ?procession=1 forces it on with short stops (and =0 off)
-  procession: { from: 8, until: 11 },
+  // setting out at `from` o'clock on the temple's clock. Arrived (about 9:25), the boys and the families crowd before the monastery and the
+  // dancers and the band go on to the festival ground, until they all go home at `until`. ?procession=1 forces it on with short stops (and =0 off)
+  procession: { from: 8, until: 10 },
   guardHats: .02,   // the palace guards put on the straw hats from their backs once the rain is heavier than this (0–1)
   // the Sunday morning service in the Kachin Baptist church: the pews full, the pastor praying at the pulpit, the choir and the pianist
   // on the dais, on `day` from `from` until `until` o'clock on the temple's clock. ?service=1 or ?service=0 forces it on or off

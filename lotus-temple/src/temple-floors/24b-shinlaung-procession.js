@@ -5,7 +5,10 @@
      kinnara dancers, and the to dances at the back. From 8 to 11 in the morning (FOLK.procession, CONFIG.procession,
      ?procession=1/0) they set out from in front of the temple's gate, go east along the front street, up the market lane, west
      along the palace lane past the Haw Kham, up the east stair's first flight onto the hill's lower terrace and along its footpath
-     to the second monastery (lowerKyaung), stopping on the way to dance; once they have all arrived the procession is over. They keep off the church's street.
+     to the second monastery (lowerKyaung), stopping on the way to dance. There the three boys on their carriers' shoulders stop
+     in a row before the monastery's stair, facing its door, and the families and the pole bearers crowd round and behind them on
+     the terrace walk; the kinnara, the to and the band go on up the hill stair to the festival ground and dance and play there,
+     until everyone goes home at 10 (CONFIG.procession.until). They keep off the church's street.
      The kinnara pair and the to are the festival stage's own costumed dancers (kinnaraKit, toDancers); everyone else is low-poly
      and flat-shaded (MeshStandardMaterial, flatShading), each figure one mesh of vertex colours; the trouser legs are one
      instanced mesh and step as they walk ---------- */
@@ -13,9 +16,8 @@
     speed: .45,    // metres a second while walking
     stride: 1.3,   // metres a full step takes (left and right)
     far: 170,      // hidden when the walker is farther than this from the head of the procession
-    dwell: 1200,   // seconds they stop to dance at each of the five places on the way (setting out at 8, they arrive at about 9:50)
-    gather: 60,    // seconds after the head reaches the monastery, everyone in place, before the procession is over
-    test: { dwell: 20, gather: 90 },  // with ?procession=1: short stops, and it starts again from the gate after gathering
+    dwell: 900,    // seconds they stop to dance at each of the five places on the way (setting out at 8, they arrive at about 9:25)
+    test: { dwell: 20, gather: 240 },  // with ?procession=1: short stops, and it starts again from the gate after gathering this long
     bar: 1.59,         // seconds one figure of the kinnara's and the to's dance takes, as on the festival stage
     kinnaraGap: 1.7    // metres each of the kinnara pair walks out from the middle of the street, room for their open wings
   };
@@ -382,6 +384,9 @@
     ];
     order.forEach(([u, back]) => { if (u.userData.squeeze === undefined) u.userData.squeeze = !u.userData.shades.length; });
     const units = order.map(([u, back]) => { u.userData.back = back; root.add(u); return u; });
+    // what each does once they have arrived: [kind, its place among that kind], in the marching order above
+    const AFTER = [["gifts", 0], ["gifts", 1], ["streamers", 0], ["streamers", 1], ["streamers", 2], ["men", 0], ["men", 1],
+      ["pair", 0], ["pair", 1], ["pair", 2], ["women", 0], ["women", 1], ["women", 2], ["men", 2], ["fest", 0], ["fest", 1], ["fest", 2], ["fest", 3]];
     const walkers = []; units.forEach(u => u.userData.walkers.forEach(f => { f.userData.unit = u; f.userData.x0 = f.position.x; walkers.push(f); }));
     // the trouser legs of everyone, two to a walker, as one instanced mesh
     const legs = new THREE.InstancedMesh(K.legGeo, K.procM, walkers.length * 2);
@@ -401,37 +406,77 @@
     const W = [[-56, 54], [0, 54], [41, 54], [41, laneZ], [PL.x0, laneZ], along(HILL.rBase + .6), landing];
     const nArc = Math.max(2, Math.ceil(Math.abs(aE - aEnd) * PR / 3));
     for (let i = 1; i <= nArc; i++) W.push(onHill(aE + (aEnd - aE) * i / nArc));
-    const cum = [0];
-    for (let i = 1; i < W.length; i++) cum.push(cum[i - 1] + Math.hypot(W[i][0] - W[i - 1][0], W[i][1] - W[i - 1][1]));
-    const L = cum[cum.length - 1], out = [0, 0];
-    const at = s => { s = Math.min(L, Math.max(0, s)); let i = 1; while (i < cum.length - 1 && cum[i] < s) i++; const u = (s - cum[i - 1]) / (cum[i] - cum[i - 1] || 1); out[0] = W[i - 1][0] + (W[i][0] - W[i - 1][0]) * u; out[1] = W[i - 1][1] + (W[i][1] - W[i - 1][1]) * u; return out; };
+    // a way through points [x, z]: its length, and the point `s` metres along it
+    const line = P => {
+      const c = [0]; for (let i = 1; i < P.length; i++) c.push(c[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+      const len = c[c.length - 1];
+      return { P, cum: c, len, at(s, o) { s = Math.min(len, Math.max(0, s)); let i = 1; while (i < c.length - 1 && c[i] < s) i++; const u = (s - c[i - 1]) / (c[i] - c[i - 1] || 1); o[0] = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * u; o[1] = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * u; return o; } };
+    };
+    const WAY = line(W), cum = WAY.cum, L = WAY.len, out = [0, 0];
+    const at = s => WAY.at(s, out);
     const sOf = k => cum[k];
+    /* once they have arrived: where each goes, in the hill's frame. The boys in a row before the monastery's stair; the families
+       and the pole bearers round and behind them on the terrace walk; the dancers and the band along the footpath to the hill
+       stair, up its flight to the upper terrace and out onto the festival ground, in a line in front of the stage */
+    const toW = (x, z) => { const v = V(x, 0, z).applyMatrix4(H.matrix); return [v.x, v.z]; };
+    const fa = (() => { const [ax, az] = toW(0, 0), [bx, bz] = toW(0, 1); return Math.atan2(bx - ax, bz - az); })();   // facing up the hill, toward the monastery
+    const GATHER = {
+      pair: [[6.4, -65.2], [8.6, -65.2], [10.8, -65.2]],
+      gifts: [[3.6, -64.6], [4.4, -67]], streamers: [[7, -67.6], [10, -67.6], [13, -67.4]],
+      men: [[14, -64.8], [16.6, -64.8], [24, -63.5]], women: [[19.2, -64.5], [21.8, -64.2], [16, -67]],
+      fest: [14.5, 11, 7.6, 3.9], festZ: -41, stair: .6
+    };
+    const afterWay = (back, kind, k) => {
+      const s0 = L - back, P = [at(s0).slice()];
+      if (kind === "fest") {   // on to the end of the way, then up the hill stair and across the festival ground
+        for (let i = 1; i < W.length; i++) if (cum[i] > s0) P.push(W[i]);
+        const z1 = -HILL.terraces[1].r0 - 1, G = GATHER;
+        [[G.stair, z1 - 1.5], [G.stair, G.festZ], [G.fest[k], G.festZ]].forEach(([x, z]) => P.push(toW(x, z)));
+        return { way: line(P), face: null };
+      }
+      // to the place along the way nearest their spot, then straight to it
+      const tgt = toW(...GATHER[kind][k]); let best = s0, bd = Infinity;
+      for (let s = s0; s <= L; s += .5) { const [x, z] = at(s), d = Math.hypot(x - tgt[0], z - tgt[1]); if (d < bd) { bd = d; best = s; } }
+      for (let i = 1; i < W.length; i++) if (cum[i] > s0 && cum[i] < best) P.push(W[i]);
+      P.push(at(best).slice(), tgt);
+      return { way: line(P), face: fa };
+    };
     // where they stop to dance: before the gate, at the market lane's corner, by the school gate, before the Haw Kham's gate,
     // at the foot of the east stair; then on to the monastery; once they have all arrived it is over
     const S0 = sOf(1), stops = [S0, sOf(2), sOf(2) + (122 - 54), sOf(3) + (41 - 16), sOf(5)], sHill = sOf(4);
-    const plan = (dwell, gather) => {
+    units.forEach((u, i) => Object.assign(u.userData, afterWay(u.userData.back, ...AFTER[i])));
+    // the timetable: when the head is where; `arrive` when it reaches the monastery and they all go to their places
+    const plan = (dwell, gather = 0) => {
       const keys = []; let t = 0;
       stops.forEach((s, i) => { keys.push([t, s]); t += dwell; keys.push([t, s]); const nx = i + 1 < stops.length ? stops[i + 1] : L; t += (nx - s) / PROCESSION.speed; });
-      keys.push([t, L]); return { keys, total: t + gather };
+      keys.push([t, L]); return { keys, arrive: t, total: t + gather };
     };
-    const REAL = plan(PROCESSION.dwell, PROCESSION.gather), TEST = plan(PROCESSION.test.dwell, PROCESSION.test.gather);
+    const REAL = plan(PROCESSION.dwell), TEST = plan(PROCESSION.test.dwell, PROCESSION.test.gather);
     const headAt = (P, t) => { const k = P.keys; if (t <= 0) return k[0][1]; for (let i = 1; i < k.length; i++) if (t < k[i][0]) { const [ta, sa] = k[i - 1], [tb, sb] = k[i]; return sa + (sb - sa) * (t - ta) / (tb - ta || 1); } return L; };
     const zero = new THREE.Matrix4().makeScale(0, 0, 0), hip = new THREE.Matrix4(), rot = new THREE.Matrix4(), m = new THREE.Matrix4();
     let testT = 0, head = S0, dance = 0;
+    const p0 = [0, 0], p1 = [0, 0], p2 = [0, 0];
     updaters.pagoda.push((dt, t, motion) => {
-      const on = FOLK.procession && (FOLK.processionAt === null || FOLK.processionAt < REAL.total), eye = FEST.eye;   // over once they have all arrived
-      if (!on) { if (root.visible) root.visible = false; testT = 0; return; }
+      const eye = FEST.eye;   // FOLK.procession goes off at CONFIG.procession.until, when everyone goes home
+      if (!FOLK.procession) { if (root.visible) root.visible = false; testT = 0; return; }
       dt = Math.min(dt, .1);
-      if (FOLK.processionAt === null) { testT = (testT + dt) % TEST.total; head = headAt(TEST, testT); }
-      else head = headAt(REAL, FOLK.processionAt);
+      let since;   // seconds since the head reached the monastery, or below 0 while still on the way
+      if (FOLK.processionAt === null) { testT = (testT + dt) % TEST.total; head = headAt(TEST, testT); since = testT - TEST.arrive; }
+      else { head = headAt(REAL, FOLK.processionAt); since = FOLK.processionAt - REAL.arrive; }
+      const walked = since > 0 ? since * PROCESSION.speed : 0;
       const [hx, hz] = at(head), show = !eye || Math.hypot(eye.x - hx, eye.z - hz) < PROCESSION.far;
       if (root.visible !== show) root.visible = show;
       if (!show) return;
       dance += dt * motion;
       units.forEach(u => {
-        const ud = u.userData, s = head - ud.back, [ax, az] = at(s - 1.2), [bx, bz] = at(s + 1.2), [x, z] = at(s);
+        const ud = u.userData, s = head - ud.back + Math.min(walked, ud.way.len);   // past the end of the way, along their own way to their place
+        let x, z, ry;
+        if (since > 0) {
+          const e = Math.min(walked, ud.way.len), [ax, az] = ud.way.at(e - 1.2, p0), [bx, bz] = ud.way.at(Math.max(e + 1.2, 2.4), p1);
+          [x, z] = ud.way.at(e, p2); ry = ud.face !== null && e >= ud.way.len ? ud.face : Math.atan2(bx - ax, bz - az);
+        } else { const [ax, az] = at(s - 1.2), [bx, bz] = at(s + 1.2); [x, z] = at(s); ry = Math.atan2(bx - ax, bz - az); }
         const w = walkAt(x, z);
-        u.position.set(x, w === null ? terrainAt(x, z) : w, z); u.rotation.y = Math.atan2(bx - ax, bz - az);
+        u.position.set(x, w === null ? terrainAt(x, z) : w, z); u.rotation.y = ry;
         const sq = ud.squeeze ? 1 - .4 * Math.min(1, Math.max(0, (s - sHill + 6) / 6)) : 1;   // closer together on the hill's narrow ways
         ud.walkers.forEach(f => {
           const d = f.userData, ph = (s / PROCESSION.stride) * TAU + d.lag;

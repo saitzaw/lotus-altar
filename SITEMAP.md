@@ -120,7 +120,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Old banyan | (36.4, 65.4) | `banyan` | `21-back-street-houses.js` |
 | Forest band and hills | z < −98; hills 150–190 m out | `mountainsAndForest` | `29-forest-and-hills.js` |
 | Townsfolk (evening), Halloween ghost | roads, market | `townsfolk`, `halloweenGhost` | `24-townsfolk.js`, `23-halloween-ghost.js` |
-| Poy Sang Long procession (from 8 AM until all have reached the second monastery, about 9:50) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
+| Poy Sang Long procession (8 AM, arriving about 9:25; gathered at the second monastery and festival ground until 10) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
 
 ## Suggested performance routes
 
