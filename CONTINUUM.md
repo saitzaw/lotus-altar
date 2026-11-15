@@ -75,6 +75,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: taller bamboo after the owner's photograph
+- Both bamboo places (the grove behind the school and the band at the stupa hill's foot) are drawn by `bambooStand()`, now
+  reshaped after the owner's photograph of a tall clumping stand: slender culms 10–15 m tall (were 6–11), streaked green,
+  olive, grey-green and orange-brown with the odd old yellow one; each culm is two instanced pieces, the upper one leaning
+  further out so the clump arches open at the top. The lower half is bare; six yellow-green leaf tufts per culm sit from just
+  under the joint to the tip; a few low green undergrowth tufts round each clump's foot. The grove floor is greener leaf
+  litter. Instance budgets: grove 2600 culm pieces / 9000 tufts, hill foot 1700 / 6000. Checked in a headless render.
+
 ### 2026-11-15: a big banyan on the stupa hill
 - Planted a big banyan (ညောင်ပင်ကြီး) on the stupa hill's upper terrace, on the open grass between the festival ground's east end
   and the east stair, where the site owner pointed (`BIG_BANYAN` / `bigBanyanSpot()` in `13-stupa-hill.js`, built in

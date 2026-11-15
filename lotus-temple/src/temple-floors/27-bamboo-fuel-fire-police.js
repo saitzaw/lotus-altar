@@ -1,25 +1,32 @@
-  // a stand of bamboo, drawn as two instanced meshes: clump(cx, cz, big) adds a clump of tall green culms fanning out from one root,
-  // with feathery leaves on their upper halves and a few older culms gone yellow; each culm stands on the land where it roots
+  // a stand of bamboo, drawn as two instanced meshes, after the owner's photograph of a tall clumping stand: clump(cx, cz, big, n)
+  // adds a clump of slender culms 10–15 m tall, streaked green, grey-green and orange-brown, fanning out from one root and arching
+  // outward near the top (each culm is two pieces, the upper one leaning further out); the lower half bare, a light yellow-green
+  // feathery canopy up the top, low green undergrowth round the foot. Each culm stands on the land where it roots
   function bambooStand(g, r, data, NC, NL) {
-    const culmGeo = new THREE.CylinderGeometry(.045, .055, 1, 5); culmGeo.translate(0, .5, 0);
+    const culmGeo = new THREE.CylinderGeometry(.04, .05, 1, 5); culmGeo.translate(0, .5, 0);
     const leafGeo = new THREE.IcosahedronGeometry(1, 0);
-    const CULMS = [0x6e8f34, 0x7d9c3c, 0x5f8030, 0x6a8a36, 0xa89c50].map(c => new THREE.Color(c)), LEAVES = [0x4a7a2e, 0x568634, 0x3e6a28].map(c => new THREE.Color(c));
+    const CULMS = [0x7a8a3e, 0x6e8238, 0x8a7a3c, 0x9a6a34, 0x7a8468, 0xb89a50].map(c => new THREE.Color(c));   // green, olive, brown-streaked, orange-brown, grey-green; an old yellow one
+    const LEAVES = [0x6a9a28, 0x5a8c26, 0x7aaa30, 0x4e7e22].map(c => new THREE.Color(c)), UNDER = [0x4a7a2e, 0x568a34].map(c => new THREE.Color(c));
     const white = { color: 0xffffff, roughness: .85 };
     const culms = new THREE.InstancedMesh(culmGeo, std(white), NC), leaves = new THREE.InstancedMesh(leafGeo, std({ ...white, roughness: 1, flatShading: true }), NL);
-    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = V(0, 1, 0), dir = V(0, 1, 0);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = V(0, 1, 0), d1 = V(0, 1, 0), d2 = V(0, 1, 0), p = V(0, 0, 0);
+    const tilt = (v, lean, a) => v.set(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
     let nc = 0, nl = 0;
+    const leaf = (x, y, z, sx, sy, sz, c) => { if (nl >= NL) return; m4.compose(V(x, y, z), q.setFromAxisAngle(up, r() * TAU), V(sx, sy, sz)); leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, c); };
     const clump = (cx, cz, big, n) => {
-      sCircle(g, cx, cz, .7);
-      for (let k = 0; k < n && nc < NC; k++) {
-        const a = r() * TAU, rr = r() * .6, lean = .04 + r() * .2 + rr * .15, h = (6 + r() * 5) * big, th = .8 + r() * .5;
-        dir.set(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
-        const bx = cx + Math.cos(a) * rr, bz = cz + Math.sin(a) * rr, by = terrainAt(bx, bz) - .05;
-        m4.compose(V(bx, by, bz), q.setFromUnitVectors(up, dir), V(th, h, th)); culms.setMatrixAt(nc, m4);
-        culms.setColorAt(nc++, CULMS[r() < .1 ? 4 : (r() * 4) | 0]);
-        for (let j = 0; j < 4 && nl < NL; j++) {   // leaf tufts up the top half, drooping out from the culm
-          const f = .55 + j * .14 + r() * .05, s = .6 + r() * .5;
-          m4.compose(V(bx + dir.x * h * f + (r() - .5) * .5, by + dir.y * h * f, bz + dir.z * h * f + (r() - .5) * .5), q.setFromAxisAngle(up, r() * TAU), V(s * 1.1, s * .35, s * .8));
-          leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, LEAVES[(r() * 3) | 0]);
+      sCircle(g, cx, cz, .8);
+      for (let j = 0; j < 3; j++) { const a = r() * TAU, rr = .4 + r() * .7, s = .35 + r() * .3, x = cx + Math.cos(a) * rr, z = cz + Math.sin(a) * rr; leaf(x, terrainAt(x, z) + s * .3, z, s * 1.3, s * .6, s * 1.1, UNDER[j & 1]); }   // undergrowth
+      for (let k = 0; k < n && nc + 1 < NC; k++) {
+        const a = r() * TAU, rr = r() * .8, lean = .03 + r() * .14 + rr * .12, h = (10 + r() * 5) * big, th = .8 + r() * .5, L1 = h * (.55 + r() * .1), L2 = h - L1;
+        tilt(d1, lean, a); tilt(d2, lean + .12 + r() * .22, a);   // the top arches further out the same way
+        const bx = cx + Math.cos(a) * rr, bz = cz + Math.sin(a) * rr, by = terrainAt(bx, bz) - .05, c = CULMS[r() < .08 ? 5 : (r() * 5) | 0];
+        m4.compose(V(bx, by, bz), q.setFromUnitVectors(up, d1), V(th, L1, th)); culms.setMatrixAt(nc, m4); culms.setColorAt(nc++, c);
+        const jx = bx + d1.x * L1, jy = by + d1.y * L1, jz = bz + d1.z * L1;
+        m4.compose(V(jx, jy, jz), q.setFromUnitVectors(up, d2), V(th * .78, L2, th * .78)); culms.setMatrixAt(nc, m4); culms.setColorAt(nc++, c);
+        for (let j = 0; j < 6; j++) {   // feathery tufts from just below the joint to the tip, drooping out from the culm
+          const t = -.3 + j * .25 + r() * .08, s = .65 + r() * .55;
+          if (t < 0) p.set(jx + d1.x * L1 * t, jy + d1.y * L1 * t, jz + d1.z * L1 * t); else p.set(jx + d2.x * L2 * t, jy + d2.y * L2 * t, jz + d2.z * L2 * t);
+          leaf(p.x + (r() - .5) * .7, p.y - s * .2, p.z + (r() - .5) * .7, s * 1.1, s * .55, s * .85, LEAVES[(r() * 4) | 0]);
         }
       }
     };
@@ -30,14 +37,14 @@
     };
     return { clump, done };
   }
-  // ဝါးတော, a bamboo grove behind the school, beyond its back wall: clumps of bamboo, dry leaves on the ground between
+  // ဝါးတော, a bamboo grove behind the school, beyond its back wall: clumps of tall bamboo, leaf litter and green undergrowth on the ground between
   function bambooGrove(g) {
     const r = rng(7171), X0 = 46, X1 = 98, Z0 = 155, Z1 = 176, data = { tip: "The bamboo grove · ဝါးတော", toast: "A bamboo grove behind the school. The culms grow in clumps from one root, a few metres in a season; people cut them for scaffolding, fences, baskets and the walls of the huts, and dig the young shoots to eat in the rains." };
-    flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x7a6a48, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // dry leaves
-    const stand = bambooStand(g, r, data, 1100, 4400);
+    flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x6a6a40, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // leaf litter
+    const stand = bambooStand(g, r, data, 2600, 9000);
     for (let x = X0 + 1.5; x < X1 - 1; x += 3.4) for (let z = Z0 + 1; z < Z1; z += 3.4) {
       if (r() < .22) continue;
-      const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 8 + (r() * 9 | 0), big = .8 + r() * .4;
+      const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 9 + (r() * 9 | 0), big = .85 + r() * .25;
       stand.clump(cx, cz, big, n);
     }
     stand.done();
@@ -51,11 +58,11 @@
     const avoid = [[-14, 98], [-12, 104]];   // the garden tree and banana behind the plaza-lane houses
     const taken = (x, z) => LANES.some(l => x > l.x0 - 1.5 && x < l.x1 + 1.5 && z > l.z0 - 1.5 && z < l.z1 + 1.5) || avoid.some(([ax, az]) => Math.hypot(x - ax, z - az) < 1.6) || surfAt(x, z);
     const free = (x, z) => [0, 1.2, F.clear].every(d => d ? [...Array(10)].every((_, i) => !taken(x + Math.cos(i * TAU / 10) * d, z + Math.sin(i * TAU / 10) * d)) : !taken(x, z));
-    const stand = bambooStand(g, r, data, 700, 2800);
+    const stand = bambooStand(g, r, data, 1700, 6000);
     for (let rr = rBase + F.r0; rr < rBase + F.r1; rr += F.step) for (let a = F.a0; a < F.a1; a += F.step / rr) {
       if (r() < .18) continue;
       const x = cx + Math.cos(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4), z = cz + Math.sin(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4);
-      const n = 7 + (r() * 8 | 0), big = .75 + r() * .4;
+      const n = 7 + (r() * 8 | 0), big = .8 + r() * .3;
       if (free(x, z)) stand.clump(x, z, big, n);
     }
     stand.done();
