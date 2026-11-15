@@ -16,7 +16,7 @@
     { food: "buns", shn: "သႃႇလႃႇပဝ်း လႄႈ ၵျႅဝ်ႉၸိုဝ်ႉ", tdd: "ᥔᥣᥱᥘᥣᥱᥙᥝᥰ", zh: "手工包子与饺子", my: "ပေါက်စီနှင့် ဖက်ထုပ်", en: "Handmade buns · dumplings" },
     { shan: true, food: "tea", shn: "လၢၼ်ႉၼမ်ႉၼဵင်ႈ လႄႈ ၶဝ်ႈမုၼ်းတႆး", tdd: "ᥘᥣᥢᥳᥘᥛᥳᥘᥥᥒᥲ", zh: "传统茶饮与傣族糕点", my: "လက်ဖက်ရည်နှင့် ရှမ်းမုန့်", en: "Tea · Shan snacks" }];
   function foodStreet(g) {
-    const list = picks.pagoda, r = rng(5150), pk = l => l[(r() * l.length) | 0];
+    const list = picks.pagoda, r = rng(5150), pk = l => l[(r() * l.length) | 0], ru = rng(5151), pu = l => l[(ru() * l.length) | 0];   // ru: the umbrellas' colours, apart so the rest stays as it was
     const vcM = std({ vertexColors: true, flatShading: true, roughness: .8 }), folkM = std({ vertexColors: true, flatShading: true, roughness: .85 });
     onDaylight(d => folkM.emissive.copy(lerpC(0x1c1814, 0x000000, d)));
     const box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 8) => new THREE.CylinderGeometry(a, b, h, n), cone = (a, h, n = 8) => new THREE.ConeGeometry(a, h, n);
@@ -89,11 +89,15 @@
         P.push([cyl(.3, .12, .14, 10), 0x2a2a2e, -1.2, .895, -1.4], [box(.5, .04, .3), 0xc8a070, .6, .845, -1.4], [box(.16, .08, .01), 0x9aa0a6, .6, .9, -1.4]);   // a wok, a chopping board and cleaver on the back table
         [-2.3, 2.3].forEach(x => lanternAt.push(V(x, 2.4, 1.85).applyMatrix4(m4)));
       }
-      // two tables out front, each with chopsticks and spoons in a holder, chilli and soy, a box of tissues, and four stools
+      // two tables out front, each with chopsticks and spoons in a holder, chilli and soy, a box of tissues, and four stools, under a
+      // big umbrella on a pole through the table that keeps the sun and rain off the diners: green or blue at the Shan stalls, red at the Chinese
+      const UMB = shan ? pu([0x2f6a3a, 0x2a5a9a, 0x3a7a8a]) : pu([0xb02a22, 0xc8382a]);
       [-1.35, 1.35].forEach(tx => {
         const tz = 3.45;
         P.push([box(1.1, .05, .72), shan ? WOOD : 0x6a4a32, tx, .72, tz], ...[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([a, b]) => [box(.05, .7, .05), WOOD_D, tx + a * .48, .35, tz + b * .3]));
         P.push([cyl(.04, .04, .12, 6), BAMBOO, tx - .35, .805, tz], ...[-.37, -.35, -.33].map(dx => [box(.01, .2, .01), 0x8a5a2a, tx + dx, .88, tz]), [cyl(.035, .035, .12, 6), 0xa8201a, tx - .2, .805, tz - .05], [cyl(.03, .03, .14, 6), 0x2a1a14, tx - .12, .815, tz + .05], [box(.16, .08, .1), 0xf0ece0, tx + .35, .785, tz]);
+        P.push([cyl(.025, .025, 2.6, 6), 0xd8d8d4, tx, 1.3, tz], [cone(1.25, .38, 8), UMB, tx, 2.36, tz], [new THREE.CylinderGeometry(1.26, 1.26, .08, 8, 1, true), 0xf2f0ea, tx, 2.15, tz],   // the pole, the canopy and its white valance
+          [ball(.05), 0xd8d8d4, tx, 2.58, tz], ...[0, 1, 2, 3].map(k => [box(2.4, .025, .025), 0xd8d8d4, tx, 2.13, tz, k * Math.PI / 4]));   // the finial and the ribs underneath
         [-1, 1].forEach(sd => [-.28, .28].forEach(dx => { P.push([cyl(.15, .17, .42, 6), pk(STOOLS), tx + dx, .21, tz + sd * .62]); seats.push({ m4: m4.clone().multiply(at(tx + dx, 0, tz + sd * .62, sd < 0 ? 0 : Math.PI)), shan }); }));
         sRect(g, FOOD.x + tz - .4, FOOD.x + tz + .4, z - tx - .6, z - tx + .6);   // the table blocks walkers; its stools don't
       });
@@ -235,15 +239,19 @@
     folkMesh.raycast = function (ray, out) { if (folkMesh.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };
     folkMesh.visible = false;
 
-    // the strollers: three pairs of friends walking up and down the street, limbs swinging
+    // the strollers: three pairs of friends walking up and down the street, limbs swinging; when it rains (the townsfolk's umbrella
+    // switch) each holds up an umbrella in the right hand, tilted back over the head
     const strollG = new THREE.Group(); strollG.userData.noCull = true; strollG.visible = false; g.add(strollG);
     const limbMesh = parts => { const m = new THREE.Mesh(linear(lowPoly(fix(parts))), folkM); m.castShadow = true; return m; };
+    const BROLLY = [0x1a1a22, 0x23305a, 0xa82a2a, 0x3a6a4a, 0xd88a3a, 0x7a3a7a, 0x2a8ac8, 0xe88aa0];
     const parties = [[["palaung", 0], ["palaung", 0]], [["kachin", 1], ["kachin", 0]], [["chinese", 1], ["shan", 0]]].map((pair, i) => {
       const pg = new THREE.Group(); strollG.add(pg);
       const members = pair.map(([eth, man], k) => {
         const f = figure(dress(eth, !!man, false), "walk"), w = new THREE.Group(); w.position.x = (k - .5) * .64; pg.add(w);
         w.add(limbMesh(f.body));
-        return { ph: r() * TAU, limbs: [...f.legs, ...f.arms].map(l => { const piv = new THREE.Group(); piv.position.set(...l.at); piv.add(limbMesh(l.parts)); w.add(piv); return piv; }) };
+        const umb = new THREE.Group(); umb.position.set(f.arms[1].at[0], .94 + k * .08, .4); umb.rotation.x = -.3; umb.visible = false; w.add(umb);   // in the raised hand
+        umb.add(limbMesh([[cyl(.012, .012, 1.1, 4), 0x9a9aa0, 0, .55, 0], [cone(.55, .2, 8), pu(BROLLY), 0, 1.05, 0], [box(.03, .14, .03), 0x2a1a14, 0, .02, 0]]));
+        return { ph: r() * TAU, umb, open: 0, limbs: [...f.legs, ...f.arms].map(l => { const piv = new THREE.Group(); piv.position.set(...l.at); piv.add(limbMesh(l.parts)); w.add(piv); return piv; }) };
       });
       return { pg, members, z: FOOD.z0 + (FOOD.z1 - FOOD.z0) * (.15 + i * .33), dir: i % 2 ? -1 : 1, speed: .85 + r() * .2, x: FOOD.lanes[i] };
     });
@@ -287,7 +295,9 @@
         pt.pg.position.set(pt.x, .05, pt.z); pt.pg.rotation.y = pt.dir > 0 ? 0 : Math.PI;
         pt.members.forEach(m => {
           m.ph += dt * motion * pt.speed * 4.2; const s = Math.sin(m.ph);
-          m.limbs[0].rotation.x = s * .42; m.limbs[1].rotation.x = -s * .42; m.limbs[2].rotation.x = -s * .3; m.limbs[3].rotation.x = s * .3;
+          m.open += ((FOLK.umbrellas ? 1 : 0) - m.open) * Math.min(1, motion ? dt * 3 : 1);   // the umbrella goes up or down
+          const o = m.open; m.umb.visible = o > .02; m.umb.scale.set(o, 1, o);
+          m.limbs[0].rotation.x = s * .42; m.limbs[1].rotation.x = -s * .42; m.limbs[2].rotation.x = -s * .3; m.limbs[3].rotation.x = s * .3 * (1 - o) - 1.0 * o;
         });
       });
     });

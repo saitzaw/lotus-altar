@@ -68,6 +68,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: umbrellas on the food street
+
+- The food street's strolling pairs (`parties` in `12d-food-street.js`) hold up umbrellas in the rain, on the townsfolk's switch
+  (`FOLK.umbrellas`, rain over `CONFIG.townsfolk.umbrella`): an umbrella group on each walker, opened by `m.open` (scaled in x/z),
+  the right arm raised forward as it opens.
+- Every stall's two customer tables have a big umbrella on a pole through the table (green or blue at the Shan stalls, red at the
+  Chinese), baked into the stalls' mesh. Their colours come from their own seed (`rng(5151)`), so the cooks and diners didn't
+  change. The rain cover picks the canopies up by itself, so it's dry under them.
+- Checked in headless Chromium in the rain from two angles.
+
 ### 2026-11-15: no rain under roofs
 
 - Rain no longer falls through roofs onto the floors of pavilions, verandahs, the balconies and the halls behind them.
@@ -965,7 +975,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   terraces against the west wall, and a gate off the road with a Burmese/English sign (မြို့နယ်အားကစားကွင်း · Township Stadium)
   and the flag. No floodlights. The hill peaks nearby were checked and don't reach it, so the skyline is unchanged.
   Checked in a headless render.
-
-### 2026-11-03 (evening)
-- Hid the "Lotus Altar" title and the floor/place line (`#where`) from the top-left HUD. They are kept for screen readers
-  through the same visually-hidden rule as `#hint` in `lotus-altar.css`; the buttons now sit at the top.
