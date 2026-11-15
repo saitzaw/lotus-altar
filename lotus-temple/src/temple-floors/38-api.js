@@ -9,7 +9,7 @@
       if (pagoda) pagoda.visible = mode === "pagoda";
     },
     clickables(mode) { return mode === "pagoda" && CULL.on ? (picks.pagoda || []).filter(shown) : picks[mode] || []; },
-    cull,
+    cull, uncull,
     set culling(on) { CULL.on = on; if (!on) CULL.cells.forEach(c => { c.vis = true; c.items.forEach(it => it.o.visible = true); }); },
     get fourTop() { return fourTop; },
     get market() { return MARKET; },

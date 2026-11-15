@@ -64,6 +64,15 @@
       });
     });
   }
+  // show again whatever the culling hid within r of world (x, z), e.g. the roof over your head while the rain's cover is drawn from
+  // above (see rainCover); returns what it showed, for the caller to hide again straight after
+  function uncull(x, z, r) {
+    const out = []; if (!CULL.on || !pagoda || !pagoda.visible) return out;
+    pagoda.updateMatrixWorld();
+    const p = _cv.set(x, 0, z).applyMatrix4(_cinv.copy(pagoda.matrixWorld).invert()), near = s => Math.hypot(s.center.x - p.x, s.center.z - p.z) - s.radius < r;
+    CULL.cells.forEach(c => { if (near(c.sphere)) c.items.forEach(it => { if (!it.o.visible && near(it.s)) { it.o.visible = true; out.push(it.o); } }); });
+    return out;
+  }
   // hidden things cannot be tapped
   const shown = o => { for (; o && o !== pagoda; o = o.parent) if (!o.visible) return false; return true; };
 

@@ -206,7 +206,9 @@ const rainCover = (() => {
     cam.position.set(p.x, top, p.z); cam.lookAt(p.x, top - 1, p.z); cam.updateMatrixWorld();
     const bg = world.background, auto = renderer.shadowMap.autoUpdate, a = renderer.getClearAlpha(); renderer.getClearColor(keep);
     world.background = null; world.overrideMaterial = depth; renderer.shadowMap.autoUpdate = false; rainLines.visible = false;
+    const culled = temple.uncull(p.x, p.z, S * .72);   // the roof over your head is out of view, so the town's culling has hidden it
     renderer.setRenderTarget(rt); renderer.setClearColor(clear, 1); renderer.clear(); renderer.render(world, cam); renderer.setRenderTarget(null);
+    culled.forEach(o => o.visible = false);
     world.background = bg; world.overrideMaterial = null; renderer.shadowMap.autoUpdate = auto; rainLines.visible = true; renderer.setClearColor(keep, a);
     u.coverAt.value.set(p.x, p.z, S, 1); u.coverY.value.set(top, H);
   };
