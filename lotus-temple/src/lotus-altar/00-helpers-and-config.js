@@ -20,6 +20,7 @@ const CONFIG = {
     stairs: { pos: [-4.6, 1.65, -2.95], target: [-6.2, 1.75, -4.45] },   // standing inside the stair room at eye height, facing the spiral
     stairsTop: { pos: [-4.6, 1.65, -2.95], target: [-6.0, .2, -4.4] },   // on the top floor, looking down the flight that arrives there
     pagoda: { pos: [0, 27, 94], target: [0, 6, 14] },
+    near: { indoor: .1, outdoor: .3 },   // nearest drawn distance (m): kept larger outdoors, where the view reaches 1000 m, so distant roads and walls do not flicker against the ground and each other
     // looking round on foot, kept gentle so walking does not make anyone dizzy
     look: { drag: .4, settle: .3, turn: 1.0, minPitch: .6, maxPitch: 2.25 }   // drag: mouse/touch look speed (1 = half a screen turns you half round); settle: how fast the view stops after you let go (0–1); turn: arrow-key turn in rad/s; pitch limits in radians from straight up
   },

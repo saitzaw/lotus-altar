@@ -74,7 +74,7 @@ world.background = new THREE.Color(0x120a07);
 world.fog = new THREE.Fog(0x120a07, 13, 28);
 const scene = new THREE.Group(); scene.name = "floor1";  // floor 1, Guanyin's main hall
 world.add(scene);
-const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 80);
+const camera = new THREE.PerspectiveCamera(42, 1, CONFIG.camera.near.indoor, 80);
 camera.position.set(...CONFIG.camera.full.pos);
 const controls = new THREE.OrbitControls(camera, canvas);
 controls.target.set(...CONFIG.camera.full.target);

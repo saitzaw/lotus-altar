@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-15
+
+### Fixed
+- Distant roads, houses and windows no longer flicker when you look out from a pagoda balcony or across the grounds.
+
 ## 2026-11-14
 
 ### Removed

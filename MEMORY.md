@@ -31,6 +31,9 @@ lesson when you learn one, and delete a lesson once it stops being true.
   and platform), the surface function reads `WALKER_Y` (the walker's feet, set by the walk each step) to pick the floor, and the
   climb between them (a ladder or stair) is its own ramp registered first. Anything that only blocks one floor (columns under a
   platform) belongs inside that function, not in a separate `sCircle`, which blocks every floor.
+- Outdoors the camera's `far` is 1000 m, so depth precision depends on `near` (`CONFIG.camera.near.outdoor`, .3). At .1, a
+  road 2 cm over the ground or a window just off a wall flickers ("blinks") 150 m away. Keep layered flat things at least
+  2–3 cm apart, and never put two overlapping road boxes at the same height.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
 ## The sky

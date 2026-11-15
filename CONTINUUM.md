@@ -68,6 +68,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: no more flickering roads and houses in the outdoor views
+
+- Seen from a pagoda balcony (the corridor view) or outside, distant roads, house walls and windows flickered: depth
+  fighting, because the camera's near plane stayed at 0.1 m while `far` is 1000 m outdoors. The near plane is now
+  `CONFIG.camera.near` (`indoor: .1`, `outdoor: .3`), set wherever `camera.far` switches (`applyMode`, `setView`).
+  If anything close to a walker now clips (a wall corner you press against), lower `outdoor` toward .2.
+
 ### 2026-11-14: a terrace walk in front of the second and third monasteries, out to the bamboo
 - From the owner (screenshots from the east stair): a platform between ဝိႁၢၼ်ႇၵုင်းသႃႇ and the hill-foot bamboo, with walls, safe to
   walk, without moving the bamboo. `wihanWalk()` (now `terraceWalk()`, `TERRACE_WALK`, in `14c-wihan-kyaung.js`) builds a paved annular sector in the hill's
