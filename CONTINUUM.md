@@ -116,6 +116,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   `CONFIG.camera.near` (`indoor: .1`, `outdoor: .3`), set wherever `camera.far` switches (`applyMode`, `setView`).
   If anything close to a walker now clips (a wall corner you press against), lower `outdoor` toward .2.
 
+### 2026-11-15: a terrace walk round the main stupa
+- From the owner: the stupa should have the terrace walk. The main stupa's three narrow stepped tiers (13-stupa-hill.js) are now one
+  square platform (`TW`: half-width 5.2 m, deck 1.8 m up, the old top tier's height, so the body is unchanged): whitewashed walls on
+  a plinth, a gilt band, paved in half-metre flags, a 0.9 m parapet with gilt coping, lamp posts on its four corners. Two flights of
+  five steps (`STEPS`) between sloping cheek walls: the front, from the hill stair, and the east, where the east stair's path comes
+  in; two Kakku stupas in that lane (`x > 0 && |z| < 2.6`) are gone. Walkable through one `sRect` on `MS`. Its toast says to walk
+  round clockwise, keeping the stupa on your right. Checked in a headless render and a `walkAt` probe. Ask the owner whether they
+  want steps on the other two faces too (more Kakku stupas would have to go).
+
 ### 2026-11-14: a terrace walk in front of the second and third monasteries, out to the bamboo
 - From the owner (screenshots from the east stair): a platform between ဝိႁၢၼ်ႇၵုင်းသႃႇ and the hill-foot bamboo, with walls, safe to
   walk, without moving the bamboo. `wihanWalk()` (now `terraceWalk()`, `TERRACE_WALK`, in `14c-wihan-kyaung.js`) builds a paved annular sector in the hill's

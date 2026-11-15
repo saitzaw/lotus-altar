@@ -292,6 +292,7 @@
       if (Math.abs(x) < 2.6 && zz < 0) continue;               // the path from the stair to the main stupa
       if (Math.abs(x) < 6.2 && Math.abs(zz) < 6.2) continue;   // the main stupa's terrace
       if (onEast(x, zz, 2.6)) continue;                         // and the path from the east stair
+      if (x > 0 && Math.abs(zz) < 2.6) continue;                // and the terrace walk's east steps, where that path comes in
       if (Math.hypot(x, zz) > rTop - 1.6) continue;
       spots.push({ x, y: top, z: zz, s: .55 + r() * .35, ry: [0, Math.PI / 2][(r() * 2) | 0] });
       sCircle(H, x, zz, 1.15 * spots[spots.length - 1].s);
@@ -316,14 +317,63 @@
       clickable(list, mesh(new THREE.BoxGeometry(BW, BH, .1), [M.lacquer, M.lacquer, M.lacquer, M.lacquer, face, face], 0, by, -rBase - .2, H), { tip: `${SHAN_NAMES.stupa} · the main stupa`, toast: `${SHAN_NAMES.stupa}, the main stupa of the hill: climb the stair past the monastery ${SHAN_NAMES.kyaung} to the white-and-gold stupa among the Shan stupas at the top.` });
       mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
     }
-    // the main stupa: a stepped white terrace, a white bell and a gilded spire with its hti
+    // the main stupa on its terrace walk: a square platform 1.8 m up, whitewashed walls, paved on top, a parapet with gilt coping
+    // all round, steps up through it on the front (from the hill stair) and the east (from the east stair's path); pilgrims walk
+    // round the stupa on it clockwise, keeping it on their right. Lamp posts at its four corners glow at night
     const gold = M.gold, MS = new THREE.Group(); MS.position.set(0, top, 0); H.add(MS);
-    // the main stupa: its body blocks; the three tiers of its terrace are surfaces you climb by the front steps
-    sRect(MS, -2.8, 2.8, -2.8, 2.8);
-    sRect(MS, -1.2, 1.2, -6.85, -3.85, (lx, lz) => clamp((lz + 6.85) / 3 * 1.8, 0, 1.8));
-    sRect(MS, -5.5, 5.5, -5.5, 5.5, (lx, lz) => { const m = Math.max(Math.abs(lx), Math.abs(lz)); return m < 3.7 ? 1.8 : m < 4.5 ? 1.2 : .6; });
-    [[11, .6], [9, 1.2], [7.4, 1.8]].forEach(([w, yy]) => mesh(new THREE.BoxGeometry(w, .6, w), whiteWash, 0, yy - .3, 0, MS));
-    for (let i = 0; i < 6; i++) { const y1 = (i + 1) * .3; mesh(new THREE.BoxGeometry(2.4, y1, .52), whiteWash, 0, y1 / 2, -6.6 + i * .5, MS); }
+    const TW = { D: 5.2, Y: 1.8, PT: .3, PH: .9, SH: 1.2, n: 5, tread: .4 }, { D, Y, PT, PH, SH } = TW, RUN = TW.n * TW.tread, rs = Y / (TW.n + 1);   // half-width, deck height, parapet thickness and height, half the steps' width, steps and tread (m)
+    const STEPS = [0, -Math.PI / 2];   // turns of the flights of steps: the front (down local -z), the east (down local +x)
+    {
+      const T = new THREE.Group(); T.position.set(0, top, 0); H.add(T);
+      const twTip = { tip: "The terrace walk round the main stupa", toast: `The terrace walk round ${SHAN_NAMES.stupa}: climb its steps and walk round the stupa clockwise, keeping it on your right, as pilgrims do.` };
+      const flags = canvasTex(256, (c, sz) => { c.fillStyle = "#cfc6b4"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 8; r++) for (let k = 0; k < 8; k++) { const v = 206 + ((r * 3 + k * 5) % 4) * 8; c.fillStyle = `rgb(${v},${v - 5},${v - 16})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
+      flags.wrapS = flags.wrapT = THREE.RepeatWrapping; flags.repeat.set(D / 2, D / 2);   // half-metre flags
+      const paved = std({ map: flags, roughness: .85 });
+      const deck = mesh(new THREE.BoxGeometry(2 * D, Y, 2 * D), [whiteWash, whiteWash, paved, whiteWash, whiteWash, whiteWash], 0, Y / 2, 0, T);
+      deck.receiveShadow = true; clickable(list, deck, twTip);
+      mesh(new THREE.BoxGeometry(2 * D + .16, .14, 2 * D + .16), M.trim, 0, Y - .2, 0, T);    // a gilt band under the deck's edge
+      mesh(new THREE.BoxGeometry(2 * D + .2, .22, 2 * D + .2), whiteWash, 0, .11, 0, T);     // and a plinth at its foot
+      // the parapet: a whitewashed wall along each side, broken where the steps come up; the coping capped in gilt
+      const open = side => STEPS.some(t => Math.abs(Math.atan2(Math.sin(t - side), Math.cos(t - side))) < .01);
+      [0, -Math.PI / 2, Math.PI, Math.PI / 2].forEach(side => {   // side 0: the front (local -z); the others turned as the steps are
+        const S = new THREE.Group(); S.rotation.y = side; T.add(S);
+        const long = side === 0 || side === Math.PI, hl = long ? D : D - PT, cl = long ? D + .07 : D - PT - .07;   // the front and back run the full width
+        const runs = open(side) ? [[-hl, -SH - .15], [SH + .15, hl]] : [[-hl, hl]], cRuns = open(side) ? [[-cl, -SH - .15], [SH + .15, cl]] : [[-cl, cl]];
+        runs.forEach(([x0, x1]) => clickable(list, mesh(new THREE.BoxGeometry(x1 - x0, PH, PT), whiteWash, (x0 + x1) / 2, Y + PH / 2, -D + PT / 2, S), twTip));
+        cRuns.forEach(([x0, x1]) => mesh(new THREE.BoxGeometry(x1 - x0, .12, PT + .14), M.trim, (x0 + x1) / 2, Y + PH + .06, -D + PT / 2, S));
+      });
+      // the flights of steps, each between two whitewashed cheek walls that slope down from the parapet
+      const cheek = new THREE.Shape();
+      [[D - PT, 0], [D + RUN + .25, 0], [D + RUN + .25, .55], [D, Y + PH], [D - PT, Y + PH]].forEach(([u, y], i) => i ? cheek.lineTo(u, y) : cheek.moveTo(u, y));
+      STEPS.forEach(turn => {
+        const S = new THREE.Group(); S.rotation.y = turn; T.add(S);
+        for (let i = 0; i < TW.n; i++) { const y1 = Y - (i + 1) * rs; clickable(list, mesh(new THREE.BoxGeometry(2 * SH, y1, TW.tread), whiteWash, 0, y1 / 2, -(D + (i + .5) * TW.tread), S), twTip); }
+        [-1, 1].forEach(sd => {
+          const cg = new THREE.ExtrudeGeometry(cheek, { depth: PT, bevelEnabled: false }); cg.rotateY(Math.PI / 2);
+          mesh(cg, whiteWash, sd > 0 ? SH : -SH - PT, 0, 0, S);
+        });
+      });
+      // lamp posts on the parapet's four corners
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => {
+        const x = a * (D - PT / 2), z = b * (D - PT / 2);
+        mesh(new THREE.BoxGeometry(.3, .6, .3), whiteWash, x, Y + PH + .42, z, T);
+        const gl = glowSprite(0xffd8a0, 1.1, .8); gl.material.fog = false; gl.position.set(x, Y + PH + .82, z); T.add(gl);
+        onDaylight(d => gl.material.opacity = .85 * (1 - d) + .05);
+      });
+    }
+    // walkable, in the stupa's frame: the stupa's body blocks; the deck at its height inside the parapet, which blocks; the steps
+    // through their openings, the cheek walls blocking beside them; round it all, inside the same rectangle, the hilltop
+    sRect(MS, -(D + RUN + .6), D + RUN + .6, -(D + RUN + .6), D + RUN + .6, (lx, lz) => {
+      const m = Math.max(Math.abs(lx), Math.abs(lz));
+      if (m < 2.8 + PAD) return null;
+      for (const t of STEPS) {   // u: out along the flight, v: across it
+        const u = -lx * Math.sin(t) - lz * Math.cos(t), v = lx * Math.cos(t) - lz * Math.sin(t);
+        if (u < D - PT - PAD || u > D + RUN + .25 + PAD) continue;
+        if (Math.abs(v) < SH - .15) return u < D ? Y : u < D + RUN ? Y - (Math.floor((u - D) / TW.tread) + 1) * rs : 0;
+        if (Math.abs(v) < SH + PT + PAD) return null;
+      }
+      return m < D - PT - PAD ? Y : m < D + .1 + PAD ? null : 0;
+    });
     mesh(new THREE.BoxGeometry(5.6, 3.2, 5.6), whiteWash, 0, 3.4, 0, MS);
     [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.8, .9, 4), gold, Math.sin(a) * 2.85, 4.55, Math.cos(a) * 2.85, MS); pd.rotation.y = a; pd.scale.z = .15; });
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.ConeGeometry(.3, 2.0, 8), gold, a * 2.55, 6.0, b * 2.55, MS));
