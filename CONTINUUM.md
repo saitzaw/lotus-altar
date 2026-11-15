@@ -116,6 +116,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   `CONFIG.camera.near` (`indoor: .1`, `outdoor: .3`), set wherever `camera.far` switches (`applyMode`, `setView`).
   If anything close to a walker now clips (a wall corner you press against), lower `outdoor` toward .2.
 
+### 2026-11-15: a taller main stupa
+- From the owner (screenshot beside a Kakku photo): the main stupa looked a little short. In 13-stupa-hill.js its body is now 4 m
+  (to `BT` = 5.8 m on `MS`, was 5.0), niches and pediments raised to suit, and everything above is drawn to the old 5 m line then
+  stretched by `SK` = 1.45 through `up(y)`; the finial ends about 23 m above the hilltop (was 17). The floodlight aims higher. Widths
+  are unchanged. Checked in a headless render from the stair. Tune `SK` if the owner wants it taller or shorter still.
+
 ### 2026-11-15: a terrace walk round the main stupa
 - From the owner: the stupa should have the terrace walk. The main stupa's three narrow stepped tiers (13-stupa-hill.js) are now one
   square platform (`TW`: half-width 5.2 m, deck 1.8 m up, the old top tier's height, so the body is unchanged): whitewashed walls on

@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-15
 
 ### Changed
+- The main stupa on the hill is taller and more slender, like Kakku's: a taller whitewashed body, and the bell, ringed spire and hti drawn up higher, the finial now about 23 m above the hilltop (it was 17 m).
 - The main stupa on the hill stands on a terrace walk: a paved platform with a parapet, gilt coping and corner lamps, climbed by steps from the hill stair and from the east stair, so you can walk right round the stupa.
 - On the food street, people out walking put up umbrellas when it rains, and every stall has big umbrellas over its customer tables.
 - When the Poy Sang Long reaches the second monastery it no longer vanishes: the three boys on their carriers' shoulders stop in a row before the monastery's stair, the families and pole bearers crowd round them, and the kinnara, the to and the band climb the hill stair to the festival ground and dance and play there. Everyone goes home at 11 AM. The stops on the way are 15 minutes now, so they arrive about 9:25.

@@ -374,18 +374,22 @@
       }
       return m < D - PT - PAD ? Y : m < D + .1 + PAD ? null : 0;
     });
-    mesh(new THREE.BoxGeometry(5.6, 3.2, 5.6), whiteWash, 0, 3.4, 0, MS);
-    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.0, .1), niche, Math.sin(a) * 2.82, 3.1, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.8, .9, 4), gold, Math.sin(a) * 2.85, 4.55, Math.cos(a) * 2.85, MS); pd.rotation.y = a; pd.scale.z = .15; });
-    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.ConeGeometry(.3, 2.0, 8), gold, a * 2.55, 6.0, b * 2.55, MS));
-    MS.add(new THREE.Mesh(lath([[0, 5], [2.4, 5], [2.3, 5.8], [1.8, 7.0], [1.4, 7.6], [0, 7.6]], 32), whiteWash));
+    // its body, 4 m of whitewash on the terrace walk; above it everything is drawn to the old 5 m line and stretched by SK, so
+    // the bell, the ringed spire and the hti rise tall and slender like Kakku's (the finial ends about 23 m above the hilltop)
+    const BT = 5.8, SK = 1.45, up = y => BT + (y - 5) * SK;   // the body's top (m), the stretch above it
+    mesh(new THREE.BoxGeometry(5.6, BT - Y, 5.6), whiteWash, 0, (BT + Y) / 2, 0, MS);
+    [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(a => { const n = mesh(new THREE.BoxGeometry(1.2, 2.4, .1), niche, Math.sin(a) * 2.82, 3.4, Math.cos(a) * 2.82, MS); n.rotation.y = a; const pd = mesh(new THREE.ConeGeometry(.8, 1.0, 4), gold, Math.sin(a) * 2.85, 5.1, Math.cos(a) * 2.85, MS); pd.rotation.y = a; pd.scale.z = .15; });
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => mesh(new THREE.ConeGeometry(.3, 2.0 * SK, 8), gold, a * 2.55, up(6.0), b * 2.55, MS));
+    const lathUp = (pts, seg) => lath(pts.map(([r, y]) => [r, up(y)]), seg);
+    MS.add(new THREE.Mesh(lathUp([[0, 5], [2.4, 5], [2.3, 5.8], [1.8, 7.0], [1.4, 7.6], [0, 7.6]], 32), whiteWash));
     const rings = []; for (let i = 0; i <= 16; i++) rings.push([1.3 - i * .055 + (i % 2 ? .12 : 0), 7.6 + i * .2]);
-    MS.add(new THREE.Mesh(lath([[0, 7.6], ...rings, [0, 10.8]], 32), gold));
-    MS.add(new THREE.Mesh(lath([[0, 10.8], [.5, 10.8], [.6, 11.4], [.35, 12.4], [.05, 13.0], [0, 13.0]], 24), gold));
-    [[.9, 13.1], [.68, 13.7], [.48, 14.3], [.3, 14.9]].forEach(([rr, yy]) => mesh(new THREE.ConeGeometry(rr, .6, 16, 1, true), gold, 0, yy, 0, MS));
-    mesh(new THREE.CylinderGeometry(.03, .03, 1.6, 6), gold, 0, 16.0, 0, MS);
-    mesh(new THREE.SphereGeometry(.16, 12, 10), std({ color: 0xfff2c0, emissive: 0xffd070, emissiveIntensity: .8 }), 0, 16.9, 0, MS);
+    MS.add(new THREE.Mesh(lathUp([[0, 7.6], ...rings, [0, 10.8]], 32), gold));
+    MS.add(new THREE.Mesh(lathUp([[0, 10.8], [.5, 10.8], [.6, 11.4], [.35, 12.4], [.05, 13.0], [0, 13.0]], 24), gold));
+    [[.9, 13.1], [.68, 13.7], [.48, 14.3], [.3, 14.9]].forEach(([rr, yy]) => mesh(new THREE.ConeGeometry(rr, .6 * SK, 16, 1, true), gold, 0, up(yy), 0, MS));
+    mesh(new THREE.CylinderGeometry(.03, .03, 1.6 * SK, 6), gold, 0, up(16.0), 0, MS);
+    mesh(new THREE.SphereGeometry(.16, 12, 10), std({ color: 0xfff2c0, emissive: 0xffd070, emissiveIntensity: .8 }), 0, up(16.9), 0, MS);
     MS.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, { tip: `${SHAN_NAMES.stupa} · the main stupa on the hill` }); } });
-    const flood = new THREE.SpotLight(0xffe0b0, 0, 40, .5, .6, 1); flood.position.set(0, 4, -16); flood.target.position.set(0, 8, 0); MS.add(flood, flood.target);
+    const flood = new THREE.SpotLight(0xffe0b0, 0, 40, .5, .6, 1); flood.position.set(0, 4, -16); flood.target.position.set(0, 11, 0); MS.add(flood, flood.target);
     onDaylight(d => flood.intensity = 2.4 * (1 - d));
     // pines on the slopes clear of the stair
     let seed = 400;
