@@ -30,6 +30,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Open threads
 
+- Have a Shan speaker check ၵၢတ်ႇပွႆး (kaat poi, "festival market"), our wording on the board over the balloon-ground market's gateway.
 - The shared seated Buddha body (`seatedBuddha` in `statue-sculpt.js`, used by Shakyamuni, the Medicine Buddha and the Victorious
   Buddha) is mirrored: seen from the front, the earth-touching hand and the robed shoulder are on the wrong sides. The Shan image
   is built mirrored to be correct; decide whether to flip the others too.
@@ -74,6 +75,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-15: a festival market of Shan shops beside the balloon ground
+- Owner's ask, from a screenshot on the lower terrace just past the balloon ground's west end. New piece `15h-balloon-bazaar.js`
+  (`balloonBazaar()`, called after `balloonGround`; `BAZAAR`): from 0.07 rad past `BALLOON_GROUND.a1`, an inner row of seven shops
+  (r 56.8, facing out) and an outer row of eight (r 67.2, facing in, staggered half a shop) across a lane at r 58.9–65.1. Each shop:
+  plank floor, teak posts, woven bamboo walls, counter and back shelves, a shutter propped out on bamboo poles, a hipped roof (thatch,
+  or rusty iron about half the time) with a raised ridge roof over a vent gap, a paper lantern. Goods by kind (noodles with a bench,
+  rice cakes, tea, fruit, cloth and bags, toy balloons) are one flat-shaded `lowPoly` mesh; static parts are baked. Lantern strings
+  cross the lane; a bamboo gateway at the balloon ground's end carries the board ၵၢတ်ႇပွႆး · Festival Market. Shops and gateway posts
+  block walkers. Always open, no sellers yet, so nothing in `SCHEDULE.md`.
+- Checked in headless renders by day (down the lane through the gateway, and from over the lake).
 
 ### 2026-11-15: a fire balloon ground on the stupa hill, over the palace lake
 - Owner's ask, from a screenshot taken on the lower terrace past the east stair, looking over the lake. New piece
