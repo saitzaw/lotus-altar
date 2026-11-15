@@ -9,6 +9,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 - When the Poy Sang Long reaches the second monastery it no longer vanishes: the three boys on their carriers' shoulders stop in a row before the monastery's stair, the families and pole bearers crowd round them, and the kinnara, the to and the band climb the hill stair to the festival ground and dance and play there. Everyone goes home at 11 AM. The stops on the way are 15 minutes now, so they arrive about 9:25.
 
 ### Fixed
+- Rain no longer falls inside buildings: it stops at roofs, eaves and ceilings, so the floors of pavilions, verandahs and balconies stay dry while it keeps raining outside.
 - On the pagoda's balcony walks, the dark red slabs at the back corners and the column stubs poking out of the corners are gone, and the strip of floor along the wall no longer flickers.
 - Distant roads, houses and windows no longer flicker when you look out from a pagoda balcony or across the grounds.
 

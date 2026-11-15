@@ -68,6 +68,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: no rain under roofs
+
+- Rain no longer falls through roofs onto the floors of pavilions, verandahs, the balconies and the halls behind them.
+  `rainCover` in `07-festivals-and-weather.js` draws the scene from straight above the camera (orthographic, 58 m square,
+  256 px, packed depth via `world.overrideMaterial`) whenever you move a metre or every half second while it rains; the rain
+  streaks are a `ShaderMaterial` now that discards any fragment below that depth. Anything seen from above counts as cover,
+  trees included. Checked headless at the lotus-viewing pavilion with `?weather=rain`: dry under its roof, rain all round.
+- Not checked by eye yet: a pagoda balcony walk in the rain.
+
 ### 2026-11-15: the Poy Sang Long gathers at the second monastery until 11
 
 - The procession no longer vanishes on arrival. From arrival (about 9:25 AM; the five stops are now 15 min, `PROCESSION.dwell`

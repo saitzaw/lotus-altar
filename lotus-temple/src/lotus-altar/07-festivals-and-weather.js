@@ -172,8 +172,44 @@ const rainLines = (() => {
   const pos = new Float32Array(RAIN_N * 6);
   for (let i = 0; i < RAIN_N; i++) { const x = (Math.random() - .5) * RAIN_BOX[0], y = Math.random() * RAIN_BOX[1], z = (Math.random() - .5) * RAIN_BOX[2]; pos.set([x, y, z, x, y - .5, z], i * 6); }
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xaab4c0, transparent: true, opacity: 0, depthWrite: false }));
+  const mat = new THREE.ShaderMaterial({   // a streak is dropped wherever a roof, a ceiling or a canopy stands over it (see rainCover)
+    uniforms: { color: { value: new THREE.Color(0xaab4c0) }, opacity: { value: 0 }, cover: { value: null }, coverAt: { value: new THREE.Vector4() }, coverY: { value: new THREE.Vector2() } },
+    vertexShader: "varying vec3 vW; void main() { vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }",
+    fragmentShader: `#include <packing>
+      uniform vec3 color; uniform float opacity; uniform sampler2D cover; uniform vec4 coverAt; uniform vec2 coverY; varying vec3 vW;
+      void main() {
+        vec2 uv = (vW.xz - coverAt.xy) / coverAt.z + .5;
+        if (coverAt.w > .5 && all(greaterThan(uv, vec2(0.))) && all(lessThan(uv, vec2(1.)))) {
+          float d = unpackRGBAToDepth(texture2D(cover, vec2(uv.x, 1. - uv.y)));   // 0 at the top camera, 1 at its far plane
+          if (vW.y < coverY.x - d * coverY.y + .05) discard;   // under something: dry
+        }
+        gl_FragColor = vec4(color, opacity);
+      }`,
+    transparent: true, depthWrite: false
+  });
+  const l = new THREE.LineSegments(g, mat);
   l.frustumCulled = false; l.visible = false; world.add(l); return l;
+})();
+// what keeps the rain off: the depth of everything seen from straight above the camera, redrawn as you move (roofs, eaves,
+// ceilings, pavilions, verandahs, trees), so it never falls through a building onto the floor inside
+const rainCover = (() => {
+  const N = 256, S = RAIN_BOX[0] + 8, H = 80, rt = new THREE.WebGLRenderTarget(N, N);
+  const cam = new THREE.OrthographicCamera(-S / 2, S / 2, S / 2, -S / 2, 0, H); cam.up.set(0, 0, -1);   // looking down, north up the texture
+  const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, side: THREE.DoubleSide });
+  const u = rainLines.material.uniforms, last = new THREE.Vector3(1e9, 0, 0), clear = new THREE.Color(1, 1, 1), keep = new THREE.Color();
+  u.cover.value = rt.texture; let age = 0;
+  return dt => {
+    const p = camera.position; age += dt;
+    if (last.distanceToSquared(p) < 1 && age < .5) return;   // fresh enough
+    last.copy(p); age = 0;
+    const top = p.y + 30;   // above the tallest roof you can stand under
+    cam.position.set(p.x, top, p.z); cam.lookAt(p.x, top - 1, p.z); cam.updateMatrixWorld();
+    const bg = world.background, auto = renderer.shadowMap.autoUpdate, a = renderer.getClearAlpha(); renderer.getClearColor(keep);
+    world.background = null; world.overrideMaterial = depth; renderer.shadowMap.autoUpdate = false; rainLines.visible = false;
+    renderer.setRenderTarget(rt); renderer.setClearColor(clear, 1); renderer.clear(); renderer.render(world, cam); renderer.setRenderTarget(null);
+    world.background = bg; world.overrideMaterial = null; renderer.shadowMap.autoUpdate = auto; rainLines.visible = true; renderer.setClearColor(keep, a);
+    u.coverAt.value.set(p.x, p.z, S, 1); u.coverY.value.set(top, H);
+  };
 })();
 function weatherStep(dt) {
   const T = WEATHER[wxKind], e = Math.min(1, dt / 6);   // a change of weather drifts in over half a minute or so
@@ -189,7 +225,8 @@ function weatherStep(dt) {
   const show = out && wx.rain > .02 && !reduceMotion;
   rainLines.visible = show;
   if (!show) return;
-  rainLines.material.opacity = .45 * wx.rain * (.6 + .4 * daylight);
+  rainLines.material.uniforms.opacity.value = .45 * wx.rain * (.6 + .4 * daylight);
+  rainCover(dt);
   rainLines.position.set(camera.position.x, camera.position.y - RAIN_BOX[1] / 2, camera.position.z);
   const a = rainLines.geometry.attributes.position, p = a.array, fall = 14 * dt, drift = 1.2 * wx.wind * dt;
   for (let i = 0; i < RAIN_N * 6; i += 6) {
