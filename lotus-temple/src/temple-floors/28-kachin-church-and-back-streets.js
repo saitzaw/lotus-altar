@@ -128,7 +128,9 @@
   function backStreets(g) {
     const lane = std({ color: 0x7e7a72, roughness: .9 }), drain = std({ color: 0x3a3632, roughness: .9 });
     const inLane = (x, z, skip) => LANES.some((l, i) => i !== skip && x > l.x0 - .5 && x < l.x1 + .5 && z > l.z0 - .5 && z < l.z1 + .5);
+    mainRoad(g);
     LANES.forEach((l, i) => {
+      if (l.main) return;   // drawn by mainRoad
       const w = l.x1 - l.x0, d = l.z1 - l.z0, along = d > w, mx = (l.x0 + l.x1) / 2, mz = (l.z0 + l.z1) / 2, y = .025 + i * .004;
       flat(mesh(new THREE.BoxGeometry(w, .04, d), lane, mx, y, mz, g));
       // open concrete drains along both edges

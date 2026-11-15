@@ -10,9 +10,10 @@
     { x0: -73, x1: -68.5, z0: -24, z1: 50, mouth: true },        // the west lane, a row back from the houses on the town road
     { x0: -10, x1: 38.75, z0: 155.5, z1: 160.5 },                // the palace lane, from the market lane's end past the Haw Kham to the hill's east stair
     { x0: 38.75, x1: 43.25, z0: 160.5, z1: 255.5 },              // the market lane on along the Haw Kham's east wall (hawKham(g, 16, 204, π): the wall at x 38)
-    { x0: -10, x1: 43.25, z0: 255.5, z1: 261.5 },                // the Hluttaw road, between the Haw Kham's front wall (z 254) and the Hluttaw's compound (z 262.5)
-    { x0: 43.25, x1: 64.5, z0: 255.5, z1: 261.5 }                  // the court road, the Hluttaw road on east past the bank to the township court's gate (z 262.5)
-  ];
+    { x0: -10, x1: 43.25, z0: 255.5, z1: 261.5, main: true },    // the Hluttaw road, between the Haw Kham's front wall (z 254) and the Hluttaw's compound (z 262.5)
+    { x0: 43.25, x1: 64.5, z0: 255.5, z1: 261.5, main: true }      // the court road, the Hluttaw road on east past the bank to the township court's gate (z 262.5)
+  ];   // `main`: one stretch of the town's main road, asphalt with lamps down a centre median (see mainRoad)
+  const MAIN_GAPS = [[13, 19], [37.5, 53]];   // where the main road's median breaks (along x): before the Haw Kham's and the Hluttaw's gates (x 16), and from the market lane's mouth to the court's gate (x 50)
   const corrugated = (base, light, dark) => {
     const t = canvasTex(64, (c, sz) => {
       for (let x = 0; x < sz; x += 8) {
@@ -102,15 +103,42 @@
   // a modern street light: a tall steel pole by the kerb, a long arm out over the road and a flat white lamp head that
   // glows at night. The arm points along local -x turned by `ry` (0: west, PI / 2: south, -PI / 2: north)
   const lightPoleG = new THREE.CylinderGeometry(.07, .1, 5.2, 8), lightArmG = new THREE.BoxGeometry(1.6, .07, .07), lightHeadG = new THREE.BoxGeometry(.5, .1, .25);
-  function streetLight(g, x, z, ry) {
-    const c = Math.cos(ry), s = Math.sin(ry), hx = x - 1.5 * c, hz = z + 1.5 * s;
+  // `ry` one turn or a list of them, one arm and head for each; `pool`: each head throws a pool of light on the road at night
+  function streetLight(g, x, z, ry, pool) {
     sCircle(g, x, z, .12);
     mesh(lightPoleG, steel, x, 2.6, z, g);
-    mesh(lightArmG, steel, x - .8 * c, 5.15, z + .8 * s, g).rotation.y = ry;
-    const head = mesh(lightHeadG, std({ color: 0xf8f4e8, emissive: 0xfff2d0, emissiveIntensity: 1 }), hx, 5.08, hz, g); head.rotation.y = ry;
-    const gl = glowSprite(0xfff0d0, 2.6, .7); gl.position.set(hx, 4.95, hz); g.add(gl);
-    onDaylight(d => { gl.material.opacity = .7 * (1 - d); head.material.emissiveIntensity = 1 - .8 * d; });
-    poleLights.push({ x: hx, z: hz, set: lit => { gl.material.opacity = lit ? .7 * (1 - daylight) : 0; head.material.emissiveIntensity = lit ? 1 - .8 * daylight : 0; } });
+    [].concat(ry).forEach(r => {
+      const c = Math.cos(r), s = Math.sin(r), hx = x - 1.5 * c, hz = z + 1.5 * s;
+      mesh(lightArmG, steel, x - .8 * c, 5.15, z + .8 * s, g).rotation.y = r;
+      const head = mesh(lightHeadG, std({ color: 0xf8f4e8, emissive: 0xfff2d0, emissiveIntensity: 1 }), hx, 5.08, hz, g); head.rotation.y = r;
+      const gl = glowSprite(0xfff0d0, 2.6, .7); gl.position.set(hx, 4.95, hz); g.add(gl);
+      const pl = pool && flat(mesh(new THREE.CircleGeometry(3.2, 20), lampPool, hx, .08, hz, g));
+      if (pl) { pl.rotation.x = -Math.PI / 2; pl.receiveShadow = false; }
+      onDaylight(d => { gl.material.opacity = .7 * (1 - d); head.material.emissiveIntensity = 1 - .8 * d; });
+      poleLights.push({ x: hx, z: hz, set: lit => { gl.material.opacity = lit ? .7 * (1 - daylight) : 0; head.material.emissiveIntensity = lit ? 1 - .8 * daylight : 0; if (pl) pl.visible = lit; } });
+    });
+  }
+  // the main road past the Haw Kham's front gate and the Hluttaw to the township court (the `main` lanes): asphalt between open
+  // drains, and down its middle a kerbed concrete median carrying twin street lights, one arm out over each carriageway
+  function mainRoad(g) {
+    const ls = LANES.filter(l => l.main), x0 = Math.min(...ls.map(l => l.x0)), x1 = Math.max(...ls.map(l => l.x1)), { z0, z1 } = ls[0];
+    const w = x1 - x0, mx = (x0 + x1) / 2, mz = (z0 + z1) / 2, y = .05;
+    flat(mesh(new THREE.BoxGeometry(w, .04, z1 - z0), std({ color: 0x2c2c2e, roughness: .95 }), mx, y, mz, g));
+    const drain = std({ color: 0x3a3632, roughness: .9 }), line = std({ color: 0xe8e4d8, roughness: .8 });
+    [-1, 1].forEach(sd => {
+      flat(mesh(new THREE.BoxGeometry(w, .045, .35), drain, mx, y + .002, mz + sd * ((z1 - z0) / 2 - .18), g));
+      flat(mesh(new THREE.BoxGeometry(w, .02, .1), line, mx, y + .02, mz + sd * ((z1 - z0) / 2 - .5), g));   // the white edge lines
+    });
+    // the median in pieces between the gaps, a lamp every 10 m or so along each
+    const kerb = std({ color: 0xb0aca2, roughness: .8 }), segs = [];
+    let a = x0 + 3;
+    MAIN_GAPS.forEach(([g0, g1]) => { segs.push([a, g0]); a = g1; });
+    segs.push([a, x1 - 2.5]);
+    segs.filter(([a, b]) => b - a > 4).forEach(([a, b]) => {
+      mesh(new THREE.BoxGeometry(b - a, .16, .6), kerb, (a + b) / 2, y + .08, mz, g);
+      const n = Math.ceil((b - a) / 10);
+      for (let k = 0; k < n; k++) streetLight(g, a + (k + .5) * (b - a) / n, mz, [Math.PI / 2, -Math.PI / 2], true);
+    });
   }
   function shanTown(g) {
     const { roadX, roadW, z0, z1 } = TOWN, len = z1 - z0, mid = (z0 + z1) / 2;

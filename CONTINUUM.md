@@ -71,6 +71,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: the main road past the Hluttaw
+
+- The Hluttaw road and the court road (`LANES[6]`, `LANES[7]`, now flagged `main: true`) are one main road, drawn by
+  `mainRoad(g)` in `10-town.js` (called from `backStreets`, which skips `main` lanes): asphalt between the open drains, white
+  edge lines, and a kerbed 0.6 m median down the middle carrying twin street lights (one arm and a light pool over each
+  carriageway) about every 10 m. The median breaks at `MAIN_GAPS`: x 13…19 before the Haw Kham's and the Hluttaw's gates, and
+  x 37.5…53 from the market lane's mouth to the court's gate. The wooden lamp poles that stood along its south edge are gone.
+  `streetLight(g, x, z, ry, pool)` now takes a list of turns for several arms and an optional light pool. Width unchanged
+  (6 m, held between the Haw Kham's front wall and the Hluttaw's). Checked in headless renders, day and night.
+
 ### 2026-11-15: the township court
 
 - `townshipCourt` in `15e-township-court.js` (after the owner's photograph): compound walls x 36…64, z 262.5…286.5, sharing its west wall with the Hluttaw's compound (`COURT` at
