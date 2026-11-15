@@ -207,7 +207,7 @@
     const HX = 7.5, HZ0 = -5.5, HZ1 = 7.5, OUT = 3.15, OX = HX + OUT, OZ0 = HZ0 - OUT, OZ1 = HZ1 + OUT;
     CORRIDOR_RING = { HX, HZ0, HZ1, OX, OZ0, OZ1 };
     [[0, (HZ1 + OZ1) / 2, 2 * OX, OUT], [0, (HZ0 + OZ0) / 2, 2 * OX, OUT], [(HX + OX) / 2, (HZ0 + HZ1) / 2, OUT, HZ1 - HZ0], [-(HX + OX) / 2, (HZ0 + HZ1) / 2, OUT, HZ1 - HZ0]]
-      .forEach(([x, z, w, d]) => mesh(new THREE.BoxGeometry(w + .02, .14, d + .02), corridorDeck, x, -.07, z, g));
+      .forEach(([x, z, w, d]) => mesh(new THREE.BoxGeometry(w + .02, .14, d + .02), corridorDeck, x, -.075, z, g));   // top 5 mm under the hall floor, so they don't flicker where they meet
     // the outside of the hall's other three walls: cream plaster with warm lattice windows
     [[HX + .03, (HZ0 + HZ1) / 2, Math.PI / 2, HZ1 - HZ0], [-HX - .03, (HZ0 + HZ1) / 2, -Math.PI / 2, HZ1 - HZ0], [0, HZ0 - .03, Math.PI, 2 * HX]].forEach(([x, z, ry, w]) => {
       const pl = flat(mesh(new THREE.PlaneGeometry(w, 7.2), corridorWall, x, 3.6, z, g)); pl.rotation.y = ry;
@@ -341,9 +341,10 @@
   // side walls (and optionally the back wall) of a hall, each with moonlit lattice windows
   function hallWalls(g, wallMat, back = true) {
     const wins = [];
-    if (back) flat(mesh(new THREE.PlaneGeometry(16, 7.2), wallMat, 0, 3.6, -5.5, g));
+    // the walls end at the hall's corners (x = ±7.5, z = -5.5 … 7.5): wider, they stick out into the balcony corridor outside
+    if (back) flat(mesh(new THREE.PlaneGeometry(15, 7.2), wallMat, 0, 3.6, -5.5, g));
     [-1, 1].forEach(s => {
-      const w = flat(mesh(new THREE.PlaneGeometry(14, 7.2), wallMat, s * 7.5, 3.6, .5, g)); w.rotation.y = -s * Math.PI / 2;
+      const w = flat(mesh(new THREE.PlaneGeometry(13, 7.2), wallMat, s * 7.5, 3.6, 1, g)); w.rotation.y = -s * Math.PI / 2;
       [-3.4, -.8, 1.8, 4.4].forEach(z => wins.push({ p: V(s * 7.47, 3.0, z), ry: -s * Math.PI / 2, w: 1.5, h: 2.4, cols: 4, rows: 5 }));
     });
     [-5.6, 5.6].forEach(x => wins.push({ p: V(x, 3.4, -5.47), ry: 0, w: 1.3, h: 2.1 }));

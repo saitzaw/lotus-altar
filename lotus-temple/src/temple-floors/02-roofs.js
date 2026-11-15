@@ -118,7 +118,7 @@
 
   // eight columns in the traditional plan: four inner columns (金柱) framing the shrine and joined by beams,
   // and four corner columns (角柱) set into the corners of the hall, where they hardly show
-  const INNER_COLUMNS = [[-2.8, -2.6], [2.8, -2.6], [-2.8, 2.4], [2.8, 2.4]], CORNER_COLUMNS = [[-7.25, -5.25], [7.25, -5.25], [-7.25, 7.25], [7.25, 7.25]];
+  const INNER_COLUMNS = [[-2.8, -2.6], [2.8, -2.6], [-2.8, 2.4], [2.8, 2.4]], CORNER_COLUMNS = [[-7.02, -5.02], [7.02, -5.02], [-7.02, 7.02], [7.02, 7.02]];   // set in so the stone bases (r .46) stay inside the walls
   function hallColumns(g) {
     // the back-left corner column would stand inside the stair room, behind the stairs, so it is left out
     [...INNER_COLUMNS, ...CORNER_COLUMNS.filter(([x, z]) => !inStairCorner({ x, z }))].forEach(([x, z]) => {
@@ -147,8 +147,9 @@
   function shell(g, n, o = {}) {
     const sway = [];
     const top = typeof n === "number" && n === FLOORS.length, holeBelow = typeof n === "number" && n > 1;
-    // the floor covers just the hall (so it does not show past the balcony), with a hole for the stairs on the top floor
-    const floorShape = sh => { sh.moveTo(-7.6, -7.6); sh.lineTo(7.6, -7.6); sh.lineTo(7.6, 5.6); sh.lineTo(-7.6, 5.6); sh.closePath(); };
+    // the floor covers just the hall, up to its walls (past them it lies level with the balcony deck and flickers against it),
+    // with a hole for the stairs on the top floor
+    const floorShape = sh => { sh.moveTo(-7.5, -7.5); sh.lineTo(7.5, -7.5); sh.lineTo(7.5, 5.5); sh.lineTo(-7.5, 5.5); sh.closePath(); };
     const fg = holeBelow ? holed(floorShape, STAIRS.x, -STAIRS.z, 1.0) : new THREE.ShapeGeometry((() => { const sh = new THREE.Shape(); floorShape(sh); return sh; })());
     const fp = fg.attributes.position, fuv = fg.attributes.uv;
     for (let i = 0; i < fp.count; i++) fuv.setXY(i, fp.getX(i) / 32 + .5, fp.getY(i) / 32 + .5);   // same tile size as the old 32-wide floor

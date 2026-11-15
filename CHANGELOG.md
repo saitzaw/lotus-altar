@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-15
 
 ### Fixed
+- On the pagoda's balcony walks, the dark red slabs at the back corners and the column stubs poking out of the corners are gone, and the strip of floor along the wall no longer flickers.
 - Distant roads, houses and windows no longer flicker when you look out from a pagoda balcony or across the grounds.
 
 ## 2026-11-14

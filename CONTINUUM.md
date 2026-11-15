@@ -68,6 +68,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: pagoda balcony corners cleaned up
+
+- The owner saw ugly pieces on the upper floors' balcony corridor (迴廊). They were bits of the hall poking through its outer walls:
+  the hall's back wall was 16 m wide on a 15 m hall (a dark red slab sticking out at each back corner), the side walls ran 1 m
+  past the back wall, and the corner columns stood so near the corners that their stone bases and a sliver of each column showed
+  outside. The hall floor also ran 10 cm past the walls at the deck's height, so a strip along the walls flickered.
+- Fix in `hallWalls` (`01-shared-pieces.js`), `shell`'s floor and `CORNER_COLUMNS` (`02-roofs.js`, now ±7.02 / -5.02 / 7.02);
+  the corridor deck sits 5 mm lower. Checked with headless renders of all four corridor corners.
+
 ### 2026-11-15: no more flickering roads and houses in the outdoor views
 
 - Seen from a pagoda balcony (the corridor view) or outside, distant roads, house walls and windows flickered: depth
