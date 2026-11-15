@@ -207,6 +207,7 @@
     bambooGrove(g);
     hillFootBamboo(g);
     terraceWalk();   // after the bamboo, so its clumps stay where they are
+    balloonGround(g);   // the fire balloon ground on the lower terrace past the east stair, over the palace lake
     fuelStation(g);
     fireAndPolice(g);
     welcomeSign(g);

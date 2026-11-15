@@ -75,6 +75,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: a fire balloon ground on the stupa hill, over the palace lake
+- Owner's ask, from a screenshot taken on the lower terrace past the east stair, looking over the lake. New piece
+  `15g-balloon-ground.js` (`balloonGround(g)`, called after `terraceWalk`): the lower terrace from 0.085 rad past the east stair to
+  2.62 rad is carried out level over the slope to r 76.5 on a whitewashed retaining wall (parapet, gilt coping, lamp posts, end walls
+  where it overhangs), topped with worn grass. Behind it, nine concrete spectator tiers climb the slope to the upper terrace; each is
+  a stair step high, so walkers can climb them. Three launch pads, each a brick fire pit with an 18 m bamboo mast whose arm holds the
+  balloon's crown by a cord. Taunggyi-style paper balloons (gored, banded, diamond pattern) fill for 55 s, are held 15 s, then rise
+  and drift north-east for 95 s; the pads are staggered so one goes up about every minute. After dark the envelopes glow from the
+  fire and the rising ones carry six strings of paper lanterns. With reduced motion they stay full on their pads.
+- A lacquer sign by the east stair's landing reads မီးပုံးပျံပွဲကွင်း · Fire Balloon Ground (Burmese, not Shan).
+- `arcSlab(H, …)` (the terrace walk's arc slab) is now a shared function in that piece; `terraceWalk` uses it.
+- Checked in headless renders by day and night (from the east stair landing, over the lake, and the balloon in flight).
+
 ### 2026-11-15: taller bamboo after the owner's photograph
 - Both bamboo places (the grove behind the school and the band at the stupa hill's foot) are drawn by `bambooStand()`, now
   reshaped after the owner's photograph of a tall clumping stand: slender culms 10–15 m tall (were 6–11), streaked green,

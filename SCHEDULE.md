@@ -27,6 +27,7 @@ hours change, update this file in the same commit.
 | 8:45 – 9:45 PM | Kinnara and kinnari pair again | Festival stage | `dancers.pair` |
 | 9:46 – 9:59 PM | Shan singer | Festival stage | `dancers.singer` |
 | 10:00 – 11:00 PM | Two to with the kinnara (closing dance) | Festival stage | `dancers.toKinnara` |
+| All day and night | Fire balloons fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads); after dark each carries strings of paper lanterns. With reduced motion they stay full on their pads | Fire balloon ground, stupa hill's lower terrace | none (`BALLOON_GROUND` in `15g-balloon-ground.js`) |
 
 ## Once a week
 

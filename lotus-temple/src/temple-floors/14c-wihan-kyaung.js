@@ -162,15 +162,7 @@
     const wash = std({ color: 0xf2eee4, roughness: .8 });
     const pave = canvasTex(256, (c, sz) => { c.fillStyle = "#cfc6b4"; c.fillRect(0, 0, sz, sz); for (let r = 0; r < 8; r++) for (let k = 0; k < 8; k++) { const v = 206 + ((r * 3 + k * 5) % 4) * 8; c.fillStyle = `rgb(${v},${v - 5},${v - 16})`; c.fillRect(k * 32 + 1, r * 32 + 1, 30, 30); } });
     pave.wrapS = pave.wrapT = THREE.RepeatWrapping; pave.repeat.set(.25, .25);   // half-metre flags (the top's UVs are in metres)
-    // a slab between an inner edge r0 (a radius, or a function of the angle) and an arc r1 round the hill's centre, and two radii
-    // at angles b0, b1; from y0 up to y1, in the hill's frame
-    const slab = (r0, r1, b0, b1, y0, y1, mat) => {
-      const s = new THREE.Shape(), n = Math.max(2, Math.ceil((b1 - b0) / .008)), ri = typeof r0 === "function" ? r0 : () => r0;
-      for (let i = 0; i <= n; i++) { const a = b0 + (b1 - b0) * i / n; i ? s.lineTo(r1 * Math.sin(a), r1 * Math.cos(a)) : s.moveTo(r1 * Math.sin(a), r1 * Math.cos(a)); }
-      for (let i = n; i >= 0; i--) { const a = b0 + (b1 - b0) * i / n, rr = ri(a); s.lineTo(rr * Math.sin(a), rr * Math.cos(a)); }
-      const geo = new THREE.ExtrudeGeometry(s, { depth: y1 - y0, bevelEnabled: false }); geo.rotateX(-Math.PI / 2);
-      return mesh(geo, mat, 0, y0, 0, H);
-    };
+    const slab = (...a) => arcSlab(H, ...a);   // see balloonGround's file
     const deck = slab(rIn, W.r1, W.a0, W.a1, 1.6, top, [std({ map: pave, roughness: .85 }), wash]);   // the paving on its retaining wall, footed below the slope
     deck.castShadow = false; deck.receiveShadow = true;
     clickable(picks.pagoda, deck, { tip: "The terrace walk", toast: "The lower terrace carried on out over the slope in front of the monasteries, paved and walled, with a parapet to lean on and the bamboo at the hill's foot just beyond it." });
