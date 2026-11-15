@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-15
 
+### Added
+- A township court (မြို့နယ်တရားရုံး) stands in its own small walled compound next door to the Hluttaw, across the road from the bank: two storeys of the colonial years, brick red below and whitewashed above under dark hipped roofs, teak balconies upstairs, a gabled bay at one end, a wing on rubble stone and a red tiered spire behind, with a lawn, clipped shrubs, the flag and a name board over the gate. The Hluttaw road now runs on east to its gate. It can't be entered.
+
 ### Changed
 - The main stupa on the hill is taller and more slender, like Kakku's: a taller whitewashed body, and the bell, ringed spire and hti drawn up higher, the finial now about 23 m above the hilltop (it was 17 m).
 - The main stupa on the hill stands on a terrace walk: a paved platform with a parapet, gilt coping and corner lamps, climbed by steps from the hill stair and from the east stair, so you can walk right round the stupa.

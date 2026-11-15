@@ -66,7 +66,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 - Have a Shan speaker check ပွႆးသၢင်ႇလွင်း (Poy Sang Long) in the procession's hover tip (`24b-shinlaung-procession.js`).
 
+- The township court's board (`COURT_NAMES`) has Burmese မြို့နယ်တရားရုံး, Chinese 镇区法院 and English only (ours); ask the owner for
+  the Shan and Tai Nüa names, as for the bank.
+
 ## Log
+
+### 2026-11-15: the township court
+
+- `townshipCourt` in `15e-township-court.js` (after the owner's photograph): compound walls x 41…69, z 263…287 (`COURT` at
+  (55, 275), turned π so its front faces south across the new court road, `LANES[7]`, x 43.25…70, to the bank). Main block
+  brick red / white with a front gabled bay at its west end, a set-back wing on rubble stone, a six-tier red spire behind the
+  wing, iron gate leaves folded open, the name board over the gate (Burmese, Chinese, English; Shan and Tai Nüa still to come
+  from the owner, as for the bank). Exterior only, not timed.
 
 ### 2026-11-15: umbrellas on the food street
 
