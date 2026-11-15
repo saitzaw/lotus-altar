@@ -11,7 +11,7 @@ hours change, update this file in the same commit.
 | Time | What happens | Where | `CONFIG` |
 |---|---|---|---|
 | 5:00 – 9:00 AM | Morning market: village women sell greens, chillies and limes on the ground | Seven-day market | `morningMarket` |
-| 8:00 – about 9:25 AM | Shinlaung procession (Poy Sang Long): gift poles and streamer poles in front, the boys on their carriers' shoulders, the families, then the kinnara, the to, and the Shan band (long drums, gongs, cymbals) at the back. It stops 15 min to dance at five places on the way | Gate → front street → market lane → Haw Kham road → second monastery | `procession` |
+| 8:00 – about 9:25 AM | Shinlaung procession (Poy Sang Long): gift poles and streamer poles in front, the boys on their carriers' shoulders, the families, then the kinnara, the to, and the Shan band (long drums, gongs, cymbals) at the back. It stops 15 min to dance at five places on the way. Called off while it rains | Gate → front street → market lane → Haw Kham road → second monastery | `procession` |
 | about 9:25 – 11:00 AM | Shinlaung gathered: the three boys on their carriers' shoulders in a row before the monastery's stair, the families and pole bearers crowded round them; the kinnara, the to and the band dance and play on the festival ground. All go home at 11 | Second monastery; festival ground | `procession` |
 | 9:00 AM – 12:00 noon | Seven-day market: sellers at the stalls, shoppers in the aisles | Seven-day market | `stalls` |
 | 9:00 AM – 10:00 PM | Food street: cooks, diners, strollers | Food street, beside the market | `foodStreet` |
@@ -27,7 +27,7 @@ hours change, update this file in the same commit.
 | 8:45 – 9:45 PM | Kinnara and kinnari pair again | Festival stage | `dancers.pair` |
 | 9:46 – 9:59 PM | Shan singer | Festival stage | `dancers.singer` |
 | 10:00 – 11:00 PM | Two to with the kinnara (closing dance) | Festival stage | `dancers.toKinnara` |
-| All day and night | Fire balloons fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads); after dark each carries strings of paper lanterns. With reduced motion they stay full on their pads | Fire balloon ground, stupa hill's lower terrace | none (`BALLOON_GROUND` in `15g-balloon-ground.js`) |
+| All day and night | Fire balloons fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads); after dark each carries strings of paper lanterns. With reduced motion they stay full on their pads. None go up while it rains (the fire pits go cold) | Fire balloon ground, stupa hill's lower terrace | none (`BALLOON_GROUND` in `15g-balloon-ground.js`) |
 
 ## Once a week
 
@@ -53,7 +53,8 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 
 | Event | Switch it on | Switch it off |
 |---|---|---|
-| Procession (short 20 s stops, then it starts again from the gate) | `?procession=1` | `?procession=0` |
+| Procession (short 20 s stops, then it starts again from the gate; runs even in rain) | `?procession=1` | `?procession=0` |
+| Fire balloons (even in rain) | `?balloons=1` | `?balloons=0` |
 | Seven-day market and food street | `?stalls=1` | `?stalls=0` |
 | Morning market | `?morningMarket=1` | `?morningMarket=0` |
 | Church service | `?service=1` | `?service=0` |

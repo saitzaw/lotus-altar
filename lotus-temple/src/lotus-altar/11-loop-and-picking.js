@@ -76,7 +76,8 @@ function frame() {
   temple.setMorningMarket(morningOn);
   temple.setStalls(stallsOn);
   temple.setFoodStreet(foodOn);
-  temple.setProcession(processionOn, processionAt());
+  temple.setProcession(processionOn && (PROCESSION_FORCE !== null || !rainingOut()), processionAt());   // called off in the rain
+  temple.setBalloons(BALLOON_FORCE !== null ? BALLOON_FORCE : !rainingOut());
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);

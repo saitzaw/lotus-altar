@@ -65,6 +65,8 @@
     // the Poy Sang Long procession from the gate to the second monastery, 8–11 am (gathered there and at the festival ground from about 9:25): `at` the seconds since it set out, or null to
     // run its short test timetable (?procession=1)
     setProcession(on, at) { FOLK.procession = on; FOLK.processionAt = at; },
+    // the fire balloons on the stupa hill: false while it rains, when the teams leave the fire pits cold
+    setBalloons(on) { FOLK.balloons = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

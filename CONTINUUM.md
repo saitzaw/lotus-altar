@@ -76,6 +76,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: no procession or fire balloons in the rain
+
+- While the weather spell is rain (`wxKind === "rain"`, via `rainingOut()` in `07-festivals-and-weather.js`), the frame loop
+  passes `false` to `temple.setProcession` and the new `temple.setBalloons` (`FOLK.balloons`). The balloon ground's updater then
+  hides every balloon, its fire, glow and cord. The gate reads the weather spell, not the drifting `wx.rain`, so the shows don't
+  flicker as the rain fades in or out. `?procession=1` still forces the procession on in rain; `?balloons=1|0` forces the balloons.
+- The gate lives in the frame loop because `wxKind` is declared below `processionNow()`'s first call (TDZ).
+
 ### 2026-11-16: offering shops along the stupa hill's footpath
 - Owner's ask, from a screenshot of the lit footpath on the lower terrace west of the main stair (looking toward the stadium):
   Shan shops where visitors buy flowers and food to offer at the stupa and the monasteries. New piece `15i-offering-shops.js`

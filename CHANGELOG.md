@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-16
 
+### Changed
+- In the rain the Shinlaung (Poy Sang Long) procession is called off and no fire balloons go up; the balloon ground's fire pits stay cold until the rain stops.
+
 ### Added
 - Offering shops (ႁၢၼ်ႉၶူဝ်းလူႇ) along the lit footpath on the stupa hill's lower terrace, west of the main stair: seven little Shan shops like the festival market's, where visitors to the stupa and the monasteries buy flowers, jasmine strings, eugenia sprigs, bananas and coconuts, sticky rice and popped rice, candles, incense, gold leaf, paper umbrellas and flags, with a board by the stair.
 
