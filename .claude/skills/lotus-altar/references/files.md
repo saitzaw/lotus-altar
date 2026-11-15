@@ -90,7 +90,7 @@
 | `18c-stage-singer.js` | the Shan singer alone on the stage between the dances, silent (no song played) | `stageSinger` |
 | `19-dance-audience.js` | audience | `festivalAudience` |
 | `20-front-street.js` | houses along the front street | `streetFrontage` |
-| `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |
+| `21-back-street-houses.js` | wooden Shan houses, tin roofs, banana, banyan (`banyan(g, x, z, s, { y, ry, seed, data })`, also the big one on the stupa hill) | `shanWoodHouse` `tinHipRoof` `banana` `banyan` |
 | `22-village-lamps.js` | pole lamps, wires, the hill-foot footpath, the hospital lane | `villageLamp` `hillFootpath` `hospitalLane` |
 | `23-halloween-ghost.js` | Halloween ghost | `halloweenGhost` |
 | `24-townsfolk.js` | evening townsfolk | `townsfolk` |

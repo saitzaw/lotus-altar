@@ -277,4 +277,8 @@
     festivalGround(H);
     lowerKyaung(H);
     wihanKyaung(H);
+    {   // the big banyan on the upper terrace, its spirit house turned to the festival ground
+      const b = bigBanyanSpot(), f = festivalSpot();
+      banyan(H, b.x, b.z, b.s, { y: b.y, ry: Math.atan2(-(f.x - b.x), -(f.z - b.z)), seed: 809, data: { tip: "The big banyan · ညောင်ပင်ကြီး", toast: "A great banyan shades the open grass between the festival ground and the east stair. Its limbs have dropped roots that grew into trunks of their own, so the one tree stands on many. On festival days families spread mats in its shade to wait for the dances, and a little spirit house at its foot keeps fresh flowers and a cup of water." } });
+    }
   }

@@ -154,6 +154,11 @@
     const fx = x + Math.cos(ry) * WIHAN.SX + Math.sin(ry) * (WIHAN.D / 2 + WIHAN.run), fz = z - Math.sin(ry) * WIHAN.SX + Math.cos(ry) * (WIHAN.D / 2 + WIHAN.run);
     return { ...WIHAN, x, z, ry, y: HILL.terraces[1].y, footA: Math.atan2(fx, -fz) };   // footA: its stair foot's angle round the hill
   }
+  // the big banyan (ညောင်ပင်ကြီး) on the upper terrace's open grass, between the festival ground's east end and the east stair:
+  // a its angle round the hill from the stair (radians), r its radius, s its size against the old banyan in the town. Placed by
+  // hand: its platform about 11 m from the festival ground's corner and 10 m from the east stair; the crown rides high over both
+  const BIG_BANYAN = { a: 1.0, r: 39, s: 1.3 };
+  function bigBanyanSpot() { const { a, r } = BIG_BANYAN; return { ...BIG_BANYAN, x: Math.sin(a) * r, z: -Math.cos(a) * r, y: HILL.terraces[0].y }; }
   // the masked kinnara pair dancing on the festival ground's pavilion stage, in the ground's local frame (the stage's centre and
   // floor height); the kinnara dances alone in the afternoon, the pair in the evening, with the to between, see CONFIG.dancers and setDancers()
   const KINNARA = { y: 1.0, r: 1.15, turn: .22 };   // stage floor height (m), circle radius (m), turn speed (rad/s)
@@ -400,6 +405,7 @@
       if (Math.abs(x) < 30 && zz < 0) continue;   // keep the stair and the monastery terraces clear
       if (onEast(x, zz, 8)) continue;               // and the east stair
       { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 20) continue; }   // and the festival ground
+      { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 12) continue; }   // and the big banyan's crown
       const t = pine(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
     }
   }

@@ -75,6 +75,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: a big banyan on the stupa hill
+- Planted a big banyan (ညောင်ပင်ကြီး) on the stupa hill's upper terrace, on the open grass between the festival ground's east end
+  and the east stair, where the site owner pointed (`BIG_BANYAN` / `bigBanyanSpot()` in `13-stupa-hill.js`, built in
+  `shanMonasteries`). It reuses the town's `banyan()`, which now takes `{ y, ry, seed, data }` and puts its `TALL` box in world
+  coordinates; this one is 1.3× size with its spirit house turned to the festival ground and its own tip and toast. Hill pines
+  keep 12 m clear of it. The banyan wind sound still comes only from the old banyan in town. Checked in headless renders.
+
 ### 2026-11-15: the palace lake reaches the hill and the palace wall; its bridge leaves the main road
 - Owner's asks. The lake (`15f-palace-lake.js`) now fills all the ground between the Haw Kham's west wall (shore x −9.5, a 3 m
   walk left along the wall), the stupa hill's foot (3 m out from `HILL.rBase`, following the hill round from about (−14, 173) to

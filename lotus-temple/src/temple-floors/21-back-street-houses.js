@@ -93,11 +93,12 @@
     }
   }
   // ညောင်ပင်, a banyan many generations old: a trunk of many stems grown together, wide limbs dropping aerial roots (the oldest
-  // have rooted into the platform as new trunks), a broad low crown; a whitewashed brick platform round its foot with a spirit house
-  function banyan(g, x, z, s = 1) {
-    const list = picks.pagoda, r = rng(808), t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); g.add(t);
+  // have rooted into the platform as new trunks), a broad low crown; a whitewashed brick platform round its foot with a spirit house.
+  // o: y the ground's height in g, ry its turn (the spirit house faces local -z), seed, and data (its tip and toast)
+  function banyan(g, x, z, s = 1, o = {}) {
+    const list = picks.pagoda, r = rng(o.seed || 808), t = new THREE.Group(); t.position.set(x, o.y || 0, z); t.rotation.y = o.ry || 0; t.scale.setScalar(s); g.add(t);
     const bk = std({ color: 0x6e6658, roughness: .95 });
-    const data = { tip: "The old banyan · ညောင်ပင်", toast: "A banyan many generations old shades the corner of the market lane. Its hanging roots have grown down into new trunks; people keep a little spirit house at its foot with fresh flowers and water, and the market porters rest on its platform at noon." };
+    const data = o.data || { tip: "The old banyan · ညောင်ပင်", toast: "A banyan many generations old shades the corner of the market lane. Its hanging roots have grown down into new trunks; people keep a little spirit house at its foot with fresh flowers and water, and the market porters rest on its platform at noon." };
     clickable(list, mesh(new THREE.CylinderGeometry(2.3, 2.45, .55, 24), whiteWall, 0, .275, 0, t), data);
     mesh(new THREE.CylinderGeometry(2.36, 2.36, .08, 24), std({ color: 0x9a4a32, roughness: .8 }), 0, .58, 0, t);
     sCircle(t, 0, 0, 2.45);
@@ -138,5 +139,6 @@
     mesh(new THREE.BoxGeometry(.55, .45, .4), std({ color: 0xb02a22, roughness: .5 }), 0, 1.58, -.05, sh);
     const sroof = mesh(new THREE.ConeGeometry(.48, .4, 4), std({ color: 0xd8a830, roughness: .35, metalness: .6 }), 0, 2.0, -.05, sh); sroof.rotation.y = Math.PI / 4;
     [[-.28, 0xf0e050], [.28, 0xffffff]].forEach(([fx, c]) => mesh(new THREE.SphereGeometry(.08, 8, 6), std({ color: c, roughness: .6 }), fx, 1.42, .2, sh));
-    TALL.push({ x0: x - 8.5 * s, x1: x + 8.5 * s, z0: z - 8.5 * s, z1: z + 8.5 * s, h: (foot + 11) * s });
+    const w = t.getWorldPosition(V(0, 0, 0));
+    TALL.push({ x0: w.x - 8.5 * s, x1: w.x + 8.5 * s, z0: w.z - 8.5 * s, z1: w.z + 8.5 * s, h: w.y + (foot + 11) * s });
   }

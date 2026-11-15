@@ -120,6 +120,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Fuel station, fire and police stations, welcome board | police (133, 36); board (144, 44.4) | `fuelStation`, `fireAndPolice`, `welcomeSign` | `27-bamboo-fuel-fire-police.js` |
 | Kachin Baptist church compound | x −6…28, z 107.6…143.6 | `churchCompound`, `kachinChurch` | `28-kachin-church-and-back-streets.js` |
 | Old banyan | (36.4, 65.4) | `banyan` | `21-back-street-houses.js` |
+| Big banyan, on the stupa hill's upper terrace between the festival ground and the east stair | (−49.1, 137.2) (`BIG_BANYAN`) | `banyan` | `13-stupa-hill.js`, called from `14-shan-monasteries.js` |
 | Forest band and hills | z < −98; hills 150–190 m out | `mountainsAndForest` | `29-forest-and-hills.js` |
 | Townsfolk (evening), Halloween ghost | roads, market | `townsfolk`, `halloweenGhost` | `24-townsfolk.js`, `23-halloween-ghost.js` |
 | Poy Sang Long procession (8 AM, arriving about 9:25; gathered at the second monastery and festival ground until 11) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
