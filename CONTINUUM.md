@@ -73,8 +73,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-15: the township court
 
-- `townshipCourt` in `15e-township-court.js` (after the owner's photograph): compound walls x 36.35…64.35, z 263…287, its west wall against the Hluttaw's east wall (`COURT` at
-  (50.35, 275), turned π so its front faces south across the new court road, `LANES[7]`, x 43.25…65, to the bank). Main block
+- `townshipCourt` in `15e-township-court.js` (after the owner's photograph): compound walls x 36…64, z 262.5…286.5, sharing its west wall with the Hluttaw's compound (`COURT` at
+  (50, 274.5), turned π so its front faces south across the new court road, `LANES[7]`, x 43.25…64.5, to the bank). Main block
   brick red / white with a front gabled bay at its west end, a set-back wing on rubble stone, a six-tier red spire behind the
   wing, iron gate leaves folded open, the name board over the gate (Burmese, Chinese, English; Shan and Tai Nüa still to come
   from the owner, as for the bank). Exterior only, not timed.

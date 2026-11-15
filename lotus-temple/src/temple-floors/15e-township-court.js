@@ -1,4 +1,4 @@
-  /* ---------- မြို့နယ်တရားရုံး the township court, in its own small walled compound against the east wall of the Hluttaw's, across the road
+  /* ---------- မြို့နယ်တရားရုံး the township court, in its own small walled compound sharing its west wall with the Hluttaw's, across the road
      from the bank; after the owner's photograph of an old court of the colonial years in the Shan hills: two storeys under dark
      hipped roofs of corrugated iron with deep eaves, the main block's ground floor plastered a faded brick red with white arched
      windows and its upper floor whitewashed, behind an upstairs balcony of dark teak rails; a gabled bay brought forward at its
@@ -6,7 +6,7 @@
      finial. In front, a lawn with clipped shrubs, a stone path from the gate and the flag on its pole ---------- */
   // the gate board's lines: Burmese, Chinese and English (Shan and Tai Nüa to come from the site's owner)
   const COURT_NAMES = { my: "မြို့နယ်တရားရုံး", zh: "镇区法院", en: "Township Court" };
-  const COURT = { x: 50.35, z: 275, ry: Math.PI };   // where it stands; ry turns its front (local +z) south, across the road to the bank. Local (x, z) is world (COURT.x − x, COURT.z − z)
+  const COURT = { x: 50, z: 274.5, ry: Math.PI };   // where it stands, its west side on the Hluttaw compound's east wall (x 36) and its front and back walls in line with that compound's; ry turns its front (local +z) south, across the road to the bank. Local (x, z) is world (COURT.x − x, COURT.z − z)
   // the name board over the gate: three lines in white on maroon in a white frame, faintly lit at night
   function courtBoard(parent, x, y, z) {
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 256;
@@ -125,12 +125,13 @@
     mesh(new THREE.ConeGeometry(.28, 2.4, 8), M.gold, SX, sy + 1.6, SZ, C);
     mesh(new THREE.CylinderGeometry(.015, .015, .9, 4), M.gold, SX, sy + 3.2, SZ, C);
 
-    // the compound: a whitewashed wall round it with a gate in the front, two pillars carrying the name board over the way in
+    // the compound: a whitewashed wall round it as high as the Hluttaw's, with a gate in the front, two pillars carrying the name board
+    // over the way in. No wall of its own on the west (local +x): it shares the Hluttaw compound's east wall
     const CX = 14, CZ0 = -12, CZ1 = 12, GX = 2.4;
-    [[-CX, -GX, CZ1, CZ1], [GX, CX, CZ1, CZ1], [-CX, CX, CZ0, CZ0], [-CX, -CX, CZ0, CZ1], [CX, CX, CZ0, CZ1]].forEach(([a, b, c, d]) => {
+    [[-CX, -GX, CZ1, CZ1], [GX, CX, CZ1, CZ1], [-CX, CX, CZ0, CZ0], [-CX, -CX, CZ0, CZ1]].forEach(([a, b, c, d]) => {
       const w = Math.max(b - a, .35), dd = Math.max(d - c, .35), mx = (a + b) / 2, mz = (c + d) / 2;
-      mesh(box(w, 1.6, dd), white, mx, .8, mz, C);
-      mesh(box(w + .12, .1, dd + .12), trim, mx, 1.65, mz, C);
+      mesh(box(w, 1.8, dd), white, mx, .9, mz, C);
+      mesh(box(w + .12, .1, dd + .12), trim, mx, 1.85, mz, C);
       sRect(C, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
     [-1, 1].forEach(sd => { mesh(box(.7, 3.6, .7), white, sd * (GX + .2), 1.8, CZ1, C); mesh(box(.85, .15, .85), trim, sd * (GX + .2), 3.65, CZ1, C); sCircle(C, sd * (GX + .2), CZ1, .45); });
