@@ -39,6 +39,10 @@ lesson when you learn one, and delete a lesson once it stops being true.
   as a stray slab or stub, or flickers against the deck at y = 0. Keep everything in a hall inside that footprint.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
+- Any extra render pass from another camera (like the rain's top-down cover map in `rainCover`) sees the grounds as the main
+  camera's culling left them: whatever is out of the player's view is hidden, often the roof right overhead. Call
+  `temple.uncull(x, z, r)` before the pass and hide what it returns straight after.
+
 ## The sky
 
 - "The moon is gone" usually means the real moon is below the horizon: the sky follows the real moon over the temple
