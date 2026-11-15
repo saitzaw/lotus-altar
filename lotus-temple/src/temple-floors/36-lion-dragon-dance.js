@@ -209,6 +209,7 @@
     terraceWalk();   // after the bamboo, so its clumps stay where they are
     balloonGround(g);   // the fire balloon ground on the lower terrace past the east stair, over the palace lake
     balloonBazaar();   // the festival market of Shan shops past the balloon ground's west end
+    offeringShops();   // the Shan shops selling flowers and food to offer, along the footpath west of the main stair
     fuelStation(g);
     fireAndPolice(g);
     welcomeSign(g);

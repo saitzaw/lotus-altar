@@ -76,6 +76,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: offering shops along the stupa hill's footpath
+- Owner's ask, from a screenshot of the lit footpath on the lower terrace west of the main stair (looking toward the stadium):
+  Shan shops where visitors buy flowers and food to offer at the stupa and the monasteries. New piece `15i-offering-shops.js`
+  (`offeringShops()`, called after `balloonBazaar`; `OFFER_SHOPS`): seven shops on the path's uphill side (r 62.8, facing out over
+  the path), from 8 m west of the stair, 5.4 m apart. Goods by kind: flowers (buckets on the counter and the ground, jasmine strings,
+  eugenia sprigs), bananas with green coconuts, rice (sticky rice parcels, popped rice, rice cakes, a rice pot), candles, incense,
+  gold leaf, paper umbrellas and flags, woven banners. A board on bamboo posts 4 m west of the stair reads ႁၢၼ်ႉၶူဝ်းလူႇ · Offering Shops.
+  **Shan wording to check with a native speaker:** ႁၢၼ်ႉၶူဝ်းလူႇ (meant: shops of things to offer).
+- The festival market's shop and its goods merge are now shared helpers in `15h-balloon-bazaar.js`: `stallKit()` (materials,
+  shapes), `shanStall(S, o)` (one shop's static parts and lantern), `stallGoods(goods, S, parts)`. The festival market builds the
+  same as before (same rng order). Always open, no sellers, so nothing in `SCHEDULE.md`. Checked in headless renders by day.
+
 ### 2026-11-15: a festival market of Shan shops beside the balloon ground
 - Owner's ask, from a screenshot on the lower terrace just past the balloon ground's west end. New piece `15h-balloon-bazaar.js`
   (`balloonBazaar()`, called after `balloonGround`; `BAZAAR`): from 0.07 rad past `BALLOON_GROUND.a1`, an inner row of seven shops

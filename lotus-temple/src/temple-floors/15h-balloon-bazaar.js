@@ -7,34 +7,77 @@
   // the rows (radius of each row's centre, from the hill's centre; how many shops), the first shop's angle past the balloon ground's
   // west end and the gap between shops (m); a shop's width, depth, floor and eave heights; the lane between the rows (radii)
   const BAZAAR = { rows: [[56.8, 7], [67.2, 8]], da: .07, gap: 1.4, W: 4, D: 3.6, FY: .45, EH: 2.75, lane: [58.9, 65.1] };
-  function balloonBazaar() {
-    const Z = BAZAAR, H = HILL.group, list = picks.pagoda, r = rng(6060), lo = HILL.terraces[1], y0 = lo.y, a0 = BALLOON_GROUND.a1 + Z.da;
-    const { teak, teakDark, hip } = shanCarpentry();
-    const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
-    const P = new THREE.Group(); H.add(P);   // the static parts, baked
+  // the things every Shan shop shares (materials, shapes), made once for the festival market and the offering shops
+  let STALL = null;
+  function stallKit() {
+    if (STALL) return STALL;
     // woven bamboo walls (a twill of light and dark strips), thatch in rows of overlapping leaf, plank floor and painted fascia
     const weave = canvasTex(128, (c, sz) => {
       c.fillStyle = "#c9ad74"; c.fillRect(0, 0, sz, sz); const s = 8;
       for (let i = 0; i < sz / s; i++) for (let j = 0; j < sz / s; j++) { c.fillStyle = ((i + j >> 1) % 2) ? "#a88a52" : "#d8bf86"; c.fillRect(i * s + 1, j * s + 1, s - 2, s - 2); }
     });
     weave.wrapS = weave.wrapT = THREE.RepeatWrapping; weave.repeat.set(3, 2);
-    const wallM = std({ map: weave, roughness: .9 });
     const thatchT = canvasTex(128, (c, sz) => {
       c.fillStyle = "#8a7448"; c.fillRect(0, 0, sz, sz); const q = rng(61);
       for (let y = 0; y < sz; y += 8) for (let x = -4; x < sz; x += 3) { c.fillStyle = `rgba(${150 + q() * 50 | 0},${120 + q() * 40 | 0},${70 + q() * 30 | 0},.6)`; c.fillRect(x, y, 2, 10); }
       for (let y = 7; y < sz; y += 8) { c.fillStyle = "rgba(40,28,14,.55)"; c.fillRect(0, y, sz, 2); }
     });
     thatchT.wrapS = thatchT.wrapT = THREE.RepeatWrapping; thatchT.repeat.set(.6, .6);   // the roof's UVs are in metres
-    const thatchM = std({ map: thatchT, roughness: 1, side: THREE.DoubleSide });
-    const FASCIA = [0x8a1e14, 0x2f5a7a, 0x3a6a3a, 0xb8862a].map(c => std({ color: c, roughness: .6 }));
-    const bamboo = std({ color: 0xb89a5a, roughness: .8 }), paper = [0xd83a2a, 0xf0e2c0, 0xe8a030].map(c => std({ color: c, roughness: .8, emissive: c, emissiveIntensity: 0 }));
+    const paper = [0xd83a2a, 0xf0e2c0, 0xe8a030].map(c => std({ color: c, roughness: .8, emissive: c, emissiveIntensity: 0 }));
     onDaylight(d => paper.forEach(m => m.emissiveIntensity = .7 * (1 - d)));
     const box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 8) => new THREE.CylinderGeometry(a, b, h, n);
-    const G_ = { post: box(.16, 1, .16), plank: box(1, 1, 1), lamp: cyl(.17, .17, .38, 10), pole: cyl(.035, .035, 1, 5), fin: new THREE.ConeGeometry(.1, .5, 6) };
+    STALL = { ...shanCarpentry(), box, cyl, paper, wallM: std({ map: weave, roughness: .9 }), thatchM: std({ map: thatchT, roughness: 1, side: THREE.DoubleSide }),
+      FASCIA: [0x8a1e14, 0x2f5a7a, 0x3a6a3a, 0xb8862a].map(c => std({ color: c, roughness: .6 })), bamboo: std({ color: 0xb89a5a, roughness: .8 }),
+      G: { post: box(.16, 1, .16), plank: box(1, 1, 1), lamp: cyl(.17, .17, .38, 10), pole: cyl(.035, .035, 1, 5), fin: new THREE.ConeGeometry(.1, .5, 6) },
+      LIN: c => { const k = new THREE.Color(c); return new THREE.Color(Math.pow(k.r, 2.2), Math.pow(k.g, 2.2), Math.pow(k.b, 2.2)).getHex(); },
+      ball: (rad, sy = 1) => { const q = new THREE.IcosahedronGeometry(rad, 0); q.scale(1, sy, 1); return q; } };
+    return STALL;
+  }
+  // one shop in its own frame S (front toward local +z), its static parts as part()s to be baked: o = { W, D, FY, EH, n (which
+  // fascia colour), r (an rng), data, front (how far the walk-block reaches out in front), lamp (the lantern's x) }; returns the
+  // lantern's place in S. The goods go in separately (see `stallGoods`)
+  function shanStall(S, o) {
+    const K = stallKit(), { teak, teakDark, hip, G, bamboo } = K, { W, D, FY, EH, r } = o, list = picks.pagoda, CT = FY + .9, CZ = D / 2 - .25, BZ = -D / 2 + .25;
+    sRect(S, -W / 2 - .1, W / 2 + .1, -D / 2 - .1, D / 2 + (o.front || .1));
+    // the floor, corner posts, bamboo walls back and sides, the counter and the shelves behind it
+    part(G.plank, teakDark, 0, FY / 2, 0, S).scale.set(W, FY, D);
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => part(G.post, teak, sx * (W / 2 - .08), (FY + EH) / 2, sz * (D / 2 - .08), S).scale.y = EH - FY);
+    part(G.plank, K.wallM, 0, (FY + EH) / 2, -D / 2 + .04, S).scale.set(W - .2, EH - FY, .05);
+    [-1, 1].forEach(sd => part(G.plank, K.wallM, sd * (W / 2 - .04), (FY + EH) / 2, 0, S).scale.set(.05, EH - FY, D - .2));
+    part(G.plank, K.wallM, 0, (FY + CT) / 2, CZ, S).scale.set(W - .2, CT - FY, .45);
+    part(G.plank, teakDark, 0, CT + .02, CZ, S).scale.set(W - .1, .04, .55);
+    [FY + 1.0, FY + 1.55].forEach(sy => part(G.plank, teak, 0, sy, BZ, S).scale.set(W - .3, .04, .35));
+    part(G.plank, teakDark, 0, EH, 0, S).scale.set(W + .1, .14, D + .1);   // the wall plate
+    part(G.plank, K.FASCIA[o.n % K.FASCIA.length], 0, EH - .14, D / 2 + .02, S).scale.set(W - .2, .3, .05);   // a painted board under the eave
+    // the shutter propped out over the counter on two bamboo poles
+    const t = .16, AL = 1.35, hy = EH - .32, aw = part(G.plank, teak, 0, hy + Math.sin(t) * AL / 2, D / 2 + Math.cos(t) * AL / 2, S); aw.scale.set(W - .1, .05, AL); aw.rotation.x = -t;
+    [-1, 1].forEach(sd => { const L = hy + Math.sin(t) * AL * .95, pz = D / 2 + Math.cos(t) * AL * .95; part(G.pole, bamboo, sd * (W / 2 - .3), L / 2, pz, S).scale.y = L; sCircle(S, sd * (W / 2 - .3), pz, .06); });
+    // the roof: a steep hip from the eaves, and over a gap above it a little raised hip on the ridge; thatch or old iron
+    const ox = W / 2 + .55, oz = D / 2 + .5, top = EH + 1.5, iron = r() < .45;
+    const lower = hip(S, [-ox, ox, -oz, oz], [-W * .22, W * .22, -.3, .3], EH + .07, top);
+    const upper = hip(S, [-W * .3, W * .3, -.6, .6], [-W * .14, W * .14, 0, 0], top + .3, top + 1.0);
+    if (!iron) lower.material = upper.material = K.thatchM;
+    [-1, 1].forEach(sd => { part(G.post, teakDark, sd * W * .2, top + .15, 0, S).scale.y = .32; part(G.fin, M.gold, sd * W * .14, top + 1.2, 0, S); });
+    [lower, upper].forEach(m => { m.castShadow = m.receiveShadow = true; clickable(list, m, o.data); });
+    // a paper lantern under the awning's edge
+    const lx = o.lamp, lz = D / 2 + 1.0, ly = EH - .55;
+    mesh(G.lamp, K.paper[(r() * K.paper.length) | 0], lx, ly, lz, S).castShadow = false;
+    const gl = lanternGlow(0xffb060, 1.2, .9); gl.position.set(lx, ly, lz); S.add(gl);
+    return V(lx, ly, lz);
+  }
+  // a shop's goods ([geometry, colour, x, y, z] in its frame S) added to `goods`, the list for one flat-shaded mesh in S's parent's frame
+  function stallGoods(goods, S, parts) {
+    const K = stallKit(); S.updateMatrix();
+    parts.forEach(([geo, col, gx, gy, gz]) => { const q = geo.index ? geo.toNonIndexed() : geo.clone(); q.translate(gx, gy, gz); q.applyMatrix4(S.matrix); goods.push([q, K.LIN(col), 0, 0, 0]); });
+  }
+  function balloonBazaar() {
+    const Z = BAZAAR, H = HILL.group, list = picks.pagoda, r = rng(6060), lo = HILL.terraces[1], y0 = lo.y, a0 = BALLOON_GROUND.a1 + Z.da;
+    const K = stallKit(), { box, cyl, ball, bamboo, paper } = K, G_ = K.G;
+    const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
+    const P = new THREE.Group(); H.add(P);   // the static parts, baked
     const data = { tip: "The festival market · ၵၢတ်ႇပွႆး", toast: "Shan shops put up beside the fire balloon ground for the festival: little timber stalls on a raised plank floor, walls of woven bamboo, a plank shutter propped out over the counter for an awning, and steep roofs of leaf thatch or old corrugated iron with a raised ridge over a gap to let the smoke and the heat out, as on Shan houses and monasteries. They sell Shan noodles, sticky rice cakes in banana leaf, tea leaf, mandarins from the hills, woven cloth and shoulder bags, and little paper balloons for the children. The market is called ၵၢတ်ႇပွႆး (kaat poi, the festival market) in Shan." };
     // the goods: one flat-shaded mesh for the whole market, built from coloured parts in each shop's frame
-    const goods = [], LIN = c => { const k = new THREE.Color(c); return new THREE.Color(Math.pow(k.r, 2.2), Math.pow(k.g, 2.2), Math.pow(k.b, 2.2)).getHex(); };
-    const ball = (rad, sy = 1) => { const q = new THREE.IcosahedronGeometry(rad, 0); q.scale(1, sy, 1); return q; };
+    const goods = [];
     const W = Z.W, D = Z.D, FY = Z.FY, EH = Z.EH, CT = FY + .9, CZ = D / 2 - .25, BZ = -D / 2 + .25;   // counter top and its line, the back shelves' line
     const pk = l => l[(r() * l.length) | 0];
     const KINDS = {
@@ -87,34 +130,9 @@
       for (let i = 0; i < count; i++, n++) {
         const a = a0 + (W / 2 + .3) / rr + i * step + (row ? step / 2 : 0), [x, z] = at(a, rr), kind = ORDER[(n * 3 + row) % ORDER.length];
         const S = new THREE.Group(); S.position.set(x, y0, z); S.rotation.y = row ? -a : Math.PI - a; P.add(S);   // the inner row faces out down the hill, the outer row in
-        sRect(S, -W / 2 - .1, W / 2 + .1, -D / 2 - .1, D / 2 + (kind === "noodles" ? 1.15 : .1));
-        // the floor, corner posts, bamboo walls back and sides, the counter and the shelves behind it
-        part(G_.plank, teakDark, 0, FY / 2, 0, S).scale.set(W, FY, D);
-        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => part(G_.post, teak, sx * (W / 2 - .08), (FY + EH) / 2, sz * (D / 2 - .08), S).scale.y = EH - FY);
-        part(G_.plank, wallM, 0, (FY + EH) / 2, -D / 2 + .04, S).scale.set(W - .2, EH - FY, .05);
-        [-1, 1].forEach(sd => part(G_.plank, wallM, sd * (W / 2 - .04), (FY + EH) / 2, 0, S).scale.set(.05, EH - FY, D - .2));
-        part(G_.plank, wallM, 0, (FY + CT) / 2, CZ, S).scale.set(W - .2, CT - FY, .45);
-        part(G_.plank, teakDark, 0, CT + .02, CZ, S).scale.set(W - .1, .04, .55);
-        [FY + 1.0, FY + 1.55].forEach(sy => part(G_.plank, teak, 0, sy, BZ, S).scale.set(W - .3, .04, .35));
-        part(G_.plank, teakDark, 0, EH, 0, S).scale.set(W + .1, .14, D + .1);   // the wall plate
-        part(G_.plank, FASCIA[n % FASCIA.length], 0, EH - .14, D / 2 + .02, S).scale.set(W - .2, .3, .05);   // a painted board under the eave
-        // the shutter propped out over the counter on two bamboo poles
-        const t = .16, AL = 1.35, hy = EH - .32, aw = part(G_.plank, teak, 0, hy + Math.sin(t) * AL / 2, D / 2 + Math.cos(t) * AL / 2, S); aw.scale.set(W - .1, .05, AL); aw.rotation.x = -t;
-        [-1, 1].forEach(sd => { const L = hy + Math.sin(t) * AL * .95, pz = D / 2 + Math.cos(t) * AL * .95; part(G_.pole, bamboo, sd * (W / 2 - .3), L / 2, pz, S).scale.y = L; sCircle(S, sd * (W / 2 - .3), pz, .06); });
-        // the roof: a steep hip from the eaves, and over a gap above it a little raised hip on the ridge; thatch or old iron
-        const ox = W / 2 + .55, oz = D / 2 + .5, top = EH + 1.5, iron = r() < .45;
-        const lower = hip(S, [-ox, ox, -oz, oz], [-W * .22, W * .22, -.3, .3], EH + .07, top);
-        const upper = hip(S, [-W * .3, W * .3, -.6, .6], [-W * .14, W * .14, 0, 0], top + .3, top + 1.0);
-        if (!iron) lower.material = upper.material = thatchM;
-        [-1, 1].forEach(sd => { part(G_.post, teakDark, sd * W * .2, top + .15, 0, S).scale.y = .32; part(G_.fin, M.gold, sd * W * .14, top + 1.2, 0, S); });
-        [lower, upper].forEach(m => { m.castShadow = m.receiveShadow = true; clickable(list, m, data); });
-        // a paper lantern under the awning's edge
-        const lx = (i % 2 ? -1 : 1) * .9, lz = D / 2 + 1.0, ly = EH - .55;
-        mesh(G_.lamp, pk(paper), lx, ly, lz, S).castShadow = false;
-        const gl = lanternGlow(0xffb060, 1.2, .9); gl.position.set(lx, ly, lz); S.add(gl);
-        S.updateMatrix();   // the goods go into the market's one mesh, in the hill frame
-        KINDS[kind]().forEach(([geo, col, gx, gy, gz]) => { const q = geo.index ? geo.toNonIndexed() : geo.clone(); q.translate(gx, gy, gz); q.applyMatrix4(S.matrix); goods.push([q, LIN(col), 0, 0, 0]); });
-        const lw = V(lx, ly, lz).applyMatrix4(S.matrix); lamps[row] = lamps[row] || []; lamps[row].push({ a, p: lw });
+        const lp = shanStall(S, { W, D, FY, EH, n, r, data, front: kind === "noodles" ? 1.15 : .1, lamp: (i % 2 ? -1 : 1) * .9 });
+        stallGoods(goods, S, KINDS[kind]());   // the goods go into the market's one mesh, in the hill frame
+        const lw = lp.applyMatrix4(S.matrix); lamps[row] = lamps[row] || []; lamps[row].push({ a, p: lw });
       }
     });
     const gm = mesh(lowPoly(goods), std({ vertexColors: true, flatShading: true, roughness: .8 }), 0, 0, 0, H); gm.castShadow = false; gm.receiveShadow = true;

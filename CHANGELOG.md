@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-16
+
+### Added
+- Offering shops (ႁၢၼ်ႉၶူဝ်းလူႇ) along the lit footpath on the stupa hill's lower terrace, west of the main stair: seven little Shan shops like the festival market's, where visitors to the stupa and the monasteries buy flowers, jasmine strings, eugenia sprigs, bananas and coconuts, sticky rice and popped rice, candles, incense, gold leaf, paper umbrellas and flags, with a board by the stair.
+
 ## 2026-11-15
 
 ### Added
