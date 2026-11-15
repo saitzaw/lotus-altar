@@ -37,6 +37,9 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - The upper halls' balcony corridor runs right round the outside of the hall (walls at x = ±7.5, z = -5.5 and 7.5), so any
   piece of the hall that reaches past those walls (a wider wall plane, a column near a corner, the floor) shows on the corridor
   as a stray slab or stub, or flickers against the deck at y = 0. Keep everything in a hall inside that footprint.
+- `surfAt` takes the first `SURF` entry whose shape holds the point, so a big `sRect` with a height function hides everything
+  registered after it inside its rectangle (the hill's terraces, a later tree). Answer `undefined` from the function where it
+  isn't yours (see `palaceLake`), and register things that should block inside it (trees) before it.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
 - Any extra render pass from another camera (like the rain's top-down cover map in `rainCover`) sees the grounds as the main

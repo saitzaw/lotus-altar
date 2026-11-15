@@ -55,7 +55,8 @@
   const segDist = (x, z, [ax, az, bx, bz]) => { const dx = bx - ax, dz = bz - az, t = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), 0, 1); return Math.hypot(x - ax - t * dx, z - az - t * dz); };
   // the height a walker stands at, at (x, z), or null where they cannot go (water, walls, posts, railings)
   // solids and raised surfaces attached to objects, in the object's own frame (resolved to world lazily, after the grounds are built):
-  // { obj, rect: [x0, x1, z0, z1] | circle: [cx, cz, r], h: null (blocks) | number | (lx, lz) => number (a surface, in local units) }
+  // { obj, rect: [x0, x1, z0, z1] | circle: [cx, cz, r], h: null (blocks) | number | (lx, lz) => number (a surface, in local units; null blocks,
+  // undefined passes the point on to the next entry) }
   const SURF = [], PAD = .35, MONASTERIES = [], PALACE = {};   // PAD: a walker's own radius, in metres; PALACE.exit: where you come out of the Haw Kham's throne room
   let WALKER_Y = 0;   // the first-person walker's feet, set by the walk each step (temple.walkerY), for places with two floors over the same ground (the clock tower)
   const solid = (obj, shape, h = null) => { SURF.push({ obj, ...shape, h, inv: null }); };
@@ -73,6 +74,7 @@
       if (!inside) continue;
       if (e.h === null) return { block: true };
       const h = typeof e.h === "function" ? e.h(lx, lz) : e.h;
+      if (h === undefined) continue;   // a surface function's "not mine here": ask the next one
       if (h === null) return { block: true };
       return { y: e.y + h * e.sc };
     }

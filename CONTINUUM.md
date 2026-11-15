@@ -75,6 +75,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-15: the palace lake reaches the hill and the palace wall; its bridge leaves the main road
+- Owner's asks. The lake (`15f-palace-lake.js`) now fills all the ground between the Haw Kham's west wall (shore x −9.5, a 3 m
+  walk left along the wall), the stupa hill's foot (3 m out from `HILL.rBase`, following the hill round from about (−14, 173) to
+  the west end) and the main road (shore z 252.5), out to x ≈ −115. The shore is `LAKE_SHORE`, a control outline rounded by three
+  passes of corner cutting; `lakeIn` / `lakeEdge` test it. The island moved to (−30, 222), its pavilion turned so the stairs face
+  north and south, and the bridge now runs straight south from the main road's edge at x −30 to it, through the gateway on the
+  road's verge.
+- The main road (`LANES[6]`) goes on west along the lake's north shore to x −118, its median broken at the bridge
+  (`MAIN_GAPS` gains [−33.5, −26.5]).
+- `surfAt`: a surface function may now answer `undefined` to pass the point on to the next entry. The lake's rectangle covers part
+  of the hill's slope and its terraces, so it answers `undefined` off the water. Checked in headless renders (from above and from
+  the road at the gate) and with `walkAt` on the bridge, island, water, verge, road and hill terraces.
+
 ### 2026-11-15: a lake with an island pavilion beside the Haw Kham
 - New piece `15f-palace-lake.js`, `palaceLake(g)` (called after `townshipCourt`): a lake on the bare ground west of the Haw Kham's
   west wall, between the wall and the stupa hill's foot, centre (−52, 246), about 76 × 52 m (`LAKE`, shore wobbled by `lakeWob`).
