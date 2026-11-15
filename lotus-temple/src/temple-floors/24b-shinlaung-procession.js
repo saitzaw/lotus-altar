@@ -8,7 +8,7 @@
      to the second monastery (lowerKyaung), stopping on the way to dance. There the three boys on their carriers' shoulders stop
      in a row before the monastery's stair, facing its door, and the families and the pole bearers crowd round and behind them on
      the terrace walk; the kinnara, the to and the band go on up the hill stair to the festival ground and dance and play there,
-     until everyone goes home at 10 (CONFIG.procession.until). They keep off the church's street.
+     until everyone goes home at 11 (CONFIG.procession.until). They keep off the church's street.
      The kinnara pair and the to are the festival stage's own costumed dancers (kinnaraKit, toDancers); everyone else is low-poly
      and flat-shaded (MeshStandardMaterial, flatShading), each figure one mesh of vertex colours; the trouser legs are one
      instanced mesh and step as they walk ---------- */

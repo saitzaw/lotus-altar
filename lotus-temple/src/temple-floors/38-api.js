@@ -62,7 +62,7 @@
     setStalls(on) { FOLK.stalls = on; },
     // the food street's cooks, diners and strollers, 9 am–10 pm
     setFoodStreet(on) { FOLK.food = on; },
-    // the Poy Sang Long procession from the gate to the second monastery, 8–10 am (gathered there and at the festival ground from about 9:25): `at` the seconds since it set out, or null to
+    // the Poy Sang Long procession from the gate to the second monastery, 8–11 am (gathered there and at the festival ground from about 9:25): `at` the seconds since it set out, or null to
     // run its short test timetable (?procession=1)
     setProcession(on, at) { FOLK.procession = on; FOLK.processionAt = at; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
