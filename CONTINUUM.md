@@ -69,7 +69,21 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - The township court's board (`COURT_NAMES`) has Burmese မြို့နယ်တရားရုံး, Chinese 镇区法院 and English only (ours); ask the owner for
   the Shan and Tai Nüa names, as for the bank.
 
+- Have a Shan speaker check ၼွင် (nawng, lake) in the palace lake's tip and toast (`15f-palace-lake.js`).
+- The island pavilion on the palace lake is our own design: the owner mentioned a Shan building to copy, but no photo came with
+  the request. Restyle it once the photo arrives.
+
 ## Log
+
+### 2026-11-15: a lake with an island pavilion beside the Haw Kham
+- New piece `15f-palace-lake.js`, `palaceLake(g)` (called after `townshipCourt`): a lake on the bare ground west of the Haw Kham's
+  west wall, between the wall and the stupa hill's foot, centre (−52, 246), about 76 × 52 m (`LAKE`, shore wobbled by `lakeWob`).
+  A grass verge and stone kerb round it, lily pads with a few pink buds along the west shore, shade trees on the verge. In the
+  middle a round island (local (6, −1), r 8.5) with a Shan pavilion: whitewashed plinth with a balustrade and stairs east and west,
+  a teak hall (doors east and west, lamplit windows), a verandah of white posts under a hipped skirt roof, a five-tier pyatthat
+  over it. A teak bridge, gently arched (`deckY`), crosses from the east shore through a white gateway with a little pyatthat,
+  red lantern posts along it lit at night. Walkers: the water blocks, the bridge, island and plinth are walkable (one `sRect` with
+  a height function in the lake's frame, registered after the trees). Checked in headless renders from above and from the shore.
 
 ### 2026-11-15: the main road past the Hluttaw
 

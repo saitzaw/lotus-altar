@@ -195,6 +195,7 @@
     townLibrary(g);   // the public library across the market lane from the palace's east wall, facing it
     townBank(g);   // the bank, south of the library on the same side of the lane, facing the palace too
     townshipCourt(g);   // the township court, next door east of the Hluttaw, across the road from the bank
+    palaceLake(g);   // the lake west of the palace wall, with its island pavilion and bridge
     streetFrontage(g);
     backStreets(g);
     hillFootpath(g);
