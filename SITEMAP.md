@@ -100,6 +100,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Food street: five Shan and Chinese food stalls (boards in Shan, Tai Nüa, Chinese, Burmese) facing the seven-day market, cooks, diners and strollers (people 9 AM–10 PM ICT) | x 33.6…43, z −11…41 (stalls at x 35.8, z −5…35) | `foodStreet` | `12d-food-street.js` |
 | Stream and waterfall, paddy fields | stream z ≈ −30; falls (−115.5, −25.8); paddies x −104…64, z −94…−42 | `waterfall`, `paddyFields` | `11-waterfall-and-stream.js` |
 | Stupa hill (terrain, `groundAt`) | centre (−88, 140), top y 15 | `shanStupaHill` | `13-stupa-hill.js` |
+| Stupa hill's four stairs: main (toward the street corner), east (palace lane), north (3.55 rad from the main stair, past the festival market; walk to the Hluttaw road's west end), west (−π/2, where the lower terrace footpath ends) | round `HILL` (`MORE_STAIRS`, `HILL.east`) | `hillStair`, `stairGate` in `shanStupaHill` | `13-stupa-hill.js` |
 | Shan monastery outside | hill terrace | `shanMonasteries` | `14-shan-monasteries.js` (its own weathered teak, rust, inlay and fretwork, and `gableB`; `pyatthat`, `hip` from `13b-shan-carpentry.js`) |
 | Lower Shan monastery outside | hill's lower terrace, below the festival ground (`LOW_KYAUNG`) | `lowerKyaung` | `14b-lower-kyaung.js` |
 | Third Shan monastery ဝိႁၢၼ်ႇၵုင်းသႃႇ outside (no interior) | hill's lower terrace, past the second monastery toward the east stair (`WIHAN`, `wihanSpot`) | `wihanKyaung` | `14c-wihan-kyaung.js` |

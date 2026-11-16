@@ -1,9 +1,14 @@
-  /* ---------- the stupa hill in the front-left corner, beyond the street and the town road: a grassy hill climbed by a stair
-     of five flights with landings, set into the slope between whitewashed walls; on top a forest of Shan stupas in the style of
+  /* ---------- the stupa hill in the front-left corner, beyond the street and the town road: a grassy hill climbed by stairs
+     on four sides, each of four flights with landings, set into the slope between whitewashed walls; on top a forest of Shan stupas in the style of
      Kakku (weathered sandstone, tiered bases with niches, ringed spires, dark iron hti crowns) round a white-and-gold main stupa ---------- */
   // stair proportions (metres): five flights of 19 steps, 17 cm risers and 32 cm treads, 2.5 m landings between flights
   // four flights of 22 steps (17 cm risers, 32 cm treads); the first two landings are wide terraces where the monasteries stand
   const STAIR = { flights: 4, steps: 22, tread: .32, landings: [17, 17, 2.5], pad: .6 };
+  // the hill's other two stairs, so that it is climbed from four sides as a stupa should be: their angles round the hill from the
+  // main stair (radians, toward the east stair). The north stair comes down just past the festival market's west end, on the far
+  // side of the hill from the main stair, and a walk leads from its foot past the palace lake's west shore to the Hluttaw road;
+  // the west stair comes down due west of the top, a quarter turn from the main stair, where the lower terrace's footpath ends
+  const MORE_STAIRS = { north: 3.55, west: -Math.PI / 2, road: [-117, 258.5] };   // road: where the north walk runs in under the Hluttaw road's west end (grounds frame)
   const HILL = (() => {
     const top = 15, rTop = 13, run = STAIR.flights * STAIR.steps * STAIR.tread + STAIR.landings.reduce((a, b) => a + b, 0);
     const rBase = rTop + run + STAIR.pad, rise = top / (STAIR.flights * STAIR.steps), flight = STAIR.steps * STAIR.tread;
@@ -260,16 +265,33 @@
       const a = rBase - .2, b = HILL.eastReach + 1;
       flat(mesh(new THREE.BoxGeometry(SW, .04, b - a), M.stone, 0, .02, -(a + b) / 2, E));
     }
-    [-1, 1].forEach(sd => {
+    // a stair's foot: two whitewashed pillars crowned with lotus buds either side of it
+    const stairGate = F => [-1, 1].forEach(sd => {
       const x = sd * (SW / 2 + .7);
-      mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, E); sRect(E, x - .4, x + .4, -rBase - .6, -rBase + .2);
-      mesh(new THREE.BoxGeometry(.92, .1, .92), M.trim, x, 2.25, -rBase - .2, E);
-      const bud = mesh(new THREE.SphereGeometry(.26, 14, 10), whiteWash, x, 2.55, -rBase - .2, E); bud.scale.y = 1.35;
-      mesh(new THREE.ConeGeometry(.09, .4, 10), M.gold, x, 2.95, -rBase - .2, E);
+      mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, F); sRect(F, x - .4, x + .4, -rBase - .6, -rBase + .2);
+      mesh(new THREE.BoxGeometry(.92, .1, .92), M.trim, x, 2.25, -rBase - .2, F);
+      const bud = mesh(new THREE.SphereGeometry(.26, 14, 10), whiteWash, x, 2.55, -rBase - .2, F); bud.scale.y = 1.35;
+      mesh(new THREE.ConeGeometry(.09, .4, 10), M.gold, x, 2.95, -rBase - .2, F);
     });
-    // in the hill's own frame, the way the east stair comes up: kept clear of stupas and pines
-    const eA = E.rotation.y - H.rotation.y, eDir = [-Math.sin(eA), -Math.cos(eA)];
-    const onEast = (x, zz, w) => x * eDir[0] + zz * eDir[1] > 0 && Math.abs(x * eDir[1] - zz * eDir[0]) < w;
+    stairGate(E);
+    // the north and west stairs: the same stair again, turned to their angles round the hill, with the same pillars at the foot
+    const turned = a => { const F = new THREE.Group(); F.position.set(cx, 0, cz); F.rotation.y = H.rotation.y - a; g.add(F); F.updateMatrixWorld(true); return F; };
+    const N = turned(MORE_STAIRS.north), Wst = turned(MORE_STAIRS.west);
+    hillStair(N, null, { tip: `The north stair · up to ${SHAN_NAMES.stupa} from the palace lake's west shore` }); stairGate(N);
+    hillStair(Wst, null, { tip: `The west stair · up to ${SHAN_NAMES.stupa}` }); stairGate(Wst);
+    flat(mesh(new THREE.BoxGeometry(SW, .04, 4.2), M.stone, 0, .02, -rBase - 1.9, Wst));   // a short paved apron before the west stair, out onto the open ground
+    {   // the north walk: out from the stair's foot, then past the palace lake's west shore to the Hluttaw road, a metre in under its end
+      const nA = N.rotation.y, d = [-Math.sin(nA), -Math.cos(nA)], at = r => [cx + d[0] * r, cz + d[1] * r], [qx, qz] = MORE_STAIRS.road;
+      const pts = [at(rBase - .2), at(rBase + 4), [qx - 6, qz], [qx, qz]];
+      for (let i = 1; i < pts.length; i++) {
+        const [ax, az] = pts[i - 1], [bx, bz] = pts[i], L = Math.hypot(bx - ax, bz - az);
+        const m = flat(mesh(new THREE.BoxGeometry(SW, .04, L), M.stone, (ax + bx) / 2, .02, (az + bz) / 2, g)); m.rotation.y = Math.atan2(bx - ax, bz - az);
+        if (i > 1) flat(mesh(new THREE.CylinderGeometry(SW / 2, SW / 2, .04, 20), M.stone, ax, .02, az, g));   // a round joint at each bend
+      }
+    }
+    // in the hill's own frame, the ways the other stairs come up: kept clear of stupas and pines
+    const upFrom = F => { const A = F.rotation.y - H.rotation.y, D = [-Math.sin(A), -Math.cos(A)]; return (x, zz, w) => x * D[0] + zz * D[1] > 0 && Math.abs(x * D[1] - zz * D[0]) < w; };
+    const onEast = upFrom(E), onNorth = upFrom(N), onWest = upFrom(Wst);
 
     // the approach: a path out to the street corner, and a zebra crossing over the street
     const foot = V(cx, 0, cz).addScaledVector(dir, rBase);
@@ -303,6 +325,8 @@
       if (Math.abs(x) < 6.2 && Math.abs(zz) < 6.2) continue;   // the main stupa's terrace
       if (onEast(x, zz, 2.6)) continue;                         // and the path from the east stair
       if (x > 0 && Math.abs(zz) < 2.6) continue;                // and the terrace walk's east steps, where that path comes in
+      if (onNorth(x, zz, 2.6) || (zz > 0 && Math.abs(x) < 2.6)) continue;   // the path from the north stair to the north steps
+      if (x < 0 && Math.abs(zz) < 2.6) continue;                // and from the west stair to the west steps (the same line)
       if (Math.hypot(x, zz) > rTop - 1.6) continue;
       spots.push({ x, y: top, z: zz, s: .55 + r() * .35, ry: [0, Math.PI / 2][(r() * 2) | 0] });
       sCircle(H, x, zz, 1.15 * spots[spots.length - 1].s);
@@ -328,11 +352,11 @@
       mesh(new THREE.ConeGeometry(.5, .5, 4), M.gold, 0, by + BH / 2 + .25, -rBase - .2, H).scale.z = .15;
     }
     // the main stupa on its terrace walk: a square platform 1.8 m up, whitewashed walls, paved on top, a parapet with gilt coping
-    // all round, steps up through it on the front (from the hill stair) and the east (from the east stair's path); pilgrims walk
+    // all round, steps up through it on all four sides, one for each of the hill's stairs; pilgrims walk
     // round the stupa on it clockwise, keeping it on their right. Lamp posts at its four corners glow at night
     const gold = M.gold, MS = new THREE.Group(); MS.position.set(0, top, 0); H.add(MS);
     const TW = { D: 5.2, Y: 1.8, PT: .3, PH: .9, SH: 1.2, n: 5, tread: .4 }, { D, Y, PT, PH, SH } = TW, RUN = TW.n * TW.tread, rs = Y / (TW.n + 1);   // half-width, deck height, parapet thickness and height, half the steps' width, steps and tread (m)
-    const STEPS = [0, -Math.PI / 2];   // turns of the flights of steps: the front (down local -z), the east (down local +x)
+    const STEPS = [0, -Math.PI / 2, Math.PI, Math.PI / 2];   // turns of the flights of steps: the front (down local -z), the east (down local +x), the north (+z), the west (-x)
     {
       const T = new THREE.Group(); T.position.set(0, top, 0); H.add(T);
       const twTip = { tip: "The terrace walk round the main stupa", toast: `The terrace walk round ${SHAN_NAMES.stupa}: climb its steps and walk round the stupa clockwise, keeping it on your right, as pilgrims do.` };
@@ -407,6 +431,7 @@
       const a = i / 32 * TAU + .1, rr = rTop + 6 + (i % 4) * 8, x = Math.sin(a) * rr, zz = Math.cos(a) * rr;
       if (Math.abs(x) < 30 && zz < 0) continue;   // keep the stair and the monastery terraces clear
       if (onEast(x, zz, 8)) continue;               // and the east stair
+      if (onNorth(x, zz, 8) || onWest(x, zz, 8)) { seed++; continue; }   // and the north and west stairs (the seed still steps, so the other pines keep their shapes)
       { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 20) continue; }   // and the festival ground
       { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 12) continue; }   // and the big banyan's crown
       const t = pine(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;

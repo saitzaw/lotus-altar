@@ -76,6 +76,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: the stupa hill has four stairs
+
+- Owner's ask: a stupa is climbed from four sides, and the hill had only the main and east stairs. `MORE_STAIRS` in
+  `13-stupa-hill.js` adds a north stair at 3.55 rad round the hill from the main stair (just past the festival market's west end;
+  π would cut through the market) and a west stair at −π/2 (its lower-terrace landing meets the end of `hillFootpath`'s west
+  run). Both are `hillStair` turned (`turned(a)`), with the east stair's lotus-bud pillars at the foot (now `stairGate(F)`).
+  A paved walk runs from the north stair's foot past the palace lake's west shore into the Hluttaw road's west end
+  (`MORE_STAIRS.road`); the west stair has only a short apron, since there is nothing beyond it yet.
+- The main stupa's terrace walk has steps on all four sides (`STEPS`), and the Kakku stupas and slope pines keep the new ways
+  clear (`onNorth`, `onWest`; skipped pines still step the seed so the others keep their shapes; the Kakku stupas after the gaps
+  draw different sizes). Checked headless: `walkAt` climbs both stairs from 0 to 15 m, renders from above and from both feet.
+
 ### 2026-11-16: compound walls keep walkers back far enough that the camera can't see through them
 
 - Against the Haw Kham's compound wall the view showed the far side. The walk keeps a walker `PAD` (.35 m) off a solid, but the

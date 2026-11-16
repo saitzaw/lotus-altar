@@ -14,6 +14,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 - In the rain the Shinlaung (Poy Sang Long) procession is called off and no fire balloons go up; the balloon ground's fire pits stay cold until the rain stops.
 
 ### Added
+- The stupa hill now has stairs on all four sides, as a stupa traditionally does. A north stair comes down past the festival market, with a walk past the palace lake's west shore to the Hluttaw road, and a west stair comes down where the lower terrace's footpath ends. The terrace round the main stupa has steps up on all four sides too.
 - Offering shops (ႁၢၼ်ႉၶူဝ်းလူႇ) along the lit footpath on the stupa hill's lower terrace, west of the main stair: seven little Shan shops like the festival market's, where visitors to the stupa and the monasteries buy flowers, jasmine strings, eugenia sprigs, bananas and coconuts, sticky rice and popped rice, candles, incense, gold leaf, paper umbrellas and flags, with a board by the stair.
 
 ## 2026-11-15
