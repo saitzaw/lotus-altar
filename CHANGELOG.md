@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-16
 
 ### Changed
+- Only the lit part of the moon shows now; its dark side is left clear, so the night sky shows through.
 - In the rain the Shinlaung (Poy Sang Long) procession is called off and no fire balloons go up; the balloon ground's fire pits stay cold until the rain stops.
 
 ### Added

@@ -38,12 +38,11 @@ const phaseName = p => PHASE_NAMES.find(([lim]) => p < lim)[1];
 const skyDir = (a, h) => V(-Math.sin(a) * Math.cos(h), Math.sin(h), Math.cos(a) * Math.cos(h));
 const COMPASS = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 const compass = a => COMPASS[Math.round(((a / Math.PI * 180 + 180) % 360) / 45) % 8];
-// the moon's face: dark disc, the lit part with its terminator, a few maria; the lit limb is drawn at the top
+// the moon's face: only the lit part with its terminator and a few maria (the dark side is left clear, so the sky shows through); the lit limb is drawn at the top
 // and the sprite is turned so it points the way it really does in the sky
 function moonTexture(fraction) {
   const S = 256, R = 116, c = document.createElement("canvas"); c.width = c.height = S;
   const g = c.getContext("2d");
-  g.fillStyle = "rgba(70,74,92,.6)"; g.beginPath(); g.arc(S / 2, S / 2, R, 0, TAU); g.fill();   // the dark side, faint with earthshine
   const lit = document.createElement("canvas"); lit.width = lit.height = S;
   const l = lit.getContext("2d");
   const grad = l.createRadialGradient(S / 2 - 20, S / 2 - 30, 10, S / 2, S / 2, R);

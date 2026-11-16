@@ -76,6 +76,11 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: only the lit part of the moon shows
+
+- `moonTexture()` in `06-sun-and-moon.js` no longer paints the dark side (it was a faint grey disc for earthshine). The canvas
+  stays transparent there, so a crescent or gibbous moon shows only its lit part against the stars. The halo glow is unchanged.
+
 ### 2026-11-16: no procession or fire balloons in the rain
 
 - While the weather spell is rain (`wxKind === "rain"`, via `rainingOut()` in `07-festivals-and-weather.js`), the frame loop
