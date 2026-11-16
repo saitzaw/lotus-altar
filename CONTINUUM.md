@@ -76,6 +76,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: compound walls keep walkers back far enough that the camera can't see through them
+
+- Against the Haw Kham's compound wall the view showed the far side. The walk keeps a walker `PAD` (.35 m) off a solid, but the
+  outdoor near plane's corners reach about .38–.41 m (near .3, fov 42 on a wide screen, up to 80 on a phone), so turning beside
+  the wall cut into its .4 m box and showed straight through it. New `sWall`/`sPillar` in `13-stupa-hill.js` add `WALL_PAD`
+  (.2 m), for .55 m in all, the same as the temple's own walls (`BLOCK.segs`). Used for the walls and gate pillars of the Haw
+  Kham, the Hluttaw, the township court and the Kachin church compounds. Gates stay at least 3.2 m wide to walk through.
+  Checked headless: `walkAt` blocks up to .55 m from both faces of the Haw Kham's side walls, and the page logs no errors.
+
 ### 2026-11-16: the Haw Kham's verandah posts block the walk
 
 - The verandah posts had no collider, so walkers passed through them and the outdoor near plane (0.3 m) sliced them open.

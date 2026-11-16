@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-16
 
 ### Fixed
+- You can no longer see through the compound walls of the Haw Kham, the Hluttaw, the township court and the Kachin church when you stand right up against them. You're now stopped a little further from these walls and their gate pillars.
 - You can no longer walk through the Haw Kham's verandah posts, or the posts of the pavilions over its back end stairs; walking through them had cut them open, so they looked see-through.
 
 ### Changed

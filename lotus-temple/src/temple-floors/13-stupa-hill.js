@@ -62,6 +62,9 @@
   const solid = (obj, shape, h = null) => { SURF.push({ obj, ...shape, h, inv: null }); };
   const sCircle = (obj, cx, cz, r) => solid(obj, { circle: [cx, cz, r] });
   const sRect = (obj, x0, x1, z0, z1, h = null) => solid(obj, { rect: [x0, x1, z0, z1] }, h);
+  // a thin compound wall or gate pillar: kept WALL_PAD further off than other solids, so the outdoor camera's near plane (its corners
+  // reach ~.4 m at .3 near) never cuts into the box and shows the far side through it; with PAD that is the .55 m the temple's own walls keep
+  const WALL_PAD = .2, sWall = (obj, x0, x1, z0, z1) => sRect(obj, x0 - WALL_PAD, x1 + WALL_PAD, z0 - WALL_PAD, z1 + WALL_PAD), sPillar = (obj, cx, cz, r) => sCircle(obj, cx, cz, r + WALL_PAD);
   const _v = new THREE.Vector3();
   function surfAt(x, z) {
     for (const e of SURF) {

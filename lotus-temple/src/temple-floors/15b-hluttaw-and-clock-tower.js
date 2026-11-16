@@ -17,9 +17,9 @@
       const w = Math.max(b - a, .4), dd = Math.max(d - c, .4), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(new THREE.BoxGeometry(w, 1.8, dd), white, mx, .9, mz, C);
       mesh(new THREE.BoxGeometry(w + .2, .16, dd + .2), tile, mx, 1.88, mz, C);
-      sRect(C, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+      sWall(C, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
-    [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(.7, 3, .7), white, sd * 2.6, 1.5, ZX, C); sRect(C, sd * 2.6 - .35, sd * 2.6 + .35, ZX - .35, ZX + .35); });
+    [-1, 1].forEach(sd => { mesh(new THREE.BoxGeometry(.7, 3, .7), white, sd * 2.6, 1.5, ZX, C); sWall(C, sd * 2.6 - .35, sd * 2.6 + .35, ZX - .35, ZX + .35); });
     mesh(new THREE.BoxGeometry(5.8, .4, 1), red, 0, 3.2, ZX, C);
     gable(C, 0, 3.4, ZX, 5.4, 1.6, 1.3);
     // the paved ways: in from the gate, across before the Hluttaw and round both its sides

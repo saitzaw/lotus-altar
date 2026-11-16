@@ -83,11 +83,11 @@
       (gap ? [[a, gap[0]], [gap[1], b]] : [[a, b]]).forEach(([a, b]) => {
         const w = Math.max(b - a, .25), dd = Math.max(d - c, .25), mx = (a + b) / 2, mz = (c + d) / 2;
         mesh(new THREE.BoxGeometry(w, 1.6, dd), civicWhite, mx, .8, mz, g); mesh(new THREE.BoxGeometry(w + .06, .14, dd + .06), cap, mx, 1.67, mz, g);
-        sRect(g, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+        sWall(g, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
       });
     });
     // the gate: two pillars, an iron arch over the way in with a white cross on top, the leaves folded back inside
-    gate.forEach(x => { mesh(new THREE.BoxGeometry(.6, 2.4, .6), civicWhite, x + (x < 0 ? -.3 : .3), 1.2, z0, g); mesh(new THREE.BoxGeometry(.7, .14, .7), cap, x + (x < 0 ? -.3 : .3), 2.47, z0, g); sCircle(g, x + (x < 0 ? -.3 : .3), z0, .4); });
+    gate.forEach(x => { mesh(new THREE.BoxGeometry(.6, 2.4, .6), civicWhite, x + (x < 0 ? -.3 : .3), 1.2, z0, g); mesh(new THREE.BoxGeometry(.7, .14, .7), cap, x + (x < 0 ? -.3 : .3), 2.47, z0, g); sPillar(g, x + (x < 0 ? -.3 : .3), z0, .4); });
     const arch = new THREE.Mesh(new THREE.TorusGeometry(gate[1] + .3, .07, 6, 24, Math.PI), iron); arch.position.set(0, 2.5, z0); arch.scale.y = .35; g.add(arch);
     const crossM = std({ color: 0xf4f2ec, roughness: .5 });
     mesh(new THREE.BoxGeometry(.1, .9, .1), crossM, 0, 2.5 + (gate[1] + .3) * .35 + .45, z0, g); mesh(new THREE.BoxGeometry(.55, .1, .1), crossM, 0, 2.5 + (gate[1] + .3) * .35 + .6, z0, g);

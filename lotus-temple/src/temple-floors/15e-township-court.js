@@ -132,9 +132,9 @@
       const w = Math.max(b - a, .35), dd = Math.max(d - c, .35), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(box(w, 1.8, dd), white, mx, .9, mz, C);
       mesh(box(w + .12, .1, dd + .12), trim, mx, 1.85, mz, C);
-      sRect(C, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+      sWall(C, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
-    [-1, 1].forEach(sd => { mesh(box(.7, 3.6, .7), white, sd * (GX + .2), 1.8, CZ1, C); mesh(box(.85, .15, .85), trim, sd * (GX + .2), 3.65, CZ1, C); sCircle(C, sd * (GX + .2), CZ1, .45); });
+    [-1, 1].forEach(sd => { mesh(box(.7, 3.6, .7), white, sd * (GX + .2), 1.8, CZ1, C); mesh(box(.85, .15, .85), trim, sd * (GX + .2), 3.65, CZ1, C); sPillar(C, sd * (GX + .2), CZ1, .45); });
     mesh(box(2 * GX + 1.1, .3, .4), white, 0, 3.2, CZ1, C);
     mesh(box(4.6, 1.3, .14), white, 0, 3.95, CZ1, C);
     courtBoard(C, 0, 3.95, CZ1 + .08);

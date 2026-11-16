@@ -78,7 +78,7 @@
       const w = Math.max(b - a, .4), dd = Math.max(d - c, .4), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(new THREE.BoxGeometry(w, 2.2, dd), white, mx, 1.1, mz, G);
       mesh(new THREE.BoxGeometry(w + .2, .18, dd + .2), tile, mx, 2.29, mz, G);
-      sRect(G, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+      sWall(G, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
     // the gates, front and back alike: white pillars under a beam carrying a little three-tiered pyatthat, a lantern on each
     // pillar's outer face lit at night
@@ -86,7 +86,7 @@
     [[CZ, 1], [-CZB, -1]].forEach(([gz, out]) => {
       [-1, 1].forEach(sd => {
         mesh(new THREE.BoxGeometry(1, 4.2, 1), white, sd * 3, 2.1, gz, G); mesh(new THREE.BoxGeometry(1.2, .2, 1.2), M.trim, sd * 3, 4.25, gz, G);
-        sRect(G, sd * 3 - .5, sd * 3 + .5, gz - .5, gz + .5);
+        sWall(G, sd * 3 - .5, sd * 3 + .5, gz - .5, gz + .5);
         const b = glowSprite(0xffd060, 1.1, .8); b.position.set(sd * 3, 3.4, gz + out * .7); G.add(b); lamps.push(b);
       });
       mesh(new THREE.BoxGeometry(7.2, .6, 1.4), red, 0, 4.6, gz, G); mesh(new THREE.BoxGeometry(7.4, .14, 1.5), M.trim, 0, 4.95, gz, G);
