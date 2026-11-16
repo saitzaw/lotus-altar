@@ -116,3 +116,6 @@ Traps:
   it. A citation doesn't make it allowed.
 - A material `color` is linear, so it renders much lighter than the same hex in a canvas texture: `0x1e0e07` comes out a
   mid orange-brown in sunlight. For near-black wood use about `0x0c0503`; canvas colours (sRGB) look as written.
+- `surfAt` (in `13-stupa-hill.js`) returns the first `SURF` entry that contains the point. A post's `sCircle` registered after
+  the walkable `sRect` it stands on (a verandah, a landing) is never checked, so walkers pass through it and the near plane cuts
+  it open. Register blockers before the surface under them.

@@ -76,6 +76,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-16: the Haw Kham's verandah posts block the walk
+
+- The verandah posts had no collider, so walkers passed through them and the outdoor near plane (0.3 m) sliced them open.
+  `hawKham` in `15-haw-kham.js` now builds the `posts` list before the plinth's surface and adds an `sCircle` per post; the
+  back-face landing pavilions' posts get theirs ahead of the end landing's `sRect` too. `surfAt` returns the first entry
+  that contains the point, so a blocker registered after the surface it stands on is never reached.
+
 ### 2026-11-16: only the lit part of the moon shows
 
 - `moonTexture()` in `06-sun-and-moon.js` no longer paints the dark side (it was a faint grey disc for earthshine). The canvas

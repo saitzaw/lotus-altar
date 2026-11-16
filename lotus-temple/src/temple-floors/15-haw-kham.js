@@ -102,6 +102,11 @@
     const ZM = -12, PH = 2.4, PX = 18, PZ1 = 2, PZ0 = 2 * ZM - PZ1, HX = 15, HZ1 = -1, HZ0 = 2 * ZM - HZ1, HC = ZM, HD = HZ1 - HZ0, WH = 4.6, yW = PH + WH;
     const SDX = 8.75, SW = 2.2, n = 14, tread = .34, run = n * tread, LX = 1.6, CF = PZ1 + SW + run, FX = PX - .4, TX = FX - run, SLC = TX - SW / 2, EH = PH + 3, ED = .75;   // EH: the verandah's eaves; ED: the parapet's no-go strip
     // walkable: the hall's walls block; the plinth's top is the verandah, kept in by the parapet but open to the landings on both faces
+    // the verandah's posts (built below) stand on the plinth's top, so they go in before it, or the walk would pass through them
+    const posts = [];
+    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(Math.abs(px) - SLC) > SW / 2 + .2 && Math.abs(px) > LX + .4) { posts.push([px, PZ1 - .55]); posts.push([px, PZ0 + .55]); }   // none before the centre doors, front or back
+    for (let k = 1; k < 12; k++) { const pz = PZ0 + .55 + k * (PZ1 - PZ0 - 1.1) / 12; [-1, 1].forEach(sd => posts.push([sd * (PX - .55), pz])); }
+    posts.forEach(([px, pz]) => sCircle(G, px, pz, .12));
     sRect(G, -HX, HX, HZ0, HZ1);
     sRect(G, -PX, PX, PZ0, PZ1, (lx, lz) => { const fz = lz > ZM ? lz : 2 * ZM - lz, edge = PZ1 - fz < ED; return (Math.abs(lx) > PX - ED || edge) && !(edge && (lz > ZM && Math.abs(lx) < LX - .3 || Math.abs(Math.abs(lx) - SLC) < SW / 2 - .3)) ? null : PH; });
     // the plinth: whitewashed brick, a moulded foot and cornice, paved on top
@@ -157,6 +162,7 @@
       [-1, 1].forEach(sd => {
         if (main) sRect(F, sd > 0 ? LX : -LX - .3, sd > 0 ? LX + .3 : -LX, PZ1, CF + .6);   // the main landing's parapet and the stair's wall
         const x0 = sd > 0 ? TX - SW : -TX, x1 = sd > 0 ? TX : -TX + SW;
+        if (!main) [-1, 1].forEach(a => [-1, 1].forEach(b => sCircle(F, sd * SLC + a * (SW / 2 - .2), PZ1 + SW / 2 + b * (SW / 2 - .2), .15)));   // the landing pavilion's posts (built below), ahead of the landing
         sRect(F, x0, x1, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 || Math.abs(lx) < TX - SW + .45 ? null : PH);   // an end landing
         sRect(F, sd > 0 ? TX : -FX, sd > 0 ? FX : -TX, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 ? null : PH * clamp((FX - Math.abs(lx)) / run, 0, 1));   // an end stair, open at its foot
         sRect(F, sd > 0 ? FX : -FX - .6, sd > 0 ? FX + .6 : -FX, PZ1 + SW - .6, PZ1 + SW + .15);   // the lotus-bud pier at its foot
@@ -201,7 +207,7 @@
         pyatthat(F, 0, Y[0] + 1.2, (PZ1 - .3 + Z[1] + .5) / 2, 2.9, 5, .15);
       } else [-1, 1].forEach(sd => {   // a roofed pavilion over each end stair's landing: red posts, a hipped skirt roof, a carved gable and a gilt finial
         const cx = sd * SLC, cz = PZ1 + SW / 2, yP = PH + 2.7;
-        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { const px = cx + a * (SW / 2 - .2), pz = cz + b * (SW / 2 - .2); mesh(new THREE.CylinderGeometry(.11, .13, yP - PH, 10), red, px, (PH + yP) / 2, pz, F); sCircle(F, px, pz, .15); mesh(new THREE.CylinderGeometry(.14, .14, .08, 10), M.gold, px, yP - .2, pz, F); });
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { const px = cx + a * (SW / 2 - .2), pz = cz + b * (SW / 2 - .2); mesh(new THREE.CylinderGeometry(.11, .13, yP - PH, 10), red, px, (PH + yP) / 2, pz, F); mesh(new THREE.CylinderGeometry(.14, .14, .08, 10), M.gold, px, yP - .2, pz, F); });
         hip([cx - 1.8, cx + 1.8, cz - 1.8, cz + 1.8], [cx - 1, cx + 1, cz - 1, cz + 1], yP, yP + .7, F);
         mesh(new THREE.BoxGeometry(2, .5, 2), teakDark, cx, yP + .9, cz, F);
         gable(F, cx, yP + 1.15, cz, 2.6, 2.8, 1.5);
@@ -236,9 +242,7 @@
     flat(mesh(new THREE.BoxGeometry(3.4, .05, CZ - PZ1 - SW - 2.2), M.stone, 0, .045, (CZ + PZ1 + SW + 2.2) / 2, G));   // and behind, from the town gate to the way along the back
     // the verandah: slender white posts round the plinth's edge under a beam, the hall's dark teak walls behind, banded in gilt,
     // windows down its ends
-    const posts = [], m4 = new THREE.Matrix4();
-    for (let px = -PX + .55; px <= PX - .54; px += (2 * PX - 1.1) / 16) if (Math.abs(Math.abs(px) - SLC) > SW / 2 + .2 && Math.abs(px) > LX + .4) { posts.push([px, PZ1 - .55]); posts.push([px, PZ0 + .55]); }   // none before the centre doors, front or back
-    for (let k = 1; k < 12; k++) { const pz = PZ0 + .55 + k * (PZ1 - PZ0 - 1.1) / 12; [-1, 1].forEach(sd => posts.push([sd * (PX - .55), pz])); }
+    const m4 = new THREE.Matrix4();
     const post = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .12, EH - PH, 8), white, posts.length);
     posts.forEach(([px, pz], i) => post.setMatrixAt(i, m4.makeTranslation(px, (PH + EH) / 2, pz)));
     G.add(post); post.castShadow = true;
