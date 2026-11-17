@@ -75,6 +75,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-17: a painted rooster and a deva balloon by day
+
+- Owner (two photos, "for the day use this, more pretty"): the rooster is now a round painted balloon, and a new round balloon
+  painted with a deva goes up by day. Fish, parrot, bear and tiger are kept; ask the owner whether to drop them.
+- `15g-balloon-ground.js`: `DAY_ENV` (a `SplineCurve` spaced evenly by length, so the paper's v runs by length and pictures keep
+  their shape) turned into `dayEnvG` (lathe, `phiStart -π` so u .5 faces front); 2048×1024 canvas papers by `dayPaper`.
+  `roosterPaper`: scale rows, a wing down each side at u .31/.69, heart band, lotus petals, red mouth; head, neck, comb, eyes and a
+  7-feather fanned tail (`featherPaper`, striped by distance from the face's u) are blobs. `devaPaper`: `deva()` draws a mural deva,
+  seated with a lotus (front and back) or kneeling in añjali (sides), over waves and lotus petals under a pink lotus crown.
+  Hanging diamonds, tassels, tubes and flame lanterns are one `lowPoly` mesh per balloon (`hang`, `around`).
+  `DAY_SET` now lists keys: rooster and deva come up most often.
+- Checked headless (reduced motion, `?balloons=day`): rooster from the front and side, the deva balloon close up; no errors.
+- Burmese tip နတ်သမီးပုံ မီးပုံးပျံ (a balloon with a deva maiden's picture) is ours: have a Burmese reader confirm.
+
 ### 2026-11-17: animal balloons by day, the owner's night balloons after dark
 
 - Owner (three photos of Taunggyi night balloons): animals only 8 AM – 3 PM, night balloons 6 PM – 2 AM, small lanterns kept.

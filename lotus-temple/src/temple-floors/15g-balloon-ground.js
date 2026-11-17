@@ -2,7 +2,7 @@
      palace lake: the terrace carried out level over the slope on a whitewashed retaining wall, a parapet with gilt coping and lamp
      posts along its outer edge, and behind it, up the slope to the upper terrace, stepped terraces for the crowd. As at the Taunggyi
      festival in the month of Tazaungmon, teams fill great paper balloons over a fire pit, the top held up from a tall bamboo mast, and
-     let them go, one after another: great paper animals by day (8 am to 3 pm), and after dark (6 pm to 2 am) tall painted balloons,
+     let them go, one after another: great paper animals and balloons painted with devas by day (8 am to 3 pm), and after dark (6 pm to 2 am) tall painted balloons,
      balloons studded with little candle lanterns, and balloons carrying fireworks, while the crowd lets go small sky lanterns ---------- */
   // angles round the hill from the main stair (radians): the field starts `da0` past the east stair and runs to a1; its outer edge
   // r1, where its end walls begin (the terrace's edge), parapet height and thickness; the crowd's terraces (`tiers` steps from the
@@ -33,7 +33,7 @@
     const lo = HILL.terraces[1], up = HILL.terraces[0], top = lo.y + .03, rIn = lo.r0, a0 = eastStairAngle() + B.da0, a1 = B.a1, PH = B.PH, PW = B.PW;
     const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
     const wash = std({ color: 0xf2eee4, roughness: .8 });
-    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day, from eight in the morning till three, the teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another. From six in the evening till two in the morning come the night balloons: tall ones painted all over in bright panels and glowing from the fire inside, ones hung with hundreds of little candle lanterns in flowers with a picture in lanterns hanging below, and ones carrying a rack of fireworks (စိန်နားပန်, \"diamond earrings\") that showers sparks over the crowd as they climb. At night the crowd lets go hundreds of small paper lanterns too, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
+    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day, from eight in the morning till three, the teams send up great paper animals one after another: a round rooster painted all over in bright feathers with its tail fanned behind, a fish, a parrot, a bear and a tiger, and round balloons painted like temple murals with a deva seated on the waves holding a lotus, over a ring of lotus petals, hung with paper diamonds and tassels. From six in the evening till two in the morning come the night balloons: tall ones painted all over in bright panels and glowing from the fire inside, ones hung with hundreds of little candle lanterns in flowers with a picture in lanterns hanging below, and ones carrying a rack of fireworks (စိန်နားပန်, \"diamond earrings\") that showers sparks over the crowd as they climb. At night the crowd lets go hundreds of small paper lanterns too, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
     // the field: trampled grass worn to earth, on its retaining wall (footed low, below the slope)
     const fieldTex = canvasTex(256, (c, sz) => { c.fillStyle = "#6f8442"; c.fillRect(0, 0, sz, sz); const q = rng(51); for (let i = 0; i < 90; i++) { c.fillStyle = `rgba(${140 + q() * 30 | 0},${110 + q() * 20 | 0},${70 + q() * 20 | 0},${.25 + q() * .3})`; c.beginPath(); c.ellipse(q() * sz, q() * sz, 6 + q() * 22, 4 + q() * 12, q() * 3, 0, TAU); c.fill(); } for (let i = 0; i < 900; i++) { c.fillStyle = q() < .5 ? "rgba(40,70,30,.45)" : "rgba(130,155,80,.4)"; c.fillRect(q() * sz, q() * sz, 2, 3); } });
     fieldTex.wrapS = fieldTex.wrapT = THREE.RepeatWrapping; fieldTex.repeat.set(.08, .08);   // the top's UVs are in metres: a tile every 12.5 m
@@ -87,14 +87,14 @@
       const cord = mesh(new THREE.CylinderGeometry(.025, .025, 1, 4), rope, x, 0, z, H); cord.castShadow = false;
       return { x, z, a, fire, glow, cord, k };
     });
-    // the big balloons: great paper animals, as the Taunggyi teams send up, a rooster, a fish, a parrot, a bear and a tiger, each
-    // sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the town.
+    // the big balloons: great paper animals, as the Taunggyi teams send up, a rooster (painted on a round balloon), a fish, a parrot,
+    // a bear and a tiger, the others each sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the town.
     // Each pad sends up a different animal each time round
     const sphG = new THREE.SphereGeometry(1, 18, 14), coneG = new THREE.ConeGeometry(1, 1, 12);
     const paper = (color, map) => std(map ? { color, map, roughness: .9 } : { color, roughness: .9 });
     const P_ = {
       black: paper(0x1a1410), white: paper(0xf4efe0), red: paper(0xd8282a), beak: paper(0xf08a1a),
-      yellow: paper(0xf2c21c), wingY: paper(0xe89a1c), tailO: paper(0xe86a1a),
+      yellow: paper(0xf2c21c),
       fish: paper(0xffffff, canvasTex(256, (c, sz) => { c.fillStyle = "#f07a20"; c.fillRect(0, 0, sz, sz); c.strokeStyle = "rgba(150,40,10,.55)"; c.lineWidth = 3; for (let y = 0; y < 14; y++) for (let x = 0; x < 16; x++) { c.beginPath(); c.arc((x + (y % 2) * .5) * sz / 16, y * sz / 14 + 8, sz / 34, 0, Math.PI); c.stroke(); } })),
       belly: paper(0xf6e0b0), green: paper(0x2aa040), blue: paper(0x2050b8), ivory: paper(0xf0e0b0),
       brown: paper(0x7a4a28), tan: paper(0xd8b080),
@@ -108,20 +108,151 @@
     const skirt = (A, m, y1) => { const o = mesh(new THREE.CylinderGeometry(2.2, 1.0, y1, 16, 1, true), m, 0, y1 / 2, 0, A); o.material = m.clone(); o.material.side = THREE.DoubleSide; glowing.push(o.material); };
     const both = f => [-1, 1].forEach(f);
     const eyes = (A, x, y, z, w = .38) => both(sd => { blob(A, P_.white, sd * x, y, z, w, w, w); blob(A, P_.black, sd * (x + w * .45), y, z + w * .45, w * .55, w * .55, w * .55); });
+    // the painted day balloons (as in the owner's photos of the rooster and the deva): a round envelope, narrow at the mouth, broad
+    // above the middle and round over the crown, painted all over by hand in the bright Shan way: a red band round the mouth, a ring of
+    // lotus petals over it, and pictures above. Its points are spaced evenly along the profile, so the paper's v runs by length up it
+    // and pictures keep their shape; turned so the paper's middle (u = .5) faces front (+z)
+    const DAY_ENV = new THREE.SplineCurve([[1.15, 0], [1.35, .9], [2.1, 2.1], [3.2, 3.4], [4.2, 4.8], [4.85, 6.4], [5.1, 8], [5, 9.6], [4.55, 11], [3.7, 12.3], [2.5, 13.2], [1.2, 13.75], [0, 13.9]].map(([x, y]) => new THREE.Vector2(x, y))).getSpacedPoints(40);
+    const dayEnvG = new THREE.LatheGeometry(DAY_ENV, 32, -Math.PI);
+    const dayR = y => { for (let i = 1; i < DAY_ENV.length; i++) if (y <= DAY_ENV[i].y) { const a = DAY_ENV[i - 1], b = DAY_ENV[i]; return a.x + (b.x - a.x) * (y - a.y) / (b.y - a.y); } return 0; };
+    const wideTex = (w, h, draw) => { const cv = document.createElement("canvas"); cv.width = w; cv.height = h; draw(cv.getContext("2d"), w, h); const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; };
+    const dayPaper = draw => { const m = std({ color: 0xffffff, map: wideTex(2048, 1024, draw), roughness: .9 }); m.side = THREE.DoubleSide; glowing.push(m); return m; };
+    const rowAt = (v, H) => (1 - v) * H;   // a height up the paper (v) to the canvas row
+    // a ring of lotus petals from v0 out to v1 (pointing up, or down when v1 < v0), each in layers [colour, size], shifted half a petal by off
+    const petals = (c, W, H, v0, v1, n, layers, off = 0) => { for (let i = 0; i < n; i++) layers.forEach(([col, k]) => {
+      const cx = (i + .5 + off) * W / n, w = W / n * .55 * k, yb = rowAt(v0, H), yt = rowAt(v0 + (v1 - v0) * k, H), d = yb - yt;
+      c.fillStyle = col; c.beginPath(); c.moveTo(cx - w, yb); c.bezierCurveTo(cx - w, yb - d * .55, cx - w * .3, yt + d * .15, cx, yt); c.bezierCurveTo(cx + w * .3, yt + d * .15, cx + w, yb - d * .55, cx + w, yb); c.closePath(); c.fill();
+    }); };
+    const curl = (c, x, y, r_, col, lw, dir = 1) => { c.strokeStyle = col; c.lineWidth = lw; c.lineCap = "round"; c.beginPath(); for (let k = 0; k <= 40; k++) { const a = k * .2, rr = r_ * (1 - k / 48); c.lineTo(x + dir * Math.cos(a) * rr, y + Math.sin(a) * rr); } c.stroke(); };
+    const waves = (c, W, H, v0, v1) => {
+      const y0 = rowAt(v1, H), y1 = rowAt(v0, H), ym = (y0 + y1) / 2; c.fillStyle = "#2a62b0"; c.fillRect(0, y0, W, y1 - y0);
+      for (let x = 0; x < W; x += 112) { curl(c, x + 56, ym, (y1 - y0) * .38, "#f4f6ff", 7); curl(c, x, ym + (y1 - y0) * .25, (y1 - y0) * .2, "#8ac0f0", 5, -1); }
+    };
+    // a deva, seated with a lotus in one hand and the other raised (pose "seated"), or kneeling with her palms joined ("anjali"), in the
+    // way of temple murals: a gold halo, a pointed crown, a jewelled collar and a patterned cloth; drawn in units of about a pixel
+    function deva(c, x, y, s, pose, P) {
+      const SK = "#f6d2a8", GD = "#e8b030", INK = "#3a2014";
+      c.save(); c.translate(x, y); c.scale(s, s); c.lineCap = c.lineJoin = "round";
+      const el = (ex, ey, rx, ry, col, rot = 0) => { c.fillStyle = col; c.beginPath(); c.ellipse(ex, ey, rx, ry, rot, 0, TAU); c.fill(); };
+      const line = (pts, col, lw) => { c.strokeStyle = col; c.lineWidth = lw; c.beginPath(); pts.forEach(([a, b], i) => i ? c.lineTo(a, b) : c.moveTo(a, b)); c.stroke(); };
+      const poly = (pts, col) => { c.fillStyle = col; c.beginPath(); pts.forEach(([a, b], i) => i ? c.lineTo(a, b) : c.moveTo(a, b)); c.closePath(); c.fill(); };
+      [[-1, P.scarf], [1, P.scarf2]].forEach(([sd, col]) => { c.strokeStyle = col; c.lineWidth = 12; c.beginPath(); c.moveTo(sd * 40, -95); c.bezierCurveTo(sd * 130, -80, sd * 155, -10, sd * 122, 45); c.stroke(); });   // the flying scarf
+      el(0, -150, 64, 64, "#d88a1a"); el(0, -150, 58, 58, "#f4c04a"); el(0, -150, 46, 46, "#fbe7a8");   // the halo
+      const seat = pose === "seated" ? [[-34, -24], [34, -24], [92, 30], [104, 62], [-104, 62], [-92, 30]] : [[-32, -24], [32, -24], [60, 40], [66, 66], [-66, 66], [-60, 40]];
+      poly(seat, P.cloth); c.save(); c.clip(); c.fillStyle = GD; for (let yy = -30; yy < 72; yy += 16) for (let xx = -112; xx < 112; xx += 16) c.fillRect(xx + ((yy + 30) / 16 % 2) * 8, yy, 4, 4); c.restore();   // the cloth, dotted in gold
+      if (pose === "seated") { el(-58, 52, 20, 10, SK, .3); el(58, 52, 20, 10, SK, -.3); }   // the soles of the crossed feet
+      poly([[-15, -24], [15, -24], [10, 58], [0, 78], [-10, 58]], P.panel); line([[-15, -24], [-10, 58], [0, 78], [10, 58], [15, -24]], GD, 3);   // the hanging front panel
+      c.fillStyle = GD; c.fillRect(-36, -32, 72, 10);   // the belt
+      poly([[-46, -104], [46, -104], [34, -26], [-34, -26]], SK); poly([[-41, -84], [41, -84], [37, -52], [-37, -52]], P.top);   // the body and breast cloth
+      c.strokeStyle = GD; c.lineWidth = 11; c.beginPath(); c.ellipse(0, -104, 46, 24, 0, 0, Math.PI); c.stroke();   // the collar, set with red stones
+      for (let k = 0; k <= 6; k++) { const a = k * Math.PI / 6; el(Math.cos(a) * 46, -104 + Math.sin(a) * 24, 3.5, 3.5, "#c82020"); }
+      if (pose === "seated") {
+        line([[-44, -98], [-84, -56], [-70, -120]], SK, 17); el(-70, -128, 10, 13, SK); line([[-74, -138], [-76, -150]], SK, 5); line([[-66, -138], [-62, -149]], SK, 5);   // the raised hand
+        line([[44, -98], [86, -58], [96, -106]], SK, 17); el(96, -112, 10, 12, SK);
+        line([[96, -112], [104, -150], [112, -174]], "#3a8a3a", 4);   // the lotus on its stem
+        for (let k = -2; k <= 2; k++) el(112 + k * 7, -188, 7, 16, k % 2 ? "#f498b4" : "#e0507a", k * .35);
+        el(-72, -112, 10, 5, GD); el(94, -98, 10, 5, GD); el(-64, -80, 9, 5, GD, -.7); el(64, -80, 9, 5, GD, .7);   // bracelets and armlets
+      } else {
+        line([[-44, -98], [-60, -56], [-6, -92]], SK, 16); line([[44, -98], [60, -56], [6, -92]], SK, 16); poly([[-9, -88], [9, -88], [0, -132]], SK);   // the palms joined
+        el(-30, -76, 9, 5, GD, -.6); el(30, -76, 9, 5, GD, .6);
+      }
+      c.fillStyle = SK; c.fillRect(-10, -126, 20, 24); el(0, -150, 29, 35, SK);   // the neck and face
+      c.fillStyle = "#2a1a14"; c.beginPath(); c.ellipse(0, -160, 31, 27, 0, Math.PI, TAU); c.fill();   // the hair
+      poly([[-24, -178], [24, -178], [12, -202], [0, -238], [-12, -202]], GD); c.fillStyle = GD; c.fillRect(-29, -183, 58, 9); el(0, -191, 4, 5, "#c82020");   // the crown
+      el(-30, -142, 5, 9, SK); el(30, -142, 5, 9, SK); el(-30, -127, 4.5, 4.5, GD); el(30, -127, 4.5, 4.5, GD);   // the ears and earrings
+      [-1, 1].forEach(sd => {
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath(); c.arc(sd * 11, -149, 9, 1.15 * Math.PI, 1.85 * Math.PI); c.stroke();   // the brows
+        c.beginPath(); c.moveTo(sd * 18, -142); c.quadraticCurveTo(sd * 11, -146, sd * 4, -142); c.stroke();   // the lowered eyes
+      });
+      line([[0, -140], [-2, -131], [2, -130]], INK, 1.8); el(0, -122, 6, 2.6, "#c8343a");
+      c.restore();
+    }
+    // the deva balloon: a pink lotus crown, blue clouds, a deva seated on the waves with a lotus in her hand on the front and the back,
+    // devas kneeling in homage on either side among green scrolls, then waves, the lotus petals and the red mouth
+    const devaPaper = dayPaper((c, W, H) => {
+      c.fillStyle = "#f6eedc"; c.fillRect(0, 0, W, H);
+      c.fillStyle = "#3a9a78"; c.fillRect(0, 0, W, rowAt(.86, H));
+      petals(c, W, H, 1, .85, 24, [["#2a8a5a", 1]], .5); petals(c, W, H, 1, .84, 24, [["#d84a78", 1], ["#f498b4", .72], ["#fbe0e8", .38]]);
+      for (let x = 0; x < W; x += 128) { curl(c, x + 64, rowAt(.8, H), 26, "#2a70c0", 8, 1); curl(c, x + 128, rowAt(.785, H), 16, "#7ab8e8", 6, -1); }
+      for (let i = 0; i < 16; i++) { const x = (i + .5) * W / 16, up = i % 2; curl(c, x, rowAt(up ? .68 : .42, H), 40, "#3a9a50", 9, up ? 1 : -1); curl(c, x + 30, rowAt(up ? .52 : .6, H), 24, "#5ab0d8", 7, up ? -1 : 1); curl(c, x - 20, rowAt(.73, H), 22, "#2a70c0", 7, up ? 1 : -1); }
+      const front = { top: "#2f9a4e", cloth: "#7a2a1a", panel: "#c8282a", scarf: "#d8402a", scarf2: "#2f9a4e" }, side = { top: "#c8282a", cloth: "#2f6a3a", panel: "#e8b030", scarf: "#2f9a4e", scarf2: "#e86a20" };
+      const yS = rowAt(.33, H) - 78 * 1.5; [0, W / 2, W].forEach(x => deva(c, x, yS, 1.5, "seated", front));
+      [W / 4, W * 3 / 4].forEach(x => deva(c, x, rowAt(.33, H) - 66 * 1.25, 1.25, "anjali", side));
+      waves(c, W, H, .25, .33);
+      petals(c, W, H, .07, .23, 16, [["#3a9a50", 1]], .5); petals(c, W, H, .07, .25, 16, [["#e85a8a", 1], ["#fbe8ee", .78], ["#d8282a", .55], ["#f2c21c", .3]]);
+      c.fillStyle = "#d8301e"; c.fillRect(0, rowAt(.07, H), W, H); c.fillStyle = "#f2c21c"; c.fillRect(0, rowAt(.07, H) - 5, W, 6);
+    });
+    // the rooster balloon's body: scale feathers in rows of red, gold, green and blue, a great wing painted down each side sweeping back,
+    // a white band of red heart-shaped flourishes, the lotus petals and the red mouth
+    const SCALE_C = ["#d8282a", "#f2b81c", "#2a9a48", "#2a62b8", "#f07a20", "#e04a8a"];
+    const scaleRows = (c, x0, x1, y0, y1, r_, step, base, k0 = 0) => { for (let y = y1, n = k0; y > y0 - r_; y -= step, n++) for (let x = x0 - (n % 2) * r_; x < x1 + r_; x += r_ * 2) {
+      [[r_, SCALE_C[n % 6]], [r_ * .66, base], [r_ * .33, SCALE_C[(n + 2) % 6]]].forEach(([rr, col]) => { c.fillStyle = col; c.beginPath(); c.arc(x + r_, y, rr, 0, Math.PI); c.fill(); });
+    } };
+    const wing = (c, cx, cy, dir) => {   // its long feathers point back: -1 toward the paper's left edge, 1 toward its right
+      c.save(); c.translate(cx, cy); c.scale(dir * 1.3, 1.6); c.lineJoin = "round";
+      const FC = ["#2a9a48", "#d8282a", "#f2b81c", "#2a62b8", "#2a9a48", "#f07a20", "#d8282a"];
+      for (let i = 6; i >= 0; i--) {
+        const len = 330 - i * 14; c.save(); c.translate(40, 20 + i * 14); c.rotate(.08 + i * .07);
+        c.fillStyle = FC[i]; c.strokeStyle = "#1a2a1a"; c.lineWidth = 5; c.beginPath(); c.moveTo(0, -22); c.quadraticCurveTo(len * .7, -30, len, 0); c.quadraticCurveTo(len * .7, 26, 0, 22); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = "#faf4e6"; c.lineWidth = 3; c.beginPath(); c.moveTo(10, 0); c.lineTo(len * .9, 0); c.stroke(); c.restore();
+      }
+      c.beginPath(); c.ellipse(20, -10, 190, 110, .12, 0, TAU); c.fillStyle = "#faf4e6"; c.fill();
+      c.save(); c.clip(); scaleRows(c, -180, 220, -130, 110, 18, 22, "#faf4e6", 3); c.restore();
+      c.beginPath(); c.ellipse(20, -10, 190, 110, .12, 0, TAU); c.strokeStyle = "#1a3a24"; c.lineWidth = 12; c.stroke(); c.restore();
+    };
+    const roosterPaper = dayPaper((c, W, H) => {
+      c.fillStyle = "#faf4e6"; c.fillRect(0, 0, W, H);
+      scaleRows(c, 0, W, 0, rowAt(.34, H), 40, 32, "#faf4e6");
+      wing(c, W * .31, rowAt(.6, H), -1); wing(c, W * .69, rowAt(.6, H), 1);
+      const b0 = rowAt(.34, H), b1 = rowAt(.24, H); c.fillStyle = "#faf4e6"; c.fillRect(0, b0, W, b1 - b0);
+      for (let x = 64; x < W; x += 128) {   // the heart-shaped flourishes
+        const yb = b1 - 12, yt = b0 + 14, ym = (yb + yt) / 2; c.strokeStyle = "#c82020"; c.lineWidth = 7;
+        c.beginPath(); c.moveTo(x, yb); c.bezierCurveTo(x - 58, ym, x - 40, yt, x, ym - 8); c.bezierCurveTo(x + 40, yt, x + 58, ym, x, yb); c.stroke();
+        c.fillStyle = "#e85a5a"; c.beginPath(); c.arc(x, ym + 6, 9, 0, TAU); c.fill(); curl(c, x + 64, ym, 12, "#c82020", 4);
+      }
+      [[b0, "#d8282a"], [b0 + 8, "#f2b81c"], [b1 - 10, "#f2b81c"], [b1 - 4, "#d8282a"]].forEach(([y, col]) => { c.fillStyle = col; c.fillRect(0, y - 4, W, 8); });
+      petals(c, W, H, .06, .22, 16, [["#2a9a48", 1], ["#f2d040", .55]], .5); petals(c, W, H, .06, .24, 16, [["#2a9a48", 1], ["#d8282a", .8], ["#f2b81c", .55], ["#f07a20", .3]]);
+      c.fillStyle = "#d8301e"; c.fillRect(0, rowAt(.06, H), W, H); c.fillStyle = "#f2c21c"; c.fillRect(0, rowAt(.06, H) - 5, W, 6);
+    });
+    // its head and neck in small scales under a white crown streaked green and red; its tail feathers striped lengthwise (on a flattened
+    // ball the faces are u .5 and 0, the edges .25 and .75)
+    const headPaper = std({ color: 0xffffff, roughness: .9, map: canvasTex(256, (c, sz) => {
+      c.fillStyle = "#faf4e6"; c.fillRect(0, 0, sz, sz); scaleRows(c, 0, sz, sz * .45, sz, 8, 7, "#faf4e6");
+      for (let i = 0; i < 8; i++) curl(c, (i + .5) * sz / 8, sz * .3, 10, i % 2 ? "#d8282a" : "#2a9a48", 3, i % 2 ? 1 : -1);
+    }) }); glowing.push(headPaper);
+    const featherPaper = cols => { const m = std({ color: 0xffffff, roughness: .9, map: canvasTex(128, (c, sz) => {
+      for (let x = 0; x < sz; x++) { const u = (x + .5) / sz, d = Math.min(Math.abs(u - .5), u, 1 - u) / .25; c.fillStyle = d < .08 ? "#faf4e6" : d < .3 ? cols[0] : d < .6 ? cols[1] : d < .9 ? cols[2] : "#1a3a24"; c.fillRect(x, 0, 1, sz); }
+      c.strokeStyle = "rgba(20,40,20,.35)"; c.lineWidth = 2; for (let y = 4; y < sz; y += 10) { c.beginPath(); c.moveTo(0, y); c.lineTo(sz / 4, y + 6); c.lineTo(sz / 2, y); c.lineTo(sz * 3 / 4, y + 6); c.lineTo(sz, y); c.stroke(); }
+    }) }); glowing.push(m); return m; };
+    const featherA = featherPaper(["#d8282a", "#f2b81c", "#2a9a48"]), featherB = featherPaper(["#2a9a48", "#f2b81c", "#d8282a"]);
+    // the paper things hung round a day balloon (diamonds, tassels, tubes, flame lanterns), merged into one mesh of flat colours
+    const ornM = std({ vertexColors: true, roughness: .85, side: THREE.DoubleSide });
+    const GOLD_H = 0xe8b030, CORD_H = 0xd8c8a0;
+    const cordP = (x, y0, y1, z) => [[new THREE.BoxGeometry(.03, y0 - y1, .03), CORD_H, x, (y0 + y1) / 2, z]];
+    const diamondP = (x, y, z, th, sz, col) => [[new THREE.BoxGeometry(sz, sz, .04).rotateZ(Math.PI / 4).rotateY(th), GOLD_H, x, y, z], [new THREE.BoxGeometry(sz * .7, sz * .7, .07).rotateZ(Math.PI / 4).rotateY(th), col, x, y, z]];
+    const tasselP = (x, y, z, col) => [[new THREE.ConeGeometry(.09, .18, 6), GOLD_H, x, y, z], [new THREE.CylinderGeometry(.08, .15, .6, 6), col, x, y - .38, z]];
+    const tubeP = (x, y, z, col, len) => [[new THREE.ConeGeometry(.17, .25, 8), GOLD_H, x, y, z], [new THREE.CylinderGeometry(.13, .13, len, 8), col, x, y - .12 - len / 2, z], [new THREE.CylinderGeometry(.13, .06, .3, 8), GOLD_H, x, y - .27 - len, z]];
+    const flameP = (x, y, z, col) => [[new THREE.ConeGeometry(.26, .8, 8).rotateX(Math.PI), col, x, y, z], [new THREE.ConeGeometry(.26, .4, 8), 0xf2b81c, x, y + .6, z]];
+    const hang = (A, parts) => { const o = mesh(lowPoly(parts), ornM, 0, 0, 0, A); o.castShadow = false; };
+    const around = (n, rr, y, f) => { const out = []; for (let k = 0; k < n; k++) { const th = (k + .5) * TAU / n; out.push(...f(rr * Math.sin(th), y, rr * Math.cos(th), th, k)); } return out; };
+    const HANG_C = [0xd8282a, 0xf2b81c, 0x2a9a48, 0xe04a8a, 0x6a3a9a];
     // each faces +z, its mouth at y = 0; h: where the mast's cord holds its top
     const ANIMALS = {
-      rooster: { my: "ကြက်ဖ", en: "rooster", h: 12.2, make(A) {
-        skirt(A, P_.yellow, 2.4);
-        blob(A, P_.yellow, 0, 6, 0, 3.8, 4.0, 4.4); blob(A, P_.yellow, 0, 6.6, 2.2, 3.0, 3.4, 2.8);   // the body and its full breast
-        blob(A, P_.yellow, 0, 10.3, 2.6, 1.9, 2.3, 2.0);   // the head on its neck
-        cone(A, P_.beak, 0, 10.4, 4.9, .5, 1.3, Math.PI / 2);
-        [[12.4, 1.9], [12.8, 2.7], [12.5, 3.5]].forEach(([y, z]) => blob(A, P_.red, 0, y, z, .35, .8, .6));   // the comb
-        blob(A, P_.red, 0, 9.0, 4.2, .4, .8, .45); eyes(A, 1.5, 10.8, 3.4);
-        both(sd => blob(A, P_.wingY, sd * 3.4, 6.2, -.3, .9, 2.4, 3.2));
-        for (let i = 0; i < 5; i++) {   // the tail feathers, fanned up and back
-          const th = -.15 - i * .32, L = 3.4 - i * .25;
-          blob(A, i % 2 ? P_.red : P_.tailO, 0, 7 + Math.cos(th) * L * .8, -3.4 + Math.sin(th) * L * .8, .5, L, 1.2, th);
+      rooster: { my: "ကြက်ဖ", en: "rooster", h: 12, make(A) {   // the round body painted as the rooster, its head, comb and tail built out
+        mesh(dayEnvG, roosterPaper, 0, 0, 0, A).scale.set(.9, .86, .9);
+        blob(A, headPaper, 0, 10.6, 2.1, 2.0, 2.6, 2.0, .3); blob(A, headPaper, 0, 12.7, 2.5, 1.8, 1.9, 2.0);   // the neck and head
+        cone(A, P_.beak, 0, 12.5, 4.65, .55, 1.0, Math.PI / 2);
+        [[14.5, 1.6], [14.9, 2.4], [14.6, 3.2]].forEach(([y, z]) => blob(A, P_.red, 0, y, z, .35, .8, .55));   // the comb
+        blob(A, P_.red, 0, 11.4, 4.0, .4, .8, .45);   // the wattle
+        both(sd => { blob(A, P_.green, sd * 1.55, 13.0, 3.2, .16, .6, .65); blob(A, P_.white, sd * 1.62, 13.02, 3.25, .16, .44, .5); blob(A, P_.black, sd * 1.69, 13.04, 3.35, .14, .22, .22); });
+        for (let i = 0; i < 7; i++) {   // the tail feathers, fanned from straight up to back
+          const rx = -.25 - i * .25, L = 3 - i * .12;
+          blob(A, i % 2 ? featherB : featherA, i % 2 ? .12 : -.12, 8.4 + Math.cos(rx) * L * .85, -3.2 + Math.sin(rx) * L * .85, .22, L, .8, rx);
         }
+        // long paper tubes round its middle, flame lanterns round the mouth, and two diamonds hung from the beak
+        hang(A, [...around(10, .9 * dayR(3.4 / .86) + .05, 3.4, (x, y, z, th, k) => [...cordP(x, y, y - .5, z), ...tubeP(x, y - .5, z, HANG_C[k % 5], 1.4)]),
+                 ...around(8, .9 * dayR(1.4 / .86) + .05, 1.4, (x, y, z, th, k) => [...cordP(x, y, y - .3, z), ...flameP(x, y - .7, z, k % 2 ? 0xd8282a : 0xf07a20)]),
+                 ...cordP(0, 11.9, 11.2, 4.4), ...diamondP(0, 10.8, 4.4, 0, .7, 0xd8282a), ...cordP(0, 10.4, 10.1, 4.4), ...diamondP(0, 9.8, 4.4, 0, .55, 0x2a62b8), ...tasselP(0, 9.4, 4.4, 0xd8282a)]);
       } },
       fish: { my: "ငါး", en: "fish", h: 10.4, make(A) {
         skirt(A, P_.belly, 3.2);
@@ -248,8 +379,17 @@
         mesh(new THREE.BoxGeometry(.9, .5, .9), bamboo, 0, -2.85, 0, A);   // the rack of fireworks
       } }
     ];
-    const DEFS = KINDS.map(name => ({ ...ANIMALS[name], key: name, tip: `A ${ANIMALS[name].en} balloon · ${ANIMALS[name].my}ပုံ မီးပုံးပျံ` })).concat(NIGHT_DEFS);
-    const DAY_SET = KINDS.map((_, i) => i), NIGHT_SET = NIGHT_DEFS.map((_, i) => KINDS.length + i);
+    // the deva balloon, hung round its middle with diamonds and tassels and round its mouth with little box lanterns
+    const DAY_DEFS = [
+      { key: "deva", h: 13.9, tip: "A balloon painted with a deva · နတ်သမီးပုံ မီးပုံးပျံ", make(A) {
+        mesh(dayEnvG, devaPaper, 0, 0, 0, A);
+        hang(A, [...around(8, dayR(4.6) + .05, 4.6, (x, y, z, th, k) => [...cordP(x, y, y - 1, z), ...diamondP(x, y - 1.35, z, th, .7, k % 2 ? 0x6a3a9a : 0xd8282a), ...cordP(x, y - 1.7, y - 2.1, z), ...tasselP(x, y - 2.1, z, HANG_C[k % 5])]),
+                 ...around(4, dayR(1.2) + .05, 1.2, (x, y, z, th, k) => [...cordP(x, y, y - 1.2, z), [new THREE.BoxGeometry(.3, .5, .3).rotateY(th), 0xf2c21c, x, y - 1.45, z], [new THREE.ConeGeometry(.24, .2, 4).rotateY(th + Math.PI / 4), 0xd8282a, x, y - 1.1, z], ...tasselP(x, y - 1.7, z, 0xd8282a)])]);
+      } }
+    ];
+    const DEFS = KINDS.map(name => ({ ...ANIMALS[name], key: name, tip: `A ${ANIMALS[name].en} balloon · ${ANIMALS[name].my}ပုံ မီးပုံးပျံ` })).concat(DAY_DEFS, NIGHT_DEFS);
+    // by day the painted rooster and the deva balloon go up most often, the other animals in between
+    const DAY_SET = ["rooster", "deva", "fish", "deva", "parrot", "rooster", "bear", "deva", "tiger"].map(k => DEFS.findIndex(Z => Z.key === k)), NIGHT_SET = NIGHT_DEFS.map(Z => DEFS.indexOf(Z));
     // the fireworks' sparks: one cloud of points shared by every rack, each spark thrown out and falling as it burns out
     const SN = 900, spPos = new Float32Array(SN * 3), spCol = new Float32Array(SN * 3), spV = new Float32Array(SN * 3), spAge = new Float32Array(SN), spLife = new Float32Array(SN), spBase = new Float32Array(SN * 3);
     const spGeo = new THREE.BufferGeometry(); spGeo.setAttribute("position", new THREE.BufferAttribute(spPos, 3)); spGeo.setAttribute("color", new THREE.BufferAttribute(spCol, 3));
