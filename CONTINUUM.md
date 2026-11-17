@@ -75,6 +75,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-17: animal balloons by day, the owner's night balloons after dark
+
+- Owner (three photos of Taunggyi night balloons): animals only 8 AM – 3 PM, night balloons 6 PM – 2 AM, small lanterns kept.
+  Hours in `CONFIG.balloons` (`day`, `night`); `balloonsNow()` in `07-festivals-and-weather.js` gives "day" / "night" / null every
+  30 s, passed as `temple.setBalloons(on, kind)` → `FOLK.balloonKind`. `?balloons=day|night` forces one, `=1` picks by the light.
+- `15g-balloon-ground.js`: `NIGHT_DEFS` share one lathe envelope (`ENV`, 14.7 m): `lamps` (dim paper, `Points` of candle lanterns
+  in flowers and rings, and a stupa drawn on a 60×80 canvas sampled every 2 px, hung 3.5 m below and unrolled as it lifts),
+  `dancers` and `fireworks` (painted canvas textures, glowing; the fireworks rack feeds a shared 900-spark `Points` cloud).
+  `DEFS` = animals + night; each pad picks from `DAY_SET`/`NIGHT_SET` at the start of each cycle, so one already up flies on.
+  The crowd shows while any pad has a balloon; lanterns only while dark in the night window.
+- Checked headless at 20:30 ICT: the lantern balloon with its stupa, both painted balloons, sparks leaving the rack (only 5 frames,
+  so the spray's full spread is unseen), and 16:30 ICT renders with no errors. See the spark spread live.
+- Burmese ညမီးပုံးပျံ (night balloon) and စိန်နားပန် (the fireworks balloons' name) are ours: have a Burmese reader confirm.
+
 ### 2026-11-17: sky lanterns let go from people's hands, on the field and the top terraces
 
 - Owner: the small lanterns should come from people's hands, launched both low (the field by the parapet) and high (up the

@@ -2,7 +2,8 @@
      palace lake: the terrace carried out level over the slope on a whitewashed retaining wall, a parapet with gilt coping and lamp
      posts along its outer edge, and behind it, up the slope to the upper terrace, stepped terraces for the crowd. As at the Taunggyi
      festival in the month of Tazaungmon, teams fill great paper balloons over a fire pit, the top held up from a tall bamboo mast, and
-     let them go, one after another; after dark they carry strings of little paper lanterns beneath them ---------- */
+     let them go, one after another: great paper animals by day (8 am to 3 pm), and after dark (6 pm to 2 am) tall painted balloons,
+     balloons studded with little candle lanterns, and balloons carrying fireworks, while the crowd lets go small sky lanterns ---------- */
   // angles round the hill from the main stair (radians): the field starts `da0` past the east stair and runs to a1; its outer edge
   // r1, where its end walls begin (the terrace's edge), parapet height and thickness; the crowd's terraces (`tiers` steps from the
   // lower terrace up to the upper) stop `tierIn` short of the field's ends; the launch pads (fractions along the field, radius);
@@ -32,7 +33,7 @@
     const lo = HILL.terraces[1], up = HILL.terraces[0], top = lo.y + .03, rIn = lo.r0, a0 = eastStairAngle() + B.da0, a1 = B.a1, PH = B.PH, PW = B.PW;
     const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
     const wash = std({ color: 0xf2eee4, roughness: .8 });
-    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. The teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another, glowing from the fire inside after dark; at night the crowd lets go hundreds of small paper lanterns too, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
+    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day, from eight in the morning till three, the teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another. From six in the evening till two in the morning come the night balloons: tall ones painted all over in bright panels and glowing from the fire inside, ones hung with hundreds of little candle lanterns in flowers with a picture in lanterns hanging below, and ones carrying a rack of fireworks (စိန်နားပန်, \"diamond earrings\") that showers sparks over the crowd as they climb. At night the crowd lets go hundreds of small paper lanterns too, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
     // the field: trampled grass worn to earth, on its retaining wall (footed low, below the slope)
     const fieldTex = canvasTex(256, (c, sz) => { c.fillStyle = "#6f8442"; c.fillRect(0, 0, sz, sz); const q = rng(51); for (let i = 0; i < 90; i++) { c.fillStyle = `rgba(${140 + q() * 30 | 0},${110 + q() * 20 | 0},${70 + q() * 20 | 0},${.25 + q() * .3})`; c.beginPath(); c.ellipse(q() * sz, q() * sz, 6 + q() * 22, 4 + q() * 12, q() * 3, 0, TAU); c.fill(); } for (let i = 0; i < 900; i++) { c.fillStyle = q() < .5 ? "rgba(40,70,30,.45)" : "rgba(130,155,80,.4)"; c.fillRect(q() * sz, q() * sz, 2, 3); } });
     fieldTex.wrapS = fieldTex.wrapT = THREE.RepeatWrapping; fieldTex.repeat.set(.08, .08);   // the top's UVs are in metres: a tile every 12.5 m
@@ -88,7 +89,7 @@
     });
     // the big balloons: great paper animals, as the Taunggyi teams send up, a rooster, a fish, a parrot, a bear and a tiger, each
     // sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the town.
-    // Each pad sends up a different animal each time round, by day and after dark, when the fire inside makes the paper glow
+    // Each pad sends up a different animal each time round
     const sphG = new THREE.SphereGeometry(1, 18, 14), coneG = new THREE.ConeGeometry(1, 1, 12);
     const paper = (color, map) => std(map ? { color, map, roughness: .9 } : { color, roughness: .9 });
     const P_ = {
@@ -158,6 +159,109 @@
       } }
     };
     const KINDS = Object.keys(ANIMALS);
+    // the night balloons, as the Taunggyi teams send up after dark: a tall pear of paper, narrow at the mouth and broad under the crown,
+    // either painted all over in bright panels and lit from inside by the fire, or of plain paper hung with hundreds of little candle
+    // lanterns set out in flowers, with a picture in lanterns (here a stupa) hanging on a line below it; the flower-painted one carries a
+    // rack of fireworks under its mouth (စိန်နားပန်, "diamond earrings") that throws out sparks over the crowd as it climbs
+    const ENV = [[1.0, 0], [1.6, 1.5], [2.6, 3.5], [3.6, 6], [4.3, 8.5], [4.6, 10.5], [4.3, 12.3], [3.4, 13.6], [2, 14.4], [0, 14.7]];
+    const envG = new THREE.LatheGeometry(ENV.map(([x, y]) => new THREE.Vector2(x, y)), 28);   // its v runs by profile point: .11 a point
+    const envR = y => { for (let i = 1; i < ENV.length; i++) if (y <= ENV[i][1]) { const [r0, y0] = ENV[i - 1], [r1, y1] = ENV[i]; return r0 + (r1 - r0) * (y - y0) / (y1 - y0); } return 0; };
+    const bandY = (v, sz) => (1 - v) * sz;   // a height up the envelope (v) to the canvas row (the crown at the top)
+    const paintedPaper = draw => { const m = std({ color: 0xffffff, map: canvasTex(512, draw), roughness: .9 }); m.side = THREE.DoubleSide; glowing.push(m); return m; };
+    const scallops = (c, sz, v, h, fill) => { c.fillStyle = fill; for (let x = 0; x < sz; x += sz / 24) { c.beginPath(); c.arc(x + sz / 48, bandY(v, sz), h, 0, Math.PI); c.fill(); } };
+    // painted with dancers in crowns between red pillars, over bands of green, red and gold (as in the owner's first photo)
+    const dancersPaper = paintedPaper((c, sz) => {
+      c.fillStyle = "#f0b030"; c.fillRect(0, 0, sz, sz);
+      c.fillStyle = "#e86a20"; c.fillRect(0, 0, sz, bandY(.84, sz));
+      c.fillStyle = "#c8282a"; for (let i = 0; i < 16; i++) c.fillRect(i * sz / 16, 0, sz / 40, bandY(.84, sz));
+      c.fillStyle = "#c8282a"; c.fillRect(0, bandY(.84, sz), sz, bandY(.78, sz) - bandY(.84, sz)); scallops(c, sz, .78, 9, "#c8282a");
+      const y1 = bandY(.76, sz), y2 = bandY(.42, sz);
+      for (let i = 0; i < 6; i++) {
+        const cx = (i + .5) * sz / 6, robe = i % 2 ? "#2a8a40" : "#c8282a";
+        c.fillStyle = "#a01a1a"; c.fillRect(i * sz / 6 - 4, y1, 8, y2 - y1);   // the red pillars between the panels
+        c.fillStyle = robe; c.beginPath(); c.moveTo(cx - 8, y1 + 48); c.lineTo(cx + 8, y1 + 48); c.lineTo(cx + 26, y2 - 10); c.lineTo(cx - 26, y2 - 10); c.fill();
+        c.strokeStyle = robe; c.lineWidth = 6; c.beginPath(); c.moveTo(cx - 30, y1 + 30); c.lineTo(cx - 8, y1 + 55); c.lineTo(cx + 8, y1 + 55); c.lineTo(cx + 30, y1 + 80); c.stroke();
+        c.fillStyle = "#f0c890"; c.beginPath(); c.arc(cx, y1 + 38, 10, 0, TAU); c.fill();
+        c.fillStyle = "#ffe060"; c.beginPath(); c.moveTo(cx - 8, y1 + 30); c.lineTo(cx, y1 + 8); c.lineTo(cx + 8, y1 + 30); c.fill();
+        c.fillStyle = "#ffffff"; c.fillRect(cx - 14, y1 + 100, 28, 6);
+      }
+      c.fillStyle = "#2a8a40"; c.fillRect(0, bandY(.42, sz), sz, bandY(.35, sz) - bandY(.42, sz));
+      c.strokeStyle = "#ffe060"; c.lineWidth = 4; c.beginPath(); for (let x = 0; x <= sz; x += 16) c.lineTo(x, bandY(x % 32 ? .36 : .41, sz)); c.stroke();
+      ["#c8282a", "#f4e8c8", "#e04a8a", "#2a8a40", "#f0b030", "#c8282a"].forEach((col, i) => { c.fillStyle = col; c.fillRect(0, bandY(.35 - i * .058, sz), sz, sz * .058 + 1); });
+    });
+    // painted with big flowers on blue under a pink crown, over pink and green chevrons (as in the owner's third photo)
+    const flowersPaper = paintedPaper((c, sz) => {
+      c.fillStyle = "#f06aa0"; c.fillRect(0, 0, sz, bandY(.82, sz)); c.fillStyle = "#ffffff";
+      for (let y = 10; y < bandY(.82, sz); y += 16) for (let x = (y % 32) / 2; x < sz; x += 16) { c.beginPath(); c.arc(x, y, 3, 0, TAU); c.fill(); }
+      c.fillStyle = "#f8f0e0"; c.fillRect(0, bandY(.82, sz), sz, bandY(.76, sz) - bandY(.82, sz)); scallops(c, sz, .82, 10, "#f07a20");
+      c.fillStyle = "#3aa0e0"; c.fillRect(0, bandY(.76, sz), sz, bandY(.46, sz) - bandY(.76, sz));
+      const flower = (x, y, rr, petal, heart) => {
+        c.fillStyle = "#2a9a40"; [-1, 1].forEach(sd => { c.beginPath(); c.ellipse(x + sd * rr * 1.1, y + rr * .7, rr * .7, rr * .3, sd * .5, 0, TAU); c.fill(); });
+        c.fillStyle = petal; for (let k = 0; k < 8; k++) { const a = k * TAU / 8; c.beginPath(); c.ellipse(x + Math.cos(a) * rr * .6, y + Math.sin(a) * rr * .6, rr * .45, rr * .25, a, 0, TAU); c.fill(); }
+        c.fillStyle = heart; c.beginPath(); c.arc(x, y, rr * .35, 0, TAU); c.fill();
+      };
+      for (let i = 0; i < 5; i++) { flower((i + .25) * sz / 5, bandY(.68, sz), 26, ["#ffd020", "#e8282a", "#f07a20"][i % 3], "#c81a50"); flower((i + .75) * sz / 5, bandY(.54, sz), 22, ["#e8282a", "#ffd020", "#ffffff"][i % 3], "#f07a20"); }
+      c.fillStyle = "#c8282a"; c.fillRect(0, bandY(.46, sz), sz, bandY(.39, sz) - bandY(.46, sz)); c.fillStyle = "#ffd020";
+      for (let x = 0; x < sz; x += 32) { const y = bandY(.425, sz); c.beginPath(); c.moveTo(x, y); c.lineTo(x + 16, y - 12); c.lineTo(x + 32, y); c.lineTo(x + 16, y + 12); c.fill(); }
+      ["#e04a8a", "#2aa060", "#f4f0e0"].forEach((col, i) => { c.strokeStyle = col; c.lineWidth = 14; for (let row = i; row < 7; row += 3) { c.beginPath(); for (let x = 0; x <= sz; x += 24) c.lineTo(x, bandY(.36 - row * .05, sz) + (x % 48 ? 10 : -4)); c.stroke(); } });
+    });
+    // the lantern balloon's own paper, plain and dim so its lanterns stand out (as in the owner's second photo)
+    const lampPaper = std({ color: 0x3a332c, roughness: 1 }); lampPaper.side = THREE.DoubleSide; glowing.push(lampPaper);
+    // the little candle lanterns: flowers of them round the paper, dotted rings between, and the stupa hung below, drawn on a small
+    // canvas and taken as one lantern every other pixel (a pixel is 10 cm)
+    const lampM = new THREE.PointsMaterial({ size: .85, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+    const pointsGeo = (pos, col) => { const G_ = new THREE.BufferGeometry(); G_.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); G_.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); return G_; };
+    const WARM = [1, .62, .25], GOLD = [1, .8, .4], ROSE = [1, .42, .28];
+    const envLamps = (() => {
+      const pos = [], col = [], on = (th, y, cl) => { const rr = envR(y) + .12; pos.push(rr * Math.sin(th), y, rr * Math.cos(th)); col.push(...cl); };
+      [[5.2, 7, 0], [8.6, 8, .5], [11.8, 6, 0]].forEach(([y, n, off]) => { for (let f = 0; f < n; f++) {
+        const th0 = (f + off) * TAU / n, r0 = envR(y); on(th0, y, GOLD);
+        for (let k = 0; k < 8; k++) { const a = k * TAU / 8; [.45, .8, 1.15].forEach(ro => on(th0 + ro * Math.cos(a) / r0, y + ro * Math.sin(a), ro > 1 ? ROSE : WARM)); }
+      } });
+      [1.2, 2.7, 10.2, 13.9].forEach(y => { const n = Math.round(TAU * envR(y) / .6); for (let k = 0; k < n; k++) on(k * TAU / n, y, GOLD); });
+      return pointsGeo(pos, col);
+    })();
+    const stupaLamps = (() => {
+      const cv = document.createElement("canvas"); cv.width = 60; cv.height = 80; const c = cv.getContext("2d");
+      c.strokeStyle = "#fff"; c.lineWidth = 2.4;
+      c.strokeRect(6, 70, 48, 8); c.strokeRect(11, 62, 38, 8); c.strokeRect(16, 55, 28, 7);   // the three terraces
+      c.beginPath(); c.moveTo(16, 55); c.quadraticCurveTo(17, 36, 30, 31); c.quadraticCurveTo(43, 36, 44, 55); c.stroke();   // the bell
+      c.beginPath(); c.moveTo(25, 31); c.lineTo(28, 12); c.moveTo(35, 31); c.lineTo(32, 12); c.moveTo(26, 25); c.lineTo(34, 25); c.moveTo(27, 18); c.lineTo(33, 18); c.stroke();   // the banded spire
+      c.beginPath(); c.moveTo(22, 12); c.lineTo(38, 12); c.lineTo(30, 4); c.closePath(); c.moveTo(30, 4); c.lineTo(30, 0); c.stroke();   // the hti and its vane
+      const px = c.getImageData(0, 0, 60, 80).data, pos = [], col = [];
+      for (let y = 0; y < 80; y += 2) for (let x = 0; x < 60; x += 2) if (px[(y * 60 + x) * 4 + 3] > 100) { pos.push((x - 30) * .1, -y * .1, 0); col.push(...(y < 13 ? GOLD : y > 54 ? ROSE : WARM)); }
+      return pointsGeo(pos, col);
+    })();
+    const NIGHT_DEFS = [
+      { key: "lamps", h: 14.7, panel: true, tip: "A lantern balloon · ညမီးပုံးပျံ", make(A) {
+        mesh(envG, lampPaper, 0, 0, 0, A);
+        const pts = new THREE.Points(envLamps, lampM); pts.frustumCulled = false; A.add(pts);
+        const P = new THREE.Group(); P.position.y = -3.5; P.visible = false; A.add(P);   // the stupa in lanterns, unrolled as it is lifted
+        const sp = new THREE.Points(stupaLamps, lampM); sp.frustumCulled = false; P.add(sp);
+        const ln = mesh(new THREE.CylinderGeometry(.02, .02, 3.5, 4), rope, 0, -1.75, 0, A); ln.castShadow = false;
+        return P;
+      } },
+      { key: "dancers", h: 14.7, tip: "A painted night balloon · ညမီးပုံးပျံ", make(A) { mesh(envG, dancersPaper, 0, 0, 0, A); } },
+      { key: "fireworks", h: 14.7, fireworks: true, tip: "A fireworks balloon · စိန်နားပန် မီးပုံးပျံ", make(A) {
+        mesh(envG, flowersPaper, 0, 0, 0, A);
+        mesh(new THREE.CylinderGeometry(.02, .02, 2.6, 4), rope, 0, -1.3, 0, A).castShadow = false;
+        mesh(new THREE.BoxGeometry(.9, .5, .9), bamboo, 0, -2.85, 0, A);   // the rack of fireworks
+      } }
+    ];
+    const DEFS = KINDS.map(name => ({ ...ANIMALS[name], key: name, tip: `A ${ANIMALS[name].en} balloon · ${ANIMALS[name].my}ပုံ မီးပုံးပျံ` })).concat(NIGHT_DEFS);
+    const DAY_SET = KINDS.map((_, i) => i), NIGHT_SET = NIGHT_DEFS.map((_, i) => KINDS.length + i);
+    // the fireworks' sparks: one cloud of points shared by every rack, each spark thrown out and falling as it burns out
+    const SN = 900, spPos = new Float32Array(SN * 3), spCol = new Float32Array(SN * 3), spV = new Float32Array(SN * 3), spAge = new Float32Array(SN), spLife = new Float32Array(SN), spBase = new Float32Array(SN * 3);
+    const spGeo = new THREE.BufferGeometry(); spGeo.setAttribute("position", new THREE.BufferAttribute(spPos, 3)); spGeo.setAttribute("color", new THREE.BufferAttribute(spCol, 3));
+    const sparks = new THREE.Points(spGeo, new THREE.PointsMaterial({ size: 1.2, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+    sparks.frustumCulled = false; sparks.userData.noCull = true; sparks.visible = false; g.add(sparks);
+    const SPARK_C = [[.7, .85, 1], [.5, .65, 1], [1, .85, .5], [1, 1, 1]];
+    let spNext = 0, spOn = false;
+    const spark = (x, y, z) => {
+      const i = spNext, th = r() * TAU, sp = 8 + r() * 12, cl = SPARK_C[(r() * 4) | 0]; spNext = (spNext + 1) % SN;
+      spPos[i * 3] = x; spPos[i * 3 + 1] = y; spPos[i * 3 + 2] = z; spV[i * 3] = Math.cos(th) * sp; spV[i * 3 + 1] = -2 + r() * 8; spV[i * 3 + 2] = Math.sin(th) * sp;
+      spAge[i] = 0; spLife[i] = 1.2 + r() * 1.3; spBase[i * 3] = cl[0]; spBase[i * 3 + 1] = cl[1]; spBase[i * 3 + 2] = cl[2]; spOn = true;
+    };
     // after dark the wick's fire shines through the paper: each glows in its own colour (the patterned ones through their pattern)
     glowing.forEach(m => { m.emissive.copy(m.color); if (m.map) m.emissiveMap = m.map; });
     onDaylight(d => glowing.forEach(m => m.emissiveIntensity = .6 * (1 - d)));
@@ -167,13 +271,13 @@
       const G = new THREE.Group(); G.userData.noCull = true; g.add(G);
       const ring = mesh(new THREE.TorusGeometry(1.0, .05, 6, 20), bamboo, 0, 0, 0, G); ring.rotation.x = Math.PI / 2;
       const wick = glowSprite(0xffa040, 1.6, .9); wick.position.y = -.2; G.add(wick);
-      const shapes = KINDS.map(name => {
-        const Z = ANIMALS[name], A = new THREE.Group(); A.visible = false; G.add(A); Z.make(A);
-        A.traverse(o => { if (o.isMesh) clickable(list, o, { tip: `A ${Z.en} balloon · ${Z.my}ပုံ မီးပုံးပျံ`, toast: data.toast }); });
+      const parts = [], shapes = DEFS.map((Z, i) => {
+        const A = new THREE.Group(); A.visible = false; G.add(A); parts[i] = Z.make(A);
+        A.traverse(o => { if (o.isMesh) clickable(list, o, { tip: Z.tip, toast: data.toast }); });
         return A;
       });
       const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, ring, wick, shapes, kind: -1, cyc: -1, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      return { p, G, ring, wick, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
@@ -295,18 +399,24 @@
     updaters.pagoda.push((dt, t, motion) => {
       if (!FOLK.balloons) {   // rain: no balloon is filled, the fire pits are cold and the cords hang loose from the masts
         balloons.forEach(b => { b.G.visible = false; b.p.fire.visible = false; b.p.glow.material.opacity = 0; b.p.cord.visible = false; });
-        lanI.visible = lanGlow.visible = false; crowd.forEach(m => m.visible = false);
+        lanI.visible = lanGlow.visible = sparks.visible = false; crowd.forEach(m => m.visible = false);
         return;
       }
-      crowd.forEach(m => m.visible = true);
-      const still = motion < 1, night = dl < .45;
+      // which balloons the teams fill now: animals by day, the night balloons after dark, none between (FOLK.balloonKind; "auto" when
+      // forced on: by the light)
+      const still = motion < 1, night = dl < .45, want = FOLK.balloonKind === "auto" ? (night ? "night" : "day") : FOLK.balloonKind;
+      let busy = false;
+      lampM.opacity = (1 - .85 * dl) * (.88 + .12 * Math.sin(t * 9.1) * Math.sin(t * 5.3));
       balloons.forEach(b => {
         const { p, G } = b, tt = t + b.off, ph = still ? B.fill + 1 : tt % CYC, c = still ? 0 : Math.floor(tt / CYC);   // with reduced motion each is held full at its pad
-        if (c !== b.cyc || !primed) {   // a new launch: the next animal
-          b.cyc = c;
-          const kind = (c * pads.length + p.k) % KINDS.length;
-          if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; b.shapes[kind].visible = true; b.kind = kind; }
+        if (c !== b.cyc || !primed || (still && b.mode !== want)) {   // a new launch: the next balloon of the hour, or none (one already up flies on)
+          b.cyc = c; b.mode = want;
+          const set = want === "day" ? DAY_SET : want === "night" ? NIGHT_SET : null, kind = set ? set[(c * pads.length + p.k) % set.length] : -1;
+          if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; if (kind >= 0) b.shapes[kind].visible = true; b.kind = kind; }
         }
+        if (b.kind < 0) { G.visible = false; p.fire.visible = false; p.glow.material.opacity = 0; p.cord.visible = false; return; }
+        busy = true;
+        const Z = DEFS[b.kind];
         const fl = .8 + .2 * Math.sin(t * 17 + p.k * 3) * Math.sin(t * 7.3 + p.k);
         let s = 1, y = mouth0, dx = 0, dz = 0, held = true, show = true, tau = 0;
         if (ph < B.fill) { const u = easeOut(ph / B.fill); s = u; }
@@ -322,17 +432,35 @@
         b.wick.material.opacity = (held ? .5 : .9) * fl;
         // the fire under it burns while it fills and is held, then dies down; the mast's cord hangs to the animal's back until let go
         const burn = held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
-        const crown = mouth0 + ANIMALS[KINDS[b.kind]].h * (.45 + .55 * s), mastTop = top + MAST - .3;
+        const crown = mouth0 + Z.h * (.45 + .55 * s), mastTop = top + MAST - .3;
         p.cord.visible = held && show; if (p.cord.visible) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
+        // the lantern balloon's stupa unrolls off the ground as the balloon lifts it; the fireworks rack throws sparks as it climbs
+        if (Z.panel) { const u = held ? 0 : clamp((y - top - 3.6) / 8, 0, 1), P = b.parts[b.kind]; P.visible = u > .02; P.scale.y = Math.max(u, .02); }
+        if (Z.fireworks && show && !held && !still && tau > 1 && tau < 45) for (b.spAcc += Math.min(dt, .1) * 200 * (1 - tau / 60); b.spAcc >= 1; b.spAcc--) spark(G.position.x, y - 2.9, G.position.z);
       });
+      crowd.forEach(m => m.visible = busy);
+      if (spOn) {
+        let alive = 0;
+        for (let i = 0; i < SN; i++) {
+          if (spAge[i] >= spLife[i]) continue;
+          const a = spAge[i] += dt, i3 = i * 3;
+          if (a >= spLife[i]) { spCol[i3] = spCol[i3 + 1] = spCol[i3 + 2] = 0; continue; }
+          alive++; const k = 1 - Math.min(dt, .1), f = 1 - a / spLife[i];
+          spV[i3] *= k; spV[i3 + 1] = spV[i3 + 1] * k - 7 * dt; spV[i3 + 2] *= k;
+          spPos[i3] += spV[i3] * dt; spPos[i3 + 1] += spV[i3 + 1] * dt; spPos[i3 + 2] += spV[i3 + 2] * dt;
+          spCol[i3] = spBase[i3] * f; spCol[i3 + 1] = spBase[i3 + 1] * f; spCol[i3 + 2] = spBase[i3 + 2] * f;
+        }
+        spOn = alive > 0; spGeo.attributes.position.needsUpdate = spGeo.attributes.color.needsUpdate = true;
+      }
+      sparks.visible = spOn;
       // the lanterns: each held up a few seconds in its launcher's hands while the hot air fills it, then let go, rising and drifting
       // with the wind, shrinking and dimming away as its wick burns out high over the town. One lit at dusk goes on till it is gone;
-      // none are let go by day
-      let any = false;
+      // none are let go by day, nor after the night balloons stop
+      let any = false; const lanOn = night && want === "night";
       launchers.forEach(L => L.want = false);
       lans.forEach((l, i) => {
         const tt = t + l.off, c = still ? 0 : Math.floor(tt / LP), ph = still ? (i / LN) * LP * .85 : tt % LP;
-        if (c !== l.cyc || !primed) { l.cyc = c; l.on = night; }
+        if (c !== l.cyc || !primed || (still && l.on !== lanOn)) { l.cyc = c; l.on = lanOn; }
         const tau = Math.max(0, ph - LH), fade = clamp((LP - ph) / 30, 0, 1), L = l.L;
         if (!l.on || fade <= 0) { lanI.setMatrixAt(i, _zero); lanCol[i * 3] = lanCol[i * 3 + 1] = lanCol[i * 3 + 2] = 0; return; }
         any = true;

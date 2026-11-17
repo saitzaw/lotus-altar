@@ -27,7 +27,8 @@ hours change, update this file in the same commit.
 | 8:45 – 9:45 PM | Kinnara and kinnari pair again | Festival stage | `dancers.pair` |
 | 9:46 – 9:59 PM | Shan singer | Festival stage | `dancers.singer` |
 | 10:00 – 11:00 PM | Two to with the kinnara (closing dance) | Festival stage | `dancers.toKinnara` |
-| All day and night | Animal balloons (rooster, fish, parrot, bear, tiger) fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads, a different animal each time); after dark they glow from the fire inside. At night the crowd also lets go small paper sky lanterns, about one every 1.1 s, each held up for 6 s in a launcher's hands (about 35 people on the field by the parapet, 30 on the top three terrace steps) before it goes, each drifting up over the town for about 3 minutes. A crowd sits on the terraces and stands along the field, with a team at each fire pit, whenever the balloons go up. With reduced motion the animals stay full on their pads and the lanterns hang still in the sky. None go up while it rains (the fire pits go cold and the crowd goes home) | Fire balloon ground, stupa hill's lower terrace | none (`BALLOON_GROUND` in `15g-balloon-ground.js`) |
+| 8:00 AM – 3:00 PM | Animal balloons (rooster, fish, parrot, bear, tiger) fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads, a different animal each time). A crowd sits on the terraces and stands along the field, with a team at each fire pit. A balloon already rising at 3 PM flies on; none is filled after | Fire balloon ground, stupa hill's lower terrace | `balloons.day` |
+| 6:00 PM – 2:00 AM | Night balloons go up in turn on the same three pads: a lantern balloon studded with candle lanterns in flowers, a stupa in lanterns hanging below it; a painted balloon with crowned dancers; a flower-painted fireworks balloon (စိန်နားပန်) that showers sparks as it climbs. The crowd lets go small paper sky lanterns while it is dark, about one every 1.1 s, each held up for 6 s in a launcher's hands (about 35 people on the field by the parapet, 30 on the top three terrace steps) and drifting up over the town for about 3 minutes. From 3 to 6 PM and 2 to 8 AM the fire pits are cold and the crowd is gone. With reduced motion the balloons stay full on their pads and the lanterns hang still. None go up while it rains | Fire balloon ground | `balloons.night` |
 
 ## Once a week
 
@@ -54,7 +55,7 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 | Event | Switch it on | Switch it off |
 |---|---|---|
 | Procession (short 20 s stops, then it starts again from the gate; runs even in rain) | `?procession=1` | `?procession=0` |
-| Fire balloons (even in rain) | `?balloons=1` | `?balloons=0` |
+| Fire balloons (even in rain) | `?balloons=1` (the kind for the light), `?balloons=day`, `?balloons=night` | `?balloons=0` |
 | Seven-day market and food street | `?stalls=1` | `?stalls=0` |
 | Morning market | `?morningMarket=1` | `?morningMarket=0` |
 | Church service | `?service=1` | `?service=0` |

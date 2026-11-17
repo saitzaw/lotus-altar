@@ -114,11 +114,15 @@ const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : inHou
 // in the rain the procession is called off and no fire balloon goes up (?procession=1 still forces the procession on;
 // ?balloons=1 or =0 forces the balloons). Read in the frame loop, as wxKind is set further down
 const BALLOON_FORCE = forced("balloons");
+// which balloons go up now (CONFIG.balloons): "day" (the animals), "night", or null; "auto" when forced on, chosen by the light
+const BALLOON_PARAM = (() => { try { return devParam("balloons"); } catch (e) { return null; } })();
+const balloonsNow = () => BALLOON_PARAM === "day" || BALLOON_PARAM === "night" ? BALLOON_PARAM : BALLOON_PARAM !== null && BALLOON_PARAM !== "0" ? "auto"
+  : inHours({ from: CONFIG.balloons.day[0], until: CONFIG.balloons.day[1] }) ? "day" : inHours({ from: CONFIG.balloons.night[0], until: CONFIG.balloons.night[1] }) ? "night" : null;
 const rainingOut = () => wxKind === "rain";
 // how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
 const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow();
-setInterval(() => { folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); festNote(); }, 3e4);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), balloonKind = balloonsNow();
+setInterval(() => { balloonKind = balloonsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */
