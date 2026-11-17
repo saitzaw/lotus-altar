@@ -72,7 +72,7 @@
           doorway(st, 0, 0, -(apo + .02), Math.PI, 2.0, 2.5, null, { floor: 1, tip: "Enter the main hall by the back door · 1F" }, list);
           continue;
         }
-        const p = V(Math.sin(a) * (apo + .02), wy, Math.cos(a) * (apo + .02));
+        const p = V(Math.sin(a) * (apo + .06), wy, Math.cos(a) * (apo + .06));   // 3 cm proud of its frame's face (apo + .03), or the two flicker from afar
         bars.push({ p, ry: a, w: ww, h: wh });
         const w = mesh(new THREE.PlaneGeometry(ww, wh), winMatS, p.x, p.y, p.z, st);
         w.rotation.y = a; w.castShadow = false;
@@ -153,7 +153,7 @@
       const T2 = E1 + 1.3, RU = 2.15, AU = RU * Math.cos(R8);
       oct(mesh(new THREE.CylinderGeometry(RU, RU, T2 - E1 + .2, 8), pillarRed, 0, (E1 - .2 + T2) / 2, 0, b));
       const wins = [];
-      for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; wins.push({ p: at(a, AU + .02, E1 + .4), ry: a, w: 1.1, h: .55, cols: 6, rows: 2 }); }
+      for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; wins.push({ p: at(a, AU + .03, E1 + .4), ry: a, w: 1.1, h: .55, cols: 6, rows: 2 }); }
       latticeWindows(b, wins, lampPane(0xff9a40, .8));
       paintedBeam(b, T2 - .25, RU + .02);
       const tex = writing(512, 160, (c, cw, ch) => {

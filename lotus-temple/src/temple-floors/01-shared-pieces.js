@@ -194,8 +194,8 @@
   function corridor(g, list, DW, DH) {
     const Z0 = 7.5, Z1 = 10.6, W = 15, EH = 3.8, mid = (Z0 + Z1) / 2;
     // the outside of the front wall: cream plaster between red posts, with the doors and windows seen from outside
-    flat(mesh(new THREE.PlaneGeometry(W, 7.2), corridorWall, 0, 3.6, Z0 + .03, g));
-    [-7.4, -2.6, 2.6, 7.4].forEach(x => mesh(new THREE.BoxGeometry(.24, EH + .6, .16), M.lacquer, x, (EH + .6) / 2, Z0 + .1, g));
+    flat(mesh(new THREE.PlaneGeometry(W + .06, 7.22), corridorWall, 0, 3.59, Z0 + .03, g));   // .03 past each corner to meet the side walls, 2 cm below the floor to close the slit over the deck
+    [-7.44, -2.6, 2.6, 7.44].forEach(x => mesh(new THREE.BoxGeometry(.24, EH + .6, .16), M.lacquer, x, (EH + .6) / 2, Z0 + .1, g));   // the corner posts stand 3 cm proud of the side walls (x = ±7.53), not 1 cm behind them
     latticeWindows(g, [-4.4, 4.4].map(x => ({ p: V(x, 3.0, Z0 + .06), ry: 0, w: 1.5, h: 2.4 })), warmPane);
     latticeWindows(g, [-1, 1].map(sd => ({ p: V(sd * DW / 2, DH / 2 + .1, Z0 + .06), ry: 0, w: DW - .04, h: DH })), warmPane);
     const back = new THREE.Mesh(new THREE.BoxGeometry(2 * DW, DH, .1), new THREE.MeshBasicMaterial({ visible: false }));
@@ -206,11 +206,12 @@
     // z = -5.5 and 7.5) and the outer edge of the balcony, 3.1 m further out
     const HX = 7.5, HZ0 = -5.5, HZ1 = 7.5, OUT = 3.15, OX = HX + OUT, OZ0 = HZ0 - OUT, OZ1 = HZ1 + OUT;
     CORRIDOR_RING = { HX, HZ0, HZ1, OX, OZ0, OZ1 };
-    [[0, (HZ1 + OZ1) / 2, 2 * OX, OUT], [0, (HZ0 + OZ0) / 2, 2 * OX, OUT], [(HX + OX) / 2, (HZ0 + HZ1) / 2, OUT, HZ1 - HZ0], [-(HX + OX) / 2, (HZ0 + HZ1) / 2, OUT, HZ1 - HZ0]]
-      .forEach(([x, z, w, d]) => mesh(new THREE.BoxGeometry(w + .02, .14, d + .02), corridorDeck, x, -.075, z, g));   // top 5 mm under the hall floor, so they don't flicker where they meet
+    // the deck starts at the walls and the four pieces only meet edge to edge, so nothing overlaps the hall floor or another piece
+    [[0, (HZ1 + OZ1 + .01) / 2, 2 * OX + .02, OUT + .01], [0, (HZ0 + OZ0 - .01) / 2, 2 * OX + .02, OUT + .01], [(HX + OX + .01) / 2, (HZ0 + HZ1) / 2, OUT + .01, HZ1 - HZ0], [-(HX + OX + .01) / 2, (HZ0 + HZ1) / 2, OUT + .01, HZ1 - HZ0]]
+      .forEach(([x, z, w, d]) => mesh(new THREE.BoxGeometry(w, .14, d), corridorDeck, x, -.075, z, g));   // top 5 mm under the hall floor
     // the outside of the hall's other three walls: cream plaster with warm lattice windows
     [[HX + .03, (HZ0 + HZ1) / 2, Math.PI / 2, HZ1 - HZ0], [-HX - .03, (HZ0 + HZ1) / 2, -Math.PI / 2, HZ1 - HZ0], [0, HZ0 - .03, Math.PI, 2 * HX]].forEach(([x, z, ry, w]) => {
-      const pl = flat(mesh(new THREE.PlaneGeometry(w, 7.2), corridorWall, x, 3.6, z, g)); pl.rotation.y = ry;
+      const pl = flat(mesh(new THREE.PlaneGeometry(w + .06, 7.22), corridorWall, x, 3.59, z, g)); pl.rotation.y = ry;   // closed at the corners, as the front
     });
     const sideWins = [];
     [-1, 1].forEach(sd => [-3.4, -.8, 1.8, 4.4].forEach(z => sideWins.push({ p: V(sd * (HX + .06), 3.0, z), ry: sd * Math.PI / 2, w: 1.5, h: 2.4 })));

@@ -160,7 +160,7 @@
       // walkable: the main landing and stair between their walls; the end stairs and their landings, their outer walls blocking
       if (main) sRect(F, -LX, LX, PZ1, PZ1 + SW, PH);
       [-1, 1].forEach(sd => {
-        if (main) sRect(F, sd > 0 ? LX : -LX - .3, sd > 0 ? LX + .3 : -LX, PZ1, CF + .6);   // the main landing's parapet and the stair's wall
+        if (main) sWall(F, sd > 0 ? LX : -LX - .3, sd > 0 ? LX + .3 : -LX, PZ1, CF + .6);   // the main landing's parapet and the stair's wall
         const x0 = sd > 0 ? TX - SW : -TX, x1 = sd > 0 ? TX : -TX + SW;
         if (!main) [-1, 1].forEach(a => [-1, 1].forEach(b => sCircle(F, sd * SLC + a * (SW / 2 - .2), PZ1 + SW / 2 + b * (SW / 2 - .2), .15)));   // the landing pavilion's posts (built below), ahead of the landing
         sRect(F, x0, x1, PZ1, PZ1 + SW, (lx, lz) => lz > PZ1 + SW - .45 || Math.abs(lx) < TX - SW + .45 ? null : PH);   // an end landing

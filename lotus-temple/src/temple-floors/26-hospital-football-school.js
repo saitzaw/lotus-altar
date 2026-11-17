@@ -344,9 +344,9 @@
     [[X0, X1, Z0, Z0], [X0, X1, Z1, Z1], [X0, X0, Z0, Z1], [X1, X1, Z0, GZ[0]], [X1, X1, GZ[1], Z1]].forEach(([a, b, c, d]) => {
       const w = Math.max(b - a, .25), dd = Math.max(d - c, .25), mx = (a + b) / 2, mz = (c + d) / 2;
       mesh(new THREE.BoxGeometry(w, 2.2, dd), civicCream, mx, 1.1, mz, g); mesh(new THREE.BoxGeometry(w + .04, .3, dd + .04), civicGreen, mx, 2.3, mz, g);
-      sRect(g, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
+      sWall(g, mx - w / 2, mx + w / 2, mz - dd / 2, mz + dd / 2);
     });
-    GZ.forEach(z => { mesh(new THREE.BoxGeometry(.6, 4.4, .6), civicGreen, X1, 2.2, z, g); sCircle(g, X1, z, .4); });
+    GZ.forEach(z => { mesh(new THREE.BoxGeometry(.6, 4.4, .6), civicGreen, X1, 2.2, z, g); sPillar(g, X1, z, .4); });
     clickable(picks.pagoda, civicSign(g, "မြို့နယ်အားကစားကွင်း", "Township Stadium", "#2f7a4a", "#ffffff", 6, X1 + .35, 3.4, (GZ[0] + GZ[1]) / 2, Math.PI / 2), data);
     flat(mesh(new THREE.BoxGeometry(5, .06, GZ[1] - GZ[0]), forecourt, X1 + .5, .035, (GZ[0] + GZ[1]) / 2, g));   // the path in from the road
     flagPole(g, X1 + 1, GZ[1] + 1.5, 8);
@@ -357,7 +357,7 @@
       mesh(new THREE.BoxGeometry(SB - fx, TR, SZ1 - SZ0), concrete, (fx + SB) / 2, top - TR / 2, (SZ0 + SZ1) / 2, g);
       sRect(g, fx, i < 4 ? fx + TD : SB, SZ0, SZ1, top);
     }
-    [SZ0, SZ1].forEach(z => { mesh(new THREE.BoxGeometry(SB - SX, 2.6, .25), civicCream, (SX + SB) / 2, 1.3, z, g); sRect(g, SX, SB, z - .125, z + .125); });
+    [SZ0, SZ1].forEach(z => { mesh(new THREE.BoxGeometry(SB - SX, 2.6, .25), civicCream, (SX + SB) / 2, 1.3, z, g); sWall(g, SX, SB, z - .125, z + .125); });
     for (let z = SZ0 + .2; z <= SZ1; z += (SZ1 - SZ0 - .4) / 4) [[SX + .2, 5.4], [SB - .4, 6.6]].forEach(([x, h]) => { mesh(new THREE.CylinderGeometry(.12, .12, h, 8), steel, x, h / 2, z, g); sCircle(g, x, z, .2); });
     const roof = mesh(new THREE.BoxGeometry(Math.hypot(SB - SX + .4, 1.2), .08, SZ1 - SZ0 + 1), ROOFS[3](6), (SX + SB) / 2, 6.05, (SZ0 + SZ1) / 2, g);
     roof.rotation.z = Math.atan2(1.2, SB - SX + .4); clickable(picks.pagoda, roof, data);
@@ -381,9 +381,9 @@
     // the wall round the grounds, open at the gate on the market lane, with gate pillars and the sign over it
     [[X0, X1, Z0, Z0], [X0, X1, Z1, Z1], [X1, X1, Z0, Z1], [X0, X0, Z0, GZ[0]], [X0, X0, GZ[1], Z1]].forEach(([a, b, c, d]) => {
       const w = Math.max(b - a, .25), dd = Math.max(d - c, .25);
-      mesh(new THREE.BoxGeometry(w, 1.4, dd), civicWhite, (a + b) / 2, .7, (c + d) / 2, g); sRect(g, (a + b) / 2 - w / 2, (a + b) / 2 + w / 2, (c + d) / 2 - dd / 2, (c + d) / 2 + dd / 2);
+      mesh(new THREE.BoxGeometry(w, 1.4, dd), civicWhite, (a + b) / 2, .7, (c + d) / 2, g); sWall(g, (a + b) / 2 - w / 2, (a + b) / 2 + w / 2, (c + d) / 2 - dd / 2, (c + d) / 2 + dd / 2);
     });
-    GZ.forEach(z => mesh(new THREE.BoxGeometry(.6, 4.8, .6), civicGreen, X0, 2.4, z, g));
+    GZ.forEach(z => { mesh(new THREE.BoxGeometry(.6, 4.8, .6), civicGreen, X0, 2.4, z, g); sPillar(g, X0, z, .4); });
     civicSign(g, "အခြေခံပညာ အထက်တန်းကျောင်း", "Basic Education High School", "#2f7a4a", "#ffffff", 8, X0 - .35, 3.6, (GZ[0] + GZ[1]) / 2, -Math.PI / 2);
     flat(mesh(new THREE.BoxGeometry(X0 + 8 - LANES[2].x1, .06, GZ[1] - GZ[0]), forecourt, (LANES[2].x1 + X0 + 8) / 2, .035, (GZ[0] + GZ[1]) / 2, g));   // the path in
     // the main building along the back, its corridors facing north over the field

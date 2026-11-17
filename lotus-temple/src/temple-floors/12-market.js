@@ -48,9 +48,9 @@
     let doorOpen = false;
     sRect(hall, TW0, TW1, -TD, TD);                                     // the table
     sRect(hall, -GW / 2 - .3, -GW / 2 + .3, -2.0, 2.0, () => doorOpen ? .25 : null);   // the doors: shut until the doorman lets you in
-    sRect(hall, -GW / 2, GW / 2, -GD / 2 - .1, -GD / 2 + .1); sRect(hall, -GW / 2, GW / 2, GD / 2 - .1, GD / 2 + .1);
-    sRect(hall, GW / 2 - .1, GW / 2 + .1, -GD / 2, GD / 2);
-    sRect(hall, -GW / 2 - .1, -GW / 2 + .1, -GD / 2, -2.0); sRect(hall, -GW / 2 - .1, -GW / 2 + .1, 2.0, GD / 2);   // the doorway is |z| < 2
+    sWall(hall, -GW / 2, GW / 2, -GD / 2 - .1, -GD / 2 + .1); sWall(hall, -GW / 2, GW / 2, GD / 2 - .1, GD / 2 + .1);   // the plank walls, kept off like a compound wall
+    sWall(hall, GW / 2 - .1, GW / 2 + .1, -GD / 2, GD / 2);
+    sWall(hall, -GW / 2 - .1, -GW / 2 + .1, -GD / 2, -2.0); sWall(hall, -GW / 2 - .1, -GW / 2 + .1, 2.0, GD / 2);   // the doorway is |z| < 2
     sRect(hall, -GW / 2 - .3, GW / 2 + .3, -GD / 2 - .3, GD / 2 + .3, .25);   // the floor slab
     const plankT = canvasTex(128, (c, sz) => { c.fillStyle = "#2f6a5a"; c.fillRect(0, 0, sz, sz); for (let y = 0; y < sz; y += 12) { c.fillStyle = "rgba(10,30,24,.5)"; c.fillRect(0, y, sz, 2); c.fillStyle = "rgba(160,210,190,.12)"; c.fillRect(0, y + 3, sz, 3); } });
     plankT.wrapS = plankT.wrapT = THREE.RepeatWrapping; plankT.repeat.set(4, 1.5);

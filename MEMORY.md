@@ -34,6 +34,8 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - Outdoors the camera's `far` is 1000 m, so depth precision depends on `near` (`CONFIG.camera.near.outdoor`, .3). At .1, a
   road 2 cm over the ground or a window just off a wall flickers ("blinks") 150 m away. Keep layered flat things at least
   2–3 cm apart, and never put two overlapping road boxes at the same height.
+  Check boxes too, not only planes: a frame box whose front face is 1 cm in front of the pane it frames hides the pane
+  except where depth fighting lets it through. Where two wall planes meet at a corner, run each past the corner so they close.
 - The upper halls' balcony corridor runs right round the outside of the hall (walls at x = ±7.5, z = -5.5 and 7.5), so any
   piece of the hall that reaches past those walls (a wider wall plane, a column near a corner, the floor) shows on the corridor
   as a stray slab or stub, or flickers against the deck at y = 0. Keep everything in a hall inside that footprint.

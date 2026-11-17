@@ -268,7 +268,7 @@
     // a stair's foot: two whitewashed pillars crowned with lotus buds either side of it
     const stairGate = F => [-1, 1].forEach(sd => {
       const x = sd * (SW / 2 + .7);
-      mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, F); sRect(F, x - .4, x + .4, -rBase - .6, -rBase + .2);
+      mesh(new THREE.BoxGeometry(.8, 2.2, .8), whiteWash, x, 1.1, -rBase - .2, F); sWall(F, x - .4, x + .4, -rBase - .6, -rBase + .2);
       mesh(new THREE.BoxGeometry(.92, .1, .92), M.trim, x, 2.25, -rBase - .2, F);
       const bud = mesh(new THREE.SphereGeometry(.26, 14, 10), whiteWash, x, 2.55, -rBase - .2, F); bud.scale.y = 1.35;
       mesh(new THREE.ConeGeometry(.09, .4, 10), M.gold, x, 2.95, -rBase - .2, F);

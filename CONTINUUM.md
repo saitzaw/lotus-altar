@@ -76,6 +76,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-17: fewer flickers on the pagoda and its balcony, more thin walls kept at arm's length
+
+- Depth fighting under the outdoor camera (near .3, far 1000): the pagoda's outside window panes sat at `apo + .02`, 1 cm
+  *behind* the face of their red frame boxes (`apo + .03`), so from the grounds the glow and the frame took turns. Panes are now
+  at `apo + .06` (`33-pagoda-exterior.js`); the bell tower drum's panes moved from 2 to 3 cm off the drum.
+- Balcony corridor (`corridor` in `01-shared-pieces.js`): the end posts of the front wall stood at x = ±7.4, their sides 1 cm behind
+  the side walls' plaster (x = ±7.53), so a strip at each front corner flickered; they are at ±7.44 now (3 cm proud). The outer
+  plaster planes run .03 past each corner so they meet, and 2 cm below the floor so no slit shows over the deck. The deck pieces
+  start at the walls and meet edge to edge, so none overlaps the hall floor or another piece.
+- Thin walls that still had a plain `sRect` now use `sWall`/`sPillar`: the stadium's wall, stand ends and gate pillars, the high
+  school's wall (its gate pillars had no collider at all), the gambling hall's plank walls, the stupa stairs' gate pillars and the
+  Haw Kham main stair's side walls. Low parapets, railings and racks under eye height are left as they were.
+
 ### 2026-11-17: animal balloons by day, small sky lanterns at night
 - `15g-balloon-ground.js`: the gored envelopes are gone. Each pad holds five animal shapes (`ANIMALS`: rooster, fish, parrot,
   bear, tiger; ellipsoids and cones on a paper skirt over the mouth ring), shows the next one each launch
