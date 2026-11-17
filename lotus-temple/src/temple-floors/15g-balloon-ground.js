@@ -6,9 +6,12 @@
   // angles round the hill from the main stair (radians): the field starts `da0` past the east stair and runs to a1; its outer edge
   // r1, where its end walls begin (the terrace's edge), parapet height and thickness; the crowd's terraces (`tiers` steps from the
   // lower terrace up to the upper) stop `tierIn` short of the field's ends; the launch pads (fractions along the field, radius);
-  // a balloon's cycle (s): filling, held full, rising, gone; its climb and drift (m/s)
+  // a balloon's cycle (s): filling, held full, rising, gone; its climb and drift (m/s); the night lanterns: how many, each one's
+  // cycle (s) and how long it is held up in its launcher's hands before it is let go, and how many people let them go down on the
+  // field by the parapet and up on the top steps of the terraces
   const BALLOON_GROUND = { da0: .085, a1: 2.62, r1: 76.5, edge: 70.4, PH: .95, PW: .35, tiers: 9, tierIn: .1,
-    pads: [[.22, 65], [.5, 64], [.78, 65]], fill: 55, hold: 15, rise: 95, gone: 10, climb: 1.4, accel: .012, drift: [.55, .3] };
+    pads: [[.22, 65], [.5, 64], [.78, 65]], fill: 55, hold: 15, rise: 95, gone: 10, climb: 1.4, accel: .012, drift: [.55, .3],
+    lanN: 180, lanP: 190, lanHold: 6, lanLow: 36, lanHigh: 30 };
   // a slab in the hill's frame between an inner edge r0 (a radius, or a function of the angle) and an arc r1 round the hill's centre,
   // and two radii at angles b0, b1, from y0 up to y1 (the angle runs from the main stair, local -z, toward the east stair)
   function arcSlab(H, r0, r1, b0, b1, y0, y1, mat) {
@@ -175,7 +178,7 @@
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
     // mesh for the paper and one cloud of points for the glow round each
-    const LN = 150, LP = 190, lanG = new THREE.LatheGeometry([[.3, 0], [.34, .3], [.4, .75], [.44, 1.05], [.4, 1.2], [.2, 1.28], [0, 1.3]].map(([x, y]) => new THREE.Vector2(x, y)), 12);
+    const LN = B.lanN, LP = B.lanP, LH = B.lanHold, lanG = new THREE.LatheGeometry([[.3, 0], [.34, .3], [.4, .75], [.44, 1.05], [.4, 1.2], [.2, 1.28], [0, 1.3]].map(([x, y]) => new THREE.Vector2(x, y)), 12);
     const lanTex = canvasTex(64, (c, sz) => { const gr = c.createLinearGradient(0, sz, 0, 0); gr.addColorStop(0, "#ffd890"); gr.addColorStop(.35, "#ff9a30"); gr.addColorStop(1, "#b8481a"); c.fillStyle = gr; c.fillRect(0, 0, sz, sz); });
     const lanM = new THREE.MeshBasicMaterial({ map: lanTex, side: THREE.DoubleSide, fog: false });
     const lanI = new THREE.InstancedMesh(lanG, lanM, LN); lanI.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -185,15 +188,12 @@
     lanGeo.setAttribute("position", new THREE.BufferAttribute(lanPos, 3)); lanGeo.setAttribute("color", new THREE.BufferAttribute(lanCol, 3));
     const lanGlow = new THREE.Points(lanGeo, new THREE.PointsMaterial({ size: 3.4, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
     lanGlow.frustumCulled = false; lanGlow.userData.noCull = true; g.add(lanGlow);
-    const lans = [];
-    for (let i = 0; i < LN; i++) {
-      const a = a0 + .06 + r() * (a1 - a0 - .12), rr = rIn + 3 + r() * (B.edge - rIn - 6), w = H.localToWorld(V(rr * Math.sin(a), top, -rr * Math.cos(a)));
-      lans.push({ x: w.x, z: w.z, off: i * LP / LN + r() * 1.2, climb: .75 + r() * .45, wind: .8 + r() * .5, ph: r() * TAU, cyc: -1, on: false, tint: .75 + r() * .25 });
-    }
+    const lans = [], launchers = [];   // launchers: the people who let them go, filled in with the crowd below
     const _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _ls = new THREE.Vector3(), _lp = new THREE.Vector3(), _le = new THREE.Euler(), _zero = new THREE.Matrix4().makeScale(0, 0, 0);
     // the crowd: people sitting on the terraces to watch, more standing along the foot of the field, and a team of six round each
     // fire pit holding the balloon's mouth over the fire. Blocky low-poly figures as at the festival stage, in warm jackets for the
     // cold Tazaungmon nights; a few kinds of each, drawn as one instanced mesh per kind. Out whenever the balloons go up (not in the rain)
+    const tierR = i => rIn - (i + .5) * tD;
     const crowd = (() => {
       const q = rng(5152), pk = l => l[(q() * l.length) | 0], box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 7) => new THREE.CylinderGeometry(a, b, h, n);
       const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18;
@@ -228,11 +228,24 @@
       const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _y = new THREE.Vector3(0, 1, 0);
       const put = (k, x, y, z, ry, sc) => k.at.push(_m.compose(_p.set(x, y, z), _q.setFromAxisAngle(_y, ry), _s.setScalar(sc)).clone());
       const nearPad = (x, z, d) => pads.some(p => Math.hypot(x - p.x, z - p.z) < d) || pads.some(p => { const [mx, mz] = at(p.a, Math.hypot(p.x, p.z) - ARM); return Math.hypot(x - mx, z - mz) < d * .5; });
-      // the terraces: little groups along each step, facing out over the field
+      // the lantern launchers: standing up on the top three steps of the terraces, and down on the field toward the parapet, spread
+      // out along it and kept clear of the fire pits and masts; each faces out over the town
+      const spots = [];
+      for (let j = 0; j < B.lanHigh; j++) {
+        const i = B.tiers - 1 - (j % 3), rr = tierR(i), a = ta0 + .03 + (j + q() * .7) * (ta1 - ta0 - .06) / B.lanHigh, [x, z] = at(a, rr);
+        spots.push([x, tierTop(i), z, Math.PI - a + (q() - .5) * .6, 1 + q() * .1]);
+      }
+      for (let j = 0, tries = 0; j < B.lanLow && tries < 400; tries++) {
+        const a = a0 + .05 + (j + q() * .8) * (a1 - a0 - .1) / B.lanLow, rr = B.r1 - PW - 1.3 - q() * (q() < .3 ? 14 : 4), [x, z] = at(a, rr);
+        if (nearPad(x, z, 6.5)) { if (tries % 8 === 7) j++; continue; }
+        spots.push([x, top, z, Math.PI - a + (q() - .5) * .8, 1 + q() * .12]); j++;
+      }
+      // the terraces: little groups along each step, facing out over the field, leaving room for the launchers
       for (let i = 0; i < B.tiers; i++) {
-        const rr = rIn - (i + .5) * tD, len = (ta1 - ta0) * rr;
+        const rr = tierR(i), len = (ta1 - ta0) * rr;
         for (let d = .5 + q() * 2; d < len - .5; d += q() < .22 ? 3 + q() * 7 : .65 + q() * .35) {
           const a = ta0 + d / rr, [x, z] = at(a, rr + (q() - .5) * tD * .3);
+          if (spots.some(s => Math.hypot(s[0] - x, s[2] - z) < .75)) continue;
           put(pk(SITS), x, tierTop(i), z, Math.PI - a + (q() - .5) * .5, 1.05 + q() * .15);
         }
       }
@@ -250,13 +263,33 @@
       const M_ = std({ vertexColors: true, flatShading: true, roughness: .85 });
       onDaylight(d => M_.emissive.copy(lerpC(0x241c14, 0x000000, d)));   // lifted a little so they read by the fires and lanterns at night
       const cdata = { tip: "The crowd at the fire balloon ground · ပွဲကြည့်ပရိသတ်", toast: "Families from the town and the villages sit on the terraces to watch the teams fill the balloons and let them go, cheering each one up; after dark they light small paper lanterns of their own and let them drift off over the town." };
-      return kinds.filter(k => k.at.length).map(k => {
+      const meshes = kinds.filter(k => k.at.length).map(k => {
         const im = new THREE.InstancedMesh(lowPoly(k.make()), M_, k.at.length);
         k.at.forEach((m, i) => im.setMatrixAt(i, m));
         im.castShadow = false; im.frustumCulled = false; im.userData.noCull = true; H.add(im); clickable(list, im, cdata);
         return im;
       });
+      // the launchers, a few kinds of each, each drawn twice: arms down, and arms up holding a lantern over the head (only one of the
+      // two shown at a time). The lantern sits on the hands, a little in front of the face
+      const LK = 4, looks = Array.from({ length: LK }, () => { const woman = q() < .5, skin = pk(SKIN), top_ = pk(JACKET), lower = woman ? pk(LONGYI) : pk(LOWER); return [skin, top_, lower, woman]; });
+      const counts = Array(LK).fill(0), lk = spots.map((s, j) => j % LK);
+      lk.forEach(k => counts[k]++);
+      const pairs = looks.map((L, k) => [false, true].map(up => {
+        const im = new THREE.InstancedMesh(lowPoly(stander(...L, up)), M_, Math.max(1, counts[k]));
+        im.castShadow = false; im.frustumCulled = false; im.userData.noCull = true; H.add(im); clickable(list, im, cdata); meshes.push(im);
+        return im;
+      }));
+      const seen = Array(LK).fill(0), _h = new THREE.Vector3();
+      spots.forEach(([x, y, z, ry, sc], j) => {
+        const k = lk[j], n = seen[k]++, m = _m.compose(_p.set(x, y, z), _q.setFromAxisAngle(_y, ry), _s.setScalar(sc)).clone();
+        pairs[k][0].setMatrixAt(n, m); pairs[k][1].setMatrixAt(n, _zero);
+        _h.set(x + Math.sin(ry) * .1 * sc, y + 1.77 * sc, z + Math.cos(ry) * .1 * sc); H.localToWorld(_h);
+        launchers.push({ down: pairs[k][0], up: pairs[k][1], n, m, hx: _h.x, hy: _h.y, hz: _h.z, held: false, want: false });
+      });
+      return meshes;
     })();
+    // each lantern belongs to one launcher, who lets go one in turn every so often
+    for (let i = 0; i < LN; i++) lans.push({ L: launchers[i % launchers.length], off: i * LP / LN + r() * 1.2, climb: .75 + r() * .45, wind: .8 + r() * .5, ph: r() * TAU, cyc: -1, on: false, tint: .75 + r() * .25 });
     const CYC = B.fill + B.hold + B.rise + B.gone, mouth0 = top + 1.7;
     let dl = 1, primed = false; onDaylight(d => dl = d);
     updaters.pagoda.push((dt, t, motion) => {
@@ -292,22 +325,31 @@
         const crown = mouth0 + ANIMALS[KINDS[b.kind]].h * (.45 + .55 * s), mastTop = top + MAST - .3;
         p.cord.visible = held && show; if (p.cord.visible) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
       });
-      // the lanterns: each held a few seconds over the field, then rising and drifting with the wind, shrinking and dimming away as
-      // its wick burns out high over the town. One lit at dusk goes on till it is gone; none are let go by day
+      // the lanterns: each held up a few seconds in its launcher's hands while the hot air fills it, then let go, rising and drifting
+      // with the wind, shrinking and dimming away as its wick burns out high over the town. One lit at dusk goes on till it is gone;
+      // none are let go by day
       let any = false;
+      launchers.forEach(L => L.want = false);
       lans.forEach((l, i) => {
         const tt = t + l.off, c = still ? 0 : Math.floor(tt / LP), ph = still ? (i / LN) * LP * .85 : tt % LP;
         if (c !== l.cyc || !primed) { l.cyc = c; l.on = night; }
-        const tau = Math.max(0, ph - 4), fade = clamp((LP - ph) / 30, 0, 1);
+        const tau = Math.max(0, ph - LH), fade = clamp((LP - ph) / 30, 0, 1), L = l.L;
         if (!l.on || fade <= 0) { lanI.setMatrixAt(i, _zero); lanCol[i * 3] = lanCol[i * 3 + 1] = lanCol[i * 3 + 2] = 0; return; }
         any = true;
-        const sway = still ? 0 : Math.sin(t * .7 + l.ph) * .6;
-        _lp.set(l.x + (B.drift[0] * l.wind * tau + sway), top + 1.6 + l.climb * tau + .002 * tau * tau, l.z + (B.drift[1] * l.wind * tau + Math.cos(t * .5 + l.ph) * (still ? 0 : .5)));
-        _lq.setFromEuler(_le.set(still ? 0 : Math.sin(t * 1.3 + l.ph) * .08, l.ph, still ? 0 : Math.cos(t * 1.1 + l.ph) * .08));
-        _ls.setScalar(fade); lanI.setMatrixAt(i, _lm.compose(_lp, _lq, _ls));
+        if (ph < LH) L.want = true;
+        const w = Math.min(1, tau / 6), sway = still ? 0 : Math.sin(t * .7 + l.ph) * .6 * w;   // it swings free only once clear of the hands
+        _lp.set(L.hx + (B.drift[0] * l.wind * tau + sway), L.hy + l.climb * tau + .002 * tau * tau, L.hz + (B.drift[1] * l.wind * tau + Math.cos(t * .5 + l.ph) * (still ? 0 : .5) * w));
+        _lq.setFromEuler(_le.set(still ? 0 : Math.sin(t * 1.3 + l.ph) * .08 * w, l.ph, still ? 0 : Math.cos(t * 1.1 + l.ph) * .08 * w));
+        _ls.setScalar(fade * (ph < LH ? .8 + .2 * ph / LH : 1)); lanI.setMatrixAt(i, _lm.compose(_lp, _lq, _ls));   // filling out with hot air in the hands
         lanPos[i * 3] = _lp.x; lanPos[i * 3 + 1] = _lp.y + .25; lanPos[i * 3 + 2] = _lp.z;
         const fl = (.85 + .15 * Math.sin(t * 13 + l.ph * 5)) * fade * (1 - dl) * l.tint;
         lanCol[i * 3] = fl; lanCol[i * 3 + 1] = fl * .55; lanCol[i * 3 + 2] = fl * .18;
+      });
+      // the launchers raise their arms while they hold a lantern up and lower them once it is let go
+      launchers.forEach(L => {
+        if (L.want === L.held) return;
+        L.held = L.want; L.down.setMatrixAt(L.n, L.held ? _zero : L.m); L.up.setMatrixAt(L.n, L.held ? L.m : _zero);
+        L.down.instanceMatrix.needsUpdate = L.up.instanceMatrix.needsUpdate = true;
       });
       primed = true;
       lanI.visible = lanGlow.visible = any;

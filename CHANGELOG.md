@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-17
 
 ### Changed
+- The small sky lanterns at night are now let go by people: each is held up over someone's head for a few seconds while it fills, then rises from their hands. People launch them down on the field by the parapet and up on the top steps of the terraces, lowering their arms once the lantern is away.
 - The big animal balloons go up after dark too, glowing from the fire inside, while the small sky lanterns drift up around them.
 - The fire balloon ground has a crowd: families sitting on the terraces, more standing along the foot of the field, and a team round each fire pit holding the balloon's mouth over the fire. They go home in the rain.
 - The Buddhas on the upper floors, in the Lotus Temple hall and in the Shan monastery are prepared in the background after Guanyin, so their halls are no longer empty while the image is sculpted. A second copy, the Buddha under the wishing tree and the lions at the back gate, reuses the one already made.

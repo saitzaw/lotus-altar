@@ -75,6 +75,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-17: sky lanterns let go from people's hands, on the field and the top terraces
+
+- Owner: the small lanterns should come from people's hands, launched both low (the field by the parapet) and high (up the
+  terraces). In `15g-balloon-ground.js` each of the `lanN` 180 lanterns belongs to one of 66 `launchers` (`lanLow` 36 on the field
+  1.3–5 m in from the parapet, a few further in, kept 6.5 m off the pits; `lanHigh` 30 standing on the top three tiers, sitters
+  kept .75 m clear). A lantern starts at its launcher's hands, is held `lanHold` 6 s while it swells, then rises from there.
+- Each launcher kind (4) is two `InstancedMesh`es, arms down and arms up; the frame loop swaps a launcher's matrix to the
+  arms-up mesh only while it holds a lantern, flagging `needsUpdate` only on a change. Launchers are in `crowd`, so they go home in the rain.
+- Checked headless at night (t forced so launchers 34–39 and 0–3 hold): lanterns sit on raised hands on the field and the top steps.
+
 ### 2026-11-17: big balloons at night too, and a crowd on the balloon ground
 
 - Owner: the balloon ground had no one on it, and only the small lanterns showed at night; both kinds should show. In
