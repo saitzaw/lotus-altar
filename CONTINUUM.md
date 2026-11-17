@@ -76,6 +76,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-17: animal balloons by day, small sky lanterns at night
+- `15g-balloon-ground.js`: the gored envelopes are gone. Each pad holds five animal shapes (`ANIMALS`: rooster, fish, parrot,
+  bear, tiger; ellipsoids and cones on a paper skirt over the mouth ring), shows the next one each launch
+  (`(cycle * 3 + pad) % 5`) and turns it to face the crowd's terraces. A launch that starts after dark (daylight < .45)
+  sends nothing up; the pit burns low.
+- Night: 150 small sky lanterns (instanced paper lathe + additive `Points` glow, `fog: false`) rise from random spots on the
+  field, 190 s each, shrinking out at the end. Each lantern decides at launch whether it is night, so dusk and dawn don't
+  pop the whole sky in or out.
+- Burmese tips: ကြက်ဖ / ငါး / ကြက်တူရွေး / ဝက်ဝံ / ကျား + ပုံ မီးပုံးပျံ, and မီးပုံးငယ် for the small lantern (Burmese, not Shan).
+- Checked by headless render (day row of all five animals, night sky of lanterns), no console errors.
+
 ### 2026-11-16: the stupa hill has four stairs
 
 - Owner's ask: a stupa is climbed from four sides, and the hill had only the main and east stairs. `MORE_STAIRS` in

@@ -3,6 +3,12 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-17
+
+### Changed
+- The fire balloon ground now sends up great paper animals by day, a rooster, a fish, a parrot, a bear and a tiger, a different one each time a team lets go.
+- After dark the crowd on the balloon ground lets go small paper sky lanterns instead, a slow river of warm orange lights drifting up over the town.
+
 ## 2026-11-16
 
 ### Fixed

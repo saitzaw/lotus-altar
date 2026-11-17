@@ -29,7 +29,7 @@
     const lo = HILL.terraces[1], up = HILL.terraces[0], top = lo.y + .03, rIn = lo.r0, a0 = eastStairAngle() + B.da0, a1 = B.a1, PH = B.PH, PW = B.PW;
     const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
     const wash = std({ color: 0xf2eee4, roughness: .8 });
-    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day they go up in bright gores of colour; after dark they carry strings of little paper lanterns that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
+    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day the teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another; after dark the crowd lets go hundreds of small paper lanterns, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
     // the field: trampled grass worn to earth, on its retaining wall (footed low, below the slope)
     const fieldTex = canvasTex(256, (c, sz) => { c.fillStyle = "#6f8442"; c.fillRect(0, 0, sz, sz); const q = rng(51); for (let i = 0; i < 90; i++) { c.fillStyle = `rgba(${140 + q() * 30 | 0},${110 + q() * 20 | 0},${70 + q() * 20 | 0},${.25 + q() * .3})`; c.beginPath(); c.ellipse(q() * sz, q() * sz, 6 + q() * 22, 4 + q() * 12, q() * 3, 0, TAU); c.fill(); } for (let i = 0; i < 900; i++) { c.fillStyle = q() < .5 ? "rgba(40,70,30,.45)" : "rgba(130,155,80,.4)"; c.fillRect(q() * sz, q() * sz, 2, 3); } });
     fieldTex.wrapS = fieldTex.wrapT = THREE.RepeatWrapping; fieldTex.repeat.set(.08, .08);   // the top's UVs are in metres: a tile every 12.5 m
@@ -83,65 +83,165 @@
       const cord = mesh(new THREE.CylinderGeometry(.025, .025, 1, 4), rope, x, 0, z, H); cord.castShadow = false;
       return { x, z, a, fire, glow, cord, k };
     });
-    // the balloons: tall paper envelopes in gores of colour, a bamboo ring round the mouth with its burning wick, and for the night
-    // strings of paper lanterns hanging beneath; one to each pad, in world space so they can climb away over the town
-    const PROF = [[1.0, 0], [1.6, 1], [2.6, 2.6], [3.6, 4.8], [4.3, 7], [4.5, 8.6], [4.2, 10], [3.3, 11.2], [1.9, 12], [.5, 12.35], [0, 12.4]], EH = 12.4;
-    const envGeo = new THREE.LatheGeometry(PROF.map(([x, y]) => new THREE.Vector2(x, y)), 24);
-    const PALETTES = [["#d8282a", "#f4c430", "#1f7a3a", "#f4efe0"], ["#1e4fa8", "#f4efe0", "#e86a1a", "#f4c430"], ["#7a1e6a", "#f4c430", "#d8282a", "#2a8ac0"]];
-    const envTex = cols => canvasTex(512, (c, sz) => {
-      const gw = sz / 12;
-      for (let i = 0; i < 12; i++) { c.fillStyle = cols[i % 2 ? 1 : 0]; c.fillRect(i * gw, 0, gw + 1, sz); }   // the gores
-      c.fillStyle = cols[2]; c.fillRect(0, sz * .3, sz, sz * .1);   // a broad band round the widest part, set with diamonds
-      c.fillStyle = cols[3]; for (let i = 0; i < 24; i++) { const x = (i + .5) * sz / 24, y = sz * .35, w = sz / 60, h = sz * .04; c.beginPath(); c.moveTo(x, y - h); c.lineTo(x + w, y); c.lineTo(x, y + h); c.lineTo(x - w, y); c.fill(); }
-      c.strokeStyle = cols[2]; c.lineWidth = sz / 70; c.beginPath(); for (let i = 0; i <= 24; i++) c.lineTo(i * sz / 24, sz * (i % 2 ? .12 : .17)); c.stroke();   // a zigzag up by the crown
-      c.fillStyle = cols[3]; c.fillRect(0, sz * .58, sz, sz * .025); c.fillStyle = cols[2]; c.fillRect(0, sz * .9, sz, sz * .1);   // a thin ring, and the mouth's skirt
-    });
-    const lanternCols = [0xffc050, 0xff6a3a, 0xffe08a];
+    // the day balloons: great paper animals, as the Taunggyi teams send up by day, a rooster, a fish, a parrot, a bear and a tiger,
+    // each sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the
+    // town. Each pad sends up a different animal each time round. After dark no animal goes up: the crowd lets go small paper lanterns
+    const sphG = new THREE.SphereGeometry(1, 18, 14), coneG = new THREE.ConeGeometry(1, 1, 12);
+    const paper = (color, map) => std(map ? { color, map, roughness: .9 } : { color, roughness: .9 });
+    const P_ = {
+      black: paper(0x1a1410), white: paper(0xf4efe0), red: paper(0xd8282a), beak: paper(0xf08a1a),
+      yellow: paper(0xf2c21c), wingY: paper(0xe89a1c), tailO: paper(0xe86a1a),
+      fish: paper(0xffffff, canvasTex(256, (c, sz) => { c.fillStyle = "#f07a20"; c.fillRect(0, 0, sz, sz); c.strokeStyle = "rgba(150,40,10,.55)"; c.lineWidth = 3; for (let y = 0; y < 14; y++) for (let x = 0; x < 16; x++) { c.beginPath(); c.arc((x + (y % 2) * .5) * sz / 16, y * sz / 14 + 8, sz / 34, 0, Math.PI); c.stroke(); } })),
+      belly: paper(0xf6e0b0), green: paper(0x2aa040), blue: paper(0x2050b8), ivory: paper(0xf0e0b0),
+      brown: paper(0x7a4a28), tan: paper(0xd8b080),
+      tiger: paper(0xffffff, canvasTex(256, (c, sz) => { c.fillStyle = "#ec8a22"; c.fillRect(0, 0, sz, sz); c.fillStyle = "#1a1410"; for (let i = 0; i < 18; i++) { const x = (i + .5) * sz / 18; c.beginPath(); c.moveTo(x - 4, sz * .12); for (let y = .12; y <= .88; y += .04) c.lineTo(x + Math.sin(y * 19 + i) * 5 - 2, y * sz); for (let y = .88; y >= .12; y -= .04) c.lineTo(x + Math.sin(y * 19 + i) * 5 + 3 - Math.abs(y - .5) * 6, y * sz); c.fill(); } })),
+      pink: paper(0xc86070)
+    };
+    // an ellipsoid or a cone (tip along +y before turning) on an animal, sized by its three half-widths
+    const blob = (A, m, x, y, z, sx, sy, sz, rx = 0, rz = 0) => { const o = mesh(sphG, m, x, y, z, A); o.scale.set(sx, sy, sz); o.rotation.set(rx, 0, rz); return o; };
+    const cone = (A, m, x, y, z, r_, h, rx = 0) => { const o = mesh(coneG, m, x, y, z, A); o.scale.set(r_, h, r_); o.rotation.x = rx; return o; };
+    const skirt = (A, m, y1) => { const o = mesh(new THREE.CylinderGeometry(2.2, 1.0, y1, 16, 1, true), m, 0, y1 / 2, 0, A); o.material = m.clone(); o.material.side = THREE.DoubleSide; };
+    const both = f => [-1, 1].forEach(f);
+    const eyes = (A, x, y, z, w = .38) => both(sd => { blob(A, P_.white, sd * x, y, z, w, w, w); blob(A, P_.black, sd * (x + w * .45), y, z + w * .45, w * .55, w * .55, w * .55); });
+    // each faces +z, its mouth at y = 0; h: where the mast's cord holds its top
+    const ANIMALS = {
+      rooster: { my: "ကြက်ဖ", en: "rooster", h: 12.2, make(A) {
+        skirt(A, P_.yellow, 2.4);
+        blob(A, P_.yellow, 0, 6, 0, 3.8, 4.0, 4.4); blob(A, P_.yellow, 0, 6.6, 2.2, 3.0, 3.4, 2.8);   // the body and its full breast
+        blob(A, P_.yellow, 0, 10.3, 2.6, 1.9, 2.3, 2.0);   // the head on its neck
+        cone(A, P_.beak, 0, 10.4, 4.9, .5, 1.3, Math.PI / 2);
+        [[12.4, 1.9], [12.8, 2.7], [12.5, 3.5]].forEach(([y, z]) => blob(A, P_.red, 0, y, z, .35, .8, .6));   // the comb
+        blob(A, P_.red, 0, 9.0, 4.2, .4, .8, .45); eyes(A, 1.5, 10.8, 3.4);
+        both(sd => blob(A, P_.wingY, sd * 3.4, 6.2, -.3, .9, 2.4, 3.2));
+        for (let i = 0; i < 5; i++) {   // the tail feathers, fanned up and back
+          const th = -.15 - i * .32, L = 3.4 - i * .25;
+          blob(A, i % 2 ? P_.red : P_.tailO, 0, 7 + Math.cos(th) * L * .8, -3.4 + Math.sin(th) * L * .8, .5, L, 1.2, th);
+        }
+      } },
+      fish: { my: "ငါး", en: "fish", h: 10.4, make(A) {
+        skirt(A, P_.belly, 3.2);
+        blob(A, P_.fish, 0, 6.5, 0, 2.8, 3.6, 6.2); blob(A, P_.belly, 0, 5.4, .5, 2.5, 2.4, 5);
+        both(sd => { blob(A, P_.red, 0, 6.5 + sd * 1.6, -7.0, .35, 2.4, 1.4, -sd * .7); blob(A, P_.red, sd * 2.7, 5.6, 2, .25, 1.0, 1.8, 0, -sd * .5); });   // the forked tail; the side fins
+        blob(A, P_.red, 0, 10, -.8, .3, 1.6, 2.8, -.3);   // the back fin
+        eyes(A, 2.2, 7.6, 3.9, .7);
+        mesh(new THREE.TorusGeometry(.8, .25, 8, 18), P_.red, 0, 6.6, 6.1, A);   // the lips
+      } },
+      parrot: { my: "ကြက်တူရွေး", en: "parrot", h: 12.6, make(A) {
+        skirt(A, P_.green, 2.2);
+        blob(A, P_.green, 0, 6, 0, 3.2, 4.4, 3.4); blob(A, P_.red, 0, 10.6, .8, 2.3, 2.3, 2.3);   // the green body, the red head
+        blob(A, P_.ivory, 0, 10.2, 3.0, .8, 1.1, 1.0); cone(A, P_.black, 0, 9.3, 3.5, .45, .9, Math.PI);   // the hooked beak
+        eyes(A, 1.6, 11, 1.8, .5);
+        both(sd => { blob(A, P_.blue, sd * 3.0, 6.6, -.6, .9, 3.8, 2.4, 0, -sd * .12); blob(A, P_.yellow, sd * 3.25, 7.8, -.2, .7, 1.0, 1.8); });
+        both(sd => blob(A, sd < 0 ? P_.red : P_.blue, sd * .5, 2.4, -3.6, .5, 4.2, 1.0, .35));   // the long tail feathers hanging down
+      } },
+      bear: { my: "ဝက်ဝံ", en: "bear", h: 12.6, make(A) {
+        skirt(A, P_.brown, 2.0);
+        blob(A, P_.brown, 0, 5.8, 0, 4, 4.2, 3.8); blob(A, P_.tan, 0, 5.6, 2.4, 2.8, 3.0, 1.8);   // the body and its pale belly
+        blob(A, P_.brown, 0, 10.6, .6, 2.7, 2.7, 2.7);
+        both(sd => { blob(A, P_.brown, sd * 1.9, 12.7, .2, .8, .8, .5); blob(A, P_.tan, sd * 1.9, 12.7, .55, .45, .45, .3); });   // the ears
+        blob(A, P_.tan, 0, 10.1, 2.9, 1.2, .9, .9); blob(A, P_.black, 0, 10.4, 3.75, .45, .32, .3);   // the muzzle and nose
+        both(sd => blob(A, P_.black, sd * 1.0, 11.4, 2.35, .3, .3, .3));
+        both(sd => { blob(A, P_.brown, sd * 3.3, 7, 1.4, 1.1, 2.4, 1.1, -.5, sd * .4); blob(A, P_.brown, sd * 2, 2.6, 1.6, 1.3, 1.6, 1.6); });   // arms and legs
+      } },
+      tiger: { my: "ကျား", en: "tiger", h: 9.6, make(A) {
+        skirt(A, P_.white, 2.6);
+        blob(A, P_.tiger, 0, 6, -.5, 3.4, 3.6, 5.4); blob(A, P_.tiger, 0, 9, 4.4, 2.6, 2.4, 2.4);   // the striped body and head
+        blob(A, P_.white, 0, 8.3, 6.4, 1.3, .9, .8); blob(A, P_.pink, 0, 8.8, 7.05, .3, .25, .25);   // the muzzle and nose
+        both(sd => { blob(A, P_.white, sd * 1.6, 8.2, 5.6, 1, .9, .8); blob(A, P_.tiger, sd * 1.7, 11.1, 4.0, .7, .8, .4); blob(A, P_.white, sd * 1.7, 11.05, 4.3, .4, .5, .2); });
+        eyes(A, .95, 9.8, 6.5, .35);
+        both(sd => both(fb => blob(A, P_.tiger, sd * 2, 2.8, fb * 2.8 - .5, 1.1, 2.0, 1.1)));   // the four legs
+        for (let i = 0; i <= 6; i++) { const s = i / 6; blob(A, i === 6 ? P_.black : P_.tiger, 0, 6.5 + 4 * s, -5.8 - 1.6 * Math.sin(s * Math.PI), .55, .55, .55); }   // the tail curling up
+      } }
+    };
+    const KINDS = Object.keys(ANIMALS);
+    H.updateMatrixWorld(true);
+    const hillC = H.localToWorld(V(0, 0, 0));
     const balloons = pads.map((p, k) => {
-      const tex = envTex(PALETTES[k % PALETTES.length]);
-      const mat = std({ map: tex, roughness: .9, side: THREE.DoubleSide, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0 });
       const G = new THREE.Group(); G.userData.noCull = true; g.add(G);
-      const env = mesh(envGeo, mat, 0, 0, 0, G);
       const ring = mesh(new THREE.TorusGeometry(1.0, .05, 6, 20), bamboo, 0, 0, 0, G); ring.rotation.x = Math.PI / 2;
       const wick = glowSprite(0xffa040, 1.6, .9); wick.position.y = -.2; G.add(wick);
-      const L = new THREE.Group(); G.add(L); const lamps = [];
-      for (let s = 0; s < 6; s++) {   // six strings fanning out below the mouth, nine lanterns on each
-        const ang = s / 6 * TAU + k;
-        for (let j = 1; j <= 9; j++) { const b = glowSprite(lanternCols[(s + j) % 3], .7, .9); b.material.fog = false; b.position.set(Math.cos(ang) * (.6 + j * .38), -j * .95, Math.sin(ang) * (.6 + j * .38)); L.add(b); lamps.push(b); }
-      }
-      G.traverse(o => { if (o.isMesh) clickable(list, o, { tip: "A fire balloon · မီးပုံးပျံ", toast: data.toast }); });
-      H.updateMatrixWorld(true); const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, env, ring, mat, wick, L, lamps, wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      const shapes = KINDS.map(name => {
+        const Z = ANIMALS[name], A = new THREE.Group(); A.visible = false; G.add(A); Z.make(A);
+        A.traverse(o => { if (o.isMesh) clickable(list, o, { tip: `A ${Z.en} balloon · ${Z.my}ပုံ မီးပုံးပျံ`, toast: data.toast }); });
+        return A;
+      });
+      const w = H.localToWorld(V(p.x, top, p.z));
+      return { p, G, ring, wick, shapes, kind: -1, cyc: -1, day: true, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
+    // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
+    // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
+    // mesh for the paper and one cloud of points for the glow round each
+    const LN = 150, LP = 190, lanG = new THREE.LatheGeometry([[.3, 0], [.34, .3], [.4, .75], [.44, 1.05], [.4, 1.2], [.2, 1.28], [0, 1.3]].map(([x, y]) => new THREE.Vector2(x, y)), 12);
+    const lanTex = canvasTex(64, (c, sz) => { const gr = c.createLinearGradient(0, sz, 0, 0); gr.addColorStop(0, "#ffd890"); gr.addColorStop(.35, "#ff9a30"); gr.addColorStop(1, "#b8481a"); c.fillStyle = gr; c.fillRect(0, 0, sz, sz); });
+    const lanM = new THREE.MeshBasicMaterial({ map: lanTex, side: THREE.DoubleSide, fog: false });
+    const lanI = new THREE.InstancedMesh(lanG, lanM, LN); lanI.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    lanI.frustumCulled = false; lanI.castShadow = false; lanI.userData.noCull = true; g.add(lanI);
+    clickable(list, lanI, { tip: "A paper sky lantern · မီးပုံးငယ်", toast: "After dark the crowd on the fire balloon ground lights small paper lanterns, a ring of wire at the mouth with a wick of wax burning in it, holds each until the hot air lifts it, and lets it go. Hundreds drift up over the town in a slow river of light, carrying the wishes and merit of the people who let them go." });
+    const lanPos = new Float32Array(LN * 3), lanCol = new Float32Array(LN * 3), lanGeo = new THREE.BufferGeometry();
+    lanGeo.setAttribute("position", new THREE.BufferAttribute(lanPos, 3)); lanGeo.setAttribute("color", new THREE.BufferAttribute(lanCol, 3));
+    const lanGlow = new THREE.Points(lanGeo, new THREE.PointsMaterial({ size: 3.4, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+    lanGlow.frustumCulled = false; lanGlow.userData.noCull = true; g.add(lanGlow);
+    const lans = [];
+    for (let i = 0; i < LN; i++) {
+      const a = a0 + .06 + r() * (a1 - a0 - .12), rr = rIn + 3 + r() * (B.edge - rIn - 6), w = H.localToWorld(V(rr * Math.sin(a), top, -rr * Math.cos(a)));
+      lans.push({ x: w.x, z: w.z, off: i * LP / LN + r() * 1.2, climb: .75 + r() * .45, wind: .8 + r() * .5, ph: r() * TAU, cyc: -1, on: false, tint: .75 + r() * .25 });
+    }
+    const _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _ls = new THREE.Vector3(), _lp = new THREE.Vector3(), _le = new THREE.Euler(), _zero = new THREE.Matrix4().makeScale(0, 0, 0);
     const CYC = B.fill + B.hold + B.rise + B.gone, mouth0 = top + 1.7;
-    let dl = 1; onDaylight(d => dl = d);
+    let dl = 1, primed = false; onDaylight(d => dl = d);
     updaters.pagoda.push((dt, t, motion) => {
       if (!FOLK.balloons) {   // rain: no balloon is filled, the fire pits are cold and the cords hang loose from the masts
         balloons.forEach(b => { b.G.visible = false; b.p.fire.visible = false; b.p.glow.material.opacity = 0; b.p.cord.visible = false; });
+        lanI.visible = lanGlow.visible = false;
         return;
       }
+      const still = motion < 1, night = dl < .45;
       balloons.forEach(b => {
-        const { p, G } = b, still = motion < 1, ph = still ? B.fill + 1 : (t + b.off) % CYC;   // with reduced motion each is held full at its pad
+        const { p, G } = b, tt = t + b.off, ph = still ? B.fill + 1 : tt % CYC, c = still ? 0 : Math.floor(tt / CYC);   // with reduced motion each is held full at its pad
+        if (c !== b.cyc || !primed) {   // a new launch: the next animal, and only by day
+          b.cyc = c; b.day = !night;
+          const kind = (c * pads.length + p.k) % KINDS.length;
+          if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; b.shapes[kind].visible = true; b.kind = kind; }
+        }
         const fl = .8 + .2 * Math.sin(t * 17 + p.k * 3) * Math.sin(t * 7.3 + p.k);
-        let s = 1, y = mouth0, dx = 0, dz = 0, held = true, show = true;
+        let s = 1, y = mouth0, dx = 0, dz = 0, held = true, show = b.day, tau = 0;
         if (ph < B.fill) { const u = easeOut(ph / B.fill); s = u; }
         else if (ph >= B.fill + B.hold) {
-          const tau = ph - B.fill - B.hold; held = false;
+          tau = ph - B.fill - B.hold; held = false;
           if (tau > B.rise) show = false;
           y = mouth0 + B.climb * tau + B.accel * tau * tau; dx = B.drift[0] * tau; dz = B.drift[1] * tau;
         }
         G.visible = show;
         G.position.set(b.wx + dx, y, b.wz + dz);
-        b.env.scale.set(.35 + .65 * s, .45 + .55 * s, .35 + .65 * s); b.ring.scale.set(.35 + .65 * s, .35 + .65 * s, 1);
-        G.rotation.z = held ? 0 : Math.sin(t * .4 + p.k) * .04; G.rotation.x = held ? 0 : Math.sin(t * .33 + p.k * 2) * .04;
-        b.mat.emissiveIntensity = (1 - dl) * (.12 + .22 * s) * fl;
-        b.wick.material.opacity = (held ? .5 : .9) * fl; b.L.visible = !held && dl < .6;
-        b.lamps.forEach(l => l.material.opacity = .9 * (1 - dl));
-        // the fire under it burns while it fills and is held, then dies down; the mast's cord hangs to its crown until let go
-        const burn = held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
-        const crown = mouth0 + EH * (.45 + .55 * s), mastTop = top + MAST - .3;
-        p.cord.visible = held; if (held) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
+        const A = b.shapes[b.kind]; A.scale.set(.35 + .65 * s, .45 + .55 * s, .35 + .65 * s); b.ring.scale.set(.35 + .65 * s, .35 + .65 * s, 1);
+        G.rotation.set(held ? 0 : Math.sin(t * .33 + p.k * 2) * .04, b.face + tau * .015, held ? 0 : Math.sin(t * .4 + p.k) * .04);
+        b.wick.material.opacity = (held ? .5 : .9) * fl;
+        // the fire under it burns while it fills and is held, then dies down (at night it is kept low, for lighting lanterns);
+        // the mast's cord hangs to the animal's back until let go
+        const burn = !b.day ? .45 * fl : held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
+        const crown = mouth0 + ANIMALS[KINDS[b.kind]].h * (.45 + .55 * s), mastTop = top + MAST - .3;
+        p.cord.visible = held && show; if (p.cord.visible) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
       });
+      // the lanterns: each held a few seconds over the field, then rising and drifting with the wind, shrinking and dimming away as
+      // its wick burns out high over the town. One lit at dusk goes on till it is gone; none are let go by day
+      let any = false;
+      lans.forEach((l, i) => {
+        const tt = t + l.off, c = still ? 0 : Math.floor(tt / LP), ph = still ? (i / LN) * LP * .85 : tt % LP;
+        if (c !== l.cyc || !primed) { l.cyc = c; l.on = night; }
+        const tau = Math.max(0, ph - 4), fade = clamp((LP - ph) / 30, 0, 1);
+        if (!l.on || fade <= 0) { lanI.setMatrixAt(i, _zero); lanCol[i * 3] = lanCol[i * 3 + 1] = lanCol[i * 3 + 2] = 0; return; }
+        any = true;
+        const sway = still ? 0 : Math.sin(t * .7 + l.ph) * .6;
+        _lp.set(l.x + (B.drift[0] * l.wind * tau + sway), top + 1.6 + l.climb * tau + .002 * tau * tau, l.z + (B.drift[1] * l.wind * tau + Math.cos(t * .5 + l.ph) * (still ? 0 : .5)));
+        _lq.setFromEuler(_le.set(still ? 0 : Math.sin(t * 1.3 + l.ph) * .08, l.ph, still ? 0 : Math.cos(t * 1.1 + l.ph) * .08));
+        _ls.setScalar(fade); lanI.setMatrixAt(i, _lm.compose(_lp, _lq, _ls));
+        lanPos[i * 3] = _lp.x; lanPos[i * 3 + 1] = _lp.y + .25; lanPos[i * 3 + 2] = _lp.z;
+        const fl = (.85 + .15 * Math.sin(t * 13 + l.ph * 5)) * fade * (1 - dl) * l.tint;
+        lanCol[i * 3] = fl; lanCol[i * 3 + 1] = fl * .55; lanCol[i * 3 + 2] = fl * .18;
+      });
+      primed = true;
+      lanI.visible = lanGlow.visible = any;
+      if (any) { lanI.instanceMatrix.needsUpdate = true; lanGeo.attributes.position.needsUpdate = lanGeo.attributes.color.needsUpdate = true; }
     });
     // walkers: the field at its own height, the parapet, end walls, fire pits and masts block; the terraces as steps. Cut into
     // wedges a few tenths of a radian wide, each with its own rectangle turned to face down its middle. Anywhere else in them is
