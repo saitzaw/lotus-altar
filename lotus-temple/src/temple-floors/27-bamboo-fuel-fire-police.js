@@ -1,21 +1,74 @@
-  // a stand of bamboo, drawn as two instanced meshes, after the owner's photograph of a tall clumping stand: clump(cx, cz, big, n)
-  // adds a clump of slender culms 10–15 m tall, streaked green, grey-green and orange-brown, fanning out from one root and arching
-  // outward near the top (each culm is two pieces, the upper one leaning further out); the lower half bare, a light yellow-green
-  // feathery canopy up the top, low green undergrowth round the foot. Each culm stands on the land where it roots
-  function bambooStand(g, r, data, NC, NL) {
-    const culmGeo = new THREE.CylinderGeometry(.04, .05, 1, 5); culmGeo.translate(0, .5, 0);
-    const leafGeo = new THREE.IcosahedronGeometry(1, 0);
-    const CULMS = [0x7a8a3e, 0x6e8238, 0x8a7a3c, 0x9a6a34, 0x7a8468, 0xb89a50].map(c => new THREE.Color(c));   // green, olive, brown-streaked, orange-brown, grey-green; an old yellow one
-    const LEAVES = [0x6a9a28, 0x5a8c26, 0x7aaa30, 0x4e7e22].map(c => new THREE.Color(c)), UNDER = [0x4a7a2e, 0x568a34].map(c => new THREE.Color(c));
-    const white = { color: 0xffffff, roughness: .85 };
-    const culms = new THREE.InstancedMesh(culmGeo, std(white), NC), leaves = new THREE.InstancedMesh(leafGeo, std({ ...white, roughness: 1, flatShading: true }), NL);
-    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = V(0, 1, 0), d1 = V(0, 1, 0), d2 = V(0, 1, 0), p = V(0, 0, 0);
+  // a stand of bamboo, drawn as three instanced meshes in low poly, after the owner's photographs of clumping bamboo: clump(cx, cz, big, n)
+  // adds a clump of slender green culms 10–15 m tall, ringed with pale nodes, fanning out from one root and arching outward near
+  // the top (each culm is two pieces, the upper one leaning further out). The foliage is cards cut out of a painted spray of narrow
+  // drooping leaves on a twig (two crossed quads each), set round the upper half of every culm with a tuft at the tip; tufts of grass
+  // on cards round the foot. Each culm stands on the land where it roots
+  const BAMBOO_TEX = {};
+  function bambooTextures() {
+    if (BAMBOO_TEX.culm) return BAMBOO_TEX;
+    const r = rng(4242);
+    // the culm's skin: pale (tinted green per culm), faint lengthwise streaks, a node ring at the top of each repeat
+    BAMBOO_TEX.culm = canvasTex(64, (c, sz) => {
+      c.fillStyle = "#dcead0"; c.fillRect(0, 0, sz, sz);
+      for (let i = 0; i < 40; i++) { c.fillStyle = r() < .5 ? "rgba(150,170,120,.25)" : "rgba(255,255,240,.25)"; c.fillRect(r() * sz, 0, 1 + r() * 2, sz); }
+      c.fillStyle = "#fafaf0"; c.fillRect(0, 3, sz, 4); c.fillStyle = "#8a9470"; c.fillRect(0, 7, sz, 2); c.fillStyle = "rgba(255,255,240,.5)"; c.fillRect(0, 9, sz, 3);
+    });
+    BAMBOO_TEX.culm.wrapS = BAMBOO_TEX.culm.wrapT = THREE.RepeatWrapping;
+    // a spray: a twig from the left edge (at the culm) out to the right, hung with narrow pointed leaves drooping both sides
+    BAMBOO_TEX.spray = canvasTex(256, (c, sz) => {
+      const y0 = sz * .3, tw = t => [t * sz * .95, y0 + Math.sin(t * 2.2) * sz * .1];
+      c.strokeStyle = "#6a7a3a"; c.lineWidth = 3; c.beginPath(); for (let t = 0; t <= 1; t += .05) { const [x, y] = tw(t); t ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+      const GREENS = ["#4f8a2a", "#5f9a32", "#6aa63a", "#46802a", "#78b048", "#58923a"];
+      for (let i = 0; i < 34; i++) {
+        const t = .1 + i / 34 * .88, [x, y] = tw(t), side = i & 1 ? 1 : -1, L = sz * (.2 + r() * .14) * (1 - t * .3), W = L * (.14 + r() * .04);
+        const ang = .35 + r() * .9 + (side < 0 ? Math.PI * .5 + r() * .4 : 0);   // out along the twig and down, a few hanging the other way
+        c.save(); c.translate(x, y); c.rotate(ang); c.fillStyle = GREENS[(r() * GREENS.length) | 0];
+        c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(L * .35, -W, L, 0); c.quadraticCurveTo(L * .35, W, 0, 0); c.fill();
+        c.strokeStyle = "rgba(200,230,150,.5)"; c.lineWidth = 1; c.beginPath(); c.moveTo(0, 0); c.lineTo(L * .9, 0); c.stroke(); c.restore();
+      }
+    });
+    // a tuft of grass blades rising from the bottom edge
+    BAMBOO_TEX.grass = canvasTex(128, (c, sz) => {
+      for (let i = 0; i < 70; i++) {
+        const x = sz * (.1 + r() * .8), h = sz * (.35 + r() * .6), lean = (r() - .5) * sz * .35, w = 2 + r() * 2;
+        c.fillStyle = ["#4a7a2a", "#5a8a32", "#6a9a3a", "#3e6a24"][(r() * 4) | 0];
+        c.beginPath(); c.moveTo(x - w, sz); c.quadraticCurveTo(x + lean * .3, sz - h * .5, x + lean, sz - h); c.quadraticCurveTo(x + lean * .3 + w * .5, sz - h * .5, x + w, sz); c.fill();
+      }
+    });
+    return BAMBOO_TEX;
+  }
+  // two quads crossed along one axis, merged into one geometry; place(plane) moves each before it's added
+  function crossedCards(place) {
+    const parts = [0, Math.PI / 2].map(rx => { const p = place(new THREE.PlaneGeometry(1, 1)); p.rotateX(rx); return p; });
+    const g = new THREE.BufferGeometry(), at = k => { const arr = []; parts.forEach(p => arr.push(...p.attributes[k].array)); return arr; };
+    g.setAttribute("position", new THREE.Float32BufferAttribute(at("position"), 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(at("normal"), 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(at("uv"), 2));
+    const n = parts[0].attributes.position.count, idx = [...parts[0].index.array, ...[...parts[1].index.array].map(i => i + n)]; g.setIndex(idx);
+    return g;
+  }
+  function bambooStand(g, r, data, NC, NL, NG = NL / 8 | 0) {
+    const T = bambooTextures();
+    const culmGeo = new THREE.CylinderGeometry(.04, .05, 1, 6, 1, true); culmGeo.translate(0, .5, 0);
+    // the spray card: the twig's root at the origin, reaching out along +x, the leaves hanging below it (crossed along x)
+    const sprayGeo = crossedCards(p => p.translate(.5, -.2, 0));
+    // the grass card stands on the ground, crossed upright (its second quad turned about y, not x)
+    const grassGeo = new THREE.PlaneGeometry(1, 1); grassGeo.translate(0, .5, 0); const g2 = grassGeo.clone().rotateY(Math.PI / 2);
+    const gg = new THREE.BufferGeometry(); ["position", "normal", "uv"].forEach(k => gg.setAttribute(k, new THREE.Float32BufferAttribute([...grassGeo.attributes[k].array, ...g2.attributes[k].array], k === "uv" ? 2 : 3)));
+    gg.setIndex([...grassGeo.index.array, ...[...g2.index.array].map(i => i + 4)]);
+    const CULMS = [0x5f9a3a, 0x4e8a32, 0x6aa444, 0x47802e, 0x78a848, 0xa8a450].map(c => new THREE.Color(c));   // greens, light and dark; an old yellowing one
+    const TINT = [0xffffff, 0xe8f4d8, 0xf4f8e0, 0xd8e8c4, 0xfff8e0].map(c => new THREE.Color(c));
+    const leafM = { color: 0xffffff, roughness: .9, map: T.spray, alphaTest: .5, side: THREE.DoubleSide };
+    const culms = new THREE.InstancedMesh(culmGeo, std({ color: 0xffffff, roughness: .55, map: T.culm }), NC);
+    const leaves = new THREE.InstancedMesh(sprayGeo, std(leafM), NL), grass = new THREE.InstancedMesh(gg, std({ ...leafM, map: T.grass, roughness: 1 }), Math.max(NG, 1));
+    T.culm.repeat.set(1, 9);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), q2 = new THREE.Quaternion(), e = new THREE.Euler(), up = V(0, 1, 0), d1 = V(0, 1, 0), d2 = V(0, 1, 0), p = V(0, 0, 0);
     const tilt = (v, lean, a) => v.set(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
-    let nc = 0, nl = 0;
-    const leaf = (x, y, z, sx, sy, sz, c) => { if (nl >= NL) return; m4.compose(V(x, y, z), q.setFromAxisAngle(up, r() * TAU), V(sx, sy, sz)); leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, c); };
+    let nc = 0, nl = 0, ng = 0;
+    // a spray at (x, y, z) reaching out toward heading a (radians round y), drooping by `droop`, s metres long
+    const spray = (x, y, z, a, droop, s, c) => { if (nl >= NL) return; m4.compose(V(x, y, z), q.setFromEuler(e.set(r() * .6 - .3, -a, -droop, "YZX")), V(s, s * (.8 + r() * .3), s)); leaves.setMatrixAt(nl, m4); leaves.setColorAt(nl++, c); };
+    const tuft = (x, z, s) => { if (ng >= NG) return; m4.compose(V(x, terrainAt(x, z) - .03, z), q.setFromAxisAngle(up, r() * TAU), V(s * (1.2 + r() * .6), s, s)); grass.setMatrixAt(ng, m4); grass.setColorAt(ng++, TINT[(r() * 5) | 0]); };
     const clump = (cx, cz, big, n) => {
       sCircle(g, cx, cz, .8);
-      for (let j = 0; j < 3; j++) { const a = r() * TAU, rr = .4 + r() * .7, s = .35 + r() * .3, x = cx + Math.cos(a) * rr, z = cz + Math.sin(a) * rr; leaf(x, terrainAt(x, z) + s * .3, z, s * 1.3, s * .6, s * 1.1, UNDER[j & 1]); }   // undergrowth
+      for (let j = 0; j < 9; j++) { const a = r() * TAU, rr = .2 + r() * 1.3; tuft(cx + Math.cos(a) * rr, cz + Math.sin(a) * rr, .35 + r() * .35); }   // grass round the foot
       for (let k = 0; k < n && nc + 1 < NC; k++) {
         const a = r() * TAU, rr = r() * .8, lean = .03 + r() * .14 + rr * .12, h = (10 + r() * 5) * big, th = .8 + r() * .5, L1 = h * (.55 + r() * .1), L2 = h - L1;
         tilt(d1, lean, a); tilt(d2, lean + .12 + r() * .22, a);   // the top arches further out the same way
@@ -23,17 +76,21 @@
         m4.compose(V(bx, by, bz), q.setFromUnitVectors(up, d1), V(th, L1, th)); culms.setMatrixAt(nc, m4); culms.setColorAt(nc++, c);
         const jx = bx + d1.x * L1, jy = by + d1.y * L1, jz = bz + d1.z * L1;
         m4.compose(V(jx, jy, jz), q.setFromUnitVectors(up, d2), V(th * .78, L2, th * .78)); culms.setMatrixAt(nc, m4); culms.setColorAt(nc++, c);
-        for (let j = 0; j < 6; j++) {   // feathery tufts from just below the joint to the tip, drooping out from the culm
-          const t = -.3 + j * .25 + r() * .08, s = .65 + r() * .55;
+        // sprays from a little below the joint up to the tip, round the culm, longer and more drooping lower down; a few low ones on some culms
+        const NS = 9 + (r() * 5 | 0), tint = TINT[(r() * 5) | 0];
+        for (let j = 0; j < NS; j++) {
+          const t = -.35 + (j + r() * .6) / NS * 1.35, f = Math.min(1, (t + .35) / 1.35);
           if (t < 0) p.set(jx + d1.x * L1 * t, jy + d1.y * L1 * t, jz + d1.z * L1 * t); else p.set(jx + d2.x * L2 * t, jy + d2.y * L2 * t, jz + d2.z * L2 * t);
-          leaf(p.x + (r() - .5) * .7, p.y - s * .2, p.z + (r() - .5) * .7, s * 1.1, s * .55, s * .85, LEAVES[(r() * 4) | 0]);
+          const out = j === NS - 1 ? a : r() * TAU;   // the last one at the tip, arching on the way the culm leans
+          spray(p.x, p.y, p.z, out, .25 + (1 - f) * .45 + r() * .3, (1.5 + r() * .9) * (1.1 - f * .3) * big, tint);
         }
+        if (r() < .35) for (let j = 0; j < 2; j++) { const t = .3 + r() * .5; spray(bx + d1.x * L1 * t, by + d1.y * L1 * t, bz + d1.z * L1 * t, r() * TAU, .4 + r() * .3, 1 + r() * .6, tint); }
       }
     };
     const done = () => {
-      culms.count = nc; leaves.count = nl;
+      culms.count = nc; leaves.count = nl; grass.count = ng;
       // always drawn: three.js r128 would cull an instanced mesh by its one base geometry at the origin
-      [culms, leaves].forEach(m => { m.castShadow = false; m.receiveShadow = true; m.frustumCulled = false; g.add(m); clickable(picks.pagoda, m, data); });
+      [culms, leaves, grass].forEach(m => { m.castShadow = false; m.receiveShadow = true; m.frustumCulled = false; g.add(m); clickable(picks.pagoda, m, data); });
     };
     return { clump, done };
   }
@@ -41,7 +98,7 @@
   function bambooGrove(g) {
     const r = rng(7171), X0 = 46, X1 = 98, Z0 = 155, Z1 = 176, data = { tip: "The bamboo grove · ဝါးတော", toast: "A bamboo grove behind the school. The culms grow in clumps from one root, a few metres in a season; people cut them for scaffolding, fences, baskets and the walls of the huts, and dig the young shoots to eat in the rains." };
     flat(mesh(new THREE.BoxGeometry(X1 - X0 + 4, .04, Z1 - Z0 + 4), std({ color: 0x6a6a40, roughness: 1 }), (X0 + X1) / 2, .025, (Z0 + Z1) / 2, g)).receiveShadow = true;   // leaf litter
-    const stand = bambooStand(g, r, data, 2600, 9000);
+    const stand = bambooStand(g, r, data, 2600, 17000);
     for (let x = X0 + 1.5; x < X1 - 1; x += 3.4) for (let z = Z0 + 1; z < Z1; z += 3.4) {
       if (r() < .22) continue;
       const cx = x + (r() - .5) * 2, cz = z + (r() - .5) * 2, n = 9 + (r() * 9 | 0), big = .85 + r() * .25;
@@ -58,7 +115,7 @@
     const avoid = [[-14, 98], [-12, 104]];   // the garden tree and banana behind the plaza-lane houses
     const taken = (x, z) => LANES.some(l => x > l.x0 - 1.5 && x < l.x1 + 1.5 && z > l.z0 - 1.5 && z < l.z1 + 1.5) || avoid.some(([ax, az]) => Math.hypot(x - ax, z - az) < 1.6) || surfAt(x, z);
     const free = (x, z) => [0, 1.2, F.clear].every(d => d ? [...Array(10)].every((_, i) => !taken(x + Math.cos(i * TAU / 10) * d, z + Math.sin(i * TAU / 10) * d)) : !taken(x, z));
-    const stand = bambooStand(g, r, data, 1700, 6000);
+    const stand = bambooStand(g, r, data, 1700, 13000);
     for (let rr = rBase + F.r0; rr < rBase + F.r1; rr += F.step) for (let a = F.a0; a < F.a1; a += F.step / rr) {
       if (r() < .18) continue;
       const x = cx + Math.cos(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4), z = cz + Math.sin(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4);

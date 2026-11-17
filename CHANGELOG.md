@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-17
 
 ### Changed
+- The bamboo looks real now: green culms ringed with pale nodes, crowned with sprays of narrow drooping leaves, and tufts of grass round the foot of each clump, in the school grove and along the stupa hill's foot.
 - The fire balloon ground keeps hours: the animal balloons go up from 8 AM to 3 PM, and from 6 PM to 2 AM come night balloons after the owner's photos: one hung with hundreds of little candle lanterns and a stupa drawn in lanterns hanging below it, one painted with crowned dancers, and a flower-painted one carrying fireworks that shower sparks as it climbs. The small sky lanterns still go up after dark.
 - The small sky lanterns at night are now let go by people: each is held up over someone's head for a few seconds while it fills, then rises from their hands. People launch them down on the field by the parapet and up on the top steps of the terraces, lowering their arms once the lantern is away.
 - The big animal balloons go up after dark too, glowing from the fire inside, while the small sky lanterns drift up around them.
