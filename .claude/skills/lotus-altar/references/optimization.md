@@ -37,7 +37,9 @@ against this list.
 - Reuse materials from `M` (main script) or one `std({...})` per kind in a builder; don't make a new material per mesh.
 - Canvas textures (`canvasTex`) are small (64–128 px) and repeat; keep them that size.
 - Statues are meshed by `statue-sculpt.js` in a Web Worker. Smaller cells in `CONFIG.sculpt` look smoother but take
-  longer to mesh and draw more triangles; distant figures (the lions) use coarser cells.
+  longer to mesh and draw more triangles; distant figures (the lions) use coarser cells. Each figure is meshed once
+  and kept: Guanyin starts with the page, then `CONFIG.sculpt.warm` meshes the other Buddhas one at a time, so opening
+  their hall does not make you wait. A second copy (the wish-tree Buddha, the back-gate lions) reuses that surface.
 
 ## Per-frame work
 

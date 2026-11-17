@@ -59,7 +59,6 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   site's owner; the boards carry the Shan names only.
 
 - After Nov 1, decide whether to keep the Halloween code for next year (it switches itself off by date) or remove it.
-- Stale comment in `src/lotus-altar/02-hall-and-guanyin.js` (line 38) points to `guanyin-sculpt.js`; the file is `statue-sculpt.js`.
 - `CONFIG.camera.stairsTop` in `lotus-altar.js` has a pasted run of duplicate trailing comments to clean up.
 
 - Have a Shan speaker and a Tai Nüa reader check the food street's board names (`FOOD_SIGNS` in `12d-food-street.js`, given by
@@ -75,6 +74,28 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-17: big balloons at night too, and a crowd on the balloon ground
+
+- Owner: the balloon ground had no one on it, and only the small lanterns showed at night; both kinds should show. In
+  `15g-balloon-ground.js` the animals now launch day and night (the `b.day` gate is gone); every paper material (and the
+  skirts' clones, in `glowing`) gets `emissive` = its colour (`emissiveMap` = its map) at `.6 * (1 - daylight)`. Lanterns stay night-only.
+- `crowd`: 6 sitter, 6 stander and 3 arms-up team kinds (`lowPoly`, vertex colours, own `rng(5152)` so the balloons' and
+  lanterns' offsets are unchanged), one `InstancedMesh` each in the hill group: ~264 people in clusters on the nine tiers, along
+  the field's foot (kept 7 m off the pits) and six round each pit (uphill side left for the cord). Hidden in the rain with the balloons. No colliders.
+- The dance ground (`16-festival-ground.js`) was checked at 9:39 PM ICT: pair, band and audience all there; it is empty
+  outside the stage's hours (before 2 PM and after 11 PM) by design.
+- Checked headless at night: glowing rooster and tiger, crowd and teams, lanterns, no console errors.
+
+### 2026-11-17: the other Buddhas are meshed ahead of your visit, like Guanyin
+
+- Guanyin's surface starts as the page opens, while the grounds are still being built, so she is seated when you come in
+  from the gate. Every other image waited until you opened its hall, then showed "Preparing…" over an empty throne.
+- `sculptFigure` now keeps each finished surface and shares it. After Guanyin and the gate lions, `CONFIG.sculpt.warm`
+  meshes the Medicine Buddha, Shakyamuni, the Thousand-Armed Guanyin, the Victorious Buddha, the Shan image and Maitreya,
+  one at a time. The wish-tree Buddha and the back-gate lions reuse the surface already built for their twin.
+- A hall you open in the first moments can still say "Preparing…" until that figure's turn finishes. After that the image
+  is there as you step in. The "Preparing…" line is shown only while you are waiting on a statue, not during the quiet warmup.
 
 ### 2026-11-17: fewer flickers on the pagoda and its balcony, more thin walls kept at arm's length
 

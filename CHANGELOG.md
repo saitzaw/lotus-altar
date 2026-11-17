@@ -6,6 +6,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-17
 
 ### Changed
+- The big animal balloons go up after dark too, glowing from the fire inside, while the small sky lanterns drift up around them.
+- The fire balloon ground has a crowd: families sitting on the terraces, more standing along the foot of the field, and a team round each fire pit holding the balloon's mouth over the fire. They go home in the rain.
+- The Buddhas on the upper floors, in the Lotus Temple hall and in the Shan monastery are prepared in the background after Guanyin, so their halls are no longer empty while the image is sculpted. A second copy, the Buddha under the wishing tree and the lions at the back gate, reuses the one already made.
 - The fire balloon ground now sends up great paper animals by day, a rooster, a fish, a parrot, a bear and a tiger, a different one each time a team lets go.
 - After dark the crowd on the balloon ground lets go small paper sky lanterns instead, a slow river of warm orange lights drifting up over the town.
 

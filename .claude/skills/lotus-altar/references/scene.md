@@ -53,7 +53,7 @@ Walkers may go up to `WORLD_R` (225 m) from the temple toward the fields and hil
   Offerings come from the bag; what each shrine shows is saved
   in `state.shrines[key]`. Keep the table front (`ALT.z + .3`) and the stands at `x = ±1.05, z = 1.95` clear in those halls (in the Shan monastery, the ledge's front corners).
 - The wishing tree (`wishTree`, placed by `WISH_TREE`) stands in the Lotus Temple hall, right of Shakyamuni, with a small
-  Victorious Buddha (`jaya` figure) seated before its trunk. The 5F hall is also a shop: `shopShelf` units along the side walls.
+  Victorious Buddha (`jaya` figure, the same surface as the 6F image) seated before its trunk. The 5F hall is also a shop: `shopShelf` units along the side walls.
 
 ## Building things
 

@@ -71,7 +71,8 @@ The main app creates `temple = TempleFloors(ctx)` and talks to it only through t
    - `WebGLRenderer({ antialias: true })`, `setPixelRatio(min(dpr, 2))`, `PCFSoftShadowMap`, shared materials `M`.
    - **Floor 1 hall + Guanyin built** (`02-hall-and-guanyin.js`). Guanyin comes from `guanyin.glb` via GLTFLoader if
      present, otherwise from an SDF sculpt job sent to the **Web Worker** (it falls back to the main thread if
-     workers fail).
+     workers fail). Each figure is meshed once and kept. After Guanyin and the gate lions finish, `CONFIG.sculpt.warm`
+     meshes the other Buddhas one at a time in the background.
    - `temple = TempleFloors(ctx)`.
    - ResizeObserver on the stage; `requestAnimationFrame(frame)` starts the loop.
    - Last line of `14-views-and-stairs.js`: `render(); renderLog(); updateChantCount(); applyMode(CONFIG.start)`.
@@ -80,8 +81,10 @@ The main app creates `temple = TempleFloors(ctx)` and talks to it only through t
    `indexCull(g)` (bounds of every child, then a grid of 24 m cells). The guardian lions start sculpt jobs. Everything
    here runs synchronously on the main thread during load.
 
-**First-time builds later on:** `floor(n)` for floors 2–7 and each side building, on the first visit. Statue halls
-send a sculpt job to the worker. `setBackdrop(n)` (corridor views) also needs `buildPagoda`.
+**First-time builds later on:** `floor(n)` for floors 2–7 and each side building, on the first visit. A statue hall
+takes the surface already meshed in the background, or, if you arrive first, sends a sculpt job to the worker and
+shows "Preparing…". A second copy (the wish-tree Buddha, the back-gate lions) reuses the same surface.
+`setBackdrop(n)` (corridor views) also needs `buildPagoda`.
 
 ## 4. Scene graph
 

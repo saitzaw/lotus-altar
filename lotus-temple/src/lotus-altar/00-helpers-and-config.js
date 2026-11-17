@@ -106,7 +106,8 @@ const CONFIG = {
               windRest: [13 * 60, 17 * 60] },                         // seconds of stillness after the banyan's or the field's one breath of wind
   chant: { rounds: 3, beat: .55 },                    // seconds per syllable
   sculpt: { worker: "statue-sculpt.js", bodyCell: .012, headCell: .0058,  // smaller cells: smoother, slower to build and to draw
-            cells: { lion: [.022, .014], lionL: [.022, .014] } },        // [body, head] per figure: the stone lions outside need far less detail than a face
+            cells: { lion: [.022, .014], lionL: [.022, .014] },        // [body, head] per figure: the stone lions outside need far less detail than a face
+            warm: ["medicine", "shakyamuni", "qianshou", "jaya", "shan", "maitreya"] }, // meshed one at a time after Guanyin and the gate lions, so a later hall already holds its Buddha
   scan: { file: "guanyin.glb", height: 2.55, turn: 0 }, // museum scan; turn is radians about y if it faces away
   // outdoor haze [near, far] in metres: things fade into it and are not drawn at all past `far`
   fog: { outside: [70, 230], walk: [30, 170], corridor: [70, 260] },

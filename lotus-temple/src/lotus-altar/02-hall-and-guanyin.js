@@ -35,7 +35,7 @@ mesh(new THREE.TorusGeometry(1.15, .04, 8, 64), M.trim, 0, .3, 0, buddha).rotati
     p.scale.set(.2, .2, .07); p.rotation.order = "YXZ"; p.rotation.y = a; p.rotation.x = -tilt;
   }
 });
-// Guanyin herself is sculpted as one smooth surface (signed distance field, see guanyin-sculpt.js) and meshed off the main thread
+// Guanyin herself is sculpted as one smooth surface (signed distance field, see statue-sculpt.js) and meshed off the main thread
 const extras = new THREE.Group(); buddha.add(extras);  // parts that belong to the sculpted figure only
 // the pure-water vase (淨瓶) with a willow sprig, held in the lap
 const jing = lathe([[0, 0], [.045, 0], [.065, .05], [.055, .11], [.02, .15], [.016, .21], [.028, .23], [0, .23]], M.robe, 24);
@@ -50,7 +50,10 @@ mesh(new THREE.TorusGeometry(.058, .007, 6, 24), M.gold, 0, 1.08, .53, extras).r
   });
 });
 /* Statues are sculpted as smooth surfaces (signed distance fields, see statue-sculpt.js) and meshed off the main thread:
-   a coarse pass for the body and a fine one for the head, where the face needs the detail. */
+   a coarse pass for the body and a fine one for the head, where the face needs the detail.
+   Each figure is meshed once. Guanyin starts with the page, so she is already seated when you come in from the gate.
+   The other Buddhas are meshed in the background after her, and a second copy (the wish-tree Buddha, the back-gate lions)
+   reuses the same surface instead of being built again. */
 const FIGURE_BOXES = {
   guanyin: { body: { min: [-1.15, .48, -.62], max: [1.15, 2.1, .95] }, head: { min: [-.6, 1.98, -.58], max: [.6, 2.98, .5] } },
   qianshou: { body: { min: [-1.15, .48, -.62], max: [1.15, 2.1, .95] }, head: { min: [-.6, 1.98, -.58], max: [.6, 2.98, .5] } },
@@ -67,36 +70,57 @@ const gilt = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .55, r
 const behind = m => { const c = m.clone(); c.polygonOffset = true; c.polygonOffsetFactor = 1; c.polygonOffsetUnits = 1; return c; };
 const stone = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85, vertexColors: true });
 const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], qianshou: [behind(gilt), gilt], jaya: [behind(gilt), gilt], shan: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
-const preparing = new Map();   // label → statues still being built
+const preparing = new Map();   // label → statues still being built, and only while a visitor is waiting on one
 function setPreparing() {
   const s = $("sculptStatus"); s.hidden = !preparing.size;
   const names = [...preparing.keys()];
   if (names.length) s.textContent = `Preparing ${names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0]}…`;
 }
 const unprepare = label => { const n = (preparing.get(label) || 1) - 1; if (n > 0) preparing.set(label, n); else preparing.delete(label); };
+const sculptReady = new Map();   // figure → [body geometry, head geometry]
+const sculptWait = new Map();    // figure → the mesh still being built, and every place waiting to receive it
+function sculptGeo(r) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(r.pos, 3));
+  g.setAttribute("normal", new THREE.BufferAttribute(r.nor, 3));
+  g.setAttribute("color", new THREE.BufferAttribute(r.col, 3));
+  g.setIndex(new THREE.BufferAttribute(r.idx, 1));
+  return g;
+}
+function placeFigure(figure, parent, geos) {
+  geos.forEach((g, i) => { const m = new THREE.Mesh(g, STATUE_MATS[figure][i]); m.castShadow = true; m.receiveShadow = true; parent.add(m); });
+}
 function sculptFigure(figure, parent, label, onDone) {
+  const ready = sculptReady.get(figure);
+  if (ready) { if (parent) placeFigure(figure, parent, ready); if (onDone) onDone(); return; }
+  let job = sculptWait.get(figure);
+  if (job) {
+    job.parents.push({ parent, onDone });
+    if (label && !job.labels.has(label)) { job.labels.add(label); preparing.set(label, (preparing.get(label) || 0) + 1); setPreparing(); }
+    return;
+  }
   const box = FIGURE_BOXES[figure];
   const [bodyCell, headCell] = CONFIG.sculpt.cells[figure] || [CONFIG.sculpt.bodyCell, CONFIG.sculpt.headCell];
   const jobs = [{ figure, ...box.body, cell: bodyCell }, { figure, ...box.head, cell: headCell }];
-  const done = jobs.map(() => false);
-  preparing.set(label, (preparing.get(label) || 0) + 1); setPreparing();
-  const add = r => {
-    if (done[r.i]) return;
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(r.pos, 3));
-    g.setAttribute("normal", new THREE.BufferAttribute(r.nor, 3));
-    g.setAttribute("color", new THREE.BufferAttribute(r.col, 3));
-    g.setIndex(new THREE.BufferAttribute(r.idx, 1));
-    const m = new THREE.Mesh(g, STATUE_MATS[figure][r.i]);
-    m.castShadow = true; m.receiveShadow = true; parent.add(m);
-    done[r.i] = true;
-    if (done.every(Boolean)) { unprepare(label); setPreparing(); if (onDone) onDone(); }
+  job = { parents: [{ parent, onDone }], labels: new Set(), geos: [null, null] };
+  sculptWait.set(figure, job);
+  if (label) { job.labels.add(label); preparing.set(label, (preparing.get(label) || 0) + 1); setPreparing(); }
+  const finish = () => {
+    sculptReady.set(figure, job.geos); sculptWait.delete(figure);
+    job.labels.forEach(unprepare); setPreparing();
+    job.parents.forEach(({ parent: p, onDone: done }) => { if (p) placeFigure(figure, p, job.geos); if (done) done(); });
+  };
+  const add = r => { if (job.geos[r.i]) return; job.geos[r.i] = sculptGeo(r); if (job.geos.every(Boolean)) finish(); };
+  const fail = () => {
+    sculptWait.delete(figure); job.labels.forEach(unprepare);
+    $("sculptStatus").hidden = false; $("sculptStatus").textContent = `${label || "The statue"} could not be prepared. Reload the page to try again.`;
+    job.parents.forEach(({ onDone: done }) => { if (done) done(); });
   };
   // without workers, fetch the same file and build on the main thread
   const onMain = () => fetch(CONFIG.sculpt.worker).then(r => r.text()).then(src => {
     const build = new Function(src + "\nreturn build;")();
-    setTimeout(() => jobs.forEach((j, i) => { if (!done[i]) add({ i, ...build(j) }); }), 60);
-  }).catch(() => { unprepare(label); $("sculptStatus").hidden = false; $("sculptStatus").textContent = `${label} could not be prepared. Reload the page to try again.`; });
+    setTimeout(() => jobs.forEach((j, i) => { if (!job.geos[i]) add({ i, ...build(j) }); }), 60);
+  }).catch(fail);
   try {
     const w = new Worker(CONFIG.sculpt.worker);
     w.onmessage = e => add(e.data);
@@ -104,6 +128,17 @@ function sculptFigure(figure, parent, label, onDone) {
     w.postMessage({ jobs });
   } catch (e) { onMain(); }
 }
+// once Guanyin and the gate lions have the cores, mesh the other Buddhas one at a time so their halls are not empty
+(function warmStatues() {
+  const names = (CONFIG.sculpt.warm || []).slice();
+  const step = () => {
+    if (sculptWait.size) { setTimeout(step, 500); return; }
+    const figure = names.shift();
+    if (!figure) return;
+    sculptFigure(figure, null, "", () => setTimeout(step, 40));
+  };
+  setTimeout(step, 800);
+})();
 /* Guanyin: the Minneapolis Institute of Art's CC0 scan of a seated Guanyin (guanyin.glb, published beside this page)
    when it is present, otherwise the sculpted porcelain figure. */
 const SCAN = CONFIG.scan;

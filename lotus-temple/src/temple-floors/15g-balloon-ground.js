@@ -29,7 +29,7 @@
     const lo = HILL.terraces[1], up = HILL.terraces[0], top = lo.y + .03, rIn = lo.r0, a0 = eastStairAngle() + B.da0, a1 = B.a1, PH = B.PH, PW = B.PW;
     const at = (a, rr) => [rr * Math.sin(a), -rr * Math.cos(a)];   // hill frame (x, z) at angle a, radius rr
     const wash = std({ color: 0xf2eee4, roughness: .8 });
-    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. By day the teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another; after dark the crowd lets go hundreds of small paper lanterns, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
+    const data = { tip: "The fire balloon ground · မီးပုံးပျံပွဲကွင်း", toast: "The fire balloon ground (မီးပုံးပျံပွဲကွင်း in Burmese). In the month of Tazaungmon, up to its full moon, Shan towns let fire balloons go, as at the great festival in Taunggyi: teams build tall balloons of paper, fill them with the heat of a fire held under the mouth, the top hung from a bamboo mast, and let them go to cheers. The teams send up great paper animals, a rooster, a fish, a parrot, a bear and a tiger, one after another, glowing from the fire inside after dark; at night the crowd lets go hundreds of small paper lanterns too, each lit by a little wick of wax, that drift high over the town. The crowd watches from the terraces cut into the hill. Nothing goes up in the rain: wet paper will not hold the heat." };
     // the field: trampled grass worn to earth, on its retaining wall (footed low, below the slope)
     const fieldTex = canvasTex(256, (c, sz) => { c.fillStyle = "#6f8442"; c.fillRect(0, 0, sz, sz); const q = rng(51); for (let i = 0; i < 90; i++) { c.fillStyle = `rgba(${140 + q() * 30 | 0},${110 + q() * 20 | 0},${70 + q() * 20 | 0},${.25 + q() * .3})`; c.beginPath(); c.ellipse(q() * sz, q() * sz, 6 + q() * 22, 4 + q() * 12, q() * 3, 0, TAU); c.fill(); } for (let i = 0; i < 900; i++) { c.fillStyle = q() < .5 ? "rgba(40,70,30,.45)" : "rgba(130,155,80,.4)"; c.fillRect(q() * sz, q() * sz, 2, 3); } });
     fieldTex.wrapS = fieldTex.wrapT = THREE.RepeatWrapping; fieldTex.repeat.set(.08, .08);   // the top's UVs are in metres: a tile every 12.5 m
@@ -83,9 +83,9 @@
       const cord = mesh(new THREE.CylinderGeometry(.025, .025, 1, 4), rope, x, 0, z, H); cord.castShadow = false;
       return { x, z, a, fire, glow, cord, k };
     });
-    // the day balloons: great paper animals, as the Taunggyi teams send up by day, a rooster, a fish, a parrot, a bear and a tiger,
-    // each sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the
-    // town. Each pad sends up a different animal each time round. After dark no animal goes up: the crowd lets go small paper lanterns
+    // the big balloons: great paper animals, as the Taunggyi teams send up, a rooster, a fish, a parrot, a bear and a tiger, each
+    // sewn on a skirt over a bamboo ring round the mouth with its burning wick; in world space so they can climb away over the town.
+    // Each pad sends up a different animal each time round, by day and after dark, when the fire inside makes the paper glow
     const sphG = new THREE.SphereGeometry(1, 18, 14), coneG = new THREE.ConeGeometry(1, 1, 12);
     const paper = (color, map) => std(map ? { color, map, roughness: .9 } : { color, roughness: .9 });
     const P_ = {
@@ -100,7 +100,8 @@
     // an ellipsoid or a cone (tip along +y before turning) on an animal, sized by its three half-widths
     const blob = (A, m, x, y, z, sx, sy, sz, rx = 0, rz = 0) => { const o = mesh(sphG, m, x, y, z, A); o.scale.set(sx, sy, sz); o.rotation.set(rx, 0, rz); return o; };
     const cone = (A, m, x, y, z, r_, h, rx = 0) => { const o = mesh(coneG, m, x, y, z, A); o.scale.set(r_, h, r_); o.rotation.x = rx; return o; };
-    const skirt = (A, m, y1) => { const o = mesh(new THREE.CylinderGeometry(2.2, 1.0, y1, 16, 1, true), m, 0, y1 / 2, 0, A); o.material = m.clone(); o.material.side = THREE.DoubleSide; };
+    const glowing = Object.values(P_);   // every paper, lit from inside after dark
+    const skirt = (A, m, y1) => { const o = mesh(new THREE.CylinderGeometry(2.2, 1.0, y1, 16, 1, true), m, 0, y1 / 2, 0, A); o.material = m.clone(); o.material.side = THREE.DoubleSide; glowing.push(o.material); };
     const both = f => [-1, 1].forEach(f);
     const eyes = (A, x, y, z, w = .38) => both(sd => { blob(A, P_.white, sd * x, y, z, w, w, w); blob(A, P_.black, sd * (x + w * .45), y, z + w * .45, w * .55, w * .55, w * .55); });
     // each faces +z, its mouth at y = 0; h: where the mast's cord holds its top
@@ -154,6 +155,9 @@
       } }
     };
     const KINDS = Object.keys(ANIMALS);
+    // after dark the wick's fire shines through the paper: each glows in its own colour (the patterned ones through their pattern)
+    glowing.forEach(m => { m.emissive.copy(m.color); if (m.map) m.emissiveMap = m.map; });
+    onDaylight(d => glowing.forEach(m => m.emissiveIntensity = .6 * (1 - d)));
     H.updateMatrixWorld(true);
     const hillC = H.localToWorld(V(0, 0, 0));
     const balloons = pads.map((p, k) => {
@@ -166,7 +170,7 @@
         return A;
       });
       const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, ring, wick, shapes, kind: -1, cyc: -1, day: true, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      return { p, G, ring, wick, shapes, kind: -1, cyc: -1, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
@@ -187,24 +191,91 @@
       lans.push({ x: w.x, z: w.z, off: i * LP / LN + r() * 1.2, climb: .75 + r() * .45, wind: .8 + r() * .5, ph: r() * TAU, cyc: -1, on: false, tint: .75 + r() * .25 });
     }
     const _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _ls = new THREE.Vector3(), _lp = new THREE.Vector3(), _le = new THREE.Euler(), _zero = new THREE.Matrix4().makeScale(0, 0, 0);
+    // the crowd: people sitting on the terraces to watch, more standing along the foot of the field, and a team of six round each
+    // fire pit holding the balloon's mouth over the fire. Blocky low-poly figures as at the festival stage, in warm jackets for the
+    // cold Tazaungmon nights; a few kinds of each, drawn as one instanced mesh per kind. Out whenever the balloons go up (not in the rain)
+    const crowd = (() => {
+      const q = rng(5152), pk = l => l[(q() * l.length) | 0], box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 7) => new THREE.CylinderGeometry(a, b, h, n);
+      const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18;
+      const JACKET = [0x2f4a3a, 0x2a3450, 0x6a2a2e, 0x5a4232, 0x4a4a50, 0xd8ccb4, 0x7a6a4a, 0x3a5a6a, 0xd83a3a, 0xf2c230], LOWER = [0x23232b, 0x2e3446, 0x4a3a2c];
+      const LONGYI = [0x8a2a3a, 0xd8483a, 0x2a2e48, 0x6a2a5a, 0x2f5a3a], TOWEL = [0xe88aa0, 0xe8903a, 0xf0ece0, 0xd84a4a];
+      const head = (y, skin, woman) => {   // a head with a face; a woman's hair down or wrapped in a towel turban
+        const p = [[box(.25, .27, .24), skin, 0, y, 0], [box(.035, .045, .012), INK, -.055, y + .015, .122], [box(.035, .045, .012), INK, .055, y + .015, .122],
+                   [box(.07, .014, .01), 0x8a3a30, 0, y - .055, .122], [box(.27, woman ? .24 : .17, .07), HAIR, 0, y + (woman ? .035 : .065), -.1]];
+        if (woman && q() < .5) p.push([box(.29, .12, .28), pk(TOWEL), 0, y + .165, 0]);
+        else p.push([box(.27, .07, .26), HAIR, 0, y + .15, -.005]);
+        return p;
+      };
+      // sitting cross-legged on a step, hands in the lap; standing, arms down (a team member's arms held up to the balloon's mouth)
+      const sitter = (skin, top, lower, woman) => [
+        [box(.24, .11, .38), lower, -.11, .06, .09], [box(.24, .11, .38), lower, .11, .06, .09], [box(.56, .1, .13), lower, 0, .07, .27],
+        [cyl(.16, .18, .44), top, 0, .34, 0], [box(.09, .34, .1), top, -.22, .36, .05], [box(.09, .34, .1), top, .22, .36, .05], [box(.26, .08, .09), skin, 0, .22, .19],
+        [cyl(.05, .05, .07, 6), skin, 0, .6, 0], ...head(.75, skin, woman)
+      ];
+      const stander = (skin, top, lower, woman, up) => [
+        ...(woman ? [[cyl(.16, .18, .78), lower, 0, .39, 0]] : [[box(.12, .78, .12), lower, -.08, .39, 0], [box(.12, .78, .12), lower, .08, .39, 0]]),
+        [box(.13, .04, .22), 0x3a2e28, -.08, .02, .04], [box(.13, .04, .22), 0x3a2e28, .08, .02, .04],
+        [cyl(.165, .175, .5), top, 0, 1.02, 0],
+        ...(up ? [[box(.09, .46, .095), top, -.2, 1.45, .05], [box(.09, .46, .095), top, .2, 1.45, .05], [box(.07, .08, .08), skin, -.2, 1.72, .05], [box(.07, .08, .08), skin, .2, 1.72, .05]]
+          : [[box(.09, .46, .095), top, -.2, 1.01, 0], [box(.09, .46, .095), top, .2, 1.01, 0], [box(.07, .08, .08), skin, -.2, .74, 0], [box(.07, .08, .08), skin, .2, .74, 0]]),
+        [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...head(1.45, skin, woman)
+      ];
+      const kinds = [];   // [make, matrices]
+      const kind = make => { const k = { geo: null, make, at: [] }; kinds.push(k); return k; };
+      const person = sit => { const woman = q() < .5, skin = pk(SKIN), top = pk(JACKET), lower = woman ? pk(LONGYI) : pk(LOWER); return sit ? sitter(skin, top, lower, woman) : stander(skin, top, lower, woman, false); };
+      const SITS = Array.from({ length: 6 }, () => kind(() => person(true))), STANDS = Array.from({ length: 6 }, () => kind(() => person(false)));
+      const TEAM = Array.from({ length: 3 }, () => kind(() => { const skin = pk(SKIN); return stander(skin, pk(JACKET), pk(LOWER), false, true); }));
+      const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _y = new THREE.Vector3(0, 1, 0);
+      const put = (k, x, y, z, ry, sc) => k.at.push(_m.compose(_p.set(x, y, z), _q.setFromAxisAngle(_y, ry), _s.setScalar(sc)).clone());
+      const nearPad = (x, z, d) => pads.some(p => Math.hypot(x - p.x, z - p.z) < d) || pads.some(p => { const [mx, mz] = at(p.a, Math.hypot(p.x, p.z) - ARM); return Math.hypot(x - mx, z - mz) < d * .5; });
+      // the terraces: little groups along each step, facing out over the field
+      for (let i = 0; i < B.tiers; i++) {
+        const rr = rIn - (i + .5) * tD, len = (ta1 - ta0) * rr;
+        for (let d = .5 + q() * 2; d < len - .5; d += q() < .22 ? 3 + q() * 7 : .65 + q() * .35) {
+          const a = ta0 + d / rr, [x, z] = at(a, rr + (q() - .5) * tD * .3);
+          put(pk(SITS), x, tierTop(i), z, Math.PI - a + (q() - .5) * .5, 1.05 + q() * .15);
+        }
+      }
+      // along the foot of the terraces on the field, standing, kept back from the fire pits and masts
+      const fr = rIn + 1.4, flen = (a1 - a0) * fr;
+      for (let d = 2; d < flen - 2; d += q() < .3 ? 2 + q() * 6 : .7 + q() * .4) {
+        const a = a0 + d / fr, [x, z] = at(a, fr + q() * 2.2);
+        if (!nearPad(x, z, 7)) put(pk(STANDS), x, top, z, Math.PI - a + (q() - .5) * .8, 1 + q() * .12);
+      }
+      // a team round each fire pit, arms up to the mouth, leaving the uphill side free for the mast's cord
+      pads.forEach(p => [-2.3, -1.4, -.5, .5, 1.4, 2.3].forEach(o => {
+        const th = Math.PI - p.a + o, x = p.x + Math.sin(th) * 2.1, z = p.z + Math.cos(th) * 2.1;   // th = 0 is straight downhill
+        put(pk(TEAM), x, top, z, Math.atan2(p.x - x, p.z - z), 1 + q() * .1);
+      }));
+      const M_ = std({ vertexColors: true, flatShading: true, roughness: .85 });
+      onDaylight(d => M_.emissive.copy(lerpC(0x241c14, 0x000000, d)));   // lifted a little so they read by the fires and lanterns at night
+      const cdata = { tip: "The crowd at the fire balloon ground · ပွဲကြည့်ပရိသတ်", toast: "Families from the town and the villages sit on the terraces to watch the teams fill the balloons and let them go, cheering each one up; after dark they light small paper lanterns of their own and let them drift off over the town." };
+      return kinds.filter(k => k.at.length).map(k => {
+        const im = new THREE.InstancedMesh(lowPoly(k.make()), M_, k.at.length);
+        k.at.forEach((m, i) => im.setMatrixAt(i, m));
+        im.castShadow = false; im.frustumCulled = false; im.userData.noCull = true; H.add(im); clickable(list, im, cdata);
+        return im;
+      });
+    })();
     const CYC = B.fill + B.hold + B.rise + B.gone, mouth0 = top + 1.7;
     let dl = 1, primed = false; onDaylight(d => dl = d);
     updaters.pagoda.push((dt, t, motion) => {
       if (!FOLK.balloons) {   // rain: no balloon is filled, the fire pits are cold and the cords hang loose from the masts
         balloons.forEach(b => { b.G.visible = false; b.p.fire.visible = false; b.p.glow.material.opacity = 0; b.p.cord.visible = false; });
-        lanI.visible = lanGlow.visible = false;
+        lanI.visible = lanGlow.visible = false; crowd.forEach(m => m.visible = false);
         return;
       }
+      crowd.forEach(m => m.visible = true);
       const still = motion < 1, night = dl < .45;
       balloons.forEach(b => {
         const { p, G } = b, tt = t + b.off, ph = still ? B.fill + 1 : tt % CYC, c = still ? 0 : Math.floor(tt / CYC);   // with reduced motion each is held full at its pad
-        if (c !== b.cyc || !primed) {   // a new launch: the next animal, and only by day
-          b.cyc = c; b.day = !night;
+        if (c !== b.cyc || !primed) {   // a new launch: the next animal
+          b.cyc = c;
           const kind = (c * pads.length + p.k) % KINDS.length;
           if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; b.shapes[kind].visible = true; b.kind = kind; }
         }
         const fl = .8 + .2 * Math.sin(t * 17 + p.k * 3) * Math.sin(t * 7.3 + p.k);
-        let s = 1, y = mouth0, dx = 0, dz = 0, held = true, show = b.day, tau = 0;
+        let s = 1, y = mouth0, dx = 0, dz = 0, held = true, show = true, tau = 0;
         if (ph < B.fill) { const u = easeOut(ph / B.fill); s = u; }
         else if (ph >= B.fill + B.hold) {
           tau = ph - B.fill - B.hold; held = false;
@@ -216,9 +287,8 @@
         const A = b.shapes[b.kind]; A.scale.set(.35 + .65 * s, .45 + .55 * s, .35 + .65 * s); b.ring.scale.set(.35 + .65 * s, .35 + .65 * s, 1);
         G.rotation.set(held ? 0 : Math.sin(t * .33 + p.k * 2) * .04, b.face + tau * .015, held ? 0 : Math.sin(t * .4 + p.k) * .04);
         b.wick.material.opacity = (held ? .5 : .9) * fl;
-        // the fire under it burns while it fills and is held, then dies down (at night it is kept low, for lighting lanterns);
-        // the mast's cord hangs to the animal's back until let go
-        const burn = !b.day ? .45 * fl : held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
+        // the fire under it burns while it fills and is held, then dies down; the mast's cord hangs to the animal's back until let go
+        const burn = held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
         const crown = mouth0 + ANIMALS[KINDS[b.kind]].h * (.45 + .55 * s), mastTop = top + MAST - .3;
         p.cord.visible = held && show; if (p.cord.visible) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
       });
