@@ -28,23 +28,38 @@
     const fallen = flat(mesh(new THREE.CircleGeometry(2.2, 20), fallenMat, 0, .03, 0, t)); fallen.rotation.x = -Math.PI / 2;
     return t;
   }
-  // 松, a pine with a leaning red-brown trunk and flat cloud-like pads of needles on its branches
-  const pineBark = std({ color: 0x6a3a26, roughness: .9 }), pineMats = [0x22412a, 0x2c4f30, 0x1d3a26].map(c => std({ color: c, roughness: .9, flatShading: true }));
-  const pineTrunkGeo = new THREE.CylinderGeometry(.12, .26, 5.2, 8), pineBranchGeo = new THREE.CylinderGeometry(.03, .07, 1, 6), pinePadGeo = new THREE.IcosahedronGeometry(1, 1);
+  // 松, a tall hill pine like the firs of the Shan uplands: a straight grey trunk on a flare of roots, bare below with a few dead
+  // twigs, then a narrow cone of drooping needle sprays in tiers, long at the bottom and short toward a single leader at the top
+  const pineBark = std({ color: 0x77706a, roughness: .95 }), pineMats = [0x1f4a2a, 0x24552f, 0x2c5f34, 0x1a3f25].map(c => std({ color: c, roughness: .9, flatShading: true }));
+  const pineTrunkGeo = new THREE.CylinderGeometry(.07, .26, 1, 7), pineBranchGeo = new THREE.CylinderGeometry(.03, .07, 1, 5), pineCoreGeo = new THREE.ConeGeometry(1, 1, 7);
+  const pineSprayGeo = (() => {   // one branch's needle spray: a flat diamond reaching from the trunk (x = 0) out to x = 1, sagging toward its tip
+    const geo = new THREE.OctahedronGeometry(.5, 1); geo.scale(1, .13, .52); geo.translate(.5, 0, 0);
+    const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) - .26 * p.getX(i) * p.getX(i));
+    geo.computeVertexNormals(); return geo;
+  })();
   function pine(g, x, z, s = 1, seed = 1) {
     const r = rng(seed * 17), t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); t.rotation.y = r() * TAU; g.add(t);
     sCircle(t, 0, 0, .26);
-    const lean = (r() - .5) * .25, H = 5.2;
-    const trunk = part(pineTrunkGeo, pineBark, Math.sin(lean) * H / 2, H / 2, 0, t); trunk.rotation.z = -lean;
-    const tiers = 5;
-    for (let i = 0; i < tiers; i++) {
-      const y = 2.0 + i * (H - 2.0) / tiers, a = i * 2.3 + r(), len = (1 - i / tiers) * 1.6 + .4, cx = Math.sin(lean) * y;
-      const br = part(pineBranchGeo, pineBark, cx + Math.cos(a) * len / 2, y, Math.sin(a) * len / 2, t); br.rotation.set(0, -a, Math.PI / 2 - .25); br.rotation.order = "YZX"; br.scale.y = len;
-      const pad = part(pinePadGeo, pineMats[i % 3], cx + Math.cos(a) * len, y + .15, Math.sin(a) * len, t);
-      pad.scale.set(.9 + len * .35, .32, .8 + len * .3);
-      if (i % 2) { const p2 = part(pinePadGeo, pineMats[(i + 1) % 3], cx - Math.cos(a) * len * .6, y + .4, -Math.sin(a) * len * .6, t); p2.scale.set(.8, .28, .7); }
+    const H = 7.6 + r() * 1.2, y0 = 3.1 + r() * .5, tiers = 9, m = (seed % 4);
+    const trunk = part(pineTrunkGeo, pineBark, 0, H * .47, 0, t); trunk.scale.y = H * .94;
+    for (let i = 0; i < 4; i++) {   // the roots spreading over the ground
+      const a = i / 4 * TAU + r() * .6, rt = part(pineBranchGeo, pineBark, Math.cos(a) * .32, .07, Math.sin(a) * .32, t);
+      rt.rotation.order = "YZX"; rt.rotation.set(0, -a, Math.PI / 2 - .3); rt.scale.set(1.4, .75, 1.4);
     }
-    const crown = part(pinePadGeo, pineMats[0], Math.sin(lean) * H, H + .1, 0, t); crown.scale.set(1.1, .38, 1.0);
+    for (let i = 0; i < 3; i++) {   // dead twigs on the bare trunk
+      const a = r() * TAU, y = .9 + r() * (y0 - 1.1), tw = part(pineBranchGeo, pineBark, Math.cos(a) * .3, y, Math.sin(a) * .3, t);
+      tw.rotation.order = "YZX"; tw.rotation.set(0, -a, Math.PI / 2 + .35); tw.scale.set(.4, .6, .4);
+    }
+    // a dark cone inside the sprays, so the crown reads as solid from a distance
+    const core = part(pineCoreGeo, pineMats[3], 0, (y0 + H) / 2 + .3, 0, t); core.scale.set(.85, H - y0 + .2, .85);
+    for (let k = 0; k < tiers; k++) {
+      const f = k / tiers, y = y0 + (H - y0 - .5) * f, reach = 1.9 * Math.pow(1 - f, .9) + .35, n = Math.max(3, Math.round(7 - f * 4));
+      for (let j = 0; j < n; j++) {
+        const a = j / n * TAU + k * .7 + r() * .45, sp = part(pineSprayGeo, pineMats[(j + k + m) % 3], 0, y + r() * .15, 0, t);
+        sp.rotation.order = "YZX"; sp.rotation.set(0, -a, -(.04 + .14 * (1 - f) + r() * .08)); sp.scale.set(reach, reach * (.9 + r() * .3), reach * (.8 + r() * .3));
+      }
+    }
+    const top = part(pineCoreGeo, pineMats[(m + 1) % 3], 0, H + .2, 0, t); top.scale.set(.17, 1.3, .17);   // the leader
     return t;
   }
   // a temple wall run between two points, red with a painted band and a tiled coping

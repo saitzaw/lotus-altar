@@ -75,6 +75,14 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-18: tall fir-like pines
+
+- `pine()` in `09-trees-and-walls.js` rebuilt after the owner's reference photo of a low-poly conifer: a straight grey trunk
+  (7.6–8.8 m at scale 1, was a 5.2 m leaning red-brown one) on four spreading roots, bare for its first ~3 m with three dead
+  twigs, then nine tiers of drooping needle sprays (a bent flat octahedron, `pineSprayGeo`) round a dark inner cone, long at
+  the bottom and short up to a thin leader. All parts still go through `part()`, about 50 per tree. Callers (temple grounds,
+  town, stupa hill) are unchanged; the trees are taller, so check that none now pokes into something overhead.
+
 ### 2026-11-18: thicker bamboo at the hill's foot
 
 - Owner: "more bamboo in the grove between the hill foot and the houses". `FOOT_BAMBOO` in `27-bamboo-fuel-fire-police.js`:
