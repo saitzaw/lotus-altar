@@ -6,7 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-18
 
 ### Changed
-- The pines are now tall firs: a straight grey trunk on spreading roots, bare below, under a narrow cone of drooping needle sprays in tiers.
+- The pines are now tall, open hill pines: a long straight grey trunk on spreading roots, bare for nearly half its height, then whorls of level branches with gaps between them, hung with drooping needle sprays.
 - More bamboo along the stupa hill's foot, between the hill and the backs of the houses: the band reaches further out and the clumps stand closer, about 40 of them where there were 26.
 
 ## 2026-11-17

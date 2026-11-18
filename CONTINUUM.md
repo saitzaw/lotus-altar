@@ -75,13 +75,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
-### 2026-11-18: tall fir-like pines
+### 2026-11-18: tall, open hill pines
 
-- `pine()` in `09-trees-and-walls.js` rebuilt after the owner's reference photo of a low-poly conifer: a straight grey trunk
-  (7.6–8.8 m at scale 1, was a 5.2 m leaning red-brown one) on four spreading roots, bare for its first ~3 m with three dead
-  twigs, then nine tiers of drooping needle sprays (a bent flat octahedron, `pineSprayGeo`) round a dark inner cone, long at
-  the bottom and short up to a thin leader. All parts still go through `part()`, about 50 per tree. Callers (temple grounds,
-  town, stupa hill) are unchanged; the trees are taller, so check that none now pokes into something overhead.
+- `pine()` in `09-trees-and-walls.js` rebuilt twice today from the owner's reference photos; the second (kept) photo is a tall
+  sparse conifer. Now: a 10–11.6 m straight grey trunk (at scale 1; was 5.2 m) on five roots, bare for ~40% of its height
+  but for dead-twig stubs, then open whorls of 2–4 near-level branches with trunk showing between them (`pineBranch`), each
+  carrying small flat drooping sprays (`pineSprayGeo`, a bent detail-0 octahedron, 8 triangles) along both sides and at the
+  tip, a small tuft and a thin leader on top. No solid inner cone. About 130 `part()`s per tree, all instanced.
+  Callers (temple grounds, town, stupa hill) are unchanged; the trees are about twice as tall, so check none pokes into
+  something overhead, and whether the many extra instances cost frame rate on the hill.
 
 ### 2026-11-18: thicker bamboo at the hill's foot
 
