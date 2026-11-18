@@ -62,8 +62,8 @@ const FIGURE_BOXES = {
   jaya: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
   shan: { body: { min: [-1.2, .48, -.62], max: [1.2, 2.1, .95] }, head: { min: [-.45, 1.98, -.45], max: [.45, 3.12, .45] } },
   maitreya: { body: { min: [-1.5, .48, -.62], max: [1.15, 2.1, 1.1] }, head: { min: [-.5, 1.7, -.45], max: [.5, 2.5, .5] } },
-  lion: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } },
-  lionL: { body: { min: [-.9, -.02, -1.2], max: [.9, 1.75, 1.15] }, head: { min: [-.66, 1.5, -.45], max: [.66, 2.56, 1.0] } }
+  lion: { body: { min: [-.78, -.02, -1.0], max: [.78, 1.92, 1.0] }, head: { min: [-.62, 1.62, -.56], max: [.62, 2.8, .8] } },
+  lionL: { body: { min: [-.78, -.02, -1.0], max: [.78, 1.92, 1.0] }, head: { min: [-.62, 1.62, -.56], max: [.62, 2.8, .8] } }
 };
 const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf8f3eb, roughness: .3, clearcoat: .85, clearcoatRoughness: .22, vertexColors: true });
 const gilt = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .55, roughness: .32, clearcoat: .35, clearcoatRoughness: .3, vertexColors: true });

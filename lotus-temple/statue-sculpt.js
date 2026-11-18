@@ -204,34 +204,73 @@ function maitreya(x, y, z) {
   return smax(d, .5 - y, .01);
 }
 
-/* ---------- the gate: a pair of stone guardian lions (石獅) on carved plinths ---------- */
+/* ---------- the gate: a pair of stone guardian lions (石獅), each sitting up tall on a carved block plinth ---------- */
 function box(x, y, z, bx, by, bz) {
   const qx = Math.abs(x) - bx, qy = Math.abs(y) - by, qz = Math.abs(z) - bz;
   return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0);
 }
+// the plinth: a footing, a tall block with a sunk panel of carved cloud scrolls on each face, and a cap; its top at y = .8
+function lionPlinth(x, y, z) {
+  const ax = Math.abs(x), az = Math.abs(z);
+  let p = Math.min(box(x, y - .06, z, .6, .06, .81) - .01, box(x, y - .42, z, .54, .32, .75) - .01, box(x, y - .76, z, .58, .04, .79) - .01);
+  const front = box(x, y - .42, az - .76, .42, .22, .022), side = box(ax - .55, y - .42, z, .022, .22, .6);
+  const u = front < side ? x : z, scroll = .011 * Math.sin(u * 26 + 1.6 * Math.sin(y * 19)) * Math.sin(y * 24 + 1.2 * Math.sin(u * 15));
+  return smax(p, -(Math.min(front, side) + scroll), .006);
+}
 function lion(x, y, z) {
   const ax = Math.abs(x);
-  let d = Math.min(box(x, y - .22, z, .78, .22, 1.02) - .02, box(x, y - .5, z, .7, .06, .94) - .02);   // plinth
-  let b = ell(x, y - 1.0, z + .42, .6, .48, .52);                                   // haunches
-  b = smin(b, ell(x, y - 1.38, z - .02, .48, .6, .46), .2);                         // chest
-  b = smin(b, ell(ax - .48, y - .72, z + .2, .2, .16, .32), .08);                   // hind paws
-  // one forepaw rests on the embroidered ball, the other stands on the plinth
-  b = smin(b, cone(x, y, z, .32, 1.2, .32, .15, .38, .95, .66, .12), .08);
-  b = smin(b, ell(x - .38, y - .92, z - .72, .15, .08, .18), .04);
-  b = smin(b, cone(x, y, z, -.3, 1.2, .32, .15, -.3, .62, .55, .12), .08);
-  b = smin(b, ell(x + .3, y - .6, z - .66, .15, .08, .2), .04);
-  d = Math.min(d, Math.hypot(x - .4, y - .72, z - .74) - .2 + .012 * Math.sin(x * 40) * Math.sin(z * 40));
-  // head framed by a mane of tight curls
-  let m = ell(x, y - 1.92, z - .1, .56, .56, .5) + .022 * Math.sin(x * 34) * Math.sin(y * 34) * Math.sin(z * 34);
-  let h = ell(x, y - 2.02, z - .32, .42, .4, .38);
-  h = smin(h, ell(x, y - 1.9, z - .66, .24, .18, .17), .08);                         // muzzle
-  h = smin(h, ell(x, y - 1.99, z - .82, .11, .07, .07), .03);                        // nose
-  h = smin(h, ell(ax - .17, y - 2.13, z - .64, .085, .075, .065), .02);              // bulging eyes
-  h = smin(h, ell(ax - .18, y - 2.24, z - .6, .13, .05, .07), .04);                  // heavy brows
-  h = smax(h, -ell(x, y - 1.78, z - .76, .17, .06, .14), .03);                       // open mouth
-  h = smin(h, ell(ax - .38, y - 2.3, z - .3, .08, .12, .05), .04);                   // ears
-  d = Math.min(d, smin(b, smin(m, h, .06), .12));
-  return smin(d, ell(x, y - 1.25, z + .95, .2, .35, .14) + .02 * Math.sin(y * 30 + x * 20), .06); // curled tail
+  let d = lionPlinth(x, y, z);
+  // seated upright: haunches and thighs on the plinth, hind paws forward beside them, the body rising to a deep chest
+  let b = ell(x, y - 1.02, z + .3, .5, .3, .45);
+  b = smin(b, ell(ax - .33, y - 1.0, z + .24, .2, .26, .36), .1);
+  b = smin(b, ell(ax - .41, y - .85, z - .1, .13, .07, .19), .05);
+  b = smin(b, ell(x, y - 1.42, z + .02, .4, .52, .36), .2);
+  b = smin(b, ell(x, y - 1.5, z - .17, .36, .36, .28), .12);
+  // forelegs: the right stands straight down to the plinth, the left rests its paw on the embroidered ball
+  b = smin(b, cone(x, y, z, -.24, 1.6, .12, .15, -.27, .9, .4, .12), .08);
+  b = smin(b, cone(x, y, z, .24, 1.6, .12, .15, .34, 1.22, .44, .12), .08);
+  const toes = .01 * Math.sin(x * 62);
+  b = smin(b, ell(x + .27, y - .86, z - .47, .13, .07, .15) + toes, .04);
+  b = smin(b, ell(x - .35, y - 1.18, z - .5, .13, .07, .15) + toes, .04);
+  // tufts of curls at the elbows and on the haunches, and the curling tail up the back
+  b = smin(b, Math.hypot(ax - .34, y - 1.42, z - .02) - .075, .04);
+  b = smin(b, Math.hypot(ax - .34, y - 1.3, z - .02) - .06, .03);
+  b = smin(b, Math.hypot(ax - .44, y - 1.08, z + .4) - .08, .04);
+  b = smin(b, ell(x, y - 1.3, z + .72, .22, .3, .12) + .02 * Math.sin(x * 30) * Math.sin(y * 30), .07);
+  // the collar round the neck, sagging to the front, and the bell hanging from it between ribbon tassels
+  const col = Math.hypot(Math.hypot(x, z + .02) - .37, y - (1.86 - .16 * clamp(z / .36, 0, 1))) - .035;
+  b = Math.min(b, smin(col, Math.hypot(x, y - 1.6, z - .45) - .1, .03));
+  b = smax(b, -box(x, y - 1.56, z - .54, .055, .008, .04), .004);
+  b = Math.min(b, ell(ax - .14, y - 1.56, z - .41, .045, .12, .03));
+  d = Math.min(d, b);
+  // the embroidered ball under the left forepaw, wound with ribbons
+  d = Math.min(d, Math.hypot(x - .36, y - .98, z - .5) - .18 + .01 * Math.sin((x - .36) * 34) * Math.sin((y - .98) * 34) * Math.sin((z - .5) * 34));
+  // head: a big round skull with a broad flat muzzle, bulging eyes under heavy brows and a wide open grin full of teeth
+  const hb = ell(x, y - 2.2, z - .1, .62, .62, .62);
+  if (hb > .12) return Math.min(d, hb);
+  let h = ell(x, y - 2.14, z - .2, .38, .34, .34);
+  h = smin(h, ell(x, y - 1.99, z - .44, .3, .16, .18), .08);                          // muzzle
+  h = smin(h, ell(ax - .2, y - 2.0, z - .4, .13, .11, .12), .05);                     // puffed cheeks
+  h = smin(h, ell(x, y - 2.07, z - .6, .12, .08, .08), .04);                          // broad nose
+  h = smax(h, -ell(ax - .055, y - 2.04, z - .67, .026, .02, .03), .01);               // nostrils
+  h = smin(h, ell(ax - .15, y - 2.2, z - .5, .095, .09, .075), .02);                   // bulging eyes
+  h = smax(h, -ell(ax - .15, y - 2.19, z - .58, .034, .034, .02), .006);                // pupils
+  h = smin(h, ell(ax - .16, y - 2.33 + .9 * (ax - .16) * (ax - .16), z - .48, .15, .05, .075), .03); // brows
+  h = smin(h, ell(x, y - 2.38, z - .42, .12, .06, .06), .03);                         // knot between the brows
+  h = smin(h, ell(ax - .37, y - 2.18, z - .22, .06, .13, .1), .04);                   // ears
+  const zf = .62 - .9 * x * x;                                                         // front of the mouth, curving back to the corners
+  h = smax(h, -ell(x, y - 1.84, z - .55, .24, .06, .15), .02);                        // the open grin
+  h = smin(h, ell(x, y - 1.75, z - .44, .25, .07, .16), .04);                         // lower jaw
+  const tx = ((x + 1.035) % .07) - .035;
+  const teeth = Math.max(Math.min(box(tx, y - 1.875, z - zf + .03, .022, .02, .02), box(tx, y - 1.8, z - zf + .05, .022, .018, .02)), ax - .2);
+  h = Math.min(h, teeth - .004, cone(ax, y, z, .19, 1.9, .55, .025, .19, 1.81, .56, .008));  // teeth and fangs
+  // the mane: rows of tight snail curls round the back and sides of the head and over the crown
+  const a = Math.atan2(x, z - .02);
+  const curl = (u, v) => { const c = Math.max(0, Math.sin(u) * Math.sin(v)); return .036 * Math.sqrt(c); };   // a round snail curl in each cell
+  let m = ell(x, y - 2.22, z + .02, .47, .43, .41) - curl(a * 10, y * 17);
+  m = smin(m, ell(x, y - 2.5, z - .18, .3, .11, .2) - curl(x * 28, z * 28 + .8), .05);
+  d = Math.min(d, smin(b, smin(m, h, .04), .1));
+  return d;
 }
 const lionL = (x, y, z) => lion(-x, y, z);   // its partner, mirrored
 
@@ -245,8 +284,8 @@ const TINT = {
   jaya: (x, y, z) => jayaFlame(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .13, .3] : GOLD,
   shan: (x, y, z) => { x = -x; return shanBud(x, y, z) < .01 ? GOLD : medHair(x, y, z) < .014 ? [.1, .1, .14] : GOLD; },
   maitreya: (x, y, z) => beads(x, y, z) < .01 ? [.42, .22, .1] : sack(x, y, z) < .012 ? [.95, .7, .42] : GOLD,
-  lion: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62],
-  lionL: (x, y) => y < .58 ? [.5, .48, .45] : [.68, .66, .62]
+  lion: (x, y, z) => lionPlinth(x, y, z) < .01 ? [.55, .54, .52] : [.66, .65, .63],
+  lionL: (x, y, z) => lionPlinth(-x, y, z) < .01 ? [.55, .54, .52] : [.66, .65, .63]
 };
 let sdf = guanyin;
 

@@ -1253,3 +1253,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   terraces against the west wall, and a gate off the road with a Burmese/English sign (မြို့နယ်အားကစားကွင်း · Township Stadium)
   and the flag. No floodlights. The hill peaks nearby were checked and don't reach it, so the skyline is unchanged.
   Checked in a headless render.
+- Re-sculpted the stone guardian lions (`lion`/`lionL` in `statue-sculpt.js`) after the owner's reference photo of a stone
+  foo lion: a tall carved block plinth (footing, cap, a sunk cloud-scroll panel on each face), the lion sitting up tall with
+  thick straight forelegs, the inner paw on the embroidered ball, a collar with a bell and ribbon tassels, curl tufts at the
+  elbows and haunches, and a big head with round snail curls in the mane and over the crown, bulging eyes under heavy brows,
+  a broad nose and a wide open grin with teeth and fangs. Mesh boxes and cells (.018/.012) updated; both gates use it.
+  Checked by meshing in Node and rendering offline.
