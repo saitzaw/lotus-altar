@@ -70,7 +70,7 @@
           for (let i = 0; i < n; i++) bx(o.awn || AWN[(i + (o.seed || 0)) % AWN.length], -W / 2 + bw * (i + .5), 2.75, D / 2 + .8, bw - .3, .06, 1.5, h).rotation.x = .3;
         }
       }
-      if (fglass(kind) && !o.shops) {   // the entrance: a steel canopy on two posts
+      if (fglass(kind) && !o.shops && !o.bare) {   // the entrance: a steel canopy on two posts (`bare`: none)
         bx(alu, 0, 3.25, D / 2 + 1.6, 5, .2, 3.2, h);
         [-1, 1].forEach(s => { cy(steel, s * 2.3, 1.6, D / 2 + 3, .07, 3.2, h); sCircle(h, s * 2.3, D / 2 + 3, .1); });
       }
@@ -280,4 +280,3 @@
     [[206, 6, 6, 3], [231, 5, 0, 4]].forEach(([z0, fl, w, a], i) => block(EX + 3 + 8, z0 + 10, E90, { W: 20, D: 16, floors: fl, kind: "flats", wall: WALL[w], accent: WALL[a], shops: i === 0, seed: i + 2, data: FLATS }));
     const SHOPS = [["ကုန်စုံဆိုင်", "Mini Mart", "#c0392b", "#ffffff"], ["ဆေးဆိုင်", "Pharmacy", "#2e7d4f", "#ffffff"], ["ဖုန်းဆိုင်", "Phones & Repairs", "#2f5f9a", "#ffffff"]];
     [-186, -164, -142].forEach((x, i) => block(x, 271, Math.PI, { W: 18, D: 14, floors: [5, 4, 5][i], kind: "flats", wall: WALL[[2, 0, 6][i]], accent: WALL[[0, 4, 1][i]], shops: true, seed: i + 1, sign: [...SHOPS[i], 6], data: FLATS }));
-  }

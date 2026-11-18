@@ -145,3 +145,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   About 4 triangles a spray against 20 a blob before, so cheaper overall.
 - Checked headless from outside the school grove and from inside it; no errors.
 
+
+### 2026-11-18: offices and a supermarket facing the lake and the hill
+
+- Owner (screenshot of the empty ground at the north end of Stadium Road): "add a super market and business buildings that can
+  see the lake and hill". New piece `28d-lakeside-offices-and-supermarket.js`, the end of `stadiumQuarter` (the closing brace moved
+  there from `28c`). On the open ground between the east side's last flats (x −173) and the stupa hill's north walk, fronts east:
+  Lake View Offices, a six-storey glass tower at (−162, 213) with a café's umbrella tables on its roof and benches on the grass
+  beyond its forecourt; Lakeside Supermarket, a two-storey store at (−161.5, 237.5) with a red awning and its name across the
+  upper floor, trolleys at the door, a car park of eight bays (five cars, a few motorbikes) and a driveway out to the Hluttaw road.
+  Between the walk and the lake's west shore, Valley Microfinance's slim four-storey glass office at (−124.6, 234), door on the
+  walk, back windows over the water. `LV.walkX(z)` recomputes the north walk's line from `HILL` and `MORE_STAIRS` (the same maths
+  as `shanStupaHill`), so everything keeps clear of it. `block()` takes `bare: true` for a glass block with no entrance canopy.
+- Burmese wording (ours, no Shan): ကန်စပ် စူပါမားကတ် (Lakeside Supermarket), ကန်မြင် ရုံးခန်းအဆောက်အအုံ (Lake View Offices),
+  အသေးစား ငွေရေးကြေးရေး (microfinance). Firms and names are made up.
+- Checked headless from above, from the Hluttaw road and from the tower roof; no errors.
