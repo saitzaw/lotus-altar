@@ -202,6 +202,7 @@
     hospitalLane(g);
     hospitalRoadHouses(g);
     hluttawRoadHouses(g);   // Shan family compounds along the Hluttaw road's north side, facing the palace lake
+    stadiumQuarter(g);   // Stadium Road: offices, restaurants, courts, a pool, a park and flats beside the football ground
     hospital(g);
     footballGround(g);
     highSchool(g);

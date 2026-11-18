@@ -120,6 +120,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Village lamps, hill-foot footpath, hospital lane | town edges; lane x −98.5…−95.5, z 5…47.6 | `hillFootpath`, `hospitalLane`, `villageLamp` | `22-village-lamps.js` |
 | General hospital, road houses | main block x −119…−85, z −19…−5; wing x −94…−85.5, z −5…12 (`HOSP`) | `hospital`, `hospitalMonument`, `bloodBank`, `nursingCollege`, `hospitalRoadHouses` | `26-hospital-football-school.js` |
 | Football ground | x −182…−131, z 4…68 | `footballGround` | `26-hospital-football-school.js` |
+| Stadium Road quarter: offices, restaurants, futsal and basketball courts, sports hall, pool, park, flats (six storeys at most); the link road to the hospital road and the Hluttaw road carried west to it | avenue x −204…−196, z −5…255.5; link road z −5…1 to x −128; buildings x −228…−172, flats across the Hluttaw road x −195…−133, z 264…278 (`SQ`) | `stadiumQuarter` | `28c-stadium-quarter.js` |
 | High school | x 46–98, z 111–152 | `highSchool` | `26-hospital-football-school.js` |
 | Bamboo grove, hill-foot bamboo | x 44–100, z 153–178; round the hill | `bambooGrove`, `hillFootBamboo` | `27-bamboo-fuel-fire-police.js` |
 | Fuel station, fire and police stations, welcome board | police (133, 36); board (144, 44.4) | `fuelStation`, `fireAndPolice`, `welcomeSign` | `27-bamboo-fuel-fire-police.js` |

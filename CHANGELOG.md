@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-18
 
 ### Added
+- Stadium Road, a modern quarter beside the township football ground, joined to both main roads: a link road along the stadium's back wall to the road up to the hospital (the front street's west arm), and the Hluttaw road carried on west to meet it. Offices of local companies (a glass business centre, a telecom office with its mast, a tea company, a haulage firm), a Chinese restaurant and a row of five restaurants with pavement tables, floodlit futsal and basketball courts, a sports hall, a public pool, a park with a playground, a footpath to the stupa hill's west stair, and blocks of flats over shops. Nothing stands higher than six storeys.
 - Shan family houses along the north side of the Hluttaw road, across from the palace lake: seven houses, wooden and concrete, each in a small compound behind a woven-bamboo, bamboo-picket or whitewashed brick fence, with an open gate, a path to the stair, a shade tree, bananas, a vegetable bed or a washing line, and at three gates a little roofed stand of drinking water pots for passers-by.
 
 ### Changed
