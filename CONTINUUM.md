@@ -75,6 +75,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-18: banana plants from a reference
+
+- `banana()` in `21-back-street-houses.js` rebuilt after the owner's reference picture of a low-poly banana plant: each clump is
+  one grown plant (`bananaPlant`, stem 2.4–3 m, brown lower 60%, green above) plus one or two suckers at .4–.7 scale. 9–11
+  leaves per plant, 2–3 m long, from four shared leaf geometries (`bananaLeafGeos`: short stalk, blade on a constant-curvature
+  arc, halves drooping from a pale midrib, torn across into 12 strips a side, some edges dried yellow/brown, vertex colours),
+  and 5–8 dead leaves hanging down the stem (`bananaDeadGeos`, no shadow). Everything goes through `part()` now (it used plain
+  meshes), so the 16 clumps (33 plants) bake into a handful of instanced meshes. Callers unchanged; the crowns are a bit wider
+  than before (about 2.5 m reach), so check none pokes through a wall or roof behind the houses.
+
 ### 2026-11-18: tall, open hill pines
 
 - `pine()` in `09-trees-and-walls.js` rebuilt twice today from the owner's reference photos; the second (kept) photo is a tall

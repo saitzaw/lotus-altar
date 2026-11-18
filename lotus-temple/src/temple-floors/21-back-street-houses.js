@@ -78,19 +78,68 @@
       for (let k = 0; k < 2 + (seed % 2); k++) { const j = mesh(new THREE.SphereGeometry(.38, 12, 10), jar, -left * (W / 2 - .5) + left * k * .85, .42, D / 2 + VD + .6, h); j.scale.y = 1.2; }
     }
   }
-  // a banana clump: a few pseudo-stems under broad, drooping leaves
-  const bananaMats = [0x4a8a2e, 0x5a9a36, 0x3e7a28].map(c => std({ color: c, roughness: .7, side: THREE.DoubleSide, flatShading: true }));
+  // a banana clump (ငှက်ပျောပင်): one grown plant with a sucker or two at its foot. Each has a pseudo-stem, brown and shaggy with
+  // old sheaths below and green above, a crown of long arching leaves torn across into strips by the wind, their edges dried
+  // yellow, and a skirt of dead brown leaves hanging down the stem. Shared geometries through part(), so every clump is instanced.
+  const bananaMat = std({ vertexColors: true, side: THREE.DoubleSide, flatShading: true, roughness: .75 });
+  const bananaStemGeo = new THREE.CylinderGeometry(.8, 1, 1, 8), bananaStemMats = [0x6e4a2c, 0x748c3e].map(c => std({ color: c, roughness: .9, flatShading: true }));
+  // a leaf one unit long, rising along +x and curving down in an arc: a short stalk, then a long blade that bends over toward its tip, its halves drooping from a pale
+  // midrib and torn across into strips, some edges dried yellow or brown
+  const bananaLeafGeos = [11, 23, 37, 51].map(seed => {
+    const r = rng(seed), pos = [], col = [], P = .13, N = 12, k = 1.5 + r() * .45;
+    const X = u => Math.sin(k * u) / k, y = u => (Math.cos(k * u) - 1) / k, w = t => .16 * Math.pow(Math.sin(Math.PI * (.04 + .92 * t)), .45);
+    const stalk = new THREE.Color(0x86a046), rib = new THREE.Color(0x92a44c), green = new THREE.Color(0x56882a), dry = [new THREE.Color(0xc4a43c), new THREE.Color(0x7a5626)];
+    const tri = (a, b, c, ca, cb, cc) => { pos.push(...a, ...b, ...c); [ca, cb, cc].forEach(k => col.push(k.r, k.g, k.b)); };
+    const quad = (a, b, c, d, ca, cb, cc, cd) => { tri(a, b, c, ca, cb, cc); tri(a, c, d, ca, cc, cd); };
+    quad([0, 0, -.03], [X(P), y(P), -.025], [X(P), y(P), .025], [0, 0, .03], stalk, stalk, stalk, stalk);
+    [-1, 1].forEach(s => {
+      const tear = [0]; for (let j = 1; j < N; j++) tear.push(r() < .5 ? .01 + r() * .012 : 0); tear.push(0);
+      for (let k = 0; k < N; k++) {
+        const t0 = k / N, t1 = (k + 1) / N, u0 = P + (1 - P) * t0, u1 = P + (1 - P) * t1;
+        const e0 = u0 + tear[k], e1 = u1 - tear[k + 1], te0 = (e0 - P) / (1 - P), te1 = (e1 - P) / (1 - P), d = r() * .05;
+        const edge = k > N - 3 || r() < .3 ? dry[r() < .3 ? 1 : 0] : green, mid = edge === green ? green : green.clone().lerp(edge, .3);
+        const at = (u, t, f, dd) => [X(u), y(u) - .3 * w(t) * f - dd * f, s * w(t) * f];
+        quad(at(u0, t0, 0, 0), at(u1, t1, 0, 0), at(e1, te1, .7, d), at(e0, te0, .7, d), rib, rib, mid, mid);
+        quad(at(e0, te0, .7, d), at(e1, te1, .7, d), at(e1, te1, 1, d), at(e0, te0, 1, d), mid, mid, edge, edge);
+      }
+    });
+    const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    geo.computeVertexNormals(); return geo;
+  });
+  // a dead leaf one unit long hanging down from its top: a crumpled brown strip shredded in two
+  const bananaDeadGeos = [5, 19].map(seed => {
+    const r = rng(seed), pos = [], col = [], N = 8, browns = [0x6a4022, 0x8a5a2e, 0xa47040].map(c => new THREE.Color(c));
+    [[-.1, -.015], [.005, .09]].forEach(([z0, z1]) => {
+      for (let k = 0; k < N; k++) {
+        const pt = (t, z) => [.1 * t + (Math.round(t * N) % 2 ? .015 : -.01), -t, z * (1 - .3 * t)], t0 = k / N, t1 = (k + 1) / N, c = browns[Math.floor(r() * 3)];
+        const a = pt(t0, z0), b = pt(t1, z0), cc = pt(t1, z1), d = pt(t0, z1);
+        pos.push(...a, ...b, ...cc, ...a, ...cc, ...d); for (let i = 0; i < 6; i++) col.push(c.r, c.g, c.b);
+      }
+    });
+    const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    geo.computeVertexNormals(); return geo;
+  });
+  function bananaPlant(g, x, z, s, r) {
+    const t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); t.rotation.y = r() * TAU; g.add(t);
+    const H = 2.4 + r() * .6, R = .16, lo = H * .6;
+    part(bananaStemGeo, bananaStemMats[0], 0, lo / 2, 0, t).scale.set(R, lo, R);
+    part(bananaStemGeo, bananaStemMats[1], 0, lo + (H - lo) / 2, 0, t).scale.set(R * .8, H - lo, R * .8);
+    const n = 9 + Math.floor(r() * 3);
+    for (let i = 0; i < n; i++) {   // the crown: the young leaves near upright in the middle, the older ones arching out and down
+      const a = i * 2.4 + r() * .5, young = i < 2, len = young ? 2 : 2.4 + r() * .6, pitch = young ? 1.4 + r() * .15 : .75 + r() * .6;
+      const lf = part(bananaLeafGeos[Math.floor(r() * 4)], bananaMat, Math.cos(a) * .08, H - .1 - r() * .25, Math.sin(a) * .08, t);
+      lf.rotation.order = "YZX"; lf.rotation.set((r() - .5) * .6, -a, pitch); lf.scale.setScalar(len);
+    }
+    for (let i = 0; i < 5 + Math.floor(r() * 4); i++) {   // the dead leaves hanging down round the stem
+      const a = r() * TAU, d = flat(part(bananaDeadGeos[i % 2], bananaMat, Math.cos(a) * R * .9, H * (.6 + r() * .3), Math.sin(a) * R * .9, t));
+      d.rotation.set(0, -a, 0); d.scale.set(1, .6 + r() * .6, 1.3);
+    }
+  }
   function banana(g, x, z, seed = 1) {
     const r = rng(seed * 13), t = new THREE.Group(); t.position.set(x, 0, z); g.add(t);
     sCircle(t, 0, 0, .5);
-    for (let s = 0; s < 3; s++) {
-      const sx = (r() - .5) * .9, sz = (r() - .5) * .9, H = 2 + r() * 1.2;
-      mesh(new THREE.CylinderGeometry(.09, .14, H, 7), bananaMats[2], sx, H / 2, sz, t);
-      for (let i = 0; i < 5; i++) {
-        const leaf = mesh(new THREE.PlaneGeometry(.55, 1.9), bananaMats[i % 2], 0, 0, 0, t);
-        leaf.geometry.translate(0, .95, 0); leaf.position.set(sx, H, sz); leaf.rotation.set(1.0 + r() * .5, i / 5 * TAU + r(), 0, "YXZ"); leaf.castShadow = false;
-      }
-    }
+    bananaPlant(t, 0, 0, .95 + r() * .15, r);
+    for (let k = 0; k < 1 + Math.floor(r() * 2); k++) { const a = r() * TAU, d = .5 + r() * .3; bananaPlant(t, Math.cos(a) * d, Math.sin(a) * d, .4 + r() * .3, r); }
   }
   // ညောင်ပင်, a banyan many generations old: a trunk of many stems grown together, wide limbs dropping aerial roots (the oldest
   // have rooted into the platform as new trunks), a broad low crown; a whitewashed brick platform round its foot with a spirit house.

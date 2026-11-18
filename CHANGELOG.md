@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-18
 
 ### Changed
+- The banana clumps are now real-looking banana plants: one grown plant and a sucker or two, each on a stem brown and shaggy below and green above, with a crown of long arching leaves torn into strips by the wind and dried yellow at the edges, and dead brown leaves hanging down the stem.
 - The pines are now tall, open hill pines: a long straight grey trunk on spreading roots, bare for nearly half its height, then whorls of level branches with gaps between them, hung with drooping needle sprays.
 - More bamboo along the stupa hill's foot, between the hill and the backs of the houses: the band reaches further out and the clumps stand closer, about 40 of them where there were 26.
 
