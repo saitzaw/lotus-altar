@@ -102,6 +102,7 @@
 | `26-hospital-football-school.js` | civic building kit, hospital and its monument, blood bank, nursing college, football ground, high school | `civic` `civicSign` `vehicle` `hospital` `hospitalMonument` `bloodBank` `nursingCollege` `postSign` `fiveLineSign` `footballGround` `highSchool` |
 | `27-bamboo-fuel-fire-police.js` | bamboo, fuel station, fire and police stations, welcome board | `bambooGrove` `hillFootBamboo` `fuelStation` `fireAndPolice` `WELCOME` |
 | `28-kachin-church-and-back-streets.js` | church outside and compound; back lanes | `kachinChurch` `churchCompound` `backStreets` |
+| `28b-hluttaw-road-houses.js` | Shan family compounds on the Hluttaw road's north side: fenced yards (woven bamboo, bamboo pickets, brick), gates, gardens, water pot stands | `hluttawRoadHouses` (`ROAD_HOUSES`, `ROAD_LOTS`) |
 | `29-forest-and-hills.js` | forest band and hills | `mountainsAndForest` |
 | `30-temple-gate.js` | 山門 gate, hipped roofs | `gate` `tiledHipRoof` |
 | `31-bell-tower.js` | Bell Tower interior | `bellTower` |

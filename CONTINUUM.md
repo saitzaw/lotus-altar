@@ -75,6 +75,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-18: house compounds on the Hluttaw road
+
+- New piece `28b-hluttaw-road-houses.js`, `hluttawRoadHouses(g)` (called after `hospitalRoadHouses` in `36-…`): the empty
+  ground north of the Hluttaw road from its west end to the Hluttaw compound (x −113…−12, z 263…278.5) now holds seven Shan
+  family compounds (`ROAD_LOTS`: width, fence kind, wood/concrete, storeys, pot stand). Houses are the existing `shanWoodHouse` /
+  `shanHouse`, turned to face the road. Fences: woven bamboo (twill canvas texture), split-bamboo pickets (instanced) or a
+  whitewashed brick wall with piers; gates stand open (steel leaves for brick, a woven leaf under a bamboo lintel otherwise).
+  Water pot stands (ရေအိုးစင်, Burmese, clickable) on the verge at three gates. The far end is beyond `CULL.far`, so it is
+  never culled; keep the detail light.
+
 ### 2026-11-18: banana plants from a reference
 
 - `banana()` in `21-back-street-houses.js` rebuilt after the owner's reference picture of a low-poly banana plant: each clump is

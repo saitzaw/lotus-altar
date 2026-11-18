@@ -5,6 +5,9 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-18
 
+### Added
+- Shan family houses along the north side of the Hluttaw road, across from the palace lake: seven houses, wooden and concrete, each in a small compound behind a woven-bamboo, bamboo-picket or whitewashed brick fence, with an open gate, a path to the stair, a shade tree, bananas, a vegetable bed or a washing line, and at three gates a little roofed stand of drinking water pots for passers-by.
+
 ### Changed
 - The banana clumps are now real-looking banana plants: one grown plant and a sucker or two, each on a stem brown and shaggy below and green above, with a crown of long arching leaves torn into strips by the wind and dried yellow at the edges, and dead brown leaves hanging down the stem.
 - The pines are now tall, open hill pines: a long straight grey trunk on spreading roots, bare for nearly half its height, then whorls of level branches with gaps between them, hung with drooping needle sprays.

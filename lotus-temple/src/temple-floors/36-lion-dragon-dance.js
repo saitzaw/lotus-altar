@@ -201,6 +201,7 @@
     hillFootpath(g);
     hospitalLane(g);
     hospitalRoadHouses(g);
+    hluttawRoadHouses(g);   // Shan family compounds along the Hluttaw road's north side, facing the palace lake
     hospital(g);
     footballGround(g);
     highSchool(g);
