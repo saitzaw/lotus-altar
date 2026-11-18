@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-18
+
+### Changed
+- More bamboo along the stupa hill's foot, between the hill and the backs of the houses: the band reaches further out and the clumps stand closer, about 40 of them where there were 26.
+
 ## 2026-11-17
 
 ### Changed

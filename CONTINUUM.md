@@ -75,6 +75,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-18: thicker bamboo at the hill's foot
+
+- Owner: "more bamboo in the grove between the hill foot and the houses". `FOOT_BAMBOO` in `27-bamboo-fuel-fire-police.js`:
+  band out to 16 m past `HILL.rBase` (was 14), clump step 2.4 m (was 3.1), room kept from houses/lanes 2.2 m (was 2.6), and the
+  share of spots skipped moved into `FOOT_BAMBOO.skip` (.08, was a literal .18). Measured headless: 42 clumps / 440 culms (was
+  26 / 277); buffers resized to 1200 culm pieces and 7200 sprays (used 880 and ~5200). Viewed from above the houses; no errors.
+
 ### 2026-11-17: realistic low-poly bamboo
 
 - Owner (three photos of clumping bamboo, "current bamboo grove are not realistic"): `bambooStand()` in

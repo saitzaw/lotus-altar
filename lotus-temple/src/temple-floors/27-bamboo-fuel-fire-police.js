@@ -109,15 +109,15 @@
   // a band of bamboo along the stupa hill's eastern foot, between the hill and the backs of the houses on the plaza lane, round
   // the church and facing the Haw Kham: clumps on the bottom of the slope and the flat below it, wherever no house, lane, tree or
   // wall stands, leaving a walk clear along the house backs. Built after backStreets, so the houses' footprints can be read.
-  const FOOT_BAMBOO = { a0: -.8, a1: .15, r0: -2.5, r1: 14, step: 3.1, clear: 2.6 };   // angles round the hill (world, radians), radial band past the hill's foot (m), clump spacing, room kept from anything else
+  const FOOT_BAMBOO = { a0: -.8, a1: .15, r0: -2.5, r1: 16, step: 2.4, clear: 2.2, skip: .08 };   // angles round the hill (world, radians), radial band past the hill's foot (m), clump spacing, room kept from anything else, share of spots left bare
   function hillFootBamboo(g) {
     const r = rng(7272), F = FOOT_BAMBOO, { cx, cz, rBase } = HILL, data = { tip: "Bamboo at the hill's foot · ဝါးတော", toast: "Bamboo grows thick along the foot of the stupa hill, behind the houses. The families cut culms here for fences, baskets and roof frames, and in the rains they dig the young shoots to cook." };
     const avoid = [[-14, 98], [-12, 104]];   // the garden tree and banana behind the plaza-lane houses
     const taken = (x, z) => LANES.some(l => x > l.x0 - 1.5 && x < l.x1 + 1.5 && z > l.z0 - 1.5 && z < l.z1 + 1.5) || avoid.some(([ax, az]) => Math.hypot(x - ax, z - az) < 1.6) || surfAt(x, z);
     const free = (x, z) => [0, 1.2, F.clear].every(d => d ? [...Array(10)].every((_, i) => !taken(x + Math.cos(i * TAU / 10) * d, z + Math.sin(i * TAU / 10) * d)) : !taken(x, z));
-    const stand = bambooStand(g, r, data, 1700, 13000);
+    const stand = bambooStand(g, r, data, 1200, 7200);
     for (let rr = rBase + F.r0; rr < rBase + F.r1; rr += F.step) for (let a = F.a0; a < F.a1; a += F.step / rr) {
-      if (r() < .18) continue;
+      if (r() < F.skip) continue;
       const x = cx + Math.cos(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4), z = cz + Math.sin(a + (r() - .5) * .02) * (rr + (r() - .5) * 1.4);
       const n = 7 + (r() * 8 | 0), big = .8 + r() * .3;
       if (free(x, z)) stand.clump(x, z, big, n);
