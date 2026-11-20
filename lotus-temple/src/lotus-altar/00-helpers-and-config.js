@@ -115,7 +115,9 @@ const CONFIG = {
   // outdoor haze [near, far] in metres: things fade into it and are not drawn at all past `far`
   fog: { outside: [70, 230], walk: [30, 170], corridor: [70, 260] },
   // selective rendering outside: skip whatever is behind the camera, past the fog or smaller than minPixels on screen
-  cull: { enabled: true, minPixels: 2 }
+  cull: { enabled: true, minPixels: 2, batch: true },  // batch: weld still, unclickable meshes in each cell into one draw per material
+  // adaptive detail: if most frames over `window` seconds come slower than minFps, the pixel ratio steps down by .5 (to 1 at least)
+  quality: { minFps: 40, window: 3, settle: 8 }        // settle: seconds after load before it starts watching
 };
 /* Prices, names and kinds of each offering live in ITEMS below. */
 

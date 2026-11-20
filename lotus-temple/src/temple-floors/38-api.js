@@ -9,8 +9,8 @@
       if (pagoda) pagoda.visible = mode === "pagoda";
     },
     clickables(mode) { return mode === "pagoda" && CULL.on ? (picks.pagoda || []).filter(shown) : picks[mode] || []; },
-    cull, uncull,
-    set culling(on) { CULL.on = on; if (!on) CULL.cells.forEach(c => { c.vis = true; c.items.forEach(it => it.o.visible = true); }); },
+    cull, uncull, batchLayer: BATCH.off,
+    set culling(on) { CULL.on = on; if (!on) CULL.cells.forEach(c => { c.vis = true; c.items.forEach(it => it.o.visible = true); c.batches.forEach(b => b.mesh.visible = true); }); },
     get fourTop() { return fourTop; },
     get market() { return MARKET; },
     groundAt, terrainAt, walkAt, get monasteries() { return MONASTERIES; }, get palace() { return PALACE; }, set walkerY(v) { WALKER_Y = v; },

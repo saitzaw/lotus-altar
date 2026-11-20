@@ -57,7 +57,7 @@ const cart = { flower: { q: 0, k: "lotus" }, water: { q: 0, k: "pure" }, fruit: 
 /* ---------- renderer ---------- */
 const canvas = $("scene");
 const stage = $("stage");
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });   // a laptop with two graphics chips uses the faster one
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;

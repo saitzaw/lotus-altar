@@ -130,6 +130,8 @@ These are described in detail in `.claude/skills/lotus-altar/references/optimiza
   objects are never culled; `CONFIG.cull.minPixels` = 2).
 - **Fog as draw distance:** `CONFIG.fog` = outside [70, 230], walk [30, 170], corridor [70, 260]. Rain and mist
   shorten it.
+- **Static batching** of the grounds' still meshes, per cell and material, undone per batch when something in it moves
+  (`batchCells` in `37-culling.js`).
 - **Lazy building** of every hall (`BUILD`, `floor(n)`).
 - **Fixed light count:** lights are never added or removed at runtime, which avoids shader recompiles. Lights that
   are off have intensity 0.
@@ -141,15 +143,15 @@ These are described in detail in `.claude/skills/lotus-altar/references/optimiza
 
 | # | Suspect | Why | How to confirm |
 |---|---|---|---|
-| H1 | `buildPagoda()` at load | the whole outdoor world, plus `bakeParts` and `indexCull`, built synchronously before the first useful frame | `performance.measure` around it; a long task in the DevTools Performance panel |
+| H1 | `buildPagoda()` at load (measured 2026-11-20: 4.3 s, ~2.8 s of it `surfAt` re-running `updateMatrixWorld(true)` per entry; now ~1.1 s) | the whole outdoor world, plus `bakeParts` and `indexCull`, built synchronously before the first useful frame | `performance.measure` around it; a long task in the DevTools Performance panel |
 | H2 | `indexCull` → `boundsOf` | it walks every instance of every InstancedMesh with matrix math | a measure inside H1 |
 | H3 | Parsing ~554 KB of `temple-floors.js` | all builders are parsed up front | DevTools "Compile / Evaluate script" |
 | H4 | First visit to a hall | `floor(n)` build plus shader compiles for new materials, then a sculpt job | a measure around `floor(n)`; frame time spikes |
-| H5 | Draw calls outdoors, festival ground in the evening | dancers, audience and townsfolk are separate animated meshes | `renderer.info.render.calls` / `.triangles` |
+| H5 | Draw calls outdoors (measured: ~4,500 at the gate, ~4,300 in town; batching brought them to ~1,600 / ~1,500), festival ground in the evening | dancers, audience and townsfolk are separate animated meshes | `renderer.info.render.calls` / `.triangles` |
 | H6 | Shadows | `PCFSoftShadowMap` with a 2048² key light; every caster is drawn twice | toggle `renderer.shadowMap.enabled` and compare |
 | H7 | Fill rate on phones | `antialias` + DPR 2 | compare GPU time with DPR 1 |
-| H8 | Floor-1 effects running in every mode | dust buffer upload and flame flicker each frame while outside | gate them behind `current === 1` and compare |
-| H9 | `aimPrompt` raycasts | 7 rays × the clickables list, ~7×/s on foot | a measure around `pickAhead` |
+| H8 | Floor-1 effects running in every mode (fixed: gated on `scene.visible`) | dust buffer upload and flame flicker each frame while outside | gate them behind `current === 1` and compare |
+| H9 | `aimPrompt` raycasts (eased: every .6 s while the camera stands still) | 7 rays × the clickables list, ~7×/s on foot | a measure around `pickAhead` |
 | H10 | Small allocations per frame | smoke `new Vector3`, `filter` arrays, `hit.point.clone()` | the DevTools Memory allocation timeline (GC sawtooth) |
 | H11 | Render-blocking CDN scripts and CJK fonts | ~600 KB+ before anything runs | Lighthouse / Web Vitals (FCP, LCP, TBT) |
 
@@ -216,8 +218,8 @@ The hotspot each idea addresses is in brackets.
 1. **Split `buildPagoda` into chunks** [H1]: build the compound first and render it, then build the town, the market,
    the hill and the outer areas over the next frames (`requestIdleCallback`, falling back to `setTimeout`). Call
    `bakeParts` / `indexCull` for each chunk, or once at the end.
-2. **Gate the floor-1 effects** behind `current === 1` [H8].
-3. **Adaptive quality** [H6, H7]: if fps p95 stays under the target for a few seconds, drop DPR to 1, then turn off
+2. ~~**Gate the floor-1 effects**~~ (done, 2026-11-20) [H8].
+3. **Adaptive quality** [H6, H7] (the pixel-ratio step is done: `adaptQuality`, `CONFIG.quality`): if fps p95 stays under the target for a few seconds, drop DPR to 1, then turn off
    soft shadows (`PCFShadowMap`, or shadows off outside), then shorten `CONFIG.fog.walk`. Raise them again when fps
    recovers. Respect the existing cap of DPR 2.
 4. **Precompile shaders** [H4] for a hall before entering it (`renderer.compile(group, camera)` exists in r128),
@@ -225,7 +227,7 @@ The hotspot each idea addresses is in brackets.
 5. **Lazy-load the outer world's code** [H3]: move the builders that run only outdoors into a second script, loaded
    after the first frame. This needs care because of the shared closure. It's a bigger change.
 6. **Remove per-frame allocations** [H10] (smoke origin vector, `filter` results, picking clones).
-7. **Throttle `aimPrompt`** [H9] when the camera hasn't moved (the same test `cull` uses).
+7. ~~**Throttle `aimPrompt`**~~ (done) [H9] when the camera hasn't moved (the same test `cull` uses).
 8. **Defer the CDN scripts and fonts** [H11]: `preload` three.js, subset Noto Serif TC to the glyphs in use (the
    Chinese hall names), and keep `display=swap`.
 

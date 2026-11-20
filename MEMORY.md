@@ -57,6 +57,18 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - To render the night sky at another time, stub the clock in a script placed before the three.js tag:
   `const T0 = Date.UTC(...); Date.now = () => T0;`.
 
+## Measuring speed in headless Chromium
+
+- For numbers (draw calls, render ms, load timings), headless Chromium on the real GPU works and is quick (~30 s a run): no
+  swiftshader flags, a fresh `--user-data-dir` under `$HOME` for every run (a profile left by a killed run stays locked and
+  the next run prints nothing at all), `--virtual-time-budget=60000 --dump-dom`, and a probe script loaded right after
+  `lotus-altar.js` that reads a `window.__probe = { THREE, renderer, world, camera, temple }` line added just before the last
+  `})();` of the copied `lotus-altar.js`. Swiftshader is far too slow for the full outdoor world (no frame within 400 s).
+- Snap Chromium writes nothing when its output is redirected straight to a file; pipe it (`2>&1 | grep CONSOLE | cat > f`).
+- A batched original sits on layer 31 (`temple.batchLayer`). If something outdoors draws nowhere but still answers a tap, or a
+  change to one mesh seems to do nothing for a moment, it was welded into a batch: see "Static batching" in
+  `references/optimization.md`. Turn `CONFIG.cull.batch` off to rule it out.
+
 ## Checking a change in headless Chromium
 
 Plain `chromium --headless --screenshot` of an outdoor view usually comes back black, or shows the hall or the overview.

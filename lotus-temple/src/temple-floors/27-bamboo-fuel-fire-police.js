@@ -123,7 +123,7 @@
       if (free(x, z)) stand.clump(x, z, big, n);
     }
     stand.done();
-    SURF.forEach(e => e.inv = null);   // read again once the grounds are placed
+    resetSurf();   // read again once the grounds are placed
   }
   // ဓာတ်ဆီဆိုင်, a fuel station on the town road south of the bridge: a forecourt off the road, a canopy lit underneath at night
   // over two islands of pumps, a small shop behind, and the sign on a pylon by the road

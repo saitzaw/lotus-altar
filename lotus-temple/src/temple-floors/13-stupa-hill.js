@@ -71,9 +71,36 @@
   // reach ~.4 m at .3 near) never cuts into the box and shows the far side through it; with PAD that is the .55 m the temple's own walls keep
   const WALL_PAD = .2, sWall = (obj, x0, x1, z0, z1) => sRect(obj, x0 - WALL_PAD, x1 + WALL_PAD, z0 - WALL_PAD, z1 + WALL_PAD), sPillar = (obj, cx, cz, r) => sCircle(obj, cx, cz, r + WALL_PAD);
   const _v = new THREE.Vector3();
+  // SURF's index: each entry, once resolved, is filed by its footprint on the ground into SURF_IX.cell-metre squares, so a lookup
+  // reads only the entries that could hold the point, still in the order they were added (the first that answers wins); entries on
+  // tilted objects, whose footprint isn't a plain shape, are read on every lookup. resetSurf() resolves everything again.
+  const SURF_IX = { cell: 8, map: new Map(), always: [], n: 0 }, NO_SURF = [];
+  const surfKey = (i, j) => (i + 4096) * 8192 + (j + 4096);
+  const resetSurf = () => { SURF_IX.map.clear(); SURF_IX.always.length = 0; SURF_IX.n = 0; };
+  function surfIndex() {
+    for (; SURF_IX.n < SURF.length; SURF_IX.n++) {
+      const e = SURF[SURF_IX.n]; e.i = SURF_IX.n;
+      e.obj.updateWorldMatrix(true, false); const M = e.obj.matrixWorld, m = M.elements;   // its parents and itself, not all it holds
+      e.inv = M.clone().invert(); e.sc = M.getMaxScaleOnAxis(); e.y = e.obj.getWorldPosition(_v).y;
+      const pad = e.h === null ? PAD / e.sc : 0, c = e.circle;
+      const [x0, x1, z0, z1] = c ? [c[0] - c[2], c[0] + c[2], c[1] - c[2], c[1] + c[2]] : e.rect;
+      let ax = Infinity, bx = -Infinity, az = Infinity, bz = -Infinity;
+      for (const [lx, lz] of [[x0 - pad, z0 - pad], [x1 + pad, z0 - pad], [x0 - pad, z1 + pad], [x1 + pad, z1 + pad]]) {
+        _v.set(lx, 0, lz).applyMatrix4(M); ax = Math.min(ax, _v.x); bx = Math.max(bx, _v.x); az = Math.min(az, _v.z); bz = Math.max(bz, _v.z);
+      }
+      const C = SURF_IX.cell, i0 = Math.floor((ax - .01) / C), i1 = Math.floor((bx + .01) / C), j0 = Math.floor((az - .01) / C), j1 = Math.floor((bz + .01) / C);
+      const tilted = Math.abs(m[1]) > 1e-6 || Math.abs(m[9]) > 1e-6 || Math.abs(m[4]) > 1e-6 || Math.abs(m[6]) > 1e-6;
+      if (tilted || !(isFinite(i0) && isFinite(i1) && isFinite(j0) && isFinite(j1)) || (i1 - i0 + 1) * (j1 - j0 + 1) > 4096) { SURF_IX.always.push(e); continue; }
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+        const k = surfKey(i, j); let l = SURF_IX.map.get(k); if (!l) SURF_IX.map.set(k, l = []); l.push(e);
+      }
+    }
+  }
   function surfAt(x, z) {
-    for (const e of SURF) {
-      if (!e.inv) { e.obj.updateMatrixWorld(true); e.inv = e.obj.matrixWorld.clone().invert(); e.sc = e.obj.matrixWorld.getMaxScaleOnAxis(); e.y = e.obj.getWorldPosition(_v).y; }
+    surfIndex();
+    const L = SURF_IX.map.get(surfKey(Math.floor(x / SURF_IX.cell), Math.floor(z / SURF_IX.cell))) || NO_SURF, A = SURF_IX.always;
+    for (let a = 0, b = 0; a < L.length || b < A.length;) {
+      const e = b >= A.length || (a < L.length && L[a].i < A[b].i) ? L[a++] : A[b++];   // the two lists merged, in the order added
       _v.set(x, 0, z).applyMatrix4(e.inv);
       const pad = e.h === null ? PAD / e.sc : 0, lx = _v.x, lz = _v.z;
       let inside;

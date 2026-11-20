@@ -10,7 +10,20 @@ function resize() {
 }
 new ResizeObserver(resize).observe(stage); resize();
 
+// a device that can't keep up draws fewer pixels: when most frames over a few seconds are slow, the pixel ratio steps down
+// (never below 1, never back up within the visit, so it doesn't see-saw); the first seconds, while the world is built, don't count
+const QUALITY = { t: -CONFIG.quality.settle, n: 0, slow: 0 };
+function adaptQuality(dt) {
+  if ((QUALITY.t += dt) < 0 || document.hidden) return;
+  QUALITY.n++; if (dt > 1 / CONFIG.quality.minFps) QUALITY.slow++;
+  if (QUALITY.t < CONFIG.quality.window) return;
+  const pr = renderer.getPixelRatio();
+  if (QUALITY.slow > QUALITY.n * .6 && pr > 1) { renderer.setPixelRatio(Math.max(1, pr - .5)); resize(); }
+  QUALITY.t = QUALITY.n = QUALITY.slow = 0;
+}
 const clock = new THREE.Clock();
+// is the hall (or the grounds) that holds o shown? the answer is the visibility of o's ancestor just under the world, found once
+const shownNow = o => { let t = o._hall; if (!t) { for (t = o; t.parent && t.parent !== world; t = t.parent); if (t.parent) o._hall = t; } return t.visible; };
 function frame() {
   const dt = Math.min(clock.getDelta(), .05); now += dt;
   const motion = reduceMotion ? .25 : 1;
@@ -27,39 +40,45 @@ function frame() {
     a.needsUpdate = true; b.pts.material.opacity = Math.max(0, 1 - b.life / 1.3);
     if (b.life > 1.3) { b.pts.parent.remove(b.pts); b.pts.geometry.dispose(); bursts.splice(i, 1); }
   }
-  const da = dust.geometry.attributes.position;
-  for (let i = 0; i < da.count; i++) {
-    da.array[i*3+1] += dt * .06 * motion; da.array[i*3] += Math.sin(now * .3 + i) * dt * .02 * motion;
-    if (da.array[i*3+1] > 6) da.array[i*3+1] = 0;
-  }
-  da.needsUpdate = true;
-  // smoke drifts up from a random lit incense tip
-  smoke.forEach((p, i) => {
-    p.age += dt * motion;
-    if (p.age > 4 || !p.origin) {
-      p.age %= 4;
-      const lit = embers.filter(e => e.material.opacity > .5);
-      p.origin = lit.length ? lit[(Math.random() * lit.length) | 0].getWorldPosition(new THREE.Vector3()) : null;
+  glowBoost = Math.max(0, glowBoost - dt * .8);
+  // floor 1's own effects (dust in the light, incense smoke, the aureole, the lanterns) only while its hall is shown
+  if (scene.visible) {
+    const da = dust.geometry.attributes.position;
+    for (let i = 0; i < da.count; i++) {
+      da.array[i*3+1] += dt * .06 * motion; da.array[i*3] += Math.sin(now * .3 + i) * dt * .02 * motion;
+      if (da.array[i*3+1] > 6) da.array[i*3+1] = 0;
     }
-    if (!p.origin) { p.s.material.opacity = 0; return; }
-    const k = p.age / 4;
-    p.s.position.set(p.origin.x + Math.sin(p.age * 1.6 + i) * .05 * (1 + k * 4), p.origin.y + p.age * .4, p.origin.z + Math.cos(p.age * 1.1 + i) * .03 * k * 4);
-    p.s.scale.setScalar(.04 + k * .45); p.s.material.opacity = .2 * Math.sin(Math.PI * k);
-  });
-  embers.forEach((e, i) => { if (e.material.opacity > .5) e.scale.setScalar(.045 + Math.sin(now * 3 + i) * .008); });
+    da.needsUpdate = true;
+    // smoke drifts up from a random lit incense tip
+    smoke.forEach((p, i) => {
+      p.age += dt * motion;
+      if (p.age > 4 || !p.origin) {
+        p.age %= 4;
+        let lit = 0; for (const e of embers) if (e.material.opacity > .5) lit++;
+        let pickN = (Math.random() * lit) | 0, from = null;
+        if (lit) for (const e of embers) if (e.material.opacity > .5 && pickN-- === 0) { from = e; break; }
+        p.origin = from ? from.getWorldPosition(p.at || (p.at = new THREE.Vector3())) : null;
+      }
+      if (!p.origin) { p.s.material.opacity = 0; return; }
+      const k = p.age / 4;
+      p.s.position.set(p.origin.x + Math.sin(p.age * 1.6 + i) * .05 * (1 + k * 4), p.origin.y + p.age * .4, p.origin.z + Math.cos(p.age * 1.1 + i) * .03 * k * 4);
+      p.s.scale.setScalar(.04 + k * .45); p.s.material.opacity = .2 * Math.sin(Math.PI * k);
+    });
+    embers.forEach((e, i) => { if (e.material.opacity > .5) e.scale.setScalar(.045 + Math.sin(now * 3 + i) * .008); });
+    aureole.rotation.z += dt * .03 * motion;
+    aureole.material.opacity = .5 + Math.sin(now * .8) * .05 + glowBoost * .25;
+    headGlow.material.opacity = .18 + glowBoost * .3;
+    backGlow.intensity = 1.2 + glowBoost * 1.2;
+    lanterns.forEach((l, i) => l.rotation.z = Math.sin(now * .7 + i * 2) * .03 * motion);
+  }
   flames.forEach(c => {
+    if (!shownNow(c.flame)) return;   // a hall that isn't shown needs no flicker
     const f = Math.sin(now * 9 + c.seed) * .5 + Math.sin(now * 23 + c.seed * 3) * .3 + (Math.random() - .5) * .3;
     const on = c.on;
     if (c.light) c.light.intensity = (1.1 + f * .25 * motion) * on;
     c.flame.scale.set(on, (2 + f * .3 * motion) * on || .001, on);
     c.g.material.opacity = (.75 + f * .12) * on;
   });
-  glowBoost = Math.max(0, glowBoost - dt * .8);
-  aureole.rotation.z += dt * .03 * motion;
-  aureole.material.opacity = .5 + Math.sin(now * .8) * .05 + glowBoost * .25;
-  headGlow.material.opacity = .18 + glowBoost * .3;
-  backGlow.intensity = 1.2 + glowBoost * 1.2;
-  lanterns.forEach((l, i) => l.rotation.z = Math.sin(now * .7 + i * 2) * .03 * motion);
   // on foot the drag only turns the head, slowly, and stops when you let go instead of drifting on
   const onFoot = inMarket || inCorridor || inStairs;
   controls.rotateSpeed = onFoot ? CONFIG.camera.look.drag : 1; controls.dampingFactor = onFoot ? CONFIG.camera.look.settle : .05;
@@ -84,12 +103,14 @@ function frame() {
   temple.update(dt, now, current, motion, camera.position);
   temple.cull(camera, stage.clientHeight);
   renderer.render(world, camera);
+  adaptQuality(dt);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 /* ---------- picking ---------- */
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(), tip = $("tip");
+ray.layers.enable(temple.batchLayer);   // the outdoor parts welded into batches still answer a tap (see static batching in temple-floors)
 const TIP = { flower: "Add flowers", water: "Add a bowl of water", fruit: "Add fruit", candle: "Light a candle", incense: "Offer incense", fortune: "Shake the fortune sticks", chant: "Recite Nāmó Ēmítuófó" };
 let lastHit = null;
 function pick(e) {
@@ -137,9 +158,10 @@ canvas.addEventListener("pointerup", e => {
 // on foot, a short prompt under the aiming dot names what Space will use, and only when it does something
 const usable = o => o && Object.keys(o.userData).some(k => k !== "tip");
 let aimT = 0;
+const aimM = new THREE.Matrix4();   // where the camera was at the last look; standing still, look again only now and then
 function aimPrompt(dt) {
   const el = $("aimTip"); if (!inMarket || moving || tgOpen) { el.hidden = true; return; }
-  if ((aimT += dt) < .15) return; aimT = 0;
+  if ((aimT += dt) < (camera.matrixWorld.equals(aimM) ? .6 : .15)) return; aimT = 0; aimM.copy(camera.matrixWorld);
   const o = pickAhead(), label = usable(o) ? (inStairs && o.userData.stairDoor ? "Back to the hall" : o.userData.tip || TIP[o.userData.item]) : null;
   el.hidden = !label; if (label) el.textContent = "Space · " + noHan(label).replace(/^the /, "");
 }

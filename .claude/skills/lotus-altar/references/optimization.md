@@ -16,6 +16,22 @@ against this list.
   - Things more than 140 m out (far hills, fields) are never culled.
   - Mark an object `userData.noCull` if it must always draw.
   - Build outdoor things as several small groups, not one huge one, so the cells can hide them.
+  - Objects more than 140 m out go into their own far cells (`c.far`): those hold only batches and are kept or dropped by
+    the view cone alone, never by distance or size.
+- **Static batching** (`batchCells`, `weld`, `batchCheck` in `37-culling.js`, `CONFIG.cull.batch`): once the cells are
+  indexed, the plain meshes in each cell are welded into one mesh per material + shadow flags + attribute set. This takes
+  the gate view from ~4,500 draw calls to ~1,600 and the town on foot from ~4,300 to ~1,500. Things to know:
+  - The originals stay in the scene on layer `temple.batchLayer` (31), which the camera skips but the picking `ray` sees, so
+    clickables, `userData` and references from builders keep working. Don't use layer 31 for anything else.
+  - Each frame `batchCheck` looks at 1,500 originals. If one moved (its matrix relative to the grounds), was hidden (it or an
+    ancestor that isn't a cull item), got another material or geometry, or had its positions rewritten (`position.version`),
+    its whole batch is undone and the originals draw again. Animating something outdoors needs no special care: it unbatches
+    itself within a few frames of first moving. Something that moves every few seconds costs its batch for good.
+  - Not batched: transparent or `depthWrite: false` materials, material arrays, instanced or skinned meshes, `frustumCulled =
+    false`, a custom `raycast` or `onBeforeRender`, `renderOrder`, morphs, anything hidden at build time, and geometries with
+    attributes other than position, normal, uv and color (Float32 only). Mark something you animate on a schedule with one
+    of these (or keep it hidden until it is used) if a short delay before it starts moving would show.
+  - To compare, set `CONFIG.cull.batch` to false and compare `renderer.info.render.calls`.
 - **Fog is the draw distance.** `CONFIG.fog` [near, far] also sets how far culling reaches, so shortening `far` (as mist
   and rain do) draws less. Don't raise `far` without a reason.
 - **Lazy building:** each floor and building is built on its first visit (`BUILD`, `floor(n)`). Keep new halls lazy;
@@ -29,7 +45,8 @@ against this list.
   shadows.
 - Use `flat(mesh(...))` (`castShadow = false`) for ground, roads, water, roofs seen from above and anything small or far;
   each shadow caster is drawn again into the shadow map.
-- `renderer.setPixelRatio` is capped at 2; don't raise it.
+- `renderer.setPixelRatio` is capped at 2; don't raise it. `adaptQuality` (`CONFIG.quality`) steps it down by .5 (to 1 at
+  least) when most frames over 3 s come slower than 40 fps, after the first 8 s; it never steps back up within a visit.
 
 ## Geometry and materials
 
@@ -44,7 +61,15 @@ against this list.
 ## Per-frame work
 
 - No allocation in the frame loop: reuse scratch vectors and colours (`_look`, `_wxTint`, `_cv`, …) instead of `new THREE.Vector3()`.
-- Per-floor `updaters` run only while that floor is shown; put animation there, not in the global loop.
+- Per-floor `updaters` run only while that floor is shown; put animation there, not in the global loop. Floor 1's own
+  effects (dust, smoke, aureole, lanterns) run only while `scene.visible`, and a flame flickers only while its hall is shown
+  (`shownNow`).
+- The on-foot aim prompt (`aimPrompt`) raycasts every .15 s while the camera moves and every .6 s while it stands still.
+- `walkAt` / `surfAt` read `SURF` through a grid index (`SURF_IX`, 8 m cells): each entry is filed by its footprint once
+  resolved, and a lookup reads only its cell's entries, in the order they were added. Entries on tilted objects go in
+  `SURF_IX.always`. After moving things that have walk surfaces, call `resetSurf()` (not `e.inv = null`).
+- Resolving a transform at build time: use `obj.updateWorldMatrix(true, false)`, not `updateMatrixWorld(true)`, which
+  recomputes everything the object holds. Doing the latter per `SURF` entry cost ~2.8 s of the 4.3 s outdoor build.
 - Big buffer updates (the rain's `LineSegments`) run only while visible; keep that guard.
 - Respect `reduceMotion`: skip or slow purely decorative animation; it also saves work.
 
@@ -59,6 +84,18 @@ against this list.
 
 `ARCHITECTURE.md` (repo root) lists the suspected hotspots, the measurement plan and tuning ideas; `SITEMAP.md` has the
 test routes.
+
+Measured on 2026-11-20 (desktop GPU, headless Chromium, 1280×720, DPR 1; see `MEMORY.md` for the setup):
+
+| | Before | After |
+|---|---|---|
+| Outdoor build (`buildPagoda`) | ~4.3 s | ~1.1–1.7 s |
+| Gate view: draw calls / render | 4,490 / 16 ms | 1,620 / 9 ms |
+| Market on foot | 1,304 / 8.5 ms | 763 / 7 ms |
+| Town on foot (0, 40 → 30, 80) | 4,292 / 22 ms | 1,527 / 13.5 ms |
+
+Still open: the first frame takes ~2.5 s (uploading ~1,000 geometries and ~100 textures, compiling 37 programs), and
+`world.updateMatrixWorld` costs ~2.5 ms a frame because three.js multiplies every object's matrix every frame.
 
 There's no profiler set up. In Chrome, open DevTools → Performance and record a walk through the town and market; look
 for long frames and stalls when entering a building. For draw calls and triangles, temporarily log

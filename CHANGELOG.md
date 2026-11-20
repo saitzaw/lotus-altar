@@ -3,6 +3,12 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-20
+
+### Changed
+- The site loads and runs faster. The town, the grounds and the market now draw in about a third as many steps (the view from the gate went from about 4,500 to 1,600, the town on foot from 4,300 to 1,500), so frames come quicker, most of all on phones; building the outdoor world at load takes about a second instead of four. Nothing looks different.
+- On a device that can't keep up, the picture drops to a slightly lower resolution after a few slow seconds instead of stuttering on.
+
 ## 2026-11-18
 
 ### Added
