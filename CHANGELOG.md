@@ -5,6 +5,12 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-21
 
+### Added
+- Beside the bank, a Shan house of two storeys: a whitewashed brick shop floor with arched windows, a teak upper storey with green louvred shutters and a long balcony over the road, and a rusty roof with a raised ridge and fretted eaves, in a walled yard with bougainvillea.
+- Ward No. 5 (အမှတ် (၅) ရပ်ကွက်), a small quarter on its own lane behind the Shan house: wooden and concrete houses, a corner shop, a well and washing lines, and the ward administrator's office at the lane's end.
+- The main road now runs on east past the court. Across it stand the municipal office (the township development committee), with its green rubbish truck, and the township immigration office, with a shelter for the queue.
+- The town's diesel power station and main substation, past the quarter: an engine hall with smoking stacks and turning radiator fans, diesel tanks, and a fenced switchyard with transformers, breakers and switches, the main switch room, and power lines leaving on concrete poles.
+
 ### Removed
 - The HUD lines for the weather and season ("☁ Cloudy · hot season in the northern hills") and for the festival of lights' lotus lanterns. The weather and the lanterns are still there to see.
 

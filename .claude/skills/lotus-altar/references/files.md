@@ -107,6 +107,7 @@
 | `28b-hluttaw-road-houses.js` | Shan family compounds on the Hluttaw road's north side: fenced yards (woven bamboo, bamboo pickets, brick), gates, gardens, water pot stands | `hluttawRoadHouses` (`ROAD_HOUSES`, `ROAD_LOTS`) |
 | `28c-stadium-quarter.js` | Stadium Road beside the football ground: the avenue and link road, offices, restaurants, courts, sports hall, pool, park, flats (≤ 6 storeys) | `stadiumQuarter` (`SQ`, inner `block`, `fence`, `tables`, `streetTree`) |
 | `28d-lakeside-offices-and-supermarket.js` | The rest of `stadiumQuarter` (it closes the function): an office tower, a supermarket with its car park and a shore office between the east-side flats and the hill's north walk, facing the palace lake and the stupa hill | `LV` (`walkX`, `edge`: the north walk's line), inner `car` |
+| `28e-ward-five-offices-and-power.js` | The bank's end of the main road: a Shan house of two storeys beside the bank, Ward No. 5 (its lane, houses, corner shop, well, ward office), the municipal and immigration offices across the road, the diesel power station and main substation | `shanTwoStorey` (`SHAN2`) `wardQuarter` (`WARD5`) `townOffices` (`TDC_OFFICE`, `IMMIG`) `powerStation` (`POWER`), helpers `compoundWall` `compoundGate` `gateBoard` `c5Kit` |
 | `29-forest-and-hills.js` | forest band and hills | `mountainsAndForest` |
 | `30-temple-gate.js` | 山門 gate, hipped roofs | `gate` `tiledHipRoof` |
 | `31-bell-tower.js` | Bell Tower interior | `bellTower` |

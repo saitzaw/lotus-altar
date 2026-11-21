@@ -195,6 +195,10 @@
     townLibrary(g);   // the public library across the market lane from the palace's east wall, facing it
     townBank(g);   // the bank, south of the library on the same side of the lane, facing the palace too
     townshipCourt(g);   // the township court, next door east of the Hluttaw, across the road from the bank
+    shanTwoStorey(g);   // a Shan house of two storeys beside the bank, on the main road
+    wardQuarter(g);   // Ward No. 5, the small quarter on its lane behind it, and the ward office
+    townOffices(g);   // the municipal and immigration offices across the road, east of the court
+    powerStation(g);   // the diesel power station and main substation past the quarter
     palaceLake(g);   // the lake west of the palace wall, with its island pavilion and bridge
     streetFrontage(g);
     backStreets(g);

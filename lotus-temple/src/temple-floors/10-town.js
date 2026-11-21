@@ -12,9 +12,11 @@
     { x0: 38.75, x1: 43.25, z0: 160.5, z1: 255.5 },              // the market lane on along the Haw Kham's east wall (hawKham(g, 16, 204, π): the wall at x 38)
     { x0: -118, x1: 43.25, z0: 255.5, z1: 261.5, main: true },   // the Hluttaw road, between the Haw Kham's front wall (z 254) and the Hluttaw's compound (z 262.5), on west along the palace lake's north shore
     { x0: 43.25, x1: 64.5, z0: 255.5, z1: 261.5, main: true },     // the court road, the Hluttaw road on east past the bank to the township court's gate (z 262.5)
-    { x0: -206.5, x1: -118, z0: 255.5, z1: 261.5, main: true }    // the Hluttaw road on west past the north stair's walk to Stadium Road (SQ, stadiumQuarter)
+    { x0: -206.5, x1: -118, z0: 255.5, z1: 261.5, main: true },   // the Hluttaw road on west past the north stair's walk to Stadium Road (SQ, stadiumQuarter)
+    { x0: 64.5, x1: 158, z0: 255.5, z1: 261.5, main: true },      // the court road on east past Ward No. 5, the municipal and immigration offices and the power station (28e)
+    { x0: 88, x1: 92, z0: 196, z1: 255.5 }                        // Ward No. 5's lane, off the main road beside the Shan house next to the bank (WARD5)
   ];   // `main`: one stretch of the town's main road, asphalt with lamps down a centre median (see mainRoad)
-  const MAIN_GAPS = [[-207, -192], [-33.5, -26.5], [13, 19], [37.5, 53]];   // where the main road's median breaks (along x): at Stadium Road's mouth (x −200), at the palace lake's bridge (x −30), before the Haw Kham's and the Hluttaw's gates (x 16), and from the market lane's mouth to the court's gate (x 50)
+  const MAIN_GAPS = [[-207, -192], [-33.5, -26.5], [13, 19], [37.5, 53], [79, 96], [114, 128]];   // where the main road's median breaks (along x): at Stadium Road's mouth (x −200), at the palace lake's bridge (x −30), before the Haw Kham's and the Hluttaw's gates (x 16), from the market lane's mouth to the court's gate (x 50), at Ward No. 5's lane and the municipal office's gate (x 85–90), and at the immigration office's and power station's gates (x 121)
   const corrugated = (base, light, dark) => {
     const t = canvasTex(64, (c, sz) => {
       for (let x = 0; x < sz; x += 8) {
