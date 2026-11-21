@@ -81,6 +81,9 @@ const CONFIG = {
   // the fire balloon ground's teams, in [from, until] hours on the temple's clock: the paper animals by day, the painted, lantern and
   // fireworks balloons by night (on past midnight); none between. ?balloons=day or =night forces one kind, =1 the kind for the light, =0 none
   balloons: { day: [8, 15], night: [18, 2] },
+  // the fire lotus ground's towers (မီးကြာ), lit one after another after dark from `from` until `until` o'clock on the temple's clock;
+  // none in the rain. ?firelotus=1 or ?firelotus=0 forces them on or off
+  fireLotus: { from: 19, until: 24 },
   // the dances on the festival ground's stage, each a list of [from, until] in hours on the temple's clock (17.75 is 5:45 pm): the
   // kinnara alone, leaping, before the biggest crowd (the epic's opening), the kinnara and kinnari pair, the to (တၢင်းၵႃႈတူဝ်း,
   // Burmese တိုးနယား) at dusk, the white and the yellow to together, the pair again, and to close, the two to with the kinnara

@@ -97,6 +97,7 @@ function frame() {
   temple.setFoodStreet(foodOn);
   temple.setProcession(processionOn && (PROCESSION_FORCE !== null || !rainingOut()), processionAt());   // called off in the rain
   temple.setBalloons(BALLOON_FORCE !== null ? BALLOON_FORCE : !rainingOut(), balloonKind);
+  temple.setFireLotus(FIRE_LOTUS_FORCE !== null ? FIRE_LOTUS_FORCE : fireLotusOn && !rainingOut());
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);

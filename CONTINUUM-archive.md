@@ -5,6 +5,26 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-18: thicker bamboo at the hill's foot
+
+- Owner: "more bamboo in the grove between the hill foot and the houses". `FOOT_BAMBOO` in `27-bamboo-fuel-fire-police.js`:
+  band out to 16 m past `HILL.rBase` (was 14), clump step 2.4 m (was 3.1), room kept from houses/lanes 2.2 m (was 2.6), and the
+  share of spots skipped moved into `FOOT_BAMBOO.skip` (.08, was a literal .18). Measured headless: 42 clumps / 440 culms (was
+  26 / 277); buffers resized to 1200 culm pieces and 7200 sprays (used 880 and ~5200). Viewed from above the houses; no errors.
+
+### 2026-11-17: realistic low-poly bamboo
+
+- Owner (three photos of clumping bamboo, "current bamboo grove are not realistic"): `bambooStand()` in
+  `27-bamboo-fuel-fire-police.js` now draws foliage as alpha-cut cards instead of icosahedron blobs. `bambooTextures()` paints
+  three canvas textures once (cached in `BAMBOO_TEX`): a pale culm skin with a node ring per repeat (tinted green per culm,
+  repeat 1×9), a spray of ~34 narrow drooping leaves on a twig, and a grass tuft. Sprays are two quads crossed along the twig
+  (`crossedCards`), 9–13 per culm from just below the joint to the tip (longer and droopier lower down, the last one arching the
+  way the culm leans), and a few low ones on a third of the culms; grass cards (two upright crossed quads) ring each clump's foot.
+  Three `InstancedMesh`es per stand (culms, sprays, grass); spray budget raised to 17000 (school grove) and 13000 (hill foot).
+  About 4 triangles a spray against 20 a blob before, so cheaper overall.
+- Checked headless from outside the school grove and from inside it; no errors.
+
+
 ### 2026-11-17: a painted rooster and a deva balloon by day
 
 - Owner (two photos, "for the day use this, more pretty"): the rooster is now a round painted balloon, and a new round balloon

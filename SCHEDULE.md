@@ -29,6 +29,7 @@ hours change, update this file in the same commit.
 | 10:00 – 11:00 PM | Two to with the kinnara (closing dance) | Festival stage | `dancers.toKinnara` |
 | 8:00 AM – 3:00 PM | Day balloons (a painted rooster, a balloon painted with a deva, and a fish, parrot, bear and tiger) fill over their fire pits and go up in turn, one about every minute (a 3-minute cycle on each of three pads, a different balloon each time). A crowd sits on the terraces and stands along the field, with a team at each fire pit. A balloon already rising at 3 PM flies on; none is filled after | Fire balloon ground, stupa hill's lower terrace | `balloons.day` |
 | 6:00 PM – 2:00 AM | Night balloons go up in turn on the same three pads: a lantern balloon studded with candle lanterns in flowers, a stupa in lanterns hanging below it; a painted balloon with crowned dancers; a flower-painted fireworks balloon (စိန်နားပန်) that showers sparks as it climbs. The crowd lets go small paper sky lanterns while it is dark, about one every 1.1 s, each held up for 6 s in a launcher's hands (about 35 people on the field by the parapet, 30 on the top three terrace steps) and drifting up over the town for about 3 minutes. From 3 to 6 PM and 2 to 8 AM the fire pits are cold and the crowd is gone. With reduced motion the balloons stay full on their pads and the lanterns hang still. None go up while it rains | Fire balloon ground | `balloons.night` |
+| 7:00 PM – midnight | Fire lotus towers (မီးလျှော်ပွဲ၊ မီးကြာစံပွဲ): the three bamboo fireworks towers are lit one at a time, one about every 100 s (a 5-minute cycle on each). On each tower the eight racks catch from the foot up over 36 s, each throwing gold fountains and burning red flares for 12 s, then the paper fire lotus on top opens in drooping trails of sparks for 34 s. The crowd sits on the terraces and stands along the field. With reduced motion one tower stands lit and still. None in the rain | Fire lotus ground, stupa hill's lower terrace between the north and west stairs | `fireLotus` |
 
 ## Once a week
 
@@ -56,6 +57,7 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 |---|---|---|
 | Procession (short 20 s stops, then it starts again from the gate; runs even in rain) | `?procession=1` | `?procession=0` |
 | Fire balloons (even in rain) | `?balloons=1` (the kind for the light), `?balloons=day`, `?balloons=night` | `?balloons=0` |
+| Fire lotus towers (even in rain) | `?firelotus=1` | `?firelotus=0` |
 | Seven-day market and food street | `?stalls=1` | `?stalls=0` |
 | Morning market | `?morningMarket=1` | `?morningMarket=0` |
 | Church service | `?service=1` | `?service=0` |

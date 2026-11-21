@@ -68,6 +68,8 @@
     // the fire balloons on the stupa hill: false while it rains, when the teams leave the fire pits cold
     // and which kind the teams fill: "day" (the animals), "night", "auto" (by the light) or null (none)
     setBalloons(on, kind) { FOLK.balloons = on; FOLK.balloonKind = kind === undefined ? "auto" : kind; },
+    // the fire lotus towers on the stupa hill, lit one after another from 7 pm to midnight; false in the rain
+    setFireLotus(on) { FOLK.fireLotus = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-21
+
+### Added
+- A fire lotus ground (မီးလျှော်ပွဲ၊ မီးကြာစံပွဲ) on the stupa hill's lower terrace between the north and west stairs, after the owner's photos: a field on a whitewashed retaining wall, terraces for the crowd and three tall bamboo fireworks towers wrapped in red and white. From 7 PM to midnight the towers are lit one at a time: the racks catch from the foot up, throwing gold fountains and burning red flares in their smoke, then the paper fire lotus on top opens in drooping trails of sparks. None in the rain.
+
 ## 2026-11-20
 
 ### Changed

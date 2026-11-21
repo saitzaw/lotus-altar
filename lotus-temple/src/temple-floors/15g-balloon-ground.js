@@ -28,6 +28,37 @@
     const v = H.worldToLocal(V(HILL.cx + HILL.east[0] * 60, 0, HILL.cz + HILL.east[1] * 60));
     return Math.atan2(v.x, -v.z);
   }
+  // the festival crowds' figures, shared by the fire balloon ground and the fire lotus ground: blocky low-poly people in warm jackets for
+  // the cold Tazaungmon nights, drawn from the seeded stream q; sitting cross-legged on a step, hands in the lap, or standing, arms down
+  // (or held up, for a balloon team or a lantern launcher); person(sit) picks a look at random
+  function crowdKit(q) {
+    const pk = l => l[(q() * l.length) | 0], box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 7) => new THREE.CylinderGeometry(a, b, h, n);
+    const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18;
+    const JACKET = [0x2f4a3a, 0x2a3450, 0x6a2a2e, 0x5a4232, 0x4a4a50, 0xd8ccb4, 0x7a6a4a, 0x3a5a6a, 0xd83a3a, 0xf2c230], LOWER = [0x23232b, 0x2e3446, 0x4a3a2c];
+    const LONGYI = [0x8a2a3a, 0xd8483a, 0x2a2e48, 0x6a2a5a, 0x2f5a3a], TOWEL = [0xe88aa0, 0xe8903a, 0xf0ece0, 0xd84a4a];
+    const head = (y, skin, woman) => {   // a head with a face; a woman's hair down or wrapped in a towel turban
+      const p = [[box(.25, .27, .24), skin, 0, y, 0], [box(.035, .045, .012), INK, -.055, y + .015, .122], [box(.035, .045, .012), INK, .055, y + .015, .122],
+                 [box(.07, .014, .01), 0x8a3a30, 0, y - .055, .122], [box(.27, woman ? .24 : .17, .07), HAIR, 0, y + (woman ? .035 : .065), -.1]];
+      if (woman && q() < .5) p.push([box(.29, .12, .28), pk(TOWEL), 0, y + .165, 0]);
+      else p.push([box(.27, .07, .26), HAIR, 0, y + .15, -.005]);
+      return p;
+    };
+    const sitter = (skin, top, lower, woman) => [
+      [box(.24, .11, .38), lower, -.11, .06, .09], [box(.24, .11, .38), lower, .11, .06, .09], [box(.56, .1, .13), lower, 0, .07, .27],
+      [cyl(.16, .18, .44), top, 0, .34, 0], [box(.09, .34, .1), top, -.22, .36, .05], [box(.09, .34, .1), top, .22, .36, .05], [box(.26, .08, .09), skin, 0, .22, .19],
+      [cyl(.05, .05, .07, 6), skin, 0, .6, 0], ...head(.75, skin, woman)
+    ];
+    const stander = (skin, top, lower, woman, up) => [
+      ...(woman ? [[cyl(.16, .18, .78), lower, 0, .39, 0]] : [[box(.12, .78, .12), lower, -.08, .39, 0], [box(.12, .78, .12), lower, .08, .39, 0]]),
+      [box(.13, .04, .22), 0x3a2e28, -.08, .02, .04], [box(.13, .04, .22), 0x3a2e28, .08, .02, .04],
+      [cyl(.165, .175, .5), top, 0, 1.02, 0],
+      ...(up ? [[box(.09, .46, .095), top, -.2, 1.45, .05], [box(.09, .46, .095), top, .2, 1.45, .05], [box(.07, .08, .08), skin, -.2, 1.72, .05], [box(.07, .08, .08), skin, .2, 1.72, .05]]
+        : [[box(.09, .46, .095), top, -.2, 1.01, 0], [box(.09, .46, .095), top, .2, 1.01, 0], [box(.07, .08, .08), skin, -.2, .74, 0], [box(.07, .08, .08), skin, .2, .74, 0]]),
+      [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...head(1.45, skin, woman)
+    ];
+    const person = sit => { const woman = q() < .5, skin = pk(SKIN), top = pk(JACKET), lower = woman ? pk(LONGYI) : pk(LOWER); return sit ? sitter(skin, top, lower, woman) : stander(skin, top, lower, woman, false); };
+    return { pk, SKIN, JACKET, LOWER, LONGYI, sitter, stander, person };
+  }
   function balloonGround(g) {
     const B = BALLOON_GROUND, H = HILL.group, list = picks.pagoda, r = rng(5150);
     const lo = HILL.terraces[1], up = HILL.terraces[0], top = lo.y + .03, rIn = lo.r0, a0 = eastStairAngle() + B.da0, a1 = B.a1, PH = B.PH, PW = B.PW;
@@ -439,34 +470,9 @@
     // cold Tazaungmon nights; a few kinds of each, drawn as one instanced mesh per kind. Out whenever the balloons go up (not in the rain)
     const tierR = i => rIn - (i + .5) * tD;
     const crowd = (() => {
-      const q = rng(5152), pk = l => l[(q() * l.length) | 0], box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, n = 7) => new THREE.CylinderGeometry(a, b, h, n);
-      const SKIN = [0xe8b890, 0xd8a47a, 0xc89068, 0xf0c4a0], HAIR = 0x221a16, INK = 0x2a1c18;
-      const JACKET = [0x2f4a3a, 0x2a3450, 0x6a2a2e, 0x5a4232, 0x4a4a50, 0xd8ccb4, 0x7a6a4a, 0x3a5a6a, 0xd83a3a, 0xf2c230], LOWER = [0x23232b, 0x2e3446, 0x4a3a2c];
-      const LONGYI = [0x8a2a3a, 0xd8483a, 0x2a2e48, 0x6a2a5a, 0x2f5a3a], TOWEL = [0xe88aa0, 0xe8903a, 0xf0ece0, 0xd84a4a];
-      const head = (y, skin, woman) => {   // a head with a face; a woman's hair down or wrapped in a towel turban
-        const p = [[box(.25, .27, .24), skin, 0, y, 0], [box(.035, .045, .012), INK, -.055, y + .015, .122], [box(.035, .045, .012), INK, .055, y + .015, .122],
-                   [box(.07, .014, .01), 0x8a3a30, 0, y - .055, .122], [box(.27, woman ? .24 : .17, .07), HAIR, 0, y + (woman ? .035 : .065), -.1]];
-        if (woman && q() < .5) p.push([box(.29, .12, .28), pk(TOWEL), 0, y + .165, 0]);
-        else p.push([box(.27, .07, .26), HAIR, 0, y + .15, -.005]);
-        return p;
-      };
-      // sitting cross-legged on a step, hands in the lap; standing, arms down (a team member's arms held up to the balloon's mouth)
-      const sitter = (skin, top, lower, woman) => [
-        [box(.24, .11, .38), lower, -.11, .06, .09], [box(.24, .11, .38), lower, .11, .06, .09], [box(.56, .1, .13), lower, 0, .07, .27],
-        [cyl(.16, .18, .44), top, 0, .34, 0], [box(.09, .34, .1), top, -.22, .36, .05], [box(.09, .34, .1), top, .22, .36, .05], [box(.26, .08, .09), skin, 0, .22, .19],
-        [cyl(.05, .05, .07, 6), skin, 0, .6, 0], ...head(.75, skin, woman)
-      ];
-      const stander = (skin, top, lower, woman, up) => [
-        ...(woman ? [[cyl(.16, .18, .78), lower, 0, .39, 0]] : [[box(.12, .78, .12), lower, -.08, .39, 0], [box(.12, .78, .12), lower, .08, .39, 0]]),
-        [box(.13, .04, .22), 0x3a2e28, -.08, .02, .04], [box(.13, .04, .22), 0x3a2e28, .08, .02, .04],
-        [cyl(.165, .175, .5), top, 0, 1.02, 0],
-        ...(up ? [[box(.09, .46, .095), top, -.2, 1.45, .05], [box(.09, .46, .095), top, .2, 1.45, .05], [box(.07, .08, .08), skin, -.2, 1.72, .05], [box(.07, .08, .08), skin, .2, 1.72, .05]]
-          : [[box(.09, .46, .095), top, -.2, 1.01, 0], [box(.09, .46, .095), top, .2, 1.01, 0], [box(.07, .08, .08), skin, -.2, .74, 0], [box(.07, .08, .08), skin, .2, .74, 0]]),
-        [cyl(.05, .05, .07, 6), skin, 0, 1.3, 0], ...head(1.45, skin, woman)
-      ];
+      const q = rng(5152), { pk, SKIN, JACKET, LOWER, LONGYI, stander, person } = crowdKit(q);
       const kinds = [];   // [make, matrices]
       const kind = make => { const k = { geo: null, make, at: [] }; kinds.push(k); return k; };
-      const person = sit => { const woman = q() < .5, skin = pk(SKIN), top = pk(JACKET), lower = woman ? pk(LONGYI) : pk(LOWER); return sit ? sitter(skin, top, lower, woman) : stander(skin, top, lower, woman, false); };
       const SITS = Array.from({ length: 6 }, () => kind(() => person(true))), STANDS = Array.from({ length: 6 }, () => kind(() => person(false)));
       const TEAM = Array.from({ length: 3 }, () => kind(() => { const skin = pk(SKIN); return stander(skin, pk(JACKET), pk(LOWER), false, true); }));
       const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _y = new THREE.Vector3(0, 1, 0);

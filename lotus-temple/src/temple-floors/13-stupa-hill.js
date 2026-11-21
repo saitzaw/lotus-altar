@@ -460,6 +460,7 @@
       if (onEast(x, zz, 8)) continue;               // and the east stair
       if (onNorth(x, zz, 8) || onWest(x, zz, 8)) { seed++; continue; }   // and the north and west stairs (the seed still steps, so the other pines keep their shapes)
       { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 20) continue; }   // and the festival ground
+      { const b = (Math.atan2(x, -zz) + TAU) % TAU, [f0, f1] = fireLotusArc(); if (rr > 30 && b > f0 - .05 && b < f1 + .05) { seed++; continue; } }   // and the fire lotus ground's terraces
       { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 12) continue; }   // and the big banyan's crown
       const t = pine(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
     }

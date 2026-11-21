@@ -30,6 +30,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Open threads
 
+- The fire lotus ground's board reads မီးလျှော်ပွဲ၊ မီးကြာစံပွဲ (the owner's words), with our English "Fire Offering · Fire Lotus Festival". Ask the owner whether the glosses are right (is မီးကြာစံပွဲ a contest, or a show?), and whether they want a Shan line too.
 - Have a Shan speaker check ၵၢတ်ႇပွႆး (kaat poi, "festival market"), our wording on the board over the balloon-ground market's gateway.
 - The shared seated Buddha body (`seatedBuddha` in `statue-sculpt.js`, used by Shakyamuni, the Medicine Buddha and the Victorious
   Buddha) is mirrored: seen from the front, the earth-touching hand and the robed shoulder are on the wrong sides. The Shan image
@@ -74,6 +75,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-21: the fire lotus ground on the stupa hill
+
+- New piece `15j-fire-lotus-ground.js` (`fireLotusGround`, `FIRE_GROUND`, `fireLotusArc`), called after `balloonBazaar`. It sits on the
+  lower terrace's free arc between the north stair (3.55 rad) and the west stair (−π/2), about 3.66–4.60 rad, r 44–75, built like the
+  balloon ground (field on a retaining wall, parapet, nine walkable terraces). The arc's outer edge stays 5–9 m off the pool and the
+  park in the stadium quarter and the north walk's start. Pines on the upper slope in that arc are skipped (seed still steps).
+- Three 24 m bamboo towers in rope rings (walkers can't enter the rings). The show (`FOLK.fireLotus`, `CONFIG.fireLotus` 19–24,
+  `?firelotus=1/0`, off in the rain): a tower every 100 s; racks catch from the foot up, then the lotus's burning stars drop trails.
+  Sparks are one points cloud (4,200), smoke a pool of 36 sprites, all in the grounds' frame.
+- The balloon ground's crowd figures moved out into `crowdKit(q)` (same random stream, so the balloon crowd is unchanged); both
+  grounds use it.
+- Checked in headless Chromium (night, mid-burn and lotus; day from the north stair's foot). No console errors.
+- No fireworks sound yet.
 
 ### 2026-11-20: speed: static batching, a walk-surface index, adaptive pixel ratio
 
@@ -144,26 +159,6 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   tip, a small tuft and a thin leader on top. No solid inner cone. About 130 `part()`s per tree, all instanced.
   Callers (temple grounds, town, stupa hill) are unchanged; the trees are about twice as tall, so check none pokes into
   something overhead, and whether the many extra instances cost frame rate on the hill.
-
-### 2026-11-18: thicker bamboo at the hill's foot
-
-- Owner: "more bamboo in the grove between the hill foot and the houses". `FOOT_BAMBOO` in `27-bamboo-fuel-fire-police.js`:
-  band out to 16 m past `HILL.rBase` (was 14), clump step 2.4 m (was 3.1), room kept from houses/lanes 2.2 m (was 2.6), and the
-  share of spots skipped moved into `FOOT_BAMBOO.skip` (.08, was a literal .18). Measured headless: 42 clumps / 440 culms (was
-  26 / 277); buffers resized to 1200 culm pieces and 7200 sprays (used 880 and ~5200). Viewed from above the houses; no errors.
-
-### 2026-11-17: realistic low-poly bamboo
-
-- Owner (three photos of clumping bamboo, "current bamboo grove are not realistic"): `bambooStand()` in
-  `27-bamboo-fuel-fire-police.js` now draws foliage as alpha-cut cards instead of icosahedron blobs. `bambooTextures()` paints
-  three canvas textures once (cached in `BAMBOO_TEX`): a pale culm skin with a node ring per repeat (tinted green per culm,
-  repeat 1×9), a spray of ~34 narrow drooping leaves on a twig, and a grass tuft. Sprays are two quads crossed along the twig
-  (`crossedCards`), 9–13 per culm from just below the joint to the tip (longer and droopier lower down, the last one arching the
-  way the culm leans), and a few low ones on a third of the culms; grass cards (two upright crossed quads) ring each clump's foot.
-  Three `InstancedMesh`es per stand (culms, sprays, grass); spray budget raised to 17000 (school grove) and 13000 (hill foot).
-  About 4 triangles a spray against 20 a blob before, so cheaper overall.
-- Checked headless from outside the school grove and from inside it; no errors.
-
 
 ### 2026-11-18: offices and a supermarket facing the lake and the hill
 
