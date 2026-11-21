@@ -10,6 +10,10 @@ For working notes and open questions, see `CONTINUUM.md`.
 
 ### Changed
 - The power station's line now runs down the east road on concrete poles.
+- The east road meets the front street and the main road cleanly: one stretch of asphalt and pavement to the corner, no seam,
+  and the main road's edge lines and drains break where the lanes and the east road come in.
+- Every yard along the east road is now fenced all round; three were open on one side.
+- The town costs less to keep up each frame: buildings out of view no longer have their positions recomputed.
 
 ## 2026-11-21
 

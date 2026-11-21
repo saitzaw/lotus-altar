@@ -42,6 +42,11 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - `surfAt` takes the first `SURF` entry whose shape holds the point, so a big `sRect` with a height function hides everything
   registered after it inside its rectangle (the hill's terraces, a later tree). Answer `undefined` from the function where it
   isn't yours (see `palaceLake`), and register things that should block inside it (trees) before it.
+- A lot built in its own frame and turned (`s.rotation.y`) has its local ±x on different world sides depending on the turn: on
+  the east road's east row (turned +π/2) local −x is north, not south. Work out which side is which from the turn before
+  placing "the fence toward the previous lot", and check every boundary is closed once (a short script over the lot list does it).
+- Hidden (culled) things skip the per-frame matrix update (`lazyMatrices`). If something reads `matrixWorld` or `localToWorld`
+  at run time and gets an old place, call `updateWorldMatrix(true, false)` on it first, or turn `CONFIG.cull.lazy` off to check.
 - Outdoor builders run before `mountainsAndForest`, so they can't read `peaks`. Hard-code the place and say why in a comment.
 
 - Any extra render pass from another camera (like the rain's top-down cover map in `rainCover`) sees the grounds as the main

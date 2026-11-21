@@ -32,6 +32,10 @@ against this list.
     attributes other than position, normal, uv and color (Float32 only). Mark something you animate on a schedule with one
     of these (or keep it hidden until it is used) if a short delay before it starts moving would show.
   - To compare, set `CONFIG.cull.batch` to false and compare `renderer.info.render.calls`.
+- **Lazy matrices** (`lazyMatrices` in `37-culling.js`, `CONFIG.cull.lazy`): three.js recomputes every object's world matrix every
+  frame, shown or not. A cell item the culling has hidden skips that (with all it holds) until it is shown again or its parent
+  moves. So code that reads a world position at run time (`localToWorld`, `matrixWorld`) off something that might be culled must
+  read it off something that stands still, or call `updateWorldMatrix(true, false)` first (`getWorldPosition` already does).
 - **Fog is the draw distance.** `CONFIG.fog` [near, far] also sets how far culling reaches, so shortening `far` (as mist
   and rain do) draws less. Don't raise `far` without a reason.
 - **Lazy building:** each floor and building is built on its first visit (`BUILD`, `floor(n)`). Keep new halls lazy;
@@ -94,8 +98,11 @@ Measured on 2026-11-20 (desktop GPU, headless Chromium, 1280×720, DPR 1; see `M
 | Market on foot | 1,304 / 8.5 ms | 763 / 7 ms |
 | Town on foot (0, 40 → 30, 80) | 4,292 / 22 ms | 1,527 / 13.5 ms |
 
-Still open: the first frame takes ~2.5 s (uploading ~1,000 geometries and ~100 textures, compiling 37 programs), and
-`world.updateMatrixWorld` costs ~2.5 ms a frame because three.js multiplies every object's matrix every frame.
+Measured on 2026-11-22, after lazy matrices (town grown since; same setup): `world.updateMatrixWorld` 3.2–3.4 ms → 1.9–2.5 ms a
+frame at the gate, market, town and east road (158, 66 → 159, 150), with draw calls unchanged (1,607 / 767 / 2,284 / 1,606).
+
+Still open: the first frame takes ~2.5 s (uploading ~1,000 geometries and ~100 textures, compiling 37 programs), and what
+still updates its matrices each frame (everything shown, the far cells and the never-culled things) costs ~2 ms.
 
 There's no profiler set up. In Chrome, open DevTools → Performance and record a walk through the town and market; look
 for long frames and stalls when entering a building. For draw calls and triangles, temporarily log

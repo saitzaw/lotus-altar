@@ -42,7 +42,26 @@
     walk(g);
     CULL.cells = [...cells.values()];
     CULL.cells.forEach(c => c.box.getBoundingSphere(c.sphere));
+    CULL.cells.forEach(c => { if (!c.far) c.items.forEach(it => lazyMatrices(it.o)); });
     if (BATCH.on) batchCells(g);
+  }
+  /* ---------- lazy matrices: three.js works out every object's place in the world again every frame, shown or not, which grows
+     with every building added to the town. A cell item the culling has hidden skips that, and so does everything it holds; it
+     catches up the frame it is shown again, or at once if what it stands on has moved (the grounds lowered under an upper
+     floor's balcony). Something moved while hidden keeps its old matrix until then; that's harmless, as nothing hidden is
+     drawn or tapped, but code that reads a world position at run time (`localToWorld`) must read it off something that stands still,
+     or call `updateWorldMatrix(true, false)` first. CONFIG.cull.lazy turns it off ---------- */
+  CULL.lazy = !ctx.cull || ctx.cull.lazy !== false;
+  const _umw = THREE.Object3D.prototype.updateMatrixWorld;
+  function lazyMatrices(o) {
+    if (o.updateMatrixWorld !== _umw) return;
+    const seen = new THREE.Matrix4(); let stale = false;   // seen: the parent's matrix when this was last brought up to date
+    o.updateMatrixWorld = function (force) {
+      if (CULL.lazy && !this.visible && this.parent && this.parent.matrixWorld.equals(seen)) { stale = true; return; }
+      if (stale) { stale = false; force = true; }
+      _umw.call(this, force);
+      if (this.parent) seen.copy(this.parent.matrixWorld);
+    };
   }
   /* ---------- static batching: most of the grounds is built one mesh per post, step and beam, each its own draw call. Once the
      cells are known, the plain, still meshes in each cell are welded into one mesh per material (and shadow flags), drawn while

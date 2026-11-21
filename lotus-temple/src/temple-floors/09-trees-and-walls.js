@@ -104,28 +104,31 @@
     outside.forEach((p, i) => p ? (i % 3 === 1 ? tree : pine)(g, p[0], p[1], .9 + (i % 4) * .08, seed++) : seed++);
     // the street: a stone-paved road between kerbed pavements
     const road = std({ color: 0x2e2b28, roughness: .95 }), pave = std({ color: 0x6a645c, roughness: .9 }), kerb = std({ color: 0x8a847a, roughness: .8 });
-    flat(mesh(new THREE.BoxGeometry(273, .04, 8), road, 8.5, .02, 54, g));   // from the corner at x = -128, past the hut village's lane, to 145 past the fire and police stations
+    const EX = EAST_ROAD.x1;   // the street's east end: the far edge of the east road, which leaves it northward past the police station (eastRoad)
+    flat(mesh(new THREE.BoxGeometry(EX + 128, .04, 8), road, (EX - 128) / 2, .02, 54, g));   // from the corner at x = -128, past the hut village's lane and the fire and police stations, to the east road
     // at its west end the street turns north and runs up beside the hut village to the hospital's forecourt
     const HX = -124.75;
     flat(mesh(new THREE.BoxGeometry(6.5, .04, 57.3), road, HX, .02, 21.35, g));
     [-1, 1].forEach(sd => flat(mesh(new THREE.BoxGeometry(1.2, .03, 57.3 + (sd < 0 ? 8.7 : 0)), std({ color: 0x8a7a5e, roughness: 1 }), HX + sd * 3.85, .015, 21.35 + (sd < 0 ? 4.35 : 0), g)));   // dirt verges
     // the north pavement stops either side of the town road, so the two roads meet in a proper junction
     // (and at the mouths of the west lane and the hut village's lane)
-    const gaps = [[-128, HX + 3.25], [-98.5, -95.5], [LANES[3].x0, LANES[3].x1], [TOWN.roadX - TOWN.roadW / 2, TOWN.roadX + TOWN.roadW / 2], [145, 145]];
+    // the south one runs on past the east road's mouth to the corner, the north one stops at the east road
+    const gaps = [[-128, HX + 3.25], [-98.5, -95.5], [LANES[3].x0, LANES[3].x1], [TOWN.roadX - TOWN.roadW / 2, TOWN.roadX + TOWN.roadW / 2], [EX + 1.5, EX + 1.5]];
     [[48.75, 2.5, true], [59.4, 2.8, false]].forEach(([z, d, cut]) => {
-      const runs = cut ? gaps.slice(1).map((gp, i) => [gaps[i][1], gp[0]]) : [[-128, 145]];
+      const runs = cut ? gaps.slice(1).map((gp, i) => [gaps[i][1], gp[0]]) : [[-128, EAST_ROAD.x0]];
       runs.forEach(([x0, x1]) => {
         mesh(new THREE.BoxGeometry(x1 - x0, .18, d), pave, (x0 + x1) / 2, .09, z, g);
         [-1, 1].forEach(e => mesh(new THREE.BoxGeometry(x1 - x0, .2, .14), kerb, (x0 + x1) / 2, .1, z + e * d / 2, g));
       });
       if (cut) gaps.slice(1, -1).flat().forEach(x => mesh(new THREE.BoxGeometry(.14, .2, d), kerb, x, .1, z, g));   // kerbs turning the corners
+      mesh(new THREE.BoxGeometry(.14, .2, d), kerb, runs[runs.length - 1][1], .1, z, g);   // and closing the end at the east road
     });
     // asphalt across the old pavement line, joining the town road to the street, with a give-way line
     flat(mesh(new THREE.BoxGeometry(TOWN.roadW, .04, 50 - TOWN.z1 + .2), std({ color: 0x2c2c2e, roughness: .95 }), TOWN.roadX, .02, (TOWN.z1 + 50) / 2, g));
     flat(mesh(new THREE.BoxGeometry(TOWN.roadW / 2 - .2, .02, .25), std({ color: 0xe8e4d8, roughness: .8 }), TOWN.roadX + TOWN.roadW / 4, .05, 49.6, g));
-    const dash = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, .02, .14), std({ color: 0xbdb6a8, roughness: .8 }), 53), m4 = new THREE.Matrix4();
-    for (let i = 0; i < 44; i++) dash.setMatrixAt(i, m4.makeTranslation(-119 + i * 6, .05, 54));
-    for (let i = 0; i < 9; i++) dash.setMatrixAt(44 + i, m4.makeRotationY(Math.PI / 2).setPosition(HX, .05, 46 - i * 6));   // and up the road to the hospital
+    const dash = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, .02, .14), std({ color: 0xbdb6a8, roughness: .8 }), 55), m4 = new THREE.Matrix4();
+    for (let i = 0; i < 46; i++) dash.setMatrixAt(i, m4.makeTranslation(-119 + i * 6, .05, 54));   // up to the east road's mouth
+    for (let i = 0; i < 9; i++) dash.setMatrixAt(46 + i, m4.makeRotationY(Math.PI / 2).setPosition(HX, .05, 46 - i * 6));   // and up the road to the hospital
     g.add(dash);
     // street lights the whole length of the street, standing at the kerb with their arms out over the road, on alternate
     // sides every 10 m; near the gate the other side gets a street tree instead. None at the gate, in a junction or lane

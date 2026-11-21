@@ -85,6 +85,19 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-22: the east road's junctions, its lots closed, lazy matrices
+
+- Junctions: the front street's own asphalt, pavements and centre dashes now run on to the east road (`EX = EAST_ROAD.x1` in
+  `templeGrounds`, `09-…`); `eastRoad` no longer lays a separate stretch, which had a different asphalt colour and left a seam
+  at x 145. The main road's south drain and white edge line now stop at every mouth that joins it (`LANES` ending at its z0,
+  and `EAST_ROAD`), the road's east end gets an edge line, and the east road's east verge carries on round that end (to z 262.7).
+- Lots: on the east row the side fences were put on local −x, which there is north, so three edges were open (south of the
+  first lot, between lots 4 and 5, north of the last) and two doubled the big compounds' walls. Fences now go on each lot's
+  world-south side (`south = -dir * w / 2`). Checked every boundary on both rows numerically: each closed exactly once.
+- Speed: `lazyMatrices` (`37-culling.js`, `CONFIG.cull.lazy`): a cell item the culling has hidden skips three.js's
+  per-frame matrix update until it's shown again (or its parent moves). Measured (headless, real GPU): `world.updateMatrixWorld`
+  3.2–3.4 ms → 1.9–2.5 ms per frame at the gate, market, town and east road; draw calls and pictures unchanged.
+
 ### 2026-11-22: the east road and its Shan family compounds
 
 - New piece `28f-east-road-compounds.js`, `eastRoad(g)` (called after `powerStation` in `36-…`). The east road (carriageway
@@ -167,23 +180,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Still open: the first frame takes ~2.5 s (uploads and 37 shader programs), and `updateMatrixWorld` is ~2.5 ms a frame.
   Check on a phone: tapping houses and stalls in town (now batched), and that nothing outdoors freezes when it starts moving.
 
-### 2026-11-18: Stadium Road, a modern quarter by the football ground
-
-- New piece `28c-stadium-quarter.js`, `stadiumQuarter(g)` (called after `hluttawRoadHouses` in `36-…`), settings in `SQ`.
-  Stadium Road (အားကစားကွင်းလမ်း) runs north–south at x −200 (carriageway x −204…−196, pavements 2.5 m) from z −5 to the
-  Hluttaw road (z 255.5). At its south end a link road (z −5…1) runs east along the stadium's back wall to the hospital road
-  (x −128), the front street's west arm; at its north end the Hluttaw road is carried on west to meet it (new `main` entry at the
-  end of `LANES`, x −206.5…−118, and a median gap `[-207, -192]` first in `MAIN_GAPS`).
-- West side (fronts at x −207.5): a six-storey glass business centre, Valley Telecom (five storeys, relay mast), Highland Leaf
-  Tea (four), Northern Shan Logistics (three, a truck in its yard), Golden Bowl Chinese Restaurant (two, red lanterns), then
-  four blocks of flats (five and six storeys, two with shops). All company names are made up.
-- East side: five two-storey restaurants with pavement tables backing onto the stadium wall (Shan noodles, tea shop, hot pot,
-  BBQ, coffee); floodlit futsal and basketball courts in a chain-link fence (z 75…99); a footpath at z 103 to the stupa hill's
-  west stair (end hard-coded at x −157); the township sports hall (blue hip roof); a six-lane public pool with changing rooms
-  and loungers; Stadium Park with paths, benches and a playground; two blocks of flats. Across the Hluttaw road, x −195…−133,
-  three blocks of flats over a mini mart, a pharmacy and a phone shop.
-- Height limit: `block()` clamps every building to `SQ.maxFloors` (6). Almost everything is `part()`s of one unit box,
-  cylinder, crown and cone, so the quarter bakes into a few instanced meshes; it lies past `CULL.far` and is never culled.
-- Burmese wording on signs (ours, no Shan): စီးပွားရေးစင်တာ, ဆက်သွယ်ရေး ကုမ္ပဏီ, လက်ဖက် ကုမ္ပဏီ, ကုန်စည်ပို့ဆောင်ရေး ကုမ္ပဏီ,
-  တရုတ်စားသောက်ဆိုင်, ရှမ်းခေါက်ဆွဲ, လက်ဖက်ရည်ဆိုင်, ဟော့ပေါ့, အကင်ဆိုင်, ကော်ဖီဆိုင်, ဘောလုံးကွင်းငယ် (futsal), အားကစားခန်းမ,
-  ရေကူးကန်, ပန်းခြံ, တိုက်ခန်းအိမ်ရာ, ကုန်စုံဆိုင်, ဆေးဆိုင်, ဖုန်းဆိုင်. A Burmese reader could glance over them.

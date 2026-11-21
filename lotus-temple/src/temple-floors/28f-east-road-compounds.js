@@ -27,20 +27,15 @@
 
   function eastRoad(g) {
     const R = EAST_ROAD, road = std({ color: 0x2c2c2e, roughness: .95 }), verge = std({ color: 0x8a7a5e, roughness: 1 });
-    const pave = std({ color: 0x6a645c, roughness: .9 }), kerb = std({ color: 0x8a847a, roughness: .8 }), line = std({ color: 0xe8e4d8, roughness: .8 });
+    const line = std({ color: 0xe8e4d8, roughness: .8 });
     const cx = (R.x0 + R.x1) / 2, w = R.x1 - R.x0, len = R.z1 - R.z0;
-    // the front street carried on east from x 145 to the junction, and the east road north from it to the main road
-    flat(mesh(new THREE.BoxGeometry(R.x1 - 145, .04, 8), road, (145 + R.x1) / 2, .02, 54, g));
+    // the east road north from the front street (whose asphalt and pavements templeGrounds carries on to this corner) to the main road
     flat(mesh(new THREE.BoxGeometry(w, .04, len), road, cx, .02, (R.z0 + R.z1) / 2, g));
-    // the front street's pavements carried on to the corner: the north one past the junction, the south one up to the east road
-    [[48.75, 2.5, 145, R.x1 + 1.5], [59.4, 2.8, 145, R.x0]].forEach(([z, d, x0, x1]) => {
-      mesh(new THREE.BoxGeometry(x1 - x0, .18, d), pave, (x0 + x1) / 2, .09, z, g);
-      [-1, 1].forEach(e => mesh(new THREE.BoxGeometry(x1 - x0, .2, .14), kerb, (x0 + x1) / 2, .1, z + e * d / 2, g));
-      mesh(new THREE.BoxGeometry(.14, .2, d), kerb, x1, .1, z, g);
-    });
     // dirt verges either side, as on the hospital road
     flat(mesh(new THREE.BoxGeometry(R.x0 - R.west, .03, R.z1 - 60.8), verge, (R.x0 + R.west) / 2, .015, (60.8 + R.z1) / 2, g));
-    flat(mesh(new THREE.BoxGeometry(R.east - R.x1, .03, R.z1 - 50), verge, (R.x1 + R.east) / 2, .015, (50 + R.z1) / 2, g));
+    // the east one runs on past the main road's end (which stops at the east road's far edge, x1), round the corner to its far side
+    const VZ1 = 262.7;
+    flat(mesh(new THREE.BoxGeometry(R.east - R.x1, .03, VZ1 - 50), verge, (R.x1 + R.east) / 2, .015, (50 + VZ1) / 2, g));
     // a dashed centre line, and a give-way line across the road's half at each end
     const n = Math.floor((len - 8) / 6), dash = new THREE.InstancedMesh(new THREE.BoxGeometry(.14, .02, 2.4), std({ color: 0xbdb6a8, roughness: .8 }), n), m4 = new THREE.Matrix4();
     for (let i = 0; i < n; i++) dash.setMatrixAt(i, m4.makeTranslation(cx, .05, R.z0 + 5 + i * 6));
@@ -67,9 +62,11 @@
         if (L.kind === "big") bigCompound(s, L, seed, K, r);
         else if (L.kind === "garden") vegGarden(s, L, seed, K, r);
         else familyLot(s, L, seed, K, r, x => !nearPost(wz(x), posts));
-        // the side fence toward the previous lot (and the far one on the last lot), unless a big compound's wall already stands there
-        if (L.kind !== "big" && !(i && EAST_LOTS[side].lots[i - 1].kind === "big")) K.fence(s, L.fence, -L.w / 2, 0, -L.w / 2, L.d);
-        if (L.kind !== "big" && i === EAST_LOTS[side].lots.length - 1) K.fence(s, L.fence, L.w / 2, 0, L.w / 2, L.d);
+        // the side fence toward the lot to the south (and the north one on the last lot), unless a big compound's wall already
+        // stands there. South is local −x on the west row but local +x on the east row, which is turned the other way
+        const south = -dir * L.w / 2;
+        if (L.kind !== "big" && !(i && EAST_LOTS[side].lots[i - 1].kind === "big")) K.fence(s, L.fence, south, 0, south, L.d);
+        if (L.kind !== "big" && i === EAST_LOTS[side].lots.length - 1) K.fence(s, L.fence, -south, 0, -south, L.d);
       });
     });
     // the corner the line crosses between the west row and the power station's back wall: rough grass, a tree and a bamboo clump

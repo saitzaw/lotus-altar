@@ -128,10 +128,20 @@
     const w = x1 - x0, mx = (x0 + x1) / 2, mz = (z0 + z1) / 2, y = .05;
     flat(mesh(new THREE.BoxGeometry(w, .04, z1 - z0), std({ color: 0x2c2c2e, roughness: .95 }), mx, y, mz, g));
     const drain = std({ color: 0x3a3632, roughness: .9 }), line = std({ color: 0xe8e4d8, roughness: .8 });
+    // the open drains and white edge lines down both sides; on the south side they stop at the mouths of the lanes and the east
+    // road that come in there (the drain runs under the junction in a culvert). At the east end, where the road turns south into
+    // the east road, an edge line closes it
+    const mouths = LANES.filter(l => !l.main && l.z1 === z0).map(l => [l.x0, l.x1]).concat([[EAST_ROAD.x0, EAST_ROAD.x1]]).sort((a, b) => a[0] - b[0]);
     [-1, 1].forEach(sd => {
-      flat(mesh(new THREE.BoxGeometry(w, .045, .35), drain, mx, y + .002, mz + sd * ((z1 - z0) / 2 - .18), g));
-      flat(mesh(new THREE.BoxGeometry(w, .02, .1), line, mx, y + .02, mz + sd * ((z1 - z0) / 2 - .5), g));   // the white edge lines
+      const runs = []; let a = x0;
+      if (sd < 0) mouths.forEach(([m0, m1]) => { if (m0 > a) runs.push([a, m0]); a = Math.max(a, m1); });
+      if (x1 > a) runs.push([a, x1]);
+      runs.forEach(([a, b]) => {
+        flat(mesh(new THREE.BoxGeometry(b - a, .045, .35), drain, (a + b) / 2, y + .002, mz + sd * ((z1 - z0) / 2 - .18), g));
+        flat(mesh(new THREE.BoxGeometry(b - a, .02, .1), line, (a + b) / 2, y + .02, mz + sd * ((z1 - z0) / 2 - .5), g));   // the white edge lines
+      });
     });
+    flat(mesh(new THREE.BoxGeometry(.1, .02, z1 - z0 - .45), line, x1 - .5, y + .02, mz - .225, g));   // from the mouth to the north edge line
     // the median in pieces between the gaps, a lamp every 10 m or so along each
     const kerb = std({ color: 0xb0aca2, roughness: .8 }), segs = [];
     let a = x0 + 3;
