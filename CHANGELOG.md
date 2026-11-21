@@ -3,6 +3,14 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-22
+
+### Added
+- The east road joins the front street, past the police station, to the main road by the power station. Along it stand Shan family compounds, each house in its own fenced yard. Two of them are big walled family compounds with the parents' house of two storeys, a second house for a married child, a rice granary on posts (စပါးကျီ) and a well. On the east side there is also a vegetable garden with a field hut.
+
+### Changed
+- The power station's line now runs down the east road on concrete poles.
+
 ## 2026-11-21
 
 ### Added

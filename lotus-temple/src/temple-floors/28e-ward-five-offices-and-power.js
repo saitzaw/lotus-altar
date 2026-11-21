@@ -357,8 +357,8 @@
     const sr = civic(g, 144.5, 250.5, 0, { W: 11, D: 3.6, floors: 1, wall: std({ color: 0xb06a50, roughness: .9 }), roof: null, door: true, data: yardData });
     clickable(list, civicSign(sr.h, "ဓာတ်အားခွဲရုံ ခလုတ်ခန်း", "Main Switch Room", "#8a2a1e", "#ffffff", 2.8, 0, 3.05, 1.83), yardData);
     streetLight(g, y0 - 1.2, 247.6, Math.PI, true);   // a floodlight over the yard's gate side
-    // the lines leaving over the back wall on concrete poles, three conductors on pin insulators
-    const poleM = std({ color: 0xb4b0a8, roughness: .85 }), POLES = [[144.5, 207], [144.5, 192], [146, 177], [149, 162]];
+    // the lines leaving over the back wall on concrete poles, three conductors on pin insulators, and down the east road's west verge
+    const poleM = std({ color: 0xb4b0a8, roughness: .85 }), POLES = EAST_POLES;
     let last = PH.map(dx => V(144.5 + dx, GH - 1.25, GZ[0]));
     POLES.forEach(([x, z]) => {
       mesh(new THREE.BoxGeometry(.28, 9.5, .28), poleM, x, 4.75, z, g); sCircle(g, x, z, .2);

@@ -30,6 +30,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Open threads
 
+- The rice granary's label စပါးကျီ (Burmese, ours) on the east road: ask the owner whether it reads right and whether they want a
+  Shan line too.
 - The new signs and names are Burmese and English only: အမှတ် (၅) ရပ်ကွက် (Ward No. 5), ရပ်ကွက်အုပ်ချုပ်ရေးမှူးရုံး, မြို့နယ်စည်ပင်သာယာရေးကော်မတီ,
   မြို့နယ်လူဝင်မှုကြီးကြပ်ရေးဦးစီးဌာန, ဒီဇယ်မီးစက်ရုံနှင့် ဓာတ်အားခွဲရုံ, ဓာတ်အားခွဲရုံ ခလုတ်ခန်း, ဗို့အားမြင့် · အန္တရာယ်ရှိသည်. Ask the owner
   whether the wording is right and whether they want Shan lines. The Shan house's tip uses the Shan ႁိူၼ်းတႆး ("Shan house"):
@@ -82,6 +84,23 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-22: the east road and its Shan family compounds
+
+- New piece `28f-east-road-compounds.js`, `eastRoad(g)` (called after `powerStation` in `36-…`). The east road (carriageway
+  x 155.5…162.5, dirt verges) runs from the front street, carried on east from x 145 to 162.5 past the police station, north to the
+  main road, whose last `main` lane now ends at x 162.5 (median gap `[150, 170]` in `MAIN_GAPS`). The front street's pavements
+  are carried to the corner. Give-way lines at both ends; street lights on the east verge (`EAST_LIGHTS`).
+- The power station's line now leaves over its back wall and runs down the west verge on ten concrete poles (`EAST_POLES`, used
+  by `powerStation`); it no longer heads toward the bamboo grove.
+- Lots (`EAST_LOTS`): west row 7 (fronts x 154.3, z 74…194), east row 10 (fronts x 163.8, z 64…251). Each lot is its own group,
+  laid out like the Hluttaw road's (front fence at local z 0, yard +z) and turned to face the road. Kinds: a family lot
+  (`familyLot`, the Hluttaw road's layout), a big walled compound (`bigCompound`: a two-storey wooden house at the back, a
+  married child's one-storey concrete house facing the yard, a rice granary `granary` (စပါးကျီ, Burmese, clickable), a well,
+  a washing line), and a vegetable garden with a field hut (`vegGarden`, clickable beds).
+- The Hluttaw road's fence, gate and water pot stand builders moved into `lotKit(r)` in `28b-…` (same random stream, so
+  that row is unchanged); both rows use it.
+- Checked in headless Chromium: a walk-surface map of the area, three views from above and one from the road. No console errors.
 
 ### 2026-11-21: Ward No. 5, a Shan house, municipal and immigration offices, a diesel power station
 
@@ -168,13 +187,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Burmese wording on signs (ours, no Shan): စီးပွားရေးစင်တာ, ဆက်သွယ်ရေး ကုမ္ပဏီ, လက်ဖက် ကုမ္ပဏီ, ကုန်စည်ပို့ဆောင်ရေး ကုမ္ပဏီ,
   တရုတ်စားသောက်ဆိုင်, ရှမ်းခေါက်ဆွဲ, လက်ဖက်ရည်ဆိုင်, ဟော့ပေါ့, အကင်ဆိုင်, ကော်ဖီဆိုင်, ဘောလုံးကွင်းငယ် (futsal), အားကစားခန်းမ,
   ရေကူးကန်, ပန်းခြံ, တိုက်ခန်းအိမ်ရာ, ကုန်စုံဆိုင်, ဆေးဆိုင်, ဖုန်းဆိုင်. A Burmese reader could glance over them.
-
-### 2026-11-18: house compounds on the Hluttaw road
-
-- New piece `28b-hluttaw-road-houses.js`, `hluttawRoadHouses(g)` (called after `hospitalRoadHouses` in `36-…`): the empty
-  ground north of the Hluttaw road from its west end to the Hluttaw compound (x −113…−12, z 263…278.5) now holds seven Shan
-  family compounds (`ROAD_LOTS`: width, fence kind, wood/concrete, storeys, pot stand). Houses are the existing `shanWoodHouse` /
-  `shanHouse`, turned to face the road. Fences: woven bamboo (twill canvas texture), split-bamboo pickets (instanced) or a
-  whitewashed brick wall with piers; gates stand open (steel leaves for brick, a woven leaf under a bamboo lintel otherwise).
-  Water pot stands (ရေအိုးစင်, Burmese, clickable) on the verge at three gates. The far end is beyond `CULL.far`, so it is
-  never culled; keep the detail light.

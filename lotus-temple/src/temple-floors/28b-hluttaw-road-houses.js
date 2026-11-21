@@ -10,8 +10,9 @@
     { w: 14, fence: "brick", wood: true, floors: 2 }, { w: 15, fence: "picket", wood: true, floors: 1, pots: true },
     { w: 14, fence: "weave", wood: false, floors: 1 }
   ];
-  function hluttawRoadHouses(g) {
-    const { front: F, back: B, set: SET } = ROAD_HOUSES, r = rng(5150);
+  // the fences, gates and water pot stands of the town's family compounds, shared by the Hluttaw road and the east road (28f); `r`
+  // gives the pickets their heights, so each row of lots keeps its own random stream
+  function lotKit(r) {
     // woven bamboo matting, the strips over and under in a twill
     const weaveTex = canvasTex(64, (c, sz) => {
       const s = sz / 8; c.fillStyle = "#5a4224"; c.fillRect(0, 0, sz, sz);
@@ -28,8 +29,8 @@
     const uvBox = (w, h, d) => { const geo = new THREE.BoxGeometry(w, h, d), uv = geo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w, uv.getY(i) * h); return geo; };
     const postGeo = new THREE.CylinderGeometry(.05, .06, 1.8, 6), slatGeo = new THREE.BoxGeometry(.07, 1, .025), pierGeo = new THREE.BoxGeometry(.3, 1.45, .3);
     const barGeo = new THREE.BoxGeometry(.03, 1.3, .03), railGeo = new THREE.BoxGeometry(1.3, .05, .05), tuftGeo = new THREE.IcosahedronGeometry(.2, 0);
-    // a straight run of fence from (x0, z0) to (x1, z1), along x or along z, blocking walkers
-    function fence(kind, x0, z0, x1, z1) {
+    // a straight run of fence in g from (x0, z0) to (x1, z1), along x or along z, blocking walkers
+    function fence(g, kind, x0, z0, x1, z1) {
       const len = Math.hypot(x1 - x0, z1 - z0); if (len < .2) return;
       const f = new THREE.Group(); f.position.set((x0 + x1) / 2, 0, (z0 + z1) / 2); f.rotation.y = x1 !== x0 ? 0 : Math.PI / 2; g.add(f);
       sWall(g, Math.min(x0, x1) - .06, Math.max(x0, x1) + .06, Math.min(z0, z1) - .06, Math.max(z0, z1) + .06);
@@ -45,8 +46,8 @@
       if (kind === "weave") mesh(uvBox(len, 1.55, .03), weave, 0, .85, 0, f);
       else for (let x = -len / 2 + .08; x < len / 2; x += .16) part(slatGeo, bamboo, x, .65, -.04, f).scale.y = 1.15 + r() * .15;   // split-bamboo pickets
     }
-    // the gate: brick piers with a pair of steel leaves, or bamboo posts and a lintel with a woven leaf; both stand open into the yard
-    function gate(kind, gx, half) {
+    // the gate in a fence along x at z = F: brick piers with a pair of steel leaves, or bamboo posts and a lintel with a woven leaf; both stand open into the yard
+    function gate(g, kind, gx, F, half) {
       if (kind === "brick") {
         [-1, 1].forEach(sd => {
           sPillar(g, gx + sd * (half + .1), F, .25);
@@ -65,7 +66,7 @@
     }
     // a ye-o-zin: a little roofed stand at the gate with clay pots of drinking water and a cup, kept filled for anyone on the road
     const potData = { tip: "ရေအိုးစင် · water pots for passers-by", toast: "A ye-o-zin (ရေအိုးစင်, Burmese): a little roofed stand at the gate with clay pots of drinking water and a cup, kept filled by the household for anyone passing on the road. Giving water to strangers is a common act of merit across Shan State and Myanmar." };
-    function potStand(x, z) {
+    function potStand(g, x, z) {
       const s = new THREE.Group(); s.position.set(x, 0, z); g.add(s);
       sRect(s, -.5, .5, -.3, .3);
       [[-.4, -.2], [.4, -.2], [-.4, .2], [.4, .2]].forEach(([px, pz]) => mesh(new THREE.BoxGeometry(.06, 1.65, .06), teakDark, px, .825, pz, s));
@@ -77,6 +78,11 @@
       mesh(new THREE.CylinderGeometry(.04, .035, .09, 8), steel, 0, 1.02, .12, s);   // the cup
       [-1, 1].forEach(sd => { const rf = mesh(new THREE.BoxGeometry(1.15, .02, .38), rustRoof, 0, 1.78, sd * .16, s); rf.rotation.x = sd * .5; });
     }
+    return { fence, gate, potStand, weave, bamboo, earth, cap, clay, greens, cloth, uvBox, tuftGeo };
+  }
+  function hluttawRoadHouses(g) {
+    const { front: F, back: B, set: SET } = ROAD_HOUSES, r = rng(5150);
+    const K = lotKit(r), { earth, greens, cloth, bamboo, tuftGeo } = K, fence = (...a) => K.fence(g, ...a), gate = (kind, gx, half) => K.gate(g, kind, gx, F, half), potStand = (x, z) => K.potStand(g, x, z);
     let x = ROAD_HOUSES.x0;
     ROAD_LOTS.forEach((L, i) => {
       const x0 = x, x1 = x + L.w, cx = (x0 + x1) / 2, seed = 820 + i, left = seed % 2 ? 1 : -1, W = L.w >= 15 ? 7.5 : 7, D = 6.5;
