@@ -64,11 +64,6 @@ function festNote() {
     el.textContent = `🐉 Training for Chinese New Year${ny ? " (" + ny + ")" : ""} on the kung fu ground · dragon 6–9 AM and 9–10 PM · lion 9:30–11 AM and 6–8 PM ICT`;
     return;
   }
-  if (!fest.season && lotusLanternsOn) {   // the months of the festivals of light: lotus lanterns round the stupa hill's main stupa
-    el.hidden = current !== "pagoda";
-    el.textContent = "🪷 Festival of lights · lotus lanterns are offered round the main stupa on the stupa hill through October and November";
-    return;
-  }
   el.hidden = current !== "pagoda" || !fest.season;
   el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
@@ -174,16 +169,9 @@ function weatherNow() {
   for (let i = 0; i < kinds.length; i++) if ((r -= w[i]) < 0) return kinds[i];
   return "clear";
 }
-const seasonName = () => { const m = +new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, month: "numeric" }).format(Date.now()); return m >= 5 && m <= 10 ? "rainy season" : m >= 3 ? "hot season" : "cool season"; };
 let wxKind = weatherNow();
 const wx = (({ fog, k, rain, wind, tint }) => ({ fog, k, rain, wind, tint: new THREE.Color(tint) }))(WEATHER[wxKind]);   // the weather as it is now, drifting toward wxKind
-setInterval(() => { const was = wxKind; wxKind = weatherNow(); if (wxKind !== was) weatherNote(); }, 6e4);
-function weatherNote() {
-  const el = $("weatherInfo"); if (!el) return;
-  const w = WEATHER[wxKind];
-  el.hidden = !(current === "pagoda" || inCorridor);
-  el.textContent = `${w.icon} ${w.label} · ${seasonName()} in the northern hills`;
-}
+setInterval(() => { wxKind = weatherNow(); }, 6e4);
 // rain: streaks falling in a box that travels with the camera (left out when motion is reduced; the sound stays)
 const RAIN_N = 2400, RAIN_BOX = [50, 24, 50];
 const rainLines = (() => {
@@ -285,7 +273,6 @@ function applySky() {
   const note = $("skyInfo");
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }
   festNote();
-  weatherNote();
   if (btn) { btn.textContent = daylight > .5 ? "☾ Night" : "☀ Day"; btn.title = daylight > .5 ? "Switch to night" : "Switch to day"; btn.setAttribute("aria-pressed", String(daylight > .5)); }
 }
 updateCelestial();

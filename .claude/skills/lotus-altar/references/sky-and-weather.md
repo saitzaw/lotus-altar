@@ -109,6 +109,6 @@ forces one.
   4 to 10 AM.
 - `weatherStep(dt)` eases the current weather (`wx`) toward the target, sets fog distance and exposure outside, and moves
   the rain streaks (`rainLines`, a box that follows the camera, hidden under reduced motion).
-- `skyColors()` blends `wx.tint` into the sky and fog. The HUD line is `#weatherInfo`, filled by `weatherNote()`.
+- `skyColors()` blends `wx.tint` into the sky and fog. The weather has no HUD line (removed 2026-11-21: players see it, they don't need it spelled out).
 - `?weather=rain` (or `clear`, `cloudy`, `mist`, `haze`) forces one.
 - Weather only shows outside (`current === "pagoda"` or a corridor); indoors keeps its own lamplit fog.
