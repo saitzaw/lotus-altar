@@ -30,6 +30,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Open threads
 
+- The lotus lanterns' Burmese labels are ours: ဆီမီးပူဇော် (offering of lamps) on their tip, သီတင်းကျွတ် (Thadingyut) and တန်ဆောင်တိုင် (Tazaungdaing) in the toast. Ask the owner whether they want a Shan line too, and whether the lanterns should also go round the Shan stupas or the stairs.
+
 - The fire lotus ground's board reads မီးလျှော်ပွဲ၊ မီးကြာစံပွဲ (the owner's words), with our English "Fire Offering · Fire Lotus Festival". Ask the owner whether the glosses are right (is မီးကြာစံပွဲ a contest, or a show?), and whether they want a Shan line too.
 - Have a Shan speaker check ၵၢတ်ႇပွႆး (kaat poi, "festival market"), our wording on the board over the balloon-ground market's gateway.
 - The shared seated Buddha body (`seatedBuddha` in `statue-sculpt.js`, used by Shakyamuni, the Medicine Buddha and the Victorious
@@ -75,6 +77,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-21: lotus lanterns round the main stupa in October and November
+
+- New piece `13c-stupa-lotus-lanterns.js` (`stupaLotusLanterns(T, list, TW, STEPS)`), called at the end of `shanStupaHill`'s terrace
+  walk block. 160 lanterns: on the parapet coping (clear of the step openings and the corner lamp posts), a row 3.12 m out round the
+  stupa's foot, and both ends of every step of the four flights. Four draw calls: two `InstancedMesh` petal rings sharing one lathe
+  cup pulled into eight pointed petals (vertex colours white to pink), the flames, and one `Points` glow cloud.
+- Season: `CONFIG.lotusLanterns.months` [10, 11] on the temple's clock, `lotusLanternsNow()`, `temple.setLotusLanterns`,
+  `FOLK.lotusLanterns`, `?lotuslanterns=1/0`. Shown day and night, glowing after dark. Hidden lanterns get `count = 0`, since the
+  picking ray doesn't skip hidden meshes. `#festInfo` names the festival of lights when no other season shows.
+- Checked in headless Chromium at night on the terrace walk. No console errors.
 
 ### 2026-11-21: the fire lotus ground on the stupa hill
 
@@ -149,28 +162,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   and 5–8 dead leaves hanging down the stem (`bananaDeadGeos`, no shadow). Everything goes through `part()` now (it used plain
   meshes), so the 16 clumps (33 plants) bake into a handful of instanced meshes. Callers unchanged; the crowns are a bit wider
   than before (about 2.5 m reach), so check none pokes through a wall or roof behind the houses.
-
-### 2026-11-18: tall, open hill pines
-
-- `pine()` in `09-trees-and-walls.js` rebuilt twice today from the owner's reference photos; the second (kept) photo is a tall
-  sparse conifer. Now: a 10–11.6 m straight grey trunk (at scale 1; was 5.2 m) on five roots, bare for ~40% of its height
-  but for dead-twig stubs, then open whorls of 2–4 near-level branches with trunk showing between them (`pineBranch`), each
-  carrying small flat drooping sprays (`pineSprayGeo`, a bent detail-0 octahedron, 8 triangles) along both sides and at the
-  tip, a small tuft and a thin leader on top. No solid inner cone. About 130 `part()`s per tree, all instanced.
-  Callers (temple grounds, town, stupa hill) are unchanged; the trees are about twice as tall, so check none pokes into
-  something overhead, and whether the many extra instances cost frame rate on the hill.
-
-### 2026-11-18: offices and a supermarket facing the lake and the hill
-
-- Owner (screenshot of the empty ground at the north end of Stadium Road): "add a super market and business buildings that can
-  see the lake and hill". New piece `28d-lakeside-offices-and-supermarket.js`, the end of `stadiumQuarter` (the closing brace moved
-  there from `28c`). On the open ground between the east side's last flats (x −173) and the stupa hill's north walk, fronts east:
-  Lake View Offices, a six-storey glass tower at (−162, 213) with a café's umbrella tables on its roof and benches on the grass
-  beyond its forecourt; Lakeside Supermarket, a two-storey store at (−161.5, 237.5) with a red awning and its name across the
-  upper floor, trolleys at the door, a car park of eight bays (five cars, a few motorbikes) and a driveway out to the Hluttaw road.
-  Between the walk and the lake's west shore, Valley Microfinance's slim four-storey glass office at (−124.6, 234), door on the
-  walk, back windows over the water. `LV.walkX(z)` recomputes the north walk's line from `HILL` and `MORE_STAIRS` (the same maths
-  as `shanStupaHill`), so everything keeps clear of it. `block()` takes `bare: true` for a glass block with no entrance canopy.
-- Burmese wording (ours, no Shan): ကန်စပ် စူပါမားကတ် (Lakeside Supermarket), ကန်မြင် ရုံးခန်းအဆောက်အအုံ (Lake View Offices),
-  အသေးစား ငွေရေးကြေးရေး (microfinance). Firms and names are made up.
-- Checked headless from above, from the Hluttaw road and from the tower roof; no errors.

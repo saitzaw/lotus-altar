@@ -64,6 +64,11 @@ function festNote() {
     el.textContent = `🐉 Training for Chinese New Year${ny ? " (" + ny + ")" : ""} on the kung fu ground · dragon 6–9 AM and 9–10 PM · lion 9:30–11 AM and 6–8 PM ICT`;
     return;
   }
+  if (!fest.season && lotusLanternsOn) {   // the months of the festivals of light: lotus lanterns round the stupa hill's main stupa
+    el.hidden = current !== "pagoda";
+    el.textContent = "🪷 Festival of lights · lotus lanterns are offered round the main stupa on the stupa hill through October and November";
+    return;
+  }
   el.hidden = current !== "pagoda" || !fest.season;
   el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
     : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
@@ -116,6 +121,9 @@ const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : inHou
 const BALLOON_FORCE = forced("balloons");
 // the fire lotus towers on the stupa hill (CONFIG.fireLotus), 7 pm to midnight, called off in the rain; ?firelotus=1 or =0 forces them
 const FIRE_LOTUS_FORCE = forced("firelotus"), fireLotusNow = () => inHours(CONFIG.fireLotus);
+// the lotus lanterns round the main stupa (CONFIG.lotusLanterns), through their months on the temple's clock; ?lotuslanterns=1 or =0 forces them
+const LANTERN_FORCE = forced("lotuslanterns");
+const lotusLanternsNow = () => LANTERN_FORCE !== null ? LANTERN_FORCE : CONFIG.lotusLanterns.months.includes(+new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, month: "numeric" }).format(Date.now()));
 // which balloons go up now (CONFIG.balloons): "day" (the animals), "night", or null; "auto" when forced on, chosen by the light
 const BALLOON_PARAM = (() => { try { return devParam("balloons"); } catch (e) { return null; } })();
 const balloonsNow = () => BALLOON_PARAM === "day" || BALLOON_PARAM === "night" ? BALLOON_PARAM : BALLOON_PARAM !== null && BALLOON_PARAM !== "0" ? "auto"
@@ -123,8 +131,8 @@ const balloonsNow = () => BALLOON_PARAM === "day" || BALLOON_PARAM === "night" ?
 const rainingOut = () => wxKind === "rain";
 // how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
 const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow();
-setInterval(() => { balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); festNote(); }, 3e4);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow();
+setInterval(() => { balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

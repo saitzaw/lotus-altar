@@ -22,6 +22,13 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 Runs Oct 27 – Nov 1 (`CONFIG.halloween`). Houses go dark at 9 PM ICT until 5 AM, a friendly ghost walks
 the roads. `?halloween=1` / `?halloween=0` force it.
 
+## Lotus lanterns
+
+Through the `months` in `CONFIG.lotusLanterns` (October and November, Thadingyut's and Tazaungdaing's festivals of light) on the
+temple's clock, small paper lotus lanterns stand round the stupa hill's main stupa all day and night (`stupaLotusLanterns` in
+`13c-stupa-lotus-lanterns.js`), glowing after dark. `lotusLanternsNow()` checks the month; the frame loop passes
+`temple.setLotusLanterns(on)`. When no other season is showing, `#festInfo` names it. `?lotuslanterns=1` / `=0` force them.
+
 ## The torch
 
 Walking outside at night shows `#torchBtn` (and **T** toggles it). On Halloween night the torch starts on, any other

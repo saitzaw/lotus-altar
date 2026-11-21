@@ -5,6 +5,31 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-18: tall, open hill pines
+
+- `pine()` in `09-trees-and-walls.js` rebuilt twice today from the owner's reference photos; the second (kept) photo is a tall
+  sparse conifer. Now: a 10–11.6 m straight grey trunk (at scale 1; was 5.2 m) on five roots, bare for ~40% of its height
+  but for dead-twig stubs, then open whorls of 2–4 near-level branches with trunk showing between them (`pineBranch`), each
+  carrying small flat drooping sprays (`pineSprayGeo`, a bent detail-0 octahedron, 8 triangles) along both sides and at the
+  tip, a small tuft and a thin leader on top. No solid inner cone. About 130 `part()`s per tree, all instanced.
+  Callers (temple grounds, town, stupa hill) are unchanged; the trees are about twice as tall, so check none pokes into
+  something overhead, and whether the many extra instances cost frame rate on the hill.
+
+### 2026-11-18: offices and a supermarket facing the lake and the hill
+
+- Owner (screenshot of the empty ground at the north end of Stadium Road): "add a super market and business buildings that can
+  see the lake and hill". New piece `28d-lakeside-offices-and-supermarket.js`, the end of `stadiumQuarter` (the closing brace moved
+  there from `28c`). On the open ground between the east side's last flats (x −173) and the stupa hill's north walk, fronts east:
+  Lake View Offices, a six-storey glass tower at (−162, 213) with a café's umbrella tables on its roof and benches on the grass
+  beyond its forecourt; Lakeside Supermarket, a two-storey store at (−161.5, 237.5) with a red awning and its name across the
+  upper floor, trolleys at the door, a car park of eight bays (five cars, a few motorbikes) and a driveway out to the Hluttaw road.
+  Between the walk and the lake's west shore, Valley Microfinance's slim four-storey glass office at (−124.6, 234), door on the
+  walk, back windows over the water. `LV.walkX(z)` recomputes the north walk's line from `HILL` and `MORE_STAIRS` (the same maths
+  as `shanStupaHill`), so everything keeps clear of it. `block()` takes `bare: true` for a glass block with no entrance canopy.
+- Burmese wording (ours, no Shan): ကန်စပ် စူပါမားကတ် (Lakeside Supermarket), ကန်မြင် ရုံးခန်းအဆောက်အအုံ (Lake View Offices),
+  အသေးစား ငွေရေးကြေးရေး (microfinance). Firms and names are made up.
+- Checked headless from above, from the Hluttaw road and from the tower roof; no errors.
+
 ### 2026-11-18: thicker bamboo at the hill's foot
 
 - Owner: "more bamboo in the grove between the hill foot and the houses". `FOOT_BAMBOO` in `27-bamboo-fuel-fire-police.js`:

@@ -421,6 +421,7 @@
         const gl = glowSprite(0xffd8a0, 1.1, .8); gl.material.fog = false; gl.position.set(x, Y + PH + .82, z); T.add(gl);
         onDaylight(d => gl.material.opacity = .85 * (1 - d) + .05);
       });
+      stupaLotusLanterns(T, list, TW, STEPS);   // lotus lanterns of light, set out in October and November
     }
     // walkable, in the stupa's frame: the stupa's body blocks; the deck at its height inside the parapet, which blocks; the steps
     // through their openings, the cheek walls blocking beside them; round it all, inside the same rectangle, the hilltop

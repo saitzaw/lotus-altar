@@ -42,6 +42,7 @@ hours change, update this file in the same commit.
 | When | What happens | Where | `CONFIG` |
 |---|---|---|---|
 | The 30 days before Chinese New Year | Dragon dance training 6–9 AM and 9–10 PM; lion dance training 9:30–11 AM and 6–8 PM. Quiet on New Year's day | Kung fu ground | `lionDragon` |
+| October and November (all day and night) | Lotus lanterns (ဆီမီးပူဇော်): 160 small pink paper lotus lanterns, each with a flame, offered to the Buddha round the main stupa (along the terrace walk's parapet, in a row round the stupa's foot, at both ends of every step), for the festivals of light of Thadingyut (October) and Tazaungdaing (November). They glow after dark | Main stupa, top of the stupa hill | `lotusLanterns` |
 | Oct 27 – Nov 1 (Halloween) | Houses go dark 9 PM – 5 AM, a friendly ghost walks the roads, walkers carry a torch | Town | `halloween` |
 | All year | Weather by season, changing every 3 hours: rain May–Oct, cool clear days and misty mornings Nov–Feb, smoky haze Mar–Apr | Everywhere outside | `weather` |
 
@@ -58,6 +59,7 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 | Procession (short 20 s stops, then it starts again from the gate; runs even in rain) | `?procession=1` | `?procession=0` |
 | Fire balloons (even in rain) | `?balloons=1` (the kind for the light), `?balloons=day`, `?balloons=night` | `?balloons=0` |
 | Fire lotus towers (even in rain) | `?firelotus=1` | `?firelotus=0` |
+| Lotus lanterns round the main stupa | `?lotuslanterns=1` | `?lotuslanterns=0` |
 | Seven-day market and food street | `?stalls=1` | `?stalls=0` |
 | Morning market | `?morningMarket=1` | `?morningMarket=0` |
 | Church service | `?service=1` | `?service=0` |

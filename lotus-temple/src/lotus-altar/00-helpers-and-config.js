@@ -84,6 +84,9 @@ const CONFIG = {
   // the fire lotus ground's towers (မီးကြာ), lit one after another after dark from `from` until `until` o'clock on the temple's clock;
   // none in the rain. ?firelotus=1 or ?firelotus=0 forces them on or off
   fireLotus: { from: 19, until: 24 },
+  // the lotus lanterns (ဆီမီးပူဇော်) set out round the stupa hill's main stupa all day and night through these `months` (1–12) on the temple's
+  // clock: Thadingyut's festival of lights in October and Tazaungdaing's in November. ?lotuslanterns=1 or =0 forces them
+  lotusLanterns: { months: [10, 11] },
   // the dances on the festival ground's stage, each a list of [from, until] in hours on the temple's clock (17.75 is 5:45 pm): the
   // kinnara alone, leaping, before the biggest crowd (the epic's opening), the kinnara and kinnari pair, the to (တၢင်းၵႃႈတူဝ်း,
   // Burmese တိုးနယား) at dusk, the white and the yellow to together, the pair again, and to close, the two to with the kinnara
