@@ -5,6 +5,25 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-20: speed: static batching, a walk-surface index, adaptive pixel ratio
+
+- Measured first (headless Chromium on the GPU; setup in `MEMORY.md`). Outdoors the cost was draw calls: 7,550 plain meshes,
+  most with their own geometry, so `bakeParts` couldn't merge them. Load was dominated by `surfAt` (2.8 s of a 4.3 s
+  `buildPagoda`), which ran `updateMatrixWorld(true)` on each `SURF` entry's object and scanned all ~2,100 entries per call.
+- **Static batching** (`batchCells`/`weld`/`batchCheck` in `37-culling.js`, `CONFIG.cull.batch`): plain meshes in each 24 m
+  cell are welded per material; originals stay on layer 31, seen by the picking ray (`ray.layers.enable(temple.batchLayer)`).
+  A batch undoes itself if any original moves, hides, changes material or geometry. Far objects (> 140 m) now go in far cells,
+  kept by the view cone only. Gate 4,490 → 1,620 calls (16 → 9 ms), market 1,304 → 763, town 4,292 → 1,527 (22 → 13.5 ms).
+  Screenshots before/after match (gate: 0.07 % of pixels differ visibly). 1,084 of 1,085 batches survive overview, walking,
+  night and day. Batching takes ~60 ms at load.
+- **`SURF` grid index** (`SURF_IX`, `surfIndex`, `resetSurf` in `13-stupa-hill.js`): same answers as the linear scan at 416,502
+  test points, ~5× faster per lookup; with `updateWorldMatrix(true, false)` the outdoor build is ~1.1 s.
+- Floor-1 effects run only while `scene.visible`; flames flicker only while their hall is shown (`shownNow`); smoke no
+  longer allocates; `aimPrompt` slows to .6 s while the camera is still; `adaptQuality` (`CONFIG.quality`) steps the pixel
+  ratio down when frames are slow; the renderer asks for the high-performance GPU.
+- Still open: the first frame takes ~2.5 s (uploads and 37 shader programs), and `updateMatrixWorld` is ~2.5 ms a frame.
+  Check on a phone: tapping houses and stalls in town (now batched), and that nothing outdoors freezes when it starts moving.
+
 ### 2026-11-18: Stadium Road, a modern quarter by the football ground
 
 - New piece `28c-stadium-quarter.js`, `stadiumQuarter(g)` (called after `hluttawRoadHouses` in `36-…`), settings in `SQ`.

@@ -14,7 +14,9 @@
     { x0: 43.25, x1: 64.5, z0: 255.5, z1: 261.5, main: true },     // the court road, the Hluttaw road on east past the bank to the township court's gate (z 262.5)
     { x0: -206.5, x1: -118, z0: 255.5, z1: 261.5, main: true },   // the Hluttaw road on west past the north stair's walk to Stadium Road (SQ, stadiumQuarter)
     { x0: 64.5, x1: 162.5, z0: 255.5, z1: 261.5, main: true },    // the court road on east past Ward No. 5, the municipal and immigration offices and the power station (28e) to the east road's mouth (EAST_ROAD, 28f)
-    { x0: 88, x1: 92, z0: 196, z1: 255.5 }                        // Ward No. 5's lane, off the main road beside the Shan house next to the bank (WARD5)
+    { x0: 88, x1: 92, z0: 196, z1: 255.5 },                       // Ward No. 5's lane, off the main road beside the Shan house next to the bank (WARD5)
+    { x0: 43.25, x1: 118, z0: 104.5, z1: 108.5 },                // Ward No. 4's lane in from the market lane, between the daily market and the school wall (WARD4)
+    { x0: 114, x1: 118, z0: 81, z1: 199.5 }                      // Ward No. 4's own lane, north–south through the inner quarter (WARD4)
   ];   // `main`: one stretch of the town's main road, asphalt with lamps down a centre median (see mainRoad)
   const MAIN_GAPS = [[-207, -192], [-33.5, -26.5], [13, 19], [37.5, 53], [79, 96], [114, 128], [150, 170]];   // where the main road's median breaks (along x): at Stadium Road's mouth (x −200), at the palace lake's bridge (x −30), before the Haw Kham's and the Hluttaw's gates (x 16), from the market lane's mouth to the court's gate (x 50), at Ward No. 5's lane and the municipal office's gate (x 85–90), at the immigration office's and power station's gates (x 121), and at the east road's mouth (x 159), where the median ends
   const corrugated = (base, light, dark) => {

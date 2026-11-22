@@ -199,6 +199,7 @@
     wardQuarter(g);   // Ward No. 5, the small quarter on its lane behind it, and the ward office
     townOffices(g);   // the municipal and immigration offices across the road, east of the court
     powerStation(g);   // the diesel power station and main substation past the quarter
+    innerQuarter(g);   // Ward No. 4, the inner quarter behind the daily market and the school, on its lane in from the market lane
     eastRoad(g);   // the east road from the front street by the police station to the main road by the power station, with Shan family compounds along it
     palaceLake(g);   // the lake west of the palace wall, with its island pavilion and bridge
     streetFrontage(g);
