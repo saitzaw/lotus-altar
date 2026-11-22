@@ -10,6 +10,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 - The east road joins the front street, past the police station, to the main road by the power station. Along it stand Shan family compounds, each house in its own fenced yard. Two of them are big walled family compounds with the parents' house of two storeys, a second house for a married child, a rice granary on posts (စပါးကျီ) and a well. On the east side there is also a vegetable garden with a field hut.
 
 ### Changed
+- On foot, the aiming mark in the middle of the screen is now a small, faint plus sign instead of a bright dot.
 - The pines round the temple, along the street and town road and on the stupa hill are now lychee trees: a broad dense dome of glossy leaves on a short forked trunk, hung with bunches of red fruit.
 - The power station's line now runs down the east road on concrete poles.
 - The east road meets the front street and the main road cleanly: one stretch of asphalt and pavement to the corner, no seam,
