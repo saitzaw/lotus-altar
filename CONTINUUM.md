@@ -85,6 +85,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-22: Lychee trees in place of the pines
+
+- From the owner's photo of a fruiting lychee: `pine()` in `09-trees-and-walls.js` is replaced by `lychee()`, and every place
+  that planted a pine now plants one (the back row behind the temple wall, the street trees by the gate, the town road's
+  verge, the stupa hill's slopes). A short dark trunk forks at about 1.5 m into four limbs under a broad dense dome of 48
+  glossy leaf clumps with a skirt hanging round the rim, and 3–5 red fruit hang off every clump. All `part()`s, so they
+  bake to instances. Fruit shows all year (the real crop is April–June). The waterfall cliff's ten instanced cone "pines"
+  in `11-waterfall-and-stream.js` are untouched.
+
 ### 2026-11-22: More fireworks, in every colour, on the night balloons
 
 - From the owner's Taunggyi photos: the fireworks balloon (`15g-balloon-ground.js`) now goes up three launches in five at night
@@ -166,17 +175,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   `FOLK.lotusLanterns`, `?lotuslanterns=1/0`. Shown day and night, glowing after dark. Hidden lanterns get `count = 0`, since the
   picking ray doesn't skip hidden meshes. `#festInfo` names the festival of lights when no other season shows.
 - Checked in headless Chromium at night on the terrace walk. No console errors.
-
-### 2026-11-21: the fire lotus ground on the stupa hill
-
-- New piece `15j-fire-lotus-ground.js` (`fireLotusGround`, `FIRE_GROUND`, `fireLotusArc`), called after `balloonBazaar`. It sits on the
-  lower terrace's free arc between the north stair (3.55 rad) and the west stair (−π/2), about 3.66–4.60 rad, r 44–75, built like the
-  balloon ground (field on a retaining wall, parapet, nine walkable terraces). The arc's outer edge stays 5–9 m off the pool and the
-  park in the stadium quarter and the north walk's start. Pines on the upper slope in that arc are skipped (seed still steps).
-- Three 24 m bamboo towers in rope rings (walkers can't enter the rings). The show (`FOLK.fireLotus`, `CONFIG.fireLotus` 19–24,
-  `?firelotus=1/0`, off in the rain): a tower every 100 s; racks catch from the foot up, then the lotus's burning stars drop trails.
-  Sparks are one points cloud (4,200), smoke a pool of 36 sprites, all in the grounds' frame.
-- The balloon ground's crowd figures moved out into `crowdKit(q)` (same random stream, so the balloon crowd is unchanged); both
-  grounds use it.
-- Checked in headless Chromium (night, mid-burn and lotus; day from the north stair's foot). No console errors.
-- No fireworks sound yet.

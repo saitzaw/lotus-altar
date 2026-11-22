@@ -170,7 +170,7 @@
     // modern street lights on the east pavement, their arms out over the road
     for (let z = z0 + 4; z < z1 - 2; z += 12) streetLight(g, roadX + roadW / 2 + 1.1, z, 0);
     // a row of trees in the strip between the temple wall and the road
-    for (let z = z0 + 8; z < z1 - 4; z += 9) (Math.round(z) % 2 ? pine : tree)(g, -35.3, z, .7, 70 + z | 0);
+    for (let z = z0 + 8; z < z1 - 4; z += 9) (Math.round(z) % 2 ? lychee : tree)(g, -35.3, z, .7, 70 + z | 0);
     // houses along the west side of the road, facing it
     const plots = [
       { W: 8, D: 7, floors: 2, shop: true, wall: 0, roof: 1 }, { W: 7, D: 7, floors: 2, shop: false, wall: 2, roof: 0 },

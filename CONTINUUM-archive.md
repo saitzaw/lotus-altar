@@ -5,6 +5,20 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-21: the fire lotus ground on the stupa hill
+
+- New piece `15j-fire-lotus-ground.js` (`fireLotusGround`, `FIRE_GROUND`, `fireLotusArc`), called after `balloonBazaar`. It sits on the
+  lower terrace's free arc between the north stair (3.55 rad) and the west stair (−π/2), about 3.66–4.60 rad, r 44–75, built like the
+  balloon ground (field on a retaining wall, parapet, nine walkable terraces). The arc's outer edge stays 5–9 m off the pool and the
+  park in the stadium quarter and the north walk's start. Pines on the upper slope in that arc are skipped (seed still steps).
+- Three 24 m bamboo towers in rope rings (walkers can't enter the rings). The show (`FOLK.fireLotus`, `CONFIG.fireLotus` 19–24,
+  `?firelotus=1/0`, off in the rain): a tower every 100 s; racks catch from the foot up, then the lotus's burning stars drop trails.
+  Sparks are one points cloud (4,200), smoke a pool of 36 sprites, all in the grounds' frame.
+- The balloon ground's crowd figures moved out into `crowdKit(q)` (same random stream, so the balloon crowd is unchanged); both
+  grounds use it.
+- Checked in headless Chromium (night, mid-burn and lotus; day from the north stair's foot). No console errors.
+- No fireworks sound yet.
+
 ### 2026-11-20: speed: static batching, a walk-surface index, adaptive pixel ratio
 
 - Measured first (headless Chromium on the GPU; setup in `MEMORY.md`). Outdoors the cost was draw calls: 7,550 plain meshes,

@@ -453,16 +453,16 @@
     MS.traverse(o => { if (o.isMesh) { o.castShadow = true; clickable(list, o, { tip: `${SHAN_NAMES.stupa} · the main stupa on the hill` }); } });
     const flood = new THREE.SpotLight(0xffe0b0, 0, 40, .5, .6, 1); flood.position.set(0, 4, -16); flood.target.position.set(0, 11, 0); MS.add(flood, flood.target);
     onDaylight(d => flood.intensity = 2.4 * (1 - d));
-    // pines on the slopes clear of the stair
+    // lychees on the slopes clear of the stair
     let seed = 400;
     for (let i = 0; i < 32; i++) {
       const a = i / 32 * TAU + .1, rr = rTop + 6 + (i % 4) * 8, x = Math.sin(a) * rr, zz = Math.cos(a) * rr;
       if (Math.abs(x) < 30 && zz < 0) continue;   // keep the stair and the monastery terraces clear
       if (onEast(x, zz, 8)) continue;               // and the east stair
-      if (onNorth(x, zz, 8) || onWest(x, zz, 8)) { seed++; continue; }   // and the north and west stairs (the seed still steps, so the other pines keep their shapes)
+      if (onNorth(x, zz, 8) || onWest(x, zz, 8)) { seed++; continue; }   // and the north and west stairs (the seed still steps, so the other lychees keep their shapes)
       { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 20) continue; }   // and the festival ground
       { const b = (Math.atan2(x, -zz) + TAU) % TAU, [f0, f1] = fireLotusArc(); if (rr > 30 && b > f0 - .05 && b < f1 + .05) { seed++; continue; } }   // and the fire lotus ground's terraces
       { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 12) continue; }   // and the big banyan's crown
-      const t = pine(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
+      const t = lychee(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
     }
   }
