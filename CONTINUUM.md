@@ -85,6 +85,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-22: More fireworks, in every colour, on the night balloons
+
+- From the owner's Taunggyi photos: the fireworks balloon (`15g-balloon-ground.js`) now goes up three launches in five at night
+  (`NIGHT_SET`), and its rack throws out more and brighter fireworks for 70 s of its climb: a fountain of white and gold sparks
+  with coloured stars in it, rockets that streak out trailing sparks of their colour and pop, and a shell every 1–3 s that bursts
+  into a ball of 100–180 stars of one colour or two. Colours come from `fwCol()`: a set of firework colours (red, green, gold,
+  orange, blue, pink, cyan, violet, white) or, 40% of the time, any hue. Two shared point pools (`fwPool`: 3000 fine sparks,
+  2000 big stars) and up to 40 rockets; nothing is thrown with reduced motion.
+
 ### 2026-11-22: Ward No. 4, the inner quarter behind the daily market
 
 - The empty block between the daily market and high school (west) and the east road's back fences (east) is now Ward No. 4
