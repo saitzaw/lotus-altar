@@ -9,9 +9,9 @@
     vaseOfLotus(g, -1.02, ALT.z - .12);
   }
   // in the Lotus Temple hall, right of Shakyamuni: x, z of the trunk and the tree's size
-  const WISH_TREE = { x: 4.7, z: 3.3, s: .72 };
+  const WISH_TREE = { x: 4.7, z: 3.3, s: .72, cells: [.03, .018] };   // cells: [body, head]; the figure is small, so it is meshed more coarsely than the hall statue
   // the wishing tree at (x, z) scaled by s, ringed by a low fence, with a small Victorious Buddha seated on a stone before its trunk
-  function wishTree(hall, n, { x, z, s }) {
+  function wishTree(hall, n, { x, z, s, cells }) {
     const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); hall.add(g);
     const list = picks[n];
     const rnd = rng(7), bark = std({ color: 0x4a3222, roughness: .9 }), leaf = std({ color: 0x2f5a26, roughness: .8, flatShading: true });
@@ -20,7 +20,7 @@
     mesh(new THREE.CylinderGeometry(.62, .7, .5, 8), M.stone, 0, .25, 0, seat);
     const bud = new THREE.Group(); bud.position.y = .5; bud.scale.setScalar(.5); seat.add(bud);
     throne(bud, M.gold);
-    sculptFigure("jaya", bud, "the Victorious Buddha");
+    sculptFigure("jaya", bud, "the Victorious Buddha", null, cells);
     const trunk = mesh(new THREE.CylinderGeometry(.24, .4, 1.5, 16), bark, TX, PLAT + .75, TZ, g);
     clickable(list, trunk, { tip: "Hang a wish ribbon", act: "wish" });
     function branch(from, dir, len, rad, depth) {

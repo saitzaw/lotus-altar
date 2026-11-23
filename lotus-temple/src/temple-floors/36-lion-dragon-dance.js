@@ -381,7 +381,7 @@
     const moonLight = new THREE.DirectionalLight(0xb8c4ff, .7); moonLight.position.set(-30, 50, 40); g.add(moonLight);
     const sunLight = new THREE.DirectionalLight(0xfff0d8, 0); sunLight.position.set(35, 60, -30); g.add(sunLight);
     const lights = () => {
-      const d = daylight, m = celestial.moonNight;
+      const d = daylight, m = celestial.moon;
       // on Halloween night, once the houses are dark, the town gives off no glow: the sky's fill light all but goes,
       // the moonlight thins and the roads fall dark between the street lamps
       const dark = (1 - d) * FEST.out;
@@ -392,7 +392,7 @@
       if (moonUp) moonLight.position.copy(m.dir).multiplyScalar(80);
       // moonlight scales with how much of the moon is lit and whether it is up; starlight keeps a little
       moonLight.intensity = (1 - d) * (moonUp ? .25 + .6 * celestial.fraction : .15) * (1 - .55 * dark);
-      sunLight.intensity = 1.5 * d * clamp(celestial.sun.y * 2.5, .35, 1);
+      sunLight.intensity = 1.5 * d * clamp(Math.max(celestial.sun.y, 0) * 2.5, 0, 1);   // no sun once it has set
     };
     onDaylight(lights); onCelestial(lights);
     const warm = new THREE.SpotLight(0xffb070, 1.6, 70, .5, .7, 1); warm.position.set(14, 4, 24); warm.target.position.set(0, 10, 0); g.add(warm, warm.target);

@@ -53,6 +53,12 @@ lesson when you learn one, and delete a lesson once it stops being true.
   camera's culling left them: whatever is out of the player's view is hidden, often the roof right overhead. Call
   `temple.uncull(x, z, r)` before the pass and hide what it returns straight after.
 
+## Shadows and layers (r128)
+
+- r128's `WebGLShadowMap` decides which objects cast by testing `object.layers` against the **viewer's** camera, not
+  `light.shadow.camera.layers`. A mesh moved to another layer to be "shadow only" casts nothing. To make a mesh cast a shadow
+  without showing, keep it on layer 0 and give it a material with `colorWrite: false, depthWrite: false`.
+
 ## The sky
 
 - "The moon is gone" usually means the real moon is below the horizon: the sky follows the real moon over the temple
@@ -83,8 +89,8 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 1. Build, copy `dist/` to a throwaway folder under `$HOME` (snap Chromium can't use `/tmp`), and serve it on a spare port.
 2. In the copy's `lotus-altar.js` (the joined file in `dist/`) (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
    `window.__t={camera,controls,renderer,world,enterWalk:(...a)=>enterWalk(...a)};`
-3. The page opens at night, and the Day button is not remembered. Force day by opening the page as `http://localhost:<port>/?day=1`
-   (that shortcut works on localhost only).
+3. The page follows the real sun, and there is no Day button, so a run after dark opens at night. Force day by opening the page as `http://localhost:<port>/?day=1`
+   (that shortcut works on localhost only). The sun and moon still sit where they are at that moment.
 4. Drive the test by counting `requestAnimationFrame` frames, not with timers. At frame ~4 call `__t.enterWalk([x,z],[lx,lz],"t")`.
    At frame ~5–7, set `camera.position` and `camera.lookAt` yourself, call `temple.cull(camera, 800)` (expose it on `__t`; else
    the town's distance culling still matches the old view and only the instanced windows show, floating), then `renderer.render(world, camera)`, then in the same

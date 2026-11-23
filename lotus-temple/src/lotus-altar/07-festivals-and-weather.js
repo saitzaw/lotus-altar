@@ -247,9 +247,10 @@ function weatherStep(dt) {
 }
 const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
 
-// day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit.
-// the Day button lasts for this visit. ?day=1 or ?day=0 forces it, and only on the developer's computer.
-let daylight = devParam("day") === "1" ? 1 : 0;
+// day and night outside follow the sun over the temple right now. There is no Day button.
+// ?day=1 or ?day=0 holds one look, and only on the developer's computer.
+const dayParam = devParam("day");
+let dayChoice = dayParam === "1" ? 1 : dayParam === "0" ? 0 : null, daylight = dayChoice == null ? 0 : dayChoice;
 // the sky and haze outside: black at night, under the stars and moon
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
@@ -269,15 +270,9 @@ function applySky() {
   lampsOn = 1 - d;
   lanternMat.emissiveIntensity = CONFIG.lanterns.glowStrength * (1 - d) + .05;
   lanterns.forEach(l => l.userData.glow.material.opacity = .45 * (1 - d));
-  const btn = $("timeBtn");
   const note = $("skyInfo");
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }
   festNote();
-  if (btn) { btn.textContent = daylight > .5 ? "☾ Night" : "☀ Day"; btn.title = daylight > .5 ? "Switch to night" : "Switch to day"; btn.setAttribute("aria-pressed", String(daylight > .5)); }
 }
 updateCelestial();
 setInterval(() => { updateCelestial(); applySky(); }, 5 * 6e4);   // the sky moves on while the page is open
-$("timeBtn").addEventListener("click", () => {
-  const from = daylight, to = daylight > .5 ? 0 : 1;
-  tween(reduceMotion ? .01 : 1.6, t => { daylight = from + (to - from) * easeInOut(t); applySky(); }, () => { daylight = to; applySky(); });
-});

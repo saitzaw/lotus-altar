@@ -60,28 +60,21 @@ function moonTexture(fraction) {
 let skyNote = "";
 function updateCelestial() {
   const { lat, lon, tz } = CONFIG.sky, now = Date.now(), deg = Math.PI / 180;
-  const wall = z => new Date(new Date(now).toLocaleString("en-US", { timeZone: z })).getTime();
-  const off = wall(tz) - wall("UTC"), midnight = Math.floor((now + off) / 864e5) * 864e5 - off;   // midnight on the temple's clock
-  const sunNow = Astro.sun(now, lat, lon).alt;
-  const dayT = sunNow > 8 * deg ? now : midnight + 12 * 36e5;            // the day view: now if it is daytime there, else today's noon
-  const nightT = sunNow < -8 * deg ? now : midnight + 22 * 36e5;         // the night view: now if it is night there, else 10 pm tonight
+  const sd = Astro.sun(now, lat, lon);   // where the sun really is over the temple at this moment
   const ill = Astro.illumination(now);
-  const moonAt = t => {
-    const m = Astro.moon(t, lat, lon), up = m.alt > -.01;
-    return { up, dir: skyDir(m.az, Math.max(m.alt, .02)), rot: Astro.illumination(t).angle - m.q, az: m.az, alt: m.alt };
-  };
-  const sd = Astro.sun(dayT, lat, lon), mN = moonAt(nightT), mD = moonAt(dayT);
-  temple.setCelestial({ sun: skyDir(sd.az, Math.max(sd.alt, .1)), moonNight: mN, moonDay: mD, moonTex: moonTexture(ill.fraction), fraction: ill.fraction });
-  // a line for the HUD: what is in the sky right now in the chosen view, and when the moon rises if it is down
+  const mNow = Astro.moon(now, lat, lon), up = mNow.alt > -.01;
+  const moon = { up, dir: skyDir(mNow.az, Math.max(mNow.alt, 0)), rot: ill.angle - mNow.q, az: mNow.az, alt: mNow.alt };
+  // full day once the sun is 8° up, full night once it is 8° down, twilight between. ?day= on localhost can hold one look.
+  if (dayChoice == null) daylight = clamp((sd.alt / deg + 8) / 16, 0, 1);
+  temple.setCelestial({ sun: skyDir(sd.az, sd.alt), moon, moonTex: moonTexture(ill.fraction), fraction: ill.fraction });
   const fmt = t => new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: tz });
   const height = a => a > 60 * deg ? "high in the " : a < 15 * deg ? "low in the " : "in the ";
   const rise = from => { for (let t = from; t < from + 864e5 * 1.1; t += 6e5) if (Astro.moon(t, lat, lon).alt > 0) return t; return null; };
-  const moonText = m => {
-    const name = phaseName(ill.phase), pct = Math.round(ill.fraction * 100);
-    if (m.up) return `${name} moon, ${pct}% lit, ${height(m.alt)}${compass(m.az)}`;
-    const r = rise(m === mN ? nightT : dayT);
-    return `${name} moon (${pct}% lit) is below the horizon${r ? ", rises " + fmt(r) : ""}`;
-  };
-  skyNote = { night: `${nightT === now ? "Now" : "Tonight " + fmt(nightT)} in ${CONFIG.sky.place} · ${moonText(mN)}`,
-              day: `${dayT === now ? "Now" : "Today " + fmt(dayT)} in ${CONFIG.sky.place} · sun ${height(sd.alt)}${compass(sd.az)} · ${mD.up ? moonText(mD).replace(" moon,", " moon also up,") : "no moon in the sky"}` };
+  const name = phaseName(ill.phase), pct = Math.round(ill.fraction * 100), rises = up ? null : rise(now);
+  const moonText = up ? `${name} moon, ${pct}% lit, ${height(mNow.alt)}${compass(mNow.az)}`
+    : `${name} moon (${pct}% lit) is below the horizon${rises ? ", rises " + fmt(rises) : ""}`;
+  const sunText = sd.alt > 0 ? `sun ${height(sd.alt)}${compass(sd.az)}` : "sun is down";
+  const clock = fmt(now);
+  skyNote = { night: `Now ${clock} in ${CONFIG.sky.place} · ${moonText}`,
+              day: `Now ${clock} in ${CONFIG.sky.place} · ${sunText} · ${up ? moonText.replace(" moon,", " moon also up,") : "no moon in the sky"}` };
 }

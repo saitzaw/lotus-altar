@@ -465,4 +465,18 @@
       { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 12) continue; }   // and the big banyan's crown
       const t = lychee(H, x, zz, .9, seed++); t.position.y = groundAt(cx + rr, cz) - .1;
     }
+    // a second planting on the open grass, staggered between the first and running further down the slope
+    const ky = lowerKyaungSpot(), whX = Math.sin(WIHAN.a) * WIHAN.r, whZ = -Math.cos(WIHAN.a) * WIHAN.r;
+    let seed2 = 910;
+    for (let i = 0; i < 48; i++) {
+      const a = (i + .5) / 48 * TAU + .4, rr = rTop + 12 + (i % 4) * 13, x = Math.sin(a) * rr, zz = Math.cos(a) * rr;   // radii 25, 38, 51, 64
+      if (rr > rBase - 8) { seed2++; continue; }
+      if (Math.abs(x) < 24 && zz < -2) { seed2++; continue; }   // the main stair and the monastery terraces in front of it
+      if (onEast(x, zz, 7) || onNorth(x, zz, 7) || onWest(x, zz, 7)) { seed2++; continue; }
+      { const f = festivalSpot(); if (Math.hypot(x - f.x, zz - f.z) < 22) { seed2++; continue; } }
+      { const b = (Math.atan2(x, -zz) + TAU) % TAU, [f0, f1] = fireLotusArc(); if (rr > 30 && b > f0 - .08 && b < f1 + .08) { seed2++; continue; } }
+      { const b = bigBanyanSpot(); if (Math.hypot(x - b.x, zz - b.z) < 14) { seed2++; continue; } }
+      if (Math.hypot(x - ky.x, zz - ky.z) < 16 || Math.hypot(x - whX, zz - whZ) < 18) { seed2++; continue; }   // the lower monasteries
+      const t = lychee(H, x, zz, .78 + (i % 3) * .1, seed2++); t.position.y = groundAt(cx + x, cz + zz) - .1;
+    }
   }

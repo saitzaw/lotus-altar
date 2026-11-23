@@ -58,8 +58,8 @@
       hands.forEach((h, i) => im.setMatrixAt(i, m4.compose(...h[key])));
       im.castShadow = shadow; st.add(im);
     };
-    set(new THREE.CylinderGeometry(.018, .026, 1, 8), M.gold, "arm", true);
-    set(new THREE.SphereGeometry(1, 12, 8), M.gold, "palm", true);
+    set(new THREE.CylinderGeometry(.018, .026, 1, 8), M.gold, "arm", false);   // the image's stand-in casts the shadow, so these many arms are not drawn into the shadow map
+    set(new THREE.SphereGeometry(1, 10, 6), M.gold, "palm", false);
     set(new THREE.SphereGeometry(1, 8, 6), std({ color: 0x1a120c, roughness: .4 }), "eye", false);
   }
   function guanyinShop(g, n) {

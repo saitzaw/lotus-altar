@@ -5,6 +5,47 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-22: Ward No. 4, the inner quarter behind the daily market
+
+- The empty block between the daily market and high school (west) and the east road's back fences (east) is now Ward No. 4
+  (`innerQuarter`, `28g-inner-quarter.js`, `WARD4`). Its lane leaves the market lane between the daily market (z 102.8) and the
+  school wall (z 111) and runs east to a tea shop facing straight down it; there it meets the quarter's north–south lane
+  (x 114…118, z 81…199.5). Both are `LANES` entries, so `backStreets` draws them with drains, poles and village lamps.
+- 18 houses (wood and concrete, one and two storeys) in two rows, bananas, shade trees, washing lines, a well; the ward
+  administrator's office at the south end (with the flag) and the quarter's dhamma hall (ဓမ္မာရုံ, exterior only) at the north
+  end, short of the power station's back wall (z 214). Board "အမှတ် (၄) ရပ်ကွက် / Ward No. 4" (Burmese) at the lane's mouth.
+- Checked with top-down and street-level headless renders. No Shan wording added.
+
+### 2026-11-22: the east road's junctions, its lots closed, lazy matrices
+
+- Junctions: the front street's own asphalt, pavements and centre dashes now run on to the east road (`EX = EAST_ROAD.x1` in
+  `templeGrounds`, `09-…`); `eastRoad` no longer lays a separate stretch, which had a different asphalt colour and left a seam
+  at x 145. The main road's south drain and white edge line now stop at every mouth that joins it (`LANES` ending at its z0,
+  and `EAST_ROAD`), the road's east end gets an edge line, and the east road's east verge carries on round that end (to z 262.7).
+- Lots: on the east row the side fences were put on local −x, which there is north, so three edges were open (south of the
+  first lot, between lots 4 and 5, north of the last) and two doubled the big compounds' walls. Fences now go on each lot's
+  world-south side (`south = -dir * w / 2`). Checked every boundary on both rows numerically: each closed exactly once.
+- Speed: `lazyMatrices` (`37-culling.js`, `CONFIG.cull.lazy`): a cell item the culling has hidden skips three.js's
+  per-frame matrix update until it's shown again (or its parent moves). Measured (headless, real GPU): `world.updateMatrixWorld`
+  3.2–3.4 ms → 1.9–2.5 ms per frame at the gate, market, town and east road; draw calls and pictures unchanged.
+
+### 2026-11-22: the east road and its Shan family compounds
+
+- New piece `28f-east-road-compounds.js`, `eastRoad(g)` (called after `powerStation` in `36-…`). The east road (carriageway
+  x 155.5…162.5, dirt verges) runs from the front street, carried on east from x 145 to 162.5 past the police station, north to the
+  main road, whose last `main` lane now ends at x 162.5 (median gap `[150, 170]` in `MAIN_GAPS`). The front street's pavements
+  are carried to the corner. Give-way lines at both ends; street lights on the east verge (`EAST_LIGHTS`).
+- The power station's line now leaves over its back wall and runs down the west verge on ten concrete poles (`EAST_POLES`, used
+  by `powerStation`); it no longer heads toward the bamboo grove.
+- Lots (`EAST_LOTS`): west row 7 (fronts x 154.3, z 74…194), east row 10 (fronts x 163.8, z 64…251). Each lot is its own group,
+  laid out like the Hluttaw road's (front fence at local z 0, yard +z) and turned to face the road. Kinds: a family lot
+  (`familyLot`, the Hluttaw road's layout), a big walled compound (`bigCompound`: a two-storey wooden house at the back, a
+  married child's one-storey concrete house facing the yard, a rice granary `granary` (စပါးကျီ, Burmese, clickable), a well,
+  a washing line), and a vegetable garden with a field hut (`vegGarden`, clickable beds).
+- The Hluttaw road's fence, gate and water pot stand builders moved into `lotKit(r)` in `28b-…` (same random stream, so
+  that row is unchanged); both rows use it.
+- Checked in headless Chromium: a walk-surface map of the area, three views from above and one from the road. No console errors.
+
 ### 2026-11-21: Ward No. 5, a Shan house, municipal and immigration offices, a diesel power station
 
 - New piece `28e-ward-five-offices-and-power.js`, called after `townshipCourt` in `36-…`: `shanTwoStorey` (`SHAN2`), `wardQuarter`

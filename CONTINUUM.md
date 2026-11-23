@@ -85,9 +85,29 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-23: The Buddhas draw faster in the halls
+
+- `CONFIG.sculpt` cells are body 20 mm, head 12 mm (lions 22 / 14 mm). The old 12 mm / 5.8 mm mesh was about 600,000 triangles and was drawn again into a 2048² shadow map. The detailed body and head no longer cast a shadow (`placeFigure` in `02-hall-and-guanyin.js`): a third mesh at `shadowCell` 40 mm casts it instead, with `shadowMat` (no colour, no depth write) so it never shows on screen. It stays on layer 0: a first try put it on layer 1 with `shadow.camera.layers.enable(1)`, and the statues cast no shadow at all, because r128 tests shadow casters against the main camera's layers. Those shadow maps are 1024². Porcelain and gilt are `MeshStandardMaterial`, so there is no clearcoat pass. Indices are 16-bit where the mesh fits. The wish-tree Buddha is its own coarser mesh (`cells` .03 / .018), and the thousand arms do not cast shadows.
+
+### 2026-11-23: No Look closer button in the halls
+
+- The pill `#viewBtn` ("Look closer" / "Full view") is gone from `lotus-altar.html`. Its click in `14-views-and-stairs.js` tweened the camera onto the image's face (`CONFIG.camera.closeUp`, or a place's own `closeUp`) over 1.3 s, which swung the view and made the hall dizzy. Statue halls are walked on foot; nothing flies the camera in. `closeUp` no longer gates `walkStep`, and the `closeUp` views are gone from `CONFIG`. The sky helpers keep a single moon sprite; `celestial.moon` replaces `moonNight` / `moonDay`.
+
+### 2026-11-23: Fireworks start 6–12 m above the ground
+
+- On a fireworks balloon (`15g-balloon-ground.js`) the rack stays quiet on the pad. Each launch draws its own start with `rng(9100 + c * 13 + p.k * 7)`: a height `h0` from 6 to 12 m above the terrace, turned into climb time `fw0` from the mouth's rise (`1.7 + climb·t + accel·t²`). Sparks, rockets and shells then run until a few seconds before the balloon is gone. Shells burst at a random point around the balloon, kept above the terrace, every 0.4–4 s.
+
+### 2026-11-23: More lychees on the stupa hill
+
+- A second planting after the first ring in `shanStupaHill` (`13-stupa-hill.js`): 48 more spots in four bands (radii 25, 38, 51, 64 m from the hilltop), staggered so they fall between the first trees and run further down the open grass. The same ground stays clear: the four stairs, both monastery terraces, the festival ground, the fire lotus arc, the big banyan, and the two lower monasteries. Seed 910, so the first ring is unchanged.
+
+### 2026-11-23: The sun and moon follow the clock
+
+- `updateCelestial` in `06-sun-and-moon.js` no longer poses a noon sun for the day view and a 10 pm moon for the night view. Both are where they are over Bangkok (`CONFIG.sky`) at `Date.now()`, including the moon's phase, and a body below the horizon is not drawn. `daylight` eases with the sun (full by 8° up, gone by 8° down). The Day/Night button is gone from the HUD. `?day=1` / `?day=0` on localhost still holds one look for a test. The outdoor sun light in `36-lion-dragon-dance.js` goes out once the sun has set. Checked against the clock for this afternoon: the sun is up in the west, so the page opens in daylight.
+
 ### 2026-11-23: Nothing is saved in the browser
 
-- Offerings (`state` in `01-catalogue-renderer-materials.js`), the Day/Night choice, festival tokens and pond coins used to be written to `localStorage`. They now last for this visit only. Each opening starts from the sample altar, at night, with 100 tokens and an empty pond. `save()` is still called where the altar changes, and it does nothing. `?day=1` / `?day=0` forces the sky on localhost. Old keys (`lotus-altar-v2`, `lotus-altar-daylight`, `lotus-altar-tokens`, `lotus-altar-coins`) are left untouched in browsers that already have them.
+- Offerings (`state` in `01-catalogue-renderer-materials.js`), the Day/Night choice, festival tokens and pond coins used to be written to `localStorage`. They now last for this visit only. Each opening starts from the sample altar, with 100 tokens and an empty pond. `save()` is still called where the altar changes, and it does nothing. `?day=1` / `?day=0` forces the sky on localhost. Old keys (`lotus-altar-v2`, `lotus-altar-daylight`, `lotus-altar-tokens`, `lotus-altar-coins`) are left untouched in browsers that already have them.
 
 ### 2026-11-22: Lychee trees in place of the pines
 
@@ -106,44 +126,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   into a ball of 100–180 stars of one colour or two. Colours come from `fwCol()`: a set of firework colours (red, green, gold,
   orange, blue, pink, cyan, violet, white) or, 40% of the time, any hue. Two shared point pools (`fwPool`: 3000 fine sparks,
   2000 big stars) and up to 40 rockets; nothing is thrown with reduced motion.
-
-### 2026-11-22: Ward No. 4, the inner quarter behind the daily market
-
-- The empty block between the daily market and high school (west) and the east road's back fences (east) is now Ward No. 4
-  (`innerQuarter`, `28g-inner-quarter.js`, `WARD4`). Its lane leaves the market lane between the daily market (z 102.8) and the
-  school wall (z 111) and runs east to a tea shop facing straight down it; there it meets the quarter's north–south lane
-  (x 114…118, z 81…199.5). Both are `LANES` entries, so `backStreets` draws them with drains, poles and village lamps.
-- 18 houses (wood and concrete, one and two storeys) in two rows, bananas, shade trees, washing lines, a well; the ward
-  administrator's office at the south end (with the flag) and the quarter's dhamma hall (ဓမ္မာရုံ, exterior only) at the north
-  end, short of the power station's back wall (z 214). Board "အမှတ် (၄) ရပ်ကွက် / Ward No. 4" (Burmese) at the lane's mouth.
-- Checked with top-down and street-level headless renders. No Shan wording added.
-
-### 2026-11-22: the east road's junctions, its lots closed, lazy matrices
-
-- Junctions: the front street's own asphalt, pavements and centre dashes now run on to the east road (`EX = EAST_ROAD.x1` in
-  `templeGrounds`, `09-…`); `eastRoad` no longer lays a separate stretch, which had a different asphalt colour and left a seam
-  at x 145. The main road's south drain and white edge line now stop at every mouth that joins it (`LANES` ending at its z0,
-  and `EAST_ROAD`), the road's east end gets an edge line, and the east road's east verge carries on round that end (to z 262.7).
-- Lots: on the east row the side fences were put on local −x, which there is north, so three edges were open (south of the
-  first lot, between lots 4 and 5, north of the last) and two doubled the big compounds' walls. Fences now go on each lot's
-  world-south side (`south = -dir * w / 2`). Checked every boundary on both rows numerically: each closed exactly once.
-- Speed: `lazyMatrices` (`37-culling.js`, `CONFIG.cull.lazy`): a cell item the culling has hidden skips three.js's
-  per-frame matrix update until it's shown again (or its parent moves). Measured (headless, real GPU): `world.updateMatrixWorld`
-  3.2–3.4 ms → 1.9–2.5 ms per frame at the gate, market, town and east road; draw calls and pictures unchanged.
-
-### 2026-11-22: the east road and its Shan family compounds
-
-- New piece `28f-east-road-compounds.js`, `eastRoad(g)` (called after `powerStation` in `36-…`). The east road (carriageway
-  x 155.5…162.5, dirt verges) runs from the front street, carried on east from x 145 to 162.5 past the police station, north to the
-  main road, whose last `main` lane now ends at x 162.5 (median gap `[150, 170]` in `MAIN_GAPS`). The front street's pavements
-  are carried to the corner. Give-way lines at both ends; street lights on the east verge (`EAST_LIGHTS`).
-- The power station's line now leaves over its back wall and runs down the west verge on ten concrete poles (`EAST_POLES`, used
-  by `powerStation`); it no longer heads toward the bamboo grove.
-- Lots (`EAST_LOTS`): west row 7 (fronts x 154.3, z 74…194), east row 10 (fronts x 163.8, z 64…251). Each lot is its own group,
-  laid out like the Hluttaw road's (front fence at local z 0, yard +z) and turned to face the road. Kinds: a family lot
-  (`familyLot`, the Hluttaw road's layout), a big walled compound (`bigCompound`: a two-storey wooden house at the back, a
-  married child's one-storey concrete house facing the yard, a rice granary `granary` (စပါးကျီ, Burmese, clickable), a well,
-  a washing line), and a vegetable garden with a field hut (`vegGarden`, clickable beds).
-- The Hluttaw road's fence, gate and water pot stand builders moved into `lotKit(r)` in `28b-…` (same random stream, so
-  that row is unchanged); both rows use it.
-- Checked in headless Chromium: a walk-surface map of the area, three views from above and one from the road. No console errors.

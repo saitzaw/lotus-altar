@@ -6,7 +6,12 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-23
 
 ### Changed
-- The shrine no longer remembers you in the browser. Offerings, the merit board, the Day/Night choice, festival tokens and coins in the lotus pond last for this visit only. Each opening starts from the sample altar, at night, with a full purse of tokens and an empty pond. On your own computer, `?day=1` still opens in daylight.
+- The Buddhas draw faster in their halls. The image is meshed a little more coarsely, its shadow comes from a coarse stand-in instead of the detailed surface, and the gilt and porcelain no longer use a second shine pass. The thousand arms and the small Buddha under the wishing tree are no longer drawn into the shadow map at full detail.
+- The Look closer button is gone from the statue halls. It flew the camera into the image's face, which was dizzy and out of place in the shrine. You still walk up to the altar yourself.
+- The fireworks balloon saves its show until it is 6–12 m above the ground, a different height each flight, then the shells burst at random around it as it climbs.
+- More lychee trees on the stupa hill's open slopes, between the first ring and further down the grass, clear of the stairs, the monasteries and the festival grounds.
+- The sun and the moon stand where they really are over the temple at the moment you open the page, and the light follows the sun: day, twilight or night. The Day/Night button is gone.
+- The shrine no longer remembers you in the browser. Offerings, the merit board, the Day/Night choice, festival tokens and coins in the lotus pond last for this visit only. Each opening starts from the sample altar, with a full purse of tokens and an empty pond.
 
 ## 2026-11-22
 

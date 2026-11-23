@@ -1,13 +1,3 @@
-// close-up of Guanyin's face and back to the full hall
-let closeUp = false;
-$("viewBtn").addEventListener("click", () => {
-  closeUp = !closeUp;
-  const p0 = camera.position.clone(), t0 = controls.target.clone();
-  const view = closeUp ? placeInfo(current).closeUp || CONFIG.camera.closeUp : CONFIG.camera.full, p1 = V(...view.pos), t1 = V(...view.target);
-  tween(reduceMotion ? .01 : 1.3, t => { const e = easeInOut(t); camera.position.lerpVectors(p0, p1, e); controls.target.lerpVectors(t0, t1, e); });
-  $("viewBtn").textContent = closeUp ? "Full view" : "Look closer";
-});
-
 // out onto the balcony corridor of an upper hall through its lattice doors, and back in
 // and into the stair room, where the spiral runs up and down through the floors
 const CORRIDOR = { minDistance: .2, maxDistance: 1.4, minPolarAngle: .35, maxPolarAngle: 2.0 };
@@ -40,8 +30,7 @@ function setView(v, instant = false) {
         lookFrom(V(-5.6, EYE, -1.3), V(-1, EYE, 3));
         $("hint").textContent = placeInfo(current).hint;
       }
-      $("viewBtn").hidden = inStairs || !placeInfo(current).statue;
-      closeUp = false; stairButtons();
+      stairButtons();
       $("walkPad").hidden = false;
     };
     if (instant) go(); else fadeCut(go);
@@ -62,8 +51,6 @@ function setView(v, instant = false) {
   const f = placeInfo(current);
   $("hint").textContent = inCorridor ? "The balcony corridor runs right round this storey. Walk it with the arrows or W A S D, turn with ◀ ▶, drag to look; tap the lattice doors to go back inside."
     : inStairs ? "The stair room. The spiral runs through every floor of the pagoda: tap the stairs or a sign to go up or down, or tap the door to go back into the hall." : f.hint;
-  $("viewBtn").hidden = inCorridor || inStairs || !f.statue;
-  closeUp = false; $("viewBtn").textContent = "Look closer";
   stairButtons();
   if ((inMarket || typeof current === "number") && !inCorridor && !inStairs && v === "hall") setTimeout(() => { if (!inMarket) stayFirstPerson(current); else lookFrom(V(camera.position.x, EYE, camera.position.z), controls.target.clone().setY(EYE)); }, reduceMotion ? 0 : 1450);   // back into a pagoda hall on foot
   $("walkPad").hidden = inStairs;

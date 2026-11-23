@@ -55,9 +55,9 @@ window.TempleFloors = function TempleFloors(ctx) {
   const COP = { on: false, night: true, walking: false, see: 16, speed: 2.1, beat: 1.2, arrest: 1, hold: 30, news: null, at: null };
   const poleLights = [];   // { x, z, set(lit) } in the grounds' frame
   const lerpC = (a, b, d) => new THREE.Color(a).lerp(new THREE.Color(b), d);
-  // the real sun and moon, set from the main script: directions for the day view and the night view (temple frame:
-  // +z south, +x east, +y up), whether each is above the horizon, and the moon's phase texture and tilt
-  const celestial = { sun: V(.3, .8, .5), moonDay: null, moonNight: null, moonTex: null, fraction: .5 };
+  // the real sun and moon for this moment, set from the main script (temple frame: +z south, +x east, +y up),
+  // whether the moon is above the horizon, and its phase texture and tilt
+  const celestial = { sun: V(.3, .8, .5), moon: null, moonTex: null, fraction: .5 };
   const celestialParts = [];
   const onCelestial = fn => { celestialParts.push(fn); fn(); };
   // a day sky laid over a night sky of radius r: a blue dome that fades in, the sun, the stars fading out,
@@ -77,31 +77,26 @@ window.TempleFloors = function TempleFloors(ctx) {
     parent.add(dome);
     const sun = glowSprite(0xfff2c8, r * .16, 1); sun.material.fog = false; parent.add(sun);
     const core = glowSprite(0xffffff, r * .05, 1); core.material.fog = false; parent.add(core);
-    // two moons: where it stands in the night view and where it stands in the day view; each fades with its view
-    const moonSprite = () => {
-      const disc = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, fog: false, toneMapped: false }));
-      disc.scale.setScalar(r * .07); parent.add(disc);
-      const halo = glowSprite(0xdfe6ff, r * .22, .5); halo.material.fog = false; parent.add(halo);
-      return { disc, halo };
-    };
-    const mN = moonSprite(), mD = moonSprite();
-    [dome, sun, core, mN.disc, mN.halo, mD.disc, mD.halo].forEach(o => o.userData.noCull = true);   // they show and hide themselves
-    const place = (m, info, alpha) => {
-      const up = info && info.up;
-      m.disc.visible = m.halo.visible = !!up && alpha > .001;
-      if (!up) return;
-      m.disc.position.copy(squash(info.dir, top)).multiplyScalar(r * .88); m.halo.position.copy(m.disc.position);
-      m.disc.material.map = celestial.moonTex; m.disc.material.rotation = info.rot; m.disc.material.needsUpdate = true;
-      m.disc.material.opacity = alpha; m.halo.material.opacity = alpha * (.15 + .45 * celestial.fraction);
+    // the moon, where it stands right now: its lit face and a soft halo
+    const disc = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, fog: false, toneMapped: false }));
+    disc.scale.setScalar(r * .07); parent.add(disc);
+    const halo = glowSprite(0xdfe6ff, r * .22, .5); halo.material.fog = false; parent.add(halo);
+    [dome, sun, core, disc, halo].forEach(o => o.userData.noCull = true);   // they show and hide themselves
+    const placeMoon = (info, alpha) => {
+      disc.visible = halo.visible = alpha > .001;
+      if (!disc.visible) return;
+      disc.position.copy(squash(info.dir, top)).multiplyScalar(r * .88); halo.position.copy(disc.position);
+      disc.material.map = celestial.moonTex; disc.material.rotation = info.rot; disc.material.needsUpdate = true;
+      disc.material.opacity = alpha; halo.material.opacity = alpha * (.15 + .45 * celestial.fraction);
     };
     const update = () => {
-      const d = daylight;
+      const d = daylight, sunUp = celestial.sun.y > 0;
       dome.material.opacity = d; dome.visible = d > .001;
       sun.position.copy(squash(celestial.sun, top)).multiplyScalar(r * .88); core.position.copy(sun.position);
-      sun.material.opacity = d; core.material.opacity = d; sun.visible = core.visible = d > .001;
+      sun.material.opacity = sunUp ? d : 0; core.material.opacity = sunUp ? d : 0; sun.visible = core.visible = sunUp && d > .001;
       if (stars) stars.material.opacity = 1 - d;
-      place(mN, celestial.moonNight, 1 - d);
-      place(mD, celestial.moonDay, d * .7);
+      const info = celestial.moon;
+      placeMoon(info, info && info.up ? 1 - .3 * d : 0);   // paler by day, when it is up in the afternoon
     };
     onDaylight(update); onCelestial(update);
   }

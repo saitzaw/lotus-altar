@@ -183,7 +183,7 @@
     // lights: warm lamplight, the key on the image from the front, a glow behind the throne, cool light from the windows
     g.add(new THREE.HemisphereLight(0xffd9a8, 0x2a1208, .36));
     const key = new THREE.SpotLight(0xffd6a0, 1.5, 24, .6, .6, 1); key.position.set(2.4, 5.6, 5.5); key.target.position.set(0, 1.8, -1.6); g.add(key, key.target);
-    key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
+    key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
     const back = new THREE.PointLight(0xffb060, 1.1, 7, 2); back.position.set(0, 2.8, -2.8); g.add(back);
     const side = new THREE.DirectionalLight(0x6f86d8, .3); side.position.set(-6, 4, -1); g.add(side);
   }

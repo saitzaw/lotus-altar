@@ -479,7 +479,7 @@
         return A;
       });
       const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, ring, wick, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      return { p, G, ring, wick, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, fw0: 3, fw1: 91, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
@@ -590,6 +590,11 @@
           b.cyc = c; b.mode = want;
           const set = want === "day" ? DAY_SET : want === "night" ? NIGHT_SET : null, kind = set ? set[(c * pads.length + p.k) % set.length] : -1;
           if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; if (kind >= 0) b.shapes[kind].visible = true; b.kind = kind; }
+          if (kind >= 0 && DEFS[kind].fireworks) {   // each flight starts at its own height, 6–12 m above the terrace, then keeps going
+            const q = rng(9100 + c * 13 + p.k * 7), h0 = 6 + q() * 6, lift = mouth0 - top;
+            const disc = B.climb * B.climb - 4 * B.accel * (lift - h0);
+            b.fw0 = (-B.climb + Math.sqrt(disc)) / (2 * B.accel); b.fw1 = B.rise - 4;
+          }
         }
         if (b.kind < 0) { G.visible = false; p.fire.visible = false; p.glow.material.opacity = 0; p.cord.visible = false; return; }
         busy = true;
@@ -611,14 +616,15 @@
         const burn = held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
         const crown = mouth0 + Z.h * (.45 + .55 * s), mastTop = top + MAST - .3;
         p.cord.visible = held && show; if (p.cord.visible) { p.cord.scale.y = mastTop - crown; p.cord.position.y = (mastTop + crown) / 2; }
-        // the lantern balloon's stupa unrolls off the ground as the balloon lifts it; the fireworks rack throws sparks as it climbs
+        // the lantern balloon's stupa unrolls off the ground as the balloon lifts it; the fireworks begin once the balloon
+        // is 6–12 m above the ground, at a different height each flight, and burst at random around it as it climbs
         if (Z.panel) { const u = held ? 0 : clamp((y - top - 3.6) / 8, 0, 1), P = b.parts[b.kind]; P.visible = u > .02; P.scale.y = Math.max(u, .02); }
-        if (Z.fireworks && show && !held && !still && tau > 1 && tau < 70) {
-          const x = G.position.x, yr = y - 2.9, z = G.position.z, k = Math.min(dt, .1), m = 1 - tau / 90;
+        if (Z.fireworks && show && !held && !still && tau > b.fw0 && tau < b.fw1) {
+          const x = G.position.x, yr = y - 2.9, z = G.position.z, k = Math.min(dt, .1), m = 1 - (tau - b.fw0) / (b.fw1 - b.fw0 + 8);
           for (b.spAcc += k * 320 * m; b.spAcc >= 1; b.spAcc--) { const th = r() * TAU, sp = 12 + r() * 16; sparks.emit(x, yr, z, Math.cos(th) * sp, -3 + r() * 10, Math.sin(th) * sp, 1.5 + r() * 1.5, r() < .2 ? fwCol() : SPARK_C[(r() * 4) | 0]); }
           for (b.stAcc += k * 30 * m; b.stAcc >= 1; b.stAcc--) { const th = r() * TAU, sp = 8 + r() * 13; stars.emit(x, yr, z, Math.cos(th) * sp, -5 + r() * 9, Math.sin(th) * sp, 2.5 + r() * 1.5, fwCol()); }
           for (b.rkAcc += k * 3.5 * m; b.rkAcc >= 1 && rockets.length < 40; b.rkAcc--) { const th = r() * TAU, sp = 22 + r() * 16, c = fwCol(); rockets.push({ x, y: yr, z, vx: Math.cos(th) * sp, vy: -8 + r() * 22, vz: Math.sin(th) * sp, life: 1.2 + r() * 1, age: 0, acc: 0, c }); }
-          if ((b.shellT -= k) <= 0) { b.shellT = 1 + r() * 2; shell(x + (r() - .5) * 16, yr - 4 - r() * 12, z + (r() - .5) * 16); }
+          if ((b.shellT -= k) <= 0) { b.shellT = .4 + r() * 3.6; shell(x + (r() - .5) * 40, Math.max(top + 6, y + (r() - .3) * 24), z + (r() - .5) * 40); }
         }
       });
       crowd.forEach(m => m.visible = busy);

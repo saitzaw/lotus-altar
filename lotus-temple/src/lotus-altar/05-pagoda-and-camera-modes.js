@@ -28,10 +28,8 @@ function applyMode(mode) {
   camera.position.set(...view.pos); controls.target.set(...view.target); controls.update();
   closeTopGame(true);
   if (inMarket) leaveMarketState();
-  closeUp = false; inCorridor = false; inStairs = false; camera.fov = 42; camera.updateProjectionMatrix(); stairButtons();
-  $("viewBtn").textContent = "Look closer";
+  inCorridor = false; inStairs = false; camera.fov = 42; camera.updateProjectionMatrix(); stairButtons();
   const f = placeInfo(mode);
-  $("viewBtn").hidden = !f.statue;
   $("outsideBtn").textContent = out ? "Enter the main hall" : "Outside view";
   $("marketBtn").hidden = !out; $("fpBtn").hidden = !out;
   $("walkPad").hidden = false;

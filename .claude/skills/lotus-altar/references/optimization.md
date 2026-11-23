@@ -45,7 +45,7 @@ against this list.
 
 - **Never add or remove a light at runtime.** Three.js recompiles every material when the light count changes, which
   causes a visible stall. Add the light once at load and set its intensity to 0 when it's off (see the walker's torch).
-- Only a few lights cast shadows (the floor-1 key `SpotLight` at 2048², the hall key lights). New lights should not cast
+- Only a few lights cast shadows (the floor-1 key `SpotLight` and the hall key lights, at 1024²). New lights should not cast
   shadows.
 - Use `flat(mesh(...))` (`castShadow = false`) for ground, roads, water, roofs seen from above and anything small or far;
   each shadow caster is drawn again into the shadow map.
@@ -58,9 +58,13 @@ against this list.
 - Reuse materials from `M` (main script) or one `std({...})` per kind in a builder; don't make a new material per mesh.
 - Canvas textures (`canvasTex`) are small (64–128 px) and repeat; keep them that size.
 - Statues are meshed by `statue-sculpt.js` in a Web Worker. Smaller cells in `CONFIG.sculpt` look smoother but take
-  longer to mesh and draw more triangles; distant figures (the lions) use coarser cells. Each figure is meshed once
-  and kept: Guanyin starts with the page, then `CONFIG.sculpt.warm` meshes the other Buddhas one at a time, so opening
-  their hall does not make you wait. A second copy (the wish-tree Buddha, the back-gate lions) reuses that surface.
+  longer to mesh and draw more triangles; the lions, and the small Buddha under the wishing tree, use coarser cells.
+  Each figure is meshed once and kept: Guanyin starts with the page, then `CONFIG.sculpt.warm` meshes the other Buddhas
+  one at a time, so opening their hall does not make you wait. The back-gate lions reuse that surface. The detailed
+  body and head do not cast a shadow: a third mesh at `shadowCell` (40 mm) casts it instead. Its material writes
+  neither colour nor depth, so nothing of it shows on screen. It stays on layer 0: r128's shadow pass tests casters
+  against the viewer's camera layers, not `shadow.camera.layers`. The hall shadow maps are 1024². Gilt and porcelain are
+  `MeshStandardMaterial` (no clearcoat), because the colour and the shine are already in the vertex colours.
 
 ## Per-frame work
 

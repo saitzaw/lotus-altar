@@ -365,7 +365,7 @@ function build(job) {
     else { C[q * 3] = .58 + .42 * t; C[q * 3 + 1] = .52 + .48 * t; C[q * 3 + 2] = .47 + .53 * t; }
   }
   // wind every triangle to face along the field normal
-  const I = new Uint32Array(idx);
+  const I = nv > 65535 ? new Uint32Array(idx) : new Uint16Array(idx);
   for (let t = 0; t < I.length; t += 3) {
     const A = I[t] * 3, B = I[t + 1] * 3, D = I[t + 2] * 3;
     const ux = P[B] - P[A], uy = P[B + 1] - P[A + 1], uz = P[B + 2] - P[A + 2];

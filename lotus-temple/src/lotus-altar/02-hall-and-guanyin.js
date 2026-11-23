@@ -50,7 +50,7 @@ mesh(new THREE.TorusGeometry(.058, .007, 6, 24), M.gold, 0, 1.08, .53, extras).r
   });
 });
 /* Statues are sculpted as smooth surfaces (signed distance fields, see statue-sculpt.js) and meshed off the main thread:
-   a coarse pass for the body and a fine one for the head, where the face needs the detail.
+   a coarse pass for the body, a fine one for the head, and a still coarser one that only casts the shadow.
    Each figure is meshed once. Guanyin starts with the page, so she is already seated when you come in from the gate.
    The other Buddhas are meshed in the background after her, and a second copy (the wish-tree Buddha, the back-gate lions)
    reuses the same surface instead of being built again. */
@@ -65,10 +65,11 @@ const FIGURE_BOXES = {
   lion: { body: { min: [-.78, -.02, -1.0], max: [.78, 1.92, 1.0] }, head: { min: [-.62, 1.62, -.56], max: [.62, 2.8, .8] } },
   lionL: { body: { min: [-.78, -.02, -1.0], max: [.78, 1.92, 1.0] }, head: { min: [-.62, 1.62, -.56], max: [.62, 2.8, .8] } }
 };
-const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf8f3eb, roughness: .3, clearcoat: .85, clearcoatRoughness: .22, vertexColors: true });
-const gilt = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .55, roughness: .32, clearcoat: .35, clearcoatRoughness: .3, vertexColors: true });
+const porcelain = new THREE.MeshStandardMaterial({ color: 0xf8f3eb, roughness: .28, metalness: .04, vertexColors: true });   // one lighting pass: the glaze's shine is in the roughness, not a clearcoat
+const gilt = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: .55, roughness: .32, vertexColors: true });   // gold, hair and occlusion are already in the vertex colours
 const behind = m => { const c = m.clone(); c.polygonOffset = true; c.polygonOffsetFactor = 1; c.polygonOffsetUnits = 1; return c; };
 const stone = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85, vertexColors: true });
+const shadowMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // the coarse stand-in leaves nothing on screen; it only casts the shadow
 const STATUE_MATS = { guanyin: [behind(porcelain), porcelain], medicine: [behind(gilt), gilt], shakyamuni: [behind(gilt), gilt], qianshou: [behind(gilt), gilt], jaya: [behind(gilt), gilt], shan: [behind(gilt), gilt], maitreya: [behind(gilt), gilt], lion: [behind(stone), stone], lionL: [behind(stone), stone] };
 const preparing = new Map();   // label → statues still being built, and only while a visitor is waiting on one
 function setPreparing() {
@@ -88,31 +89,39 @@ function sculptGeo(r) {
   return g;
 }
 function placeFigure(figure, parent, geos) {
-  geos.forEach((g, i) => { const m = new THREE.Mesh(g, STATUE_MATS[figure][i]); m.castShadow = true; m.receiveShadow = true; parent.add(m); });
+  const stand = geos.length > 2;   // a third mesh casts the shadow, so the detailed body and head are not drawn into the shadow map
+  geos.forEach((g, i) => {
+    const shadow = stand && i > 1, m = new THREE.Mesh(g, shadow ? shadowMat : STATUE_MATS[figure][i]);
+    if (shadow) { m.castShadow = true; m.receiveShadow = false; }   // writes neither colour nor depth, so only the shadow map sees it (r128 tests shadow casters against the viewer's camera layers, so it stays on layer 0)
+    else { m.castShadow = !stand; m.receiveShadow = true; }
+    parent.add(m);
+  });
 }
-function sculptFigure(figure, parent, label, onDone) {
-  const ready = sculptReady.get(figure);
+function sculptFigure(figure, parent, label, onDone, cells) {
+  const key = cells ? figure + "@" + cells.join(":") : figure;   // a small copy (the wish-tree Buddha) is meshed on its own, coarser cells
+  const ready = sculptReady.get(key);
   if (ready) { if (parent) placeFigure(figure, parent, ready); if (onDone) onDone(); return; }
-  let job = sculptWait.get(figure);
+  let job = sculptWait.get(key);
   if (job) {
     job.parents.push({ parent, onDone });
     if (label && !job.labels.has(label)) { job.labels.add(label); preparing.set(label, (preparing.get(label) || 0) + 1); setPreparing(); }
     return;
   }
   const box = FIGURE_BOXES[figure];
-  const [bodyCell, headCell] = CONFIG.sculpt.cells[figure] || [CONFIG.sculpt.bodyCell, CONFIG.sculpt.headCell];
+  const [bodyCell, headCell] = cells || CONFIG.sculpt.cells[figure] || [CONFIG.sculpt.bodyCell, CONFIG.sculpt.headCell];
   const jobs = [{ figure, ...box.body, cell: bodyCell }, { figure, ...box.head, cell: headCell }];
-  job = { parents: [{ parent, onDone }], labels: new Set(), geos: [null, null] };
-  sculptWait.set(figure, job);
+  if (figure !== "lion" && figure !== "lionL") jobs.push({ figure, min: box.body.min.map((v, i) => Math.min(v, box.head.min[i])), max: box.body.max.map((v, i) => Math.max(v, box.head.max[i])), cell: CONFIG.sculpt.shadowCell });
+  job = { parents: [{ parent, onDone }], labels: new Set(), geos: jobs.map(() => null) };
+  sculptWait.set(key, job);
   if (label) { job.labels.add(label); preparing.set(label, (preparing.get(label) || 0) + 1); setPreparing(); }
   const finish = () => {
-    sculptReady.set(figure, job.geos); sculptWait.delete(figure);
+    sculptReady.set(key, job.geos); sculptWait.delete(key);
     job.labels.forEach(unprepare); setPreparing();
     job.parents.forEach(({ parent: p, onDone: done }) => { if (p) placeFigure(figure, p, job.geos); if (done) done(); });
   };
   const add = r => { if (job.geos[r.i]) return; job.geos[r.i] = sculptGeo(r); if (job.geos.every(Boolean)) finish(); };
   const fail = () => {
-    sculptWait.delete(figure); job.labels.forEach(unprepare);
+    sculptWait.delete(key); job.labels.forEach(unprepare);
     $("sculptStatus").hidden = false; $("sculptStatus").textContent = `${label || "The statue"} could not be prepared. Reload the page to try again.`;
     job.parents.forEach(({ onDone: done }) => { if (done) done(); });
   };

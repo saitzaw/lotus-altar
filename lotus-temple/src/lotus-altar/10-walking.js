@@ -64,7 +64,7 @@ function sitInPavilion() {
 }
 // called every frame: keys and the pad move the walker in every view; in the market a tap also sets a point to walk to
 function walkStep(dt) {
-  if (tgOpen || moving || closeUp) return;
+  if (tgOpen || moving) return;
   const fwd = controls.target.clone().sub(camera.position); fwd.y = 0;
   if (fwd.lengthSq() < 1e-8) return;
   fwd.normalize();

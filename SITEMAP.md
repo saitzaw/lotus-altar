@@ -48,7 +48,7 @@ Ways to move between places:
 - **Walking** (`#fpBtn`, `enterWalk` / `walkStep` in `10-walking.js`): first-person movement outside, up to `WORLD_R`
   (225 m) from the temple.
 - **Flying** (`goTo(mode)` in `10-walking.js`): a camera move from one place to another.
-- **Views inside a hall** (`setView`): `full`, `closeUp` (on statue floors), `corridor`, `stairs` / `stairsTop`
+- **Views inside a hall** (`setView`): `full`, `corridor`, `stairs` / `stairsTop`
   (presets in `CONFIG.camera`).
 
 ## Indoor places (modes)

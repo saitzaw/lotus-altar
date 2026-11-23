@@ -2,7 +2,7 @@
 scene.add(new THREE.HemisphereLight(0xffd9a8, 0x2a1208, CONFIG.light.hemisphere));
 const key = new THREE.SpotLight(0xffd6a0, CONFIG.light.key, 24, .62, .6, 1);
 key.position.set(2.8, 6.4, 6.5); key.target.position.set(0, 1.6, -1.4); scene.add(key, key.target);
-key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
+key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
 const rim = new THREE.DirectionalLight(0x9a86ff, .55); rim.position.set(-3, 4, -6); scene.add(rim);
 const backGlow = new THREE.PointLight(0xe6eeff, 1.2, 7, 2); backGlow.position.set(0, 2.6, -3); scene.add(backGlow);
 
