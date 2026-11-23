@@ -247,10 +247,12 @@ function weatherStep(dt) {
 }
 const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
 
-// day and night outside follow the sun over the temple right now. There is no Day button.
-// ?day=1 or ?day=0 holds one look, and only on the developer's computer.
+// day and night outside follow the sun over the temple right now. The Day/Night button shows the other look for this
+// visit (dayChoice 1 or 0) and, pressed again, goes back to the real sky (null); nothing is kept once the page closes.
+// ?day=1 or ?day=0 opens on one look, and only on the developer's computer.
 const dayParam = devParam("day");
-let dayChoice = dayParam === "1" ? 1 : dayParam === "0" ? 0 : null, daylight = dayChoice == null ? 0 : dayChoice;
+let dayChoice = dayParam === "1" ? 1 : dayParam === "0" ? 0 : null, daylight = dayChoice == null ? 0 : dayChoice, liveDaylight = 0, dayFadeUntil = -1;
+const dayFading = () => now < dayFadeUntil;   // on the frame clock, so a fade cleared by a jump elsewhere cannot lock the button
 // the sky and haze outside: black at night, under the stars and moon
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
@@ -270,9 +272,23 @@ function applySky() {
   lampsOn = 1 - d;
   lanternMat.emissiveIntensity = CONFIG.lanterns.glowStrength * (1 - d) + .05;
   lanterns.forEach(l => l.userData.glow.material.opacity = .45 * (1 - d));
-  const note = $("skyInfo");
-  if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = daylight > .5 ? skyNote.day : skyNote.night; }
+  const note = $("skyInfo"), real = skyNote && (liveDaylight > .5 ? skyNote.day : skyNote.night);
+  if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = dayChoice == null ? real : (dayChoice ? "Daylight view · " : "Night view · ") + real; }
   festNote();
+  const btn = $("timeBtn"), toDay = daylight <= .5, backToLive = dayChoice != null && (toDay ? 1 : 0) === (liveDaylight > .5 ? 1 : 0);
+  btn.textContent = toDay ? "☀ Day" : "☾ Night";
+  btn.title = backToLive ? "Back to the real sky over the temple" : toDay ? "Show the temple by day, for this visit" : "Show the temple at night, for this visit";
+  btn.setAttribute("aria-label", btn.title);
 }
 updateCelestial();
 setInterval(() => { updateCelestial(); applySky(); }, 5 * 6e4);   // the sky moves on while the page is open
+// show the other look, or go back to the real sky when the other look is what is really overhead
+$("timeBtn").addEventListener("click", () => {
+  if (dayFading()) return;
+  const from = daylight, to = from > .5 ? 0 : 1, dur = reduceMotion ? .01 : 1.6;
+  dayChoice = to === (liveDaylight > .5 ? 1 : 0) ? null : to;
+  dayFadeUntil = now + dur + .1;   // set first, so updateCelestial leaves daylight to the fade
+  updateCelestial();   // the noon sun for a daylight view after dark, the real one otherwise
+  const end = dayChoice == null ? liveDaylight : to;
+  tween(dur, t => { daylight = from + (end - from) * easeInOut(t); applySky(); }, () => { daylight = end; applySky(); });
+});

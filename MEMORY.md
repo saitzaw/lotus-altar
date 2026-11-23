@@ -89,7 +89,7 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 1. Build, copy `dist/` to a throwaway folder under `$HOME` (snap Chromium can't use `/tmp`), and serve it on a spare port.
 2. In the copy's `lotus-altar.js` (the joined file in `dist/`) (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
    `window.__t={camera,controls,renderer,world,enterWalk:(...a)=>enterWalk(...a)};`
-3. The page follows the real sun, and there is no Day button, so a run after dark opens at night. Force day by opening the page as `http://localhost:<port>/?day=1`
+3. The page opens on the real sun, so a run after dark opens at night (the Day button switches, but clicking it from a test fades over ~1.6 s of the frame clock, which headless frames advance only ~4 ms at a time; `--force-prefers-reduced-motion` makes it instant). Force day by opening the page as `http://localhost:<port>/?day=1`
    (that shortcut works on localhost only). The sun and moon still sit where they are at that moment.
 4. Drive the test by counting `requestAnimationFrame` frames, not with timers. At frame ~4 call `__t.enterWalk([x,z],[lx,lz],"t")`.
    At frame ~5–7, set `camera.position` and `camera.lookAt` yourself, call `temple.cull(camera, 800)` (expose it on `__t`; else

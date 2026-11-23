@@ -8,7 +8,7 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 ## Sun, moon, day and night
 
 - `updateCelestial()` places the real sun and moon for this moment over the temple (after SunCalc) every 5 minutes. The phase is the real phase. A body below the horizon is not drawn.
-- `daylight` (0 night, 1 day) follows that sun: full day above 8°, full night below −8°, twilight between. There is no Day button. `?day=1` / `?day=0` hold one look on localhost only, and that choice is not saved.
+- `daylight` (0 night, 1 day) follows that sun: full day above 8°, full night below −8°, twilight between. The `#timeBtn` Day/Night pill shows the other look for this visit (`dayChoice` 1 or 0, with the sun at today's noon for a daylight view after dark) and, pressed again, returns to the real sky (`dayChoice = null`). A fade runs until `dayFadeUntil` on the frame clock, not a flag, because a jump elsewhere clears `tweens`; `updateCelestial` settles `daylight` once it has passed. `?day=1` / `?day=0` open on one look on localhost only. Nothing is saved.
 - `skyColors()` sets the sky and fog colour outside; `applySky()` also sets exposure, calls `temple.setDaylight(d)` and
   refreshes the HUD lines.
 - By day every lamp is out. `lampsOn` (`1 - daylight`) scales every `PointLight` through an `intensity` accessor on the

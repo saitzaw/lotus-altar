@@ -61,12 +61,20 @@ let skyNote = "";
 function updateCelestial() {
   const { lat, lon, tz } = CONFIG.sky, now = Date.now(), deg = Math.PI / 180;
   const sd = Astro.sun(now, lat, lon);   // where the sun really is over the temple at this moment
+  // full day once the sun is 8° up, full night once it is 8° down, twilight between
+  liveDaylight = clamp((sd.alt / deg + 8) / 16, 0, 1);
+  if (!dayFading()) daylight = dayChoice == null ? liveDaylight : dayChoice;   // also settles a fade that a jump elsewhere cut short
+  // the daylight view asked for after dark puts the sun where it stands at noon today on the temple's clock
+  let sunAt = sd;
+  if (dayChoice === 1 && sd.alt < 8 * deg) {
+    const wall = z => new Date(new Date(now).toLocaleString("en-US", { timeZone: z })).getTime();
+    const off = wall(tz) - wall("UTC"), midnight = Math.floor((now + off) / 864e5) * 864e5 - off;
+    sunAt = Astro.sun(midnight + 12 * 36e5, lat, lon);
+  }
   const ill = Astro.illumination(now);
   const mNow = Astro.moon(now, lat, lon), up = mNow.alt > -.01;
   const moon = { up, dir: skyDir(mNow.az, Math.max(mNow.alt, 0)), rot: ill.angle - mNow.q, az: mNow.az, alt: mNow.alt };
-  // full day once the sun is 8° up, full night once it is 8° down, twilight between. ?day= on localhost can hold one look.
-  if (dayChoice == null) daylight = clamp((sd.alt / deg + 8) / 16, 0, 1);
-  temple.setCelestial({ sun: skyDir(sd.az, sd.alt), moon, moonTex: moonTexture(ill.fraction), fraction: ill.fraction });
+  temple.setCelestial({ sun: skyDir(sunAt.az, sunAt.alt), moon, moonTex: moonTexture(ill.fraction), fraction: ill.fraction });
   const fmt = t => new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: tz });
   const height = a => a > 60 * deg ? "high in the " : a < 15 * deg ? "low in the " : "in the ";
   const rise = from => { for (let t = from; t < from + 864e5 * 1.1; t += 6e5) if (Astro.moon(t, lat, lon).alt > 0) return t; return null; };

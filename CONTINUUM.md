@@ -85,6 +85,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-24: The Day/Night button is back, for this visit
+
+- `#timeBtn` sits in the HUD again (after Bird's-eye view). The page still opens on the real sky; the button shows the other look and, pressed again, goes back to the real sky. `dayChoice` is `null` for the real sky, `1` or `0` for a chosen look; `liveDaylight` is what the sun says. A daylight view after dark poses the sun at noon today on the temple's clock (`updateCelestial`), so the outdoor sunlight is on; the moon stays where it really is. The HUD sky line starts "Daylight view ·" or "Night view ·" while a look is chosen. The label names the action (☀ Day / ☾ Night) and the title and `aria-label` say whether it goes back to the real sky. The fade is guarded by `dayFadeUntil` on the frame clock, because `05-pagoda-and-camera-modes.js` clears `tweens` on a jump and a flag would have locked the button. Nothing is stored. Checked headless at 11:40 PM ICT: night → daylight view → real night.
+
 ### 2026-11-23: The Buddhas draw faster in the halls
 
 - `CONFIG.sculpt` cells are body 20 mm, head 12 mm (lions 22 / 14 mm). The old 12 mm / 5.8 mm mesh was about 600,000 triangles and was drawn again into a 2048² shadow map. The detailed body and head no longer cast a shadow (`placeFigure` in `02-hall-and-guanyin.js`): a third mesh at `shadowCell` 40 mm casts it instead, with `shadowMat` (no colour, no depth write) so it never shows on screen. It stays on layer 0: a first try put it on layer 1 with `shadow.camera.layers.enable(1)`, and the statues cast no shadow at all, because r128 tests shadow casters against the main camera's layers. Those shadow maps are 1024². Porcelain and gilt are `MeshStandardMaterial`, so there is no clearcoat pass. Indices are 16-bit where the mesh fits. The wish-tree Buddha is its own coarser mesh (`cells` .03 / .018), and the thousand arms do not cast shadows.
@@ -103,7 +107,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-23: The sun and moon follow the clock
 
-- `updateCelestial` in `06-sun-and-moon.js` no longer poses a noon sun for the day view and a 10 pm moon for the night view. Both are where they are over Bangkok (`CONFIG.sky`) at `Date.now()`, including the moon's phase, and a body below the horizon is not drawn. `daylight` eases with the sun (full by 8° up, gone by 8° down). The Day/Night button is gone from the HUD. `?day=1` / `?day=0` on localhost still holds one look for a test. The outdoor sun light in `36-lion-dragon-dance.js` goes out once the sun has set. Checked against the clock for this afternoon: the sun is up in the west, so the page opens in daylight.
+- `updateCelestial` in `06-sun-and-moon.js` no longer poses a noon sun for the day view and a 10 pm moon for the night view. Both are where they are over Bangkok (`CONFIG.sky`) at `Date.now()`, including the moon's phase, and a body below the horizon is not drawn. `daylight` eases with the sun (full by 8° up, gone by 8° down). The Day/Night button went from the HUD (it came back on 2026-11-24, see above). `?day=1` / `?day=0` on localhost still holds one look for a test. The outdoor sun light in `36-lion-dragon-dance.js` goes out once the sun has set. Checked against the clock for this afternoon: the sun is up in the west, so the page opens in daylight.
 
 ### 2026-11-23: Nothing is saved in the browser
 
