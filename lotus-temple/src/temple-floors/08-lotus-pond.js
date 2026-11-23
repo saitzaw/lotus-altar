@@ -1,7 +1,6 @@
   /* ---------- 蓮池 the lotus pond, outside in front of the pagoda ---------- */
   // a square pool centred on (cx, cz), S from the centre to each side, with stone coping; the arched bridge runs along z
   /* ---------- at the lotus pond: tossing a coin for a wish, and bathing the Buddha with pond water (symbolic only, no money) ---------- */
-  const COIN_KEY = "lotus-altar-coins";
   let pondCoinThrow = null, pondBathe = null;
   function pondRituals(g, water, cx, cz, S, WY) {
     const list = picks.pagoda, upd = updaters.pagoda;
@@ -10,23 +9,21 @@
     const coinGeo = new THREE.CylinderGeometry(.15, .15, .025, 18), coinMat = std({ color: 0xf0c050, metalness: .7, roughness: .25, emissive: 0x6a4a10 });   // a little larger than life so they show through the water
     const MAXC = 300, bedCoins = new THREE.InstancedMesh(coinGeo, coinMat, MAXC), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
     bedCoins.count = 0; g.add(bedCoins);
-    let saved = 0; try { saved = Math.min(MAXC, parseInt(localStorage.getItem(COIN_KEY), 10) || 0); } catch (err) {}
     const rr = rng(808);
     const lay = (x, z) => {   // a coin settled on the pond bed
       if (bedCoins.count >= MAXC) return;
       bedCoins.setMatrixAt(bedCoins.count++, m4.compose(V(x, .045, z), q.setFromEuler(e.set((rr() - .5) * .3, rr() * TAU, (rr() - .5) * .3)), V(1, 1, 1)));
       bedCoins.instanceMatrix.needsUpdate = true;
     };
-    for (let i = 0; i < saved; i++) lay(cx + (rr() * 2 - 1) * (S - 1), cz + (rr() * 2 - 1) * (S - 1));   // coins left on earlier visits
     const flying = [], rings = [];
     const ringGeo = new THREE.RingGeometry(.85, 1, 40);
+    let tossed = 0;   // coins given this visit; the bed starts empty each time the page opens
     pondCoinThrow = p => {
       const to = V(clamp(p.x, cx - S + .5, cx + S - .5), WY, clamp(p.z, cz - S + .5, cz + S - .5));
       const from = to.clone().add(V(0, 3.2, 4.5));   // as if thrown from the bank nearest the viewer
       const coin = mesh(coinGeo, coinMat, from.x, from.y, from.z, g);
       flying.push({ coin, from, to, t: 0 });
-      let n = 0; try { n = (parseInt(localStorage.getItem(COIN_KEY), 10) || 0) + 1; localStorage.setItem(COIN_KEY, String(n)); } catch (err) { n = bedCoins.count + 1; }
-      return n;
+      return ++tossed;
     };
     upd.push(dt => {
       for (let i = flying.length - 1; i >= 0; i--) {

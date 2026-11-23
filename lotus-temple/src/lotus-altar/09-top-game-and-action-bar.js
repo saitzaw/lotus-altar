@@ -1,9 +1,7 @@
-/* ---------- the four-animal top (လေးကောင်ဂျင်) in the seven-day market: festival tokens only, kept in this browser ---------- */
-const TG_KEY = "lotus-altar-tokens", TG_START = 100, TG_CHIPS = [[1, "#d8d2c0"], [5, "#c0302a"], [10, "#2a5ab0"], [25, "#2a8a4a"]];
+/* ---------- the four-animal top (လေးကောင်ဂျင်) in the seven-day market: festival tokens only, for this visit ---------- */
+const TG_START = 100, TG_CHIPS = [[1, "#d8d2c0"], [5, "#c0302a"], [10, "#2a5ab0"], [25, "#2a8a4a"]];
 let tgTokens = TG_START, tgChip = 5, tgBets = {}, tgLast = null, tgOpen = false, tgCam = null, tgClearT = 0;
 let tgRefused = false;   // the doorman turned you away: he remembers you until the page is reloaded
-try { const v = parseInt(localStorage.getItem(TG_KEY), 10); if (v >= 0) tgTokens = v; } catch (e) {}
-const tgSave = () => { try { localStorage.setItem(TG_KEY, String(tgTokens)); } catch (e) {} };
 const TG_BETS = window.FourFaceTopGame ? FourFaceTopGame.BETS : [];
 const tgSum = b => Object.values(b || {}).reduce((a, v) => a + v, 0);
 const tgPayText = b => b.pays === 3 ? "3 to 1" : "1 to 1";
@@ -31,13 +29,12 @@ function tgPlace(key) {
   const game = temple.fourTop; if (!game || game.busy) return;
   if (tgTokens < tgChip) { $("tgMsg").textContent = tgTokens > 0 ? `You have only ${tgTokens} token${tgTokens > 1 ? "s" : ""} left: pick a smaller chip.` : "You have no tokens left to bet."; return; }
   clearTimeout(tgClearT);
-  tgBets[key] = (tgBets[key] || 0) + tgChip; tgTokens -= tgChip; tgSave();
-  if ($("soundOn").checked) { ac(); tone(1400, 1100, .06, .05, "triangle"); }
+  tgBets[key] = (tgBets[key] || 0) + tgChip; tgTokens -= tgChip; if ($("soundOn").checked) { ac(); tone(1400, 1100, .06, .05, "triangle"); }
   $("tgMsg").textContent = "";
   tgShowChips(); tgRender();
 }
 // take every chip back off the mat
-function tgRefund() { tgTokens += tgSum(tgBets); tgBets = {}; tgSave(); }
+function tgRefund() { tgTokens += tgSum(tgBets); tgBets = {}; }
 function tgRender() {
   const game = temple.fourTop, busy = !!(game && game.busy), onMat = tgSum(tgBets);
   document.querySelectorAll("#tgChips button").forEach(b => { b.setAttribute("aria-checked", String(+b.dataset.v === tgChip)); b.disabled = busy; });
@@ -59,12 +56,11 @@ $("tgRepeat").addEventListener("click", () => {
   tgRefund();
   if (tgSum(tgLast) > tgTokens) return tgRender();
   clearTimeout(tgClearT);
-  tgBets = Object.assign({}, tgLast); tgTokens -= tgSum(tgBets); tgSave();
-  $("tgMsg").textContent = "The same bets as last round."; tgShowChips(); tgRender();
+  tgBets = Object.assign({}, tgLast); tgTokens -= tgSum(tgBets); $("tgMsg").textContent = "The same bets as last round."; tgShowChips(); tgRender();
 });
 $("tgSpin").addEventListener("click", () => {
   const game = temple.fourTop; if (!game || game.busy) return;
-  if (tgTokens <= 0 && !tgSum(tgBets)) { tgTokens = TG_START; tgSave(); $("tgMsg").textContent = `The stall keeper hands you another ${TG_START} festival tokens.`; tgRender(); return; }
+  if (tgTokens <= 0 && !tgSum(tgBets)) { tgTokens = TG_START; $("tgMsg").textContent = `The stall keeper hands you another ${TG_START} festival tokens.`; tgRender(); return; }
   if (!tgSum(tgBets)) return;
   ac(); clearTimeout(tgClearT);
   tgLast = Object.assign({}, tgBets);
@@ -83,8 +79,7 @@ function tgHook(game) {
   };
   game.options.onResult = (face, outcome) => {
     const back = outcome.reduce((a, o) => a + (o.won ? o.stake * (o.pays + 1) : 0), 0), name = k => TG_BETS.find(b => b.key === k).en;
-    tgTokens += back; tgSave();
-    const side = face.color === "red" ? "red, a land animal" : "black, a water animal";
+    tgTokens += back; const side = face.color === "red" ? "red, a land animal" : "black, a water animal";
     const wins = outcome.filter(o => o.won).map(o => `${name(o.key)} wins ${o.stake * o.pays}`), lost = outcome.filter(o => !o.won).map(o => name(o.key));
     $("tgMsg").textContent = `${face.my} ${face.en} lies face up (${side}). ` +
       (wins.length ? wins.join(", ") + (lost.length ? `; the banker takes your chips on ${lost.join(", ")}.` : ".") + ` ${back} tokens come back to you.` : "The banker takes all your chips.");

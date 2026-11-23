@@ -5,6 +5,38 @@ start of a session. For current state and open threads, see `CONTINUUM.md`.
 
 ## Log
 
+### 2026-11-21: Ward No. 5, a Shan house, municipal and immigration offices, a diesel power station
+
+- New piece `28e-ward-five-offices-and-power.js`, called after `townshipCourt` in `36-…`: `shanTwoStorey` (`SHAN2`), `wardQuarter`
+  (`WARD5`), `townOffices` (`TDC_OFFICE`, `IMMIG`), `powerStation` (`POWER`), with shared helpers `compoundWall`, `compoundGate`,
+  `gateBoard` and the lazily built kit `C5` (`c5Kit()`).
+- The main road goes on east from the court road's end (x 64.5) to x 158: a new `main` lane at the end of `LANES`, with median gaps
+  at x 79–96 (the ward lane's mouth and the municipal gate) and 114–128 (the immigration and power station gates). Ward No. 5's lane
+  (x 88–92, z 196–255.5) is the last entry in `LANES`, so `backStreets` draws it with drains and village lamps.
+- Shan house beside the bank at (77.5, 243.5), front to the road: whitewashed brick ground floor with arched windows and a shop room,
+  a teak upper storey jutting out on brackets with green louvred shutters, a balcony on posts, a rusty hip roof with a raised
+  ridge, and fretted boards along the eaves; in a walled yard (bougainvillea, frangipani, jars).
+- Ward No. 5: three houses west of the lane and four east (`shanWoodHouse` / `shanHouse`), a corner shop on the road, a well,
+  washing lines, bananas; the ward administrator's office at the lane's end (90, 190.6); the ward board at the lane's mouth.
+- Across the road: the municipal office (85, 278) with its rubbish truck, and the immigration office (121, 276) with a queue
+  shelter, each `civic()` in a walled compound with a railed front wall, a gate board and the flag.
+- Power station, compound x 112–152, z 214–254.5, gate at x 121: engine hall (126, 236) with roller doors, four smoking stacks
+  (sprites, still under reduced motion), radiators with turning fans (`frustumCulled = false` so they aren't welded into a batch),
+  two diesel tanks in a bund, a fenced switchyard (x 138–151, z 215–246) with two gantries, two transformers, busbar, breakers and
+  switches, the main switch room by the gate, and a pole line leaving toward the bamboo grove. No sound yet, no timed running.
+- Checked in headless Chromium from above and from the road. No console errors from the page.
+
+### 2026-11-21: lotus lanterns round the main stupa in October and November
+
+- New piece `13c-stupa-lotus-lanterns.js` (`stupaLotusLanterns(T, list, TW, STEPS)`), called at the end of `shanStupaHill`'s terrace
+  walk block. 160 lanterns: on the parapet coping (clear of the step openings and the corner lamp posts), a row 3.12 m out round the
+  stupa's foot, and both ends of every step of the four flights. Four draw calls: two `InstancedMesh` petal rings sharing one lathe
+  cup pulled into eight pointed petals (vertex colours white to pink), the flames, and one `Points` glow cloud.
+- Season: `CONFIG.lotusLanterns.months` [10, 11] on the temple's clock, `lotusLanternsNow()`, `temple.setLotusLanterns`,
+  `FOLK.lotusLanterns`, `?lotuslanterns=1/0`. Shown day and night, glowing after dark. Hidden lanterns get `count = 0`, since the
+  picking ray doesn't skip hidden meshes. `#festInfo` names the festival of lights when no other season shows.
+- Checked in headless Chromium at night on the terrace walk. No console errors.
+
 ### 2026-11-21: the fire lotus ground on the stupa hill
 
 - New piece `15j-fire-lotus-ground.js` (`fireLotusGround`, `FIRE_GROUND`, `fireLotusArc`), called after `balloonBazaar`. It sits on the

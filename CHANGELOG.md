@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-23
+
+### Changed
+- The shrine no longer remembers you in the browser. Offerings, the merit board, the Day/Night choice, festival tokens and coins in the lotus pond last for this visit only. Each opening starts from the sample altar, at night, with a full purse of tokens and an empty pond. On your own computer, `?day=1` still opens in daylight.
+
 ## 2026-11-22
 
 ### Added

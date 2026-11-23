@@ -1,4 +1,4 @@
-/* ---------- testing shortcuts in the address (?dancers=, ?weather=, ?halloween=, ?townsfolk=, ?lionDragon=): they work only on the
+/* ---------- testing shortcuts in the address (?day=, ?dancers=, ?weather=, ?halloween=, ?townsfolk=, ?lionDragon=): they work only on the
    developer's own computer (localhost), so on the public site everyone sees the real schedule on the temple's clock ---------- */
 const DEV_HOST = (() => { try { return ["localhost", "127.0.0.1", "[::1]", "::1"].includes(location.hostname); } catch (e) { return false; } })();
 const devParam = key => DEV_HOST ? new URLSearchParams(location.search).get(key) : null;   // null on the public site, as if the address had no shortcut
@@ -247,9 +247,9 @@ function weatherStep(dt) {
 }
 const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
 
-// day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit
-let daylight = 0;
-try { daylight = localStorage.getItem("lotus-altar-daylight") === "1" ? 1 : 0; } catch (e) {}
+// day and night outside: the sky, sun or moon, the light and the haze; indoors stays lamplit.
+// the Day button lasts for this visit. ?day=1 or ?day=0 forces it, and only on the developer's computer.
+let daylight = devParam("day") === "1" ? 1 : 0;
 // the sky and haze outside: black at night, under the stars and moon
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
@@ -279,6 +279,5 @@ updateCelestial();
 setInterval(() => { updateCelestial(); applySky(); }, 5 * 6e4);   // the sky moves on while the page is open
 $("timeBtn").addEventListener("click", () => {
   const from = daylight, to = daylight > .5 ? 0 : 1;
-  try { localStorage.setItem("lotus-altar-daylight", String(to)); } catch (e) {}
   tween(reduceMotion ? .01 : 1.6, t => { daylight = from + (to - from) * easeInOut(t); applySky(); }, () => { daylight = to; applySky(); });
 });

@@ -83,8 +83,8 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 1. Build, copy `dist/` to a throwaway folder under `$HOME` (snap Chromium can't use `/tmp`), and serve it on a spare port.
 2. In the copy's `lotus-altar.js` (the joined file in `dist/`) (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
    `window.__t={camera,controls,renderer,world,enterWalk:(...a)=>enterWalk(...a)};`
-3. Force day before the page loads, with a script placed before the three.js tag:
-   `localStorage.setItem("lotus-altar-daylight","1")`.
+3. The page opens at night, and the Day button is not remembered. Force day by opening the page as `http://localhost:<port>/?day=1`
+   (that shortcut works on localhost only).
 4. Drive the test by counting `requestAnimationFrame` frames, not with timers. At frame ~4 call `__t.enterWalk([x,z],[lx,lz],"t")`.
    At frame ~5–7, set `camera.position` and `camera.lookAt` yourself, call `temple.cull(camera, 800)` (expose it on `__t`; else
    the town's distance culling still matches the old view and only the instanced windows show, floating), then `renderer.render(world, camera)`, then in the same

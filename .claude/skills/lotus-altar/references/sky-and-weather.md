@@ -8,7 +8,7 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 ## Sun, moon, day and night
 
 - `updateCelestial()` places the real sun and moon for Bangkok (after SunCalc) every 5 minutes.
-- `daylight` (0 night, 1 day) is the visitor's Day/Night toggle, saved in `localStorage` `lotus-altar-daylight`.
+- `daylight` (0 night, 1 day) is the visitor's Day/Night toggle. Each visit opens at night, and the choice is not saved. `?day=1` / `?day=0` force it on localhost only.
 - `skyColors()` sets the sky and fog colour outside; `applySky()` also sets exposure, calls `temple.setDaylight(d)` and
   refreshes the HUD lines.
 - By day every lamp is out. `lampsOn` (`1 - daylight`) scales every `PointLight` through an `intensity` accessor on the

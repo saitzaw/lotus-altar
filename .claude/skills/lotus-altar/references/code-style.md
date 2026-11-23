@@ -7,7 +7,6 @@
 - Tweakable values go in `CONFIG` with a trailing comment.
 - Deterministic randomness uses the seeded `rng(seed)`; `Math.random()` only for things that don't need to look the same
   every visit (sparkles, sound timing).
-- Visitor state persists in `localStorage` (`lotus-altar-v2`, `lotus-altar-daylight`, `lotus-altar-tokens`), always
-  wrapped in try/catch.
+- Visitor state stays in memory for this visit. Don't use `localStorage` or `sessionStorage`.
 - Things that read `current`, `inMarket` or `inCorridor` must only run from the frame loop or event handlers: those are
   `let`s declared partway down `lotus-altar.js`, so touching them during top-level setup throws.

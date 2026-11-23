@@ -34,8 +34,7 @@ const ITEMS = {
 const KEYS = Object.keys(ITEMS);
 const kindOf = (key, k) => ITEMS[key].kinds[k];
 
-/* ---------- store ---------- */
-const KEY = CONFIG.storageKey;
+/* ---------- offerings for this visit: the sample altar, then whatever the visitor places. Nothing is written to the browser. ---------- */
 const defaults = () => ({
   counts: { flower: 3, water: 3, fruit: 4, candle: 4, incense: 1 },
   altar: {
@@ -48,10 +47,9 @@ const defaults = () => ({
   log: []
 });
 let state = defaults();
-try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.counts && s.altar) state = s; } catch (e) {}
 if (typeof state.recitations !== "number") state.recitations = 0;
 if (!state.bag) state.bag = {};   // offerings bought at the shop and not yet placed: bag[item][kind] = count
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+const save = () => {};   // kept so the altar, the shop and the merit board can record a change; it lasts until the page is closed
 const cart = { flower: { q: 0, k: "lotus" }, water: { q: 0, k: "pure" }, fruit: { q: 0, k: "mixed" }, candle: { q: 0, k: "red" }, incense: { q: 0, k: "sandal" } };
 
 /* ---------- renderer ---------- */

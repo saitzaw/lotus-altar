@@ -10,7 +10,6 @@ const $ = id => document.getElementById(id);
 
 /* ---------- settings: change these to adjust the shrine ---------- */
 const CONFIG = {
-  storageKey: "lotus-altar-v2",                       // change to start every visitor from the sample altar
   start: "pagoda",                                    // where the page opens: "pagoda" (outside the gate) or a floor number
   light: { exposure: .82, key: 1.5, hemisphere: .3, dayIndoor: 0x7a6c5a },   // dayIndoor: the haze in a hall by day
   camera: {

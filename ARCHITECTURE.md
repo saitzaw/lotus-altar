@@ -16,14 +16,12 @@ flowchart LR
     TF["temple-floors.js<br/>window.TempleFloors(ctx)"]
     APP["lotus-altar.js<br/>main IIFE"]
     W["statue-sculpt.js<br/>Web Worker"]
-    LS[(localStorage<br/>lotus-altar-v2)]
     AUD[[WebAudio context]]
   end
   HTML --> CSS & THREE --> TOP --> TF --> APP
   APP -- "ctx: THREE, world, M, mesh, std, sculptFigure, shrine, CONFIG…" --> TF
   TF -- "API: show, update, cull, clickables, activate, sounds…" --> APP
   APP -- "jobs (SDF figures)" --> W -- "meshes (positions, normals)" --> APP
-  APP <--> LS
   APP --> AUD
 ```
 
@@ -32,7 +30,7 @@ flowchart LR
   the HTML body. No minifying, no tree shaking, no compression step (Vercel gzips/brotlis on the fly).
 - **Hosting:** Vercel static (`vercel.json`: `buildCommand: bash build-dist.sh`, `outputDirectory: dist`). The same
   body also publishes as a claude.ai Artifact.
-- **No server, no backend, no analytics today.** All state is in the browser (`localStorage`, wrapped in try/catch).
+- **No server, no backend, no analytics today.** Offerings, the day/night choice, festival tokens and pond coins live in memory for this visit. Nothing is written to `localStorage`.
 
 ### Payload (dist, uncompressed)
 
@@ -67,7 +65,7 @@ The main app creates `temple = TempleFloors(ctx)` and talks to it only through t
 2. CDN scripts load in order (blocking): three → OrbitControls → GLTFLoader.
 3. `four-face-top.js`, `temple-floors.js` (defines `TempleFloors`, builds nothing yet), `lotus-altar.js` run.
 4. `lotus-altar.js` runs top to bottom:
-   - `CONFIG`, `ITEMS`, cart restored from `localStorage`.
+   - `CONFIG`, `ITEMS`, the sample altar (this visit only).
    - `WebGLRenderer({ antialias: true })`, `setPixelRatio(min(dpr, 2))`, `PCFSoftShadowMap`, shared materials `M`.
    - **Floor 1 hall + Guanyin built** (`02-hall-and-guanyin.js`). Guanyin comes from `guanyin.glb` via GLTFLoader if
      present, otherwise from an SDF sculpt job sent to the **Web Worker** (it falls back to the main thread if
@@ -118,7 +116,7 @@ Only one mode's group is visible at a time (`temple.show(mode)`), so the cost of
 | `renderer.render(world, camera)` | draw | shadows (PCF soft), antialias, DPR up to 2 |
 
 Other work on the main thread: pointer picking (`pick` on `pointermove` for a mouse), the ResizeObserver, sheet UI,
-`localStorage` saves, and the worker's results being turned into `BufferGeometry`.
+and the worker's results being turned into `BufferGeometry`.
 
 ## 6. Performance systems already in place
 
@@ -199,7 +197,7 @@ This step needs a product decision before it's built. Options, from lightest to 
 3. **Product events** (place entered, offering made, fortune drawn, top game played). Use the mode names in
    SITEMAP as event names. Donations and payments are demo only, so never send amounts as if they were real money.
 
-`localStorage` stays wrapped in try/catch. Any tracking script must not block the first frame, so load it with
+Don't store a visitor id. Any tracking script must not block the first frame, so load it with
 `defer` or after `load`.
 
 ### 8.3 Baseline before tuning

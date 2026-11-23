@@ -28,7 +28,7 @@ donate (demo only), and wander a Northern Shan State town, seven-day market, stu
 - Every statue hall gets Guanyin's offering altar (water, light, incense, fruit) through `shrine()` (see references/scene.md).
 - The beat officer (police chase) stays commented out unless the user asks for him back.
 - Respect `prefers-reduced-motion` (`reduceMotion`) and label buttons for screen readers.
-- Layout randomness uses the seeded `rng(seed)`, never `Math.random()`. `localStorage` is always wrapped in try/catch.
+- Layout randomness uses the seeded `rng(seed)`, never `Math.random()`. Don't use `localStorage` or `sessionStorage`: offerings, the day/night choice, festival tokens and pond coins last for this visit only.
 - Don't edit `dist/` (generated, gitignored).
 - Every timed event and its hours is listed in `SCHEDULE.md` at the repo root; update it whenever you add a timed event or change
   its hours.

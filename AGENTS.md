@@ -55,7 +55,7 @@ and visiting the affected place, and watch the browser console for errors.
 - Layout randomness uses the seeded `rng(seed)`, not `Math.random()`.
 - Tweakable values go in `CONFIG` with a trailing comment.
 - The temple's clock is Bangkok time (ICT, UTC+7).
-- `localStorage` access is always wrapped in try/catch.
+- Don't use `localStorage` or `sessionStorage`. Offerings, the day/night choice, festival tokens and pond coins last for this visit only.
 - Match the existing style: dense one-line helpers, plain-English comments that describe what a thing is in the world,
   section banners `/* ---------- name ---------- */`.
 
