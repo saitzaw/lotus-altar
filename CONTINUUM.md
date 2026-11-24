@@ -86,6 +86,20 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-25: Christmas and the harvest thanksgiving at the Kachin church
+
+- The owner asked to prepare for Christmas and Thanksgiving, and chose: Thanksgiving as the church's harvest thanksgiving on the
+  last Sunday of November (not the US Thursday); Christmas as the church dressed, carol singers, Christmas services and the
+  Christian homes lit; nothing on the temple grounds or the pagoda. Carols every evening 1–24 December, 7–11 PM.
+- New piece `28h-christmas-and-harvest.js` (see `sky-and-weather.md`, "Christmas and the harvest thanksgiving", and `SCHEDULE.md`).
+  `CONFIG.christmas`, `CONFIG.harvest`; `?christmas=`, `?carols=`, `?harvest=`. Checked in headless renders: the church inside
+  (tree, nativity, lanterns, greeting, harvest gifts), outside at night (tower star, bulbs, star poles) and the carollers at a door.
+- Ours, for the owner to confirm: the season's end (6 January, Epiphany), the Christmas Eve service's hours (5–7 PM, before the
+  carols go out), which homes are Christian (the pastor's, the women workers' and the two plaza-lane houses nearest the church),
+  the carollers' route and stops, and the harvest gifts lying out all that Sunday.
+- For a Jinghpaw speaker to check: the greeting “Ngwi Pyaw Christmas” over the cross. The harvest display's tip uses Burmese
+  ကျေးဇူးတော်ချီးမွမ်းပွဲ (thanksgiving service); check that too.
+
 ### 2026-11-24: The Shan Kathin on its one day
 
 - The owner says the town holds the Shan Kathin on one day only, the full moon of Tazaungmon in November, and there is no Shinlaung procession that day. `CONFIG.kathin.windows` (a month each year) became `days` ([year, month, day], the Tazaungmon full moons through 2035); `kathinSeason()` became `kathinDay()`, and `processionNow()` is false on that day unless `?procession=1`. `#festInfo` names the Kathin only on its day. 2031 has two full moons in October; the owner confirmed the Kathin is always in November, so 2031's day is Nov 30.

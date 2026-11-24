@@ -90,6 +90,8 @@
     });
     // the Sunday service: the congregation, the pastor, the choir and the pianist
     updaters[n].push(churchService(g, list, DY));
+    // the harvest thanksgiving's first fruits before the dais (the last Sunday of November), and the Christmas dressing (December to Epiphany)
+    updaters[n].push(harvestDisplay(g, list, DY), churchChristmasHall(g, list, DY, HH));
     // ceiling fans turning under the beams, and lamps hanging between them
     const fans = [];
     [[-3.4, .9], [3.4, .9], [-3.4, 3.6], [3.4, 3.6]].forEach(([x, z]) => {

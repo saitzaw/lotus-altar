@@ -100,6 +100,8 @@ function frame() {
   temple.setBalloons(BALLOON_FORCE !== null ? BALLOON_FORCE : !rainingOut(), balloonKind);
   temple.setFireLotus(FIRE_LOTUS_FORCE !== null ? FIRE_LOTUS_FORCE : fireLotusOn && !rainingOut());
   temple.setLotusLanterns(lotusLanternsOn);
+  temple.setChristmas(xmasOn, carolsOn && (CAROL_FORCE !== null || !rainingOut()), carolAt());   // the carol singers stay in when it rains
+  temple.setHarvest(harvestOn);
   temple.setLionDragon(drill.show);
   // policeStep();   // the beat officer is commented out
   ambStep(dt);

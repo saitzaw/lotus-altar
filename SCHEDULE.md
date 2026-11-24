@@ -36,6 +36,7 @@ hours change, update this file in the same commit.
 | Day and time | What happens | Where | `CONFIG` |
 |---|---|---|---|
 | Sunday 9:00 – 11:30 AM | Church service: congregation, pastor, choir, pianist | Kachin Baptist church | `service` |
+| The last Sunday of November, all day (service 9:00 – 11:30 AM) | Harvest thanksgiving: the families' first fruits (sheaves of rice, sacks of new rice, pumpkins, baskets of oranges, avocados and chillies, bananas, cabbages, maize, sugar cane) before the pulpit | Kachin Baptist church | `harvest` |
 
 ## By season
 
@@ -45,6 +46,10 @@ hours change, update this file in the same commit.
 | October and November (all day and night) | Lotus lanterns (ဆီမီးပူဇော်): 160 small pink paper lotus lanterns, each with a flame, offered to the Buddha round the main stupa (along the terrace walk's parapet, in a row round the stupa's foot, at both ends of every step), for the festivals of light of Thadingyut (October) and Tazaungdaing (November). They glow after dark | Main stupa, top of the stupa hill | `lotusLanterns` |
 | Noon – 2:00 PM, on one day only: the full moon of Tazaungmon (Tazaungdaing), in November; the days through 2035 are listed in `CONFIG.kathin.days` | Shan Kathin (ပွႆးၵထိၼ်, ကထိန်ပွဲ): the town carries one new set of monastic robes from Haw Kham around the old quarter to the second monastery, with no dance stops. A padetha tree (ပဒေသာပင်) goes with them, and the robe is under a white umbrella. They arrive about 12:10. Five monks wait on the porch to receive the robe. Called off while it rains | Haw Kham → palace lane → market lane → front street → main stair → second monastery; monks on its porch | `kathin` |
 | Oct 27 – Nov 1 (Halloween) | Houses go dark 9 PM – 5 AM, a friendly ghost walks the roads, walkers carry a torch | Town | `halloween` |
+| Dec 1 – Jan 6 (all day and night) | Christmas dressing: a gold star on the church tower, coloured bulbs on the church, its tower and the compound's front wall and gate; a tree, a nativity, paper star lanterns and the greeting “Ngwi Pyaw Christmas” inside; bamboo star poles with bulbs in the yards of four Christian homes (the pastor's, the women workers', two on the plaza lane) | Kachin Baptist church and the plaza lane | `christmas` |
+| Dec 1 – 24, 7:00 – 11:00 PM | Carol singers: eight young people of the church behind a paper star on a pole and a guitar, from the church gate down the plaza lane, along the back lane and up the market lane, stopping 45 s to sing at each door (the Christian homes and three more), back to the gate, a minute's rest, out again (about 9 minutes a round). Seen only, no singing played. Stay in when it rains | Plaza lane, back lane, market lane | `christmas.carols` |
+| Dec 24, 5:00 – 7:00 PM | Christmas Eve service (the congregation, pastor, choir and pianist, as on Sunday) | Kachin Baptist church | `christmas.services` |
+| Dec 25, 9:00 – 11:30 AM | Christmas Day service | Kachin Baptist church | `christmas.services` |
 | All year | Weather by season, changing every 3 hours: rain May–Oct, cool clear days and misty mornings Nov–Feb, smoky haze Mar–Apr | Everywhere outside | `weather` |
 
 ## Known overlaps
@@ -69,4 +74,7 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 | Stage | `?dancers=solo`, `pair`, `to`, `twoTo`, `toKinnara` or `singer` | `?dancers=0` |
 | Kung fu ground | `?lionDragon=dragon` or `?lionDragon=lion` | `?lionDragon=0` |
 | Halloween | `?halloween=1` | `?halloween=0` |
+| Christmas dressing (church, compound, star poles) | `?christmas=1` | `?christmas=0` |
+| Carol singers (on their own clock from the church gate; runs even in rain) | `?carols=1` | `?carols=0` |
+| Harvest thanksgiving gifts in the church | `?harvest=1` | `?harvest=0` |
 | Weather | `?weather=clear`, `cloudy`, `rain`, `mist` or `haze` | |

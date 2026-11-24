@@ -77,7 +77,7 @@
   function churchCompound(g) {
     const { x0, x1, z0, z1, gate } = CHURCH_YARD, cap = std({ color: 0x9a2a22, roughness: .6 }), iron = std({ color: 0x2a2a2c, roughness: .5, metalness: .6 });
     const lane = std({ color: 0x7e7a72, roughness: .9 });
-    kachinChurch(g, 12, 128);
+    kachinChurch(g, 12, 128); churchChristmas(g, 12, 128); compoundChristmas(g, CHURCH_YARD);
     // the wall, open at the gate
     [[x0, x1, z0, z0, gate], [x0, x1, z1, z1], [x0, x0, z0, z1], [x1, x1, z0, z1]].forEach(([a, b, c, d, gap]) => {
       (gap ? [[a, gap[0]], [gap[1], b]] : [[a, b]]).forEach(([a, b]) => {
@@ -149,6 +149,7 @@
     let seq = 0;
     const house = (cx, cz, ry, W, D) => {
       const [wood, floors] = KINDS[seq % KINDS.length], seed = 200 + seq++;
+      TOWN_HOUSES.push({ x: cx, z: cz, ry, W, D });
       if (wood) shanWoodHouse(g, cx, cz, ry, { W, D, floors, seed, roof: seed % 3 ? rustRoof : ROOFS[seed % 4](1) });
       else shanHouse(g, cx, cz, ry, { W, D, floors, shop: false, seed, wall: WALLS[(seed * 5) % WALLS.length], roof: ROOFS[seed % 4] });
     };
@@ -177,6 +178,8 @@
     // a wooden storey and verandah over a whitewashed brick ground floor, under rusty tin hip roofs
     for (let i = 0; i < 5; i++) shanWoodHouse(g, -2.25 + i * 9, 148.9, 0, { W: 7, D: 6.5, floors: 2, seed: 240 + i, roof: rustRoof });
     churchCompound(g);
+    // at Christmas, star poles in the yards of the Christian homes: the pastor's, the women workers' and the two plaza-lane houses nearest the church
+    christianHomes(g, [{ x: -.5, z: 131, ry: Math.PI / 2, W: 7, D: 6.5 }, { x: -.6, z: 120, ry: Math.PI / 2, W: 6.5, D: 6 }, ...TOWN_HOUSES.filter(h => Math.abs(h.x) < 12 && h.z > 99 && h.z < 108)]);
     // the old banyan on the corner of the market lane and the street
     banyan(g, 36.4, 65.4);
   }

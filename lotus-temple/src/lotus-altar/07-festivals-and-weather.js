@@ -1,4 +1,4 @@
-/* ---------- testing shortcuts in the address (?day=, ?dancers=, ?weather=, ?halloween=, ?townsfolk=, ?lionDragon=): they work only on the
+/* ---------- testing shortcuts in the address (?day=, ?dancers=, ?weather=, ?halloween=, ?townsfolk=, ?lionDragon=, ?christmas=, ?carols=, ?harvest=): they work only on the
    developer's own computer (localhost), so on the public site everyone sees the real schedule on the temple's clock ---------- */
 const DEV_HOST = (() => { try { return ["localhost", "127.0.0.1", "[::1]", "::1"].includes(location.hostname); } catch (e) { return false; } })();
 const devParam = key => DEV_HOST ? new URLSearchParams(location.search).get(key) : null;   // null on the public site, as if the address had no shortcut
@@ -58,6 +58,17 @@ $("torchBtn").addEventListener("click", flipTorch);
 document.addEventListener("keydown", e => { if (e.code === "KeyT" && !e.repeat && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) flipTorch(); });
 function festNote() {
   const el = $("festInfo"); if (!el) return;
+  const kathinToday = KATHIN_FORCE !== false && (kathinDay() || kathinNow());
+  if (!fest.season && !kathinToday && (harvestOn || xmasOn)) {   // the Kachin Baptist church's harvest thanksgiving and Christmas (the Kathin's day comes first)
+    el.hidden = current !== "pagoda";
+    const C = CONFIG.christmas, carolDays = inDays(C.carols.from, C.carols.to), wet = carolsOn && CAROL_FORCE === null && rainingOut();
+    el.textContent = harvestOn ? "🌾 Harvest thanksgiving at the Kachin Baptist church · the first fruits before the pulpit · service 9–11:30 AM ICT"
+      : onDay([12, 24]) ? `🎄 Christmas Eve · service at the Kachin Baptist church 5–7 PM ICT, then the carol singers go round until 11 PM${wet ? " (held up by the rain)" : ""}`
+      : onDay([12, 25]) ? "🎄 Christmas Day · service at the Kachin Baptist church 9–11:30 AM ICT"
+      : carolDays ? `🎄 Christmas at the Kachin Baptist church · carol singers go round the lanes 7–11 PM ICT${wet ? " · held up by the rain tonight" : carolsOn && daylight > .5 ? " (switch to Night to see them)" : ""}`
+      : "🎄 Christmas season · the Kachin Baptist church is dressed for Christmas until 6 January";
+    return;
+  }
   if (!fest.season && drill.season) {   // the weeks of dragon and lion dance training before Chinese New Year
     el.hidden = current !== "pagoda";
     const ny = drill.newYear ? new Date(drill.newYear).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short" }) : "";
@@ -111,7 +122,24 @@ function drillNow() {
 // the Sunday service in the Kachin Baptist church (CONFIG.service): on that weekday, in its hours, on the temple's clock
 const SERVICE_FORCE = forced("service");
 const serviceNow = () => SERVICE_FORCE !== null ? SERVICE_FORCE
-  : new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, weekday: "short" }).format(Date.now()) === CONFIG.service.day && inHours(CONFIG.service);
+  : new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, weekday: "short" }).format(Date.now()) === CONFIG.service.day && inHours(CONFIG.service)
+  || CONFIG.christmas.services.some(v => onDay(v.on) && inHours(v));   // and the Christmas Eve and Christmas morning services
+// today on the temple's clock, and whether it falls on [month, day] or in a span of them (which may run over New Year)
+const ictToday = () => { const [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(Date.now()).split("-").map(Number); return { y, m, d, md: m * 100 + d }; };
+const onDay = ([m, d]) => ictToday().md === m * 100 + d;
+const inDays = ([m0, d0], [m1, d1]) => { const md = ictToday().md, a = m0 * 100 + d0, b = m1 * 100 + d1; return a <= b ? md >= a && md <= b : md >= a || md <= b; };
+// Christmas at the Kachin Baptist church (CONFIG.christmas): the dressing through the season, the carol singers in the evenings
+const XMAS_FORCE = forced("christmas"), CAROL_FORCE = forced("carols");
+const christmasNow = () => XMAS_FORCE !== null ? XMAS_FORCE : inDays(CONFIG.christmas.from, CONFIG.christmas.to);
+const carolsNow = () => { const C = CONFIG.christmas.carols; return CAROL_FORCE !== null ? CAROL_FORCE : inDays(C.from, C.to) && inHours({ from: C.hours[0], until: C.hours[1] }); };
+const carolAt = () => CAROL_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.christmas.carols.hours[0] * 3600;   // seconds since they set out, on the temple's clock
+// the harvest thanksgiving (CONFIG.harvest): the last Sunday of its month on the temple's clock
+const HARVEST_FORCE = forced("harvest");
+const harvestNow = () => {
+  if (HARVEST_FORCE !== null) return HARVEST_FORCE;
+  const { y, m, d } = ictToday(), last = new Date(Date.UTC(y, m, 0)).getUTCDate();   // the month's last day
+  return m === CONFIG.harvest.month && d + 7 > last && new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, weekday: "short" }).format(Date.now()) === "Sun";
+};
 // the morning market (CONFIG.morningMarket): villagers selling on the ground at the seven-day market, early in the morning
 const MORNING_FORCE = forced("morningMarket");
 const morningNow = () => MORNING_FORCE !== null ? MORNING_FORCE : inHours(CONFIG.morningMarket);
@@ -147,8 +175,9 @@ const balloonsNow = () => BALLOON_PARAM === "day" || BALLOON_PARAM === "night" ?
 const rainingOut = () => wxKind === "rain";
 // how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
 const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
+let xmasOn = christmasNow(), carolsOn = carolsNow(), harvestOn = harvestNow();
 let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), kathinOn = kathinNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow();
-setInterval(() => { balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); kathinOn = kathinNow(); festNote(); }, 3e4);
+setInterval(() => { xmasOn = christmasNow(); carolsOn = carolsNow(); harvestOn = harvestNow(); balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); kathinOn = kathinNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

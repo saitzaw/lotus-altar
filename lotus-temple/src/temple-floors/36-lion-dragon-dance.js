@@ -224,6 +224,7 @@
     welcomeSign(g);
     halloweenGhost(g);
     townsfolk(g);
+    carolSingers(g); christmasOutside();
     createShinlaungProcession(g);   // Poy Sang Long, the novice ordination procession, round the block opposite the gate in the morning
     createShanKathin(g);   // Shan Kathin, the robe offering, noon to 2 PM in the month after the rains retreat
     // beatOfficer(g);   // the beat officer is commented out (see the main script)

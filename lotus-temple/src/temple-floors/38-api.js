@@ -39,6 +39,8 @@
       if (mode === "shop") return rc(-2.55, 2.55, -1.45, -.55) || z < -4.4;
       if (mode === "quarters") return rc(-2.6, 2.6, -2.1, -1.1) || rc(-2.6, 2.6, 1.1, 2.1) || x < -5.1 || x > 6.6 || rc(1.2, 3.8, -5.5, -4.7);
       if (mode === "bell") return rc(-1.2, 1.2, -1.8, -1.4);
+      if (mode === "church" && FOLK.christmas && rc(-6.7, -3.95, -2.6, -1.6)) return true;   // the nativity and its shepherds
+      if (mode === "church" && FOLK.harvest && (rc(-4.1, -.95, -2.6, -1.4) || rc(.95, 4.1, -2.6, -1.4))) return true;   // the harvest gifts
       if (mode === "church") return CHURCH.banks.some(([x0, x1]) => rc(x0, x1, CHURCH.rows[0] - .25, CHURCH.rows[CHURCH.rows.length - 1] + .3)) || rc(-.9, .9, -2.45, -1.85) || z < CHURCH.dais;   // the pews, the communion table, the dais
       if (mode === "kyaung") return KYAUNG.pillars.some(([cx, cz]) => c(cx, cz, .25)) || KYAUNG.hti.some(([cx, cz]) => c(cx, cz, .3)) || KYAUNG.urns.some(([cx, cz]) => c(cx, cz, .3)) || z < -2.9;   // pillars, parasols, flower urns
       if (HAW.rooms[mode]) return HAW.pillars.some(([cx, cz]) => c(cx, cz, .3)) || HAW.rooms[mode].some(r => rc(...r));   // the pillars; the dais and what stands before it
@@ -74,6 +76,11 @@
     setFireLotus(on) { FOLK.fireLotus = on; },
     // the lotus lanterns of light round the stupa hill's main stupa, set out through October and November
     setLotusLanterns(on) { FOLK.lotusLanterns = on; },
+    // Christmas at the Kachin Baptist church: `season` dresses the church, its compound and the Christian homes (1 Dec – 6 Jan);
+    // `carols` sends the carol singers round, `at` seconds since 7 pm (null: their own clock, for ?carols=1)
+    setChristmas(season, carols, at) { FOLK.christmas = season; FOLK.carols = carols; FOLK.carolAt = at; },
+    // the harvest thanksgiving's gifts before the pulpit, on the last Sunday of November
+    setHarvest(on) { FOLK.harvest = on; },
     // dragon and lion dance training on the kung fu ground before Chinese New Year: "dragon", "lion", or null for none
     setLionDragon(show) { FOLK.drill = show; },
     // the beat officer: settings and whether a visitor is on foot outside; `policeNews()` hands over what just happened, once

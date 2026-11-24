@@ -3,6 +3,11 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-25
+
+### Added
+- Christmas and the harvest thanksgiving at the Kachin Baptist church. On the last Sunday of November the families' first fruits (rice sheaves, sacks of new rice, pumpkins, baskets of fruit and vegetables) lie before the pulpit. From 1 December to 6 January the church is dressed for Christmas: a gold star and coloured lights outside, a tree, a nativity, paper stars and a Jinghpaw greeting inside, and star poles with lights in the yards of the Christian homes beside it. From 1 to 24 December, 7 to 11 PM, carol singers go round the lanes behind a star on a pole and stop to sing at the doors. There are services on Christmas Eve and Christmas morning.
+
 ## 2026-11-24
 
 ### Added

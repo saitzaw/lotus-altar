@@ -22,6 +22,33 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
 Runs Oct 27 – Nov 1 (`CONFIG.halloween`). Houses go dark at 9 PM ICT until 5 AM, a friendly ghost walks
 the roads. `?halloween=1` / `?halloween=0` force it.
 
+## Christmas and the harvest thanksgiving
+
+Both belong to the Kachin Baptist church; the temple, pagoda and monasteries are left as they are (the owner's choice).
+`28h-christmas-and-harvest.js` builds them; the main script passes `temple.setChristmas(season, carols, at)` and
+`temple.setHarvest(on)` each frame.
+
+- **Harvest thanksgiving** (`CONFIG.harvest`): the last Sunday of November (`harvestNow()`), as the owner says this church keeps
+  it. All that day the families' first fruits lie on the floor before the dais either side of the communion table
+  (`harvestDisplay`); the service is the usual Sunday one. `?harvest=1` / `=0`.
+- **Christmas dressing** (`CONFIG.christmas.from`–`to`, 1 Dec – 6 Jan, `christmasNow()`): a gold star and strings of bulbs on the
+  church (`churchChristmas`), bulbs along the compound's front wall and gate arch (`compoundChristmas`), bamboo star poles in the
+  yards of the pastor's house, the women workers' house and the two plaza-lane houses nearest the church (`christianHomes`, the
+  latter picked from `TOWN_HOUSES`, which `backStreets` fills), and inside (`churchChristmasHall`) a tree on the dais beside the
+  choir, a nativity before the dais's left end, paper star lanterns under the beams, a tinsel garland and the Jinghpaw greeting
+  “Ngwi Pyaw Christmas”. The outdoor pieces are groups with `noCull` in `XMAS.out`, shown together; every string of bulbs
+  (`fairyLights`) is one instanced mesh plus a cloud of glows, twinkled by `xmasTwinkle` (held still under reduced motion), only
+  glass by day outdoors. No lights are added (that would recompile every material). `?christmas=1` / `=0`.
+- **Carol singers** (`CONFIG.christmas.carols`, 1–24 Dec, 7–11 PM, `carolsNow()`; not in the rain): `carolSingers` walks eight
+  young people along `CAROLS.way` (church gate, plaza lane, back lane, market lane), stopping to sing at `CAROLS.stops` and before
+  each star pole near the way, in an arc facing the door, then back to the gate and a rest. The timetable runs on the temple's
+  clock (`carolAt()`, seconds since 7 PM), so every visitor sees them in the same place; `?carols=1` runs it on its own clock from
+  the gate. Seen only: no song is played.
+- **Christmas services** (`CONFIG.christmas.services`): `serviceNow()` also shows the congregation on Christmas Eve 5–7 PM and
+  Christmas morning 9–11:30.
+- `#festInfo` names whichever is on (harvest Sunday, Christmas Eve, Christmas Day, the carol nights, the rest of the season), after
+  Halloween and the Kathin's day and before the lion-dragon training.
+
 ## Lotus lanterns
 
 Through the `months` in `CONFIG.lotusLanterns` (October and November, Thadingyut's and Tazaungdaing's festivals of light) on the

@@ -71,7 +71,7 @@ Every indoor place except floor 1 is built **lazily** the first time it's visite
 | `quarters` | 寮房 Monks' dining and rest room | `quarters` | `temple-floors/06-shop-and-monks-room.js` | – |
 | `kyaung` | Shan monastery shrine hall (ၵျွင်းၵွင်းမူးၶမ်း) | `kyaungHall` | `temple-floors/04-kyaung-shrine-hall.js` | yes (Shan ledge) |
 | `kyaungLow` | the lower Shan monastery's hall for sermons and gatherings, no image (ၵျွင်းလူင်ဝဵင်းၵဝ်; `nav: false`) | `lowerKyaungHall` | `temple-floors/04b-lower-kyaung-hall.js` | no |
-| `church` | Kachin Baptist church; the Sunday service on Sunday 9–11:30 AM ICT | `churchHall`, `churchService` | `temple-floors/05-church-interior.js`, `temple-floors/05c-church-service.js` | no (church) |
+| `church` | Kachin Baptist church; the Sunday service on Sunday 9–11:30 AM ICT; the harvest thanksgiving's gifts on the last Sunday of November; dressed for Christmas 1 Dec – 6 Jan, with services on Christmas Eve and morning | `churchHall`, `churchService`, `harvestDisplay`, `churchChristmasHall` | `temple-floors/05-church-interior.js`, `temple-floors/05c-church-service.js`, `temple-floors/28h-christmas-and-harvest.js` | no (church) |
 | `haw` | Haw Kham throne room | `hawHall` | `temple-floors/05b-haw-kham-throne-room.js` | no (throne, no image) |
 | `hawJustice`, `hawMonks`, `hawLibrary`, `hawDining`, `hawOpera` | Haw Kham hall of justice, hall of the monks; at the back the literature, dining and opera halls (no nav button) | `hawHall(g, n, kind)` | `temple-floors/05b-haw-kham-throne-room.js` | no |
 
@@ -132,7 +132,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | High school | x 46–98, z 111–152 | `highSchool` | `26-hospital-football-school.js` |
 | Bamboo grove, hill-foot bamboo | x 44–100, z 153–178; round the hill | `bambooGrove`, `hillFootBamboo` | `27-bamboo-fuel-fire-police.js` |
 | Fuel station, fire and police stations, welcome board | police (133, 36); board (144, 44.4) | `fuelStation`, `fireAndPolice`, `welcomeSign` | `27-bamboo-fuel-fire-police.js` |
-| Kachin Baptist church compound | x −6…28, z 107.6…143.6 | `churchCompound`, `kachinChurch` | `28-kachin-church-and-back-streets.js` |
+| Kachin Baptist church compound | x −6…28, z 107.6…143.6 | `churchCompound`, `kachinChurch`; at Christmas `churchChristmas`, `compoundChristmas`, `christianHomes`, and the carol singers on the lanes (`carolSingers`) | `28-kachin-church-and-back-streets.js`, `28h-christmas-and-harvest.js` |
 | Old banyan | (36.4, 65.4) | `banyan` | `21-back-street-houses.js` |
 | Big banyan, on the stupa hill's upper terrace between the festival ground and the east stair | (−49.1, 137.2) (`BIG_BANYAN`) | `banyan` | `13-stupa-hill.js`, called from `14-shan-monasteries.js` |
 | Forest band and hills | z < −98; hills 150–190 m out | `mountainsAndForest` | `29-forest-and-hills.js` |
