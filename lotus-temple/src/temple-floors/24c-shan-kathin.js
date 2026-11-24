@@ -1,5 +1,5 @@
-  /* ---------- Shan Kathin (ပွႆးၵထိၼ်, Burmese ကထိန်ပွဲ), the offering of robes after the rains retreat. Through the lunar month
-     after the full moon of Thadingyut, until the full moon of Tazaungmon (CONFIG.kathin, ?kathin=1/0), the town carries one new
+  /* ---------- Shan Kathin (ပွႆးၵထိၼ်, Burmese ကထိန်ပွဲ), the offering of robes after the rains retreat. On one day, the full
+     moon of Tazaungmon in November (CONFIG.kathin, ?kathin=1/0), when there is no Shinlaung procession, the town carries one new
      set of monastic robes to the second monastery. They leave Haw Kham's town gate at noon and go round the old quarter, the
      wooden streets between the palace and the temple, with no dance stops, and reach the monastery about ten minutes
      later; the robe is offered at the foot of its stair and five
@@ -14,7 +14,7 @@
   };
   const KATHIN_INFO = {
     tip: "Shan Kathin · ပွႆးၵထိၼ် · ကထိန်ပွဲ",
-    toast: "The Shan Kathin, the offering of robes after the rains retreat. In the month after the full moon of Thadingyut (သီတင်းကျွတ်), through the full moon of Tazaungdaing (တန်ဆောင်တိုင်), the town carries one new set of monastic robes to the monastery. A padetha tree (ပဒေသာပင်) goes with them, hung with cloth, fruit and slips of gold paper for the gifts, and the robe itself is carried under a white umbrella. Five monks who kept the retreat receive it on the porch. A monastery may receive the kathina only once in that month."
+    toast: "The Shan Kathin, the offering of robes after the rains retreat. On the full moon day of Tazaungmon, Tazaungdaing (တန်ဆောင်တိုင်), in November, the month after the rains retreat ends at Thadingyut (သီတင်းကျွတ်), the town carries one new set of monastic robes to the monastery. A padetha tree (ပဒေသာပင်) goes with them, hung with cloth, fruit and slips of gold paper for the gifts, and the robe itself is carried under a white umbrella. Five monks who kept the retreat receive it on the porch. A monastery may receive the kathina only once in that month."
   };
   const MONK_INFO = {
     tip: "The monks receiving the robe",

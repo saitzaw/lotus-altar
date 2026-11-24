@@ -86,6 +86,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-24: The Shan Kathin on its one day
+
+- The owner says the town holds the Shan Kathin on one day only, the full moon of Tazaungmon in November, and there is no Shinlaung procession that day. `CONFIG.kathin.windows` (a month each year) became `days` ([year, month, day], the Tazaungmon full moons through 2035); `kathinSeason()` became `kathinDay()`, and `processionNow()` is false on that day unless `?procession=1`. `#festInfo` names the Kathin only on its day. 2031's full moon is Oct 31 in the table (that year has two full moons in October): ask the owner whether the town holds it then or on Nov 30.
+
 ### 2026-11-24: Sharper fireworks from the night balloons
 
 - The owner found the balloon fireworks blurry. They had been drawn as `PointsMaterial` points with the soft `glowTex`, 1.2 m (sparks) and 2.6 m (stars) wide, so they piled up as a coloured fog. `fwPool` in `15g-balloon-ground.js` now draws each with a small `ShaderMaterial` (`FW_VS`/`FW_FS`): a hard white-hot core with a thin halo of its colour, sized in metres (`uH` set from the drawing buffer in `onBeforeRender`) but never under 2.5 px, white when just lit and its own colour after; and a `LineSegments` streak back along its velocity that fades to the tail. `emit` takes optional size, heat and streak factors. Shells now come as peonies, gold willows (long drooping streaks) or tilted rings, with a white flash and sometimes a crackle of glitter. Checked by rendering the pool code alone in headless Chromium; not yet seen inside the full scene at night.

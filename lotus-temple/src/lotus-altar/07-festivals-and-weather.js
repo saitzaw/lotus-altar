@@ -70,11 +70,11 @@ function festNote() {
       : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
     return;
   }
-  if (KATHIN_FORCE !== false && (kathinSeason() || kathinNow())) {   // the robe offering, in its month; ?kathin=1 shows it on any day
+  if (KATHIN_FORCE !== false && (kathinDay() || kathinNow())) {   // the robe offering, on its day; ?kathin=1 shows it on any day
     el.hidden = current !== "pagoda";
     const on = kathinNow(), wet = on && KATHIN_FORCE === null && rainingOut();
-    el.textContent = !on ? "Shan Kathin month · the robe offering leaves Haw Kham at noon ICT"
-      : wet ? "Shan Kathin · called off while it rains. The robes go to the monastery another afternoon, noon–2 PM ICT"
+    el.textContent = !on ? "Shan Kathin today, the full moon of Tazaungmon · the robe offering leaves Haw Kham at noon ICT"
+      : wet ? "Shan Kathin · held up while it rains. The robes go to the monastery once it stops, until 2 PM ICT"
       : "Shan Kathin · the town carries the new robes from Haw Kham round the old quarter to the second monastery until 2 PM ICT";
     return;
   }
@@ -122,14 +122,15 @@ const stallsNow = () => STALLS_FORCE !== null ? STALLS_FORCE : CONFIG.stalls.som
 const foodNow = () => STALLS_FORCE !== null ? STALLS_FORCE : inHours(CONFIG.foodStreet);
 // the Poy Sang Long procession round the block opposite the gate (CONFIG.procession)
 const PROCESSION_FORCE = forced("procession");
-const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : inHours(CONFIG.procession);
-// Shan Kathin (CONFIG.kathin): on through the robe-offering month, from noon until 2 pm. ?kathin=1 or =0 forces it
+// Shan Kathin (CONFIG.kathin): on the full moon of Tazaungmon only, from noon until 2 pm. ?kathin=1 or =0 forces it
 const KATHIN_FORCE = forced("kathin");
-function kathinSeason(now = Date.now()) {
-  const [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(now).split("-").map(Number), md = m * 100 + d;
-  return CONFIG.kathin.windows.some(([yy, sm, sd, em, ed]) => y === yy && md >= sm * 100 + sd && md <= em * 100 + ed);
+function kathinDay(now = Date.now()) {
+  const [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(now).split("-").map(Number);
+  return CONFIG.kathin.days.some(([yy, mm, dd]) => y === yy && m === mm && d === dd);
 }
-const kathinNow = () => KATHIN_FORCE !== null ? KATHIN_FORCE : kathinSeason() && inHours(CONFIG.kathin);
+const kathinNow = () => KATHIN_FORCE !== null ? KATHIN_FORCE : kathinDay() && inHours(CONFIG.kathin);
+// the Shinlaung procession goes out every morning but the Kathin day
+const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : !kathinDay() && inHours(CONFIG.procession);
 const kathinAt = () => KATHIN_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.kathin.from * 3600;
 // in the rain the procession is called off and no fire balloon goes up (?procession=1 still forces the procession on;
 // ?balloons=1 or =0 forces the balloons). Read in the frame loop, as wxKind is set further down
