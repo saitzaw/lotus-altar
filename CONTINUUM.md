@@ -75,6 +75,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the owner), e.g. လၢၼ်ႉၶဝ်ႈၽၵ်းတႆး / ᥘᥣᥢᥳᥑᥝᥲᥚᥐᥴᥖᥭᥰ; the English lines are ours.
 
 - Have a Shan speaker check ပွႆးသၢင်ႇလွင်း (Poy Sang Long) in the procession's hover tip (`24b-shinlaung-procession.js`).
+- Have a Shan speaker check ပွႆးၵထိၼ် (Poy Kathin, our wording) on the Shan Kathin procession (`24c-shan-kathin.js`). The Burmese ကထိန်ပွဲ and ပဒေသာပင် are the usual names. The date windows in `CONFIG.kathin` follow the full moons and may be a day off; 2031 stays in October because that year has two full moons then.
 
 - The township court's board (`COURT_NAMES`) has Burmese မြို့နယ်တရားရုံး, Chinese 镇区法院 and English only (ours); ask the owner for
   the Shan and Tai Nüa names, as for the bank.
@@ -84,6 +85,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   the request. Restyle it once the photo arrives.
 
 ## Log
+
+### 2026-11-24: Shan Kathin, the robe offering after the rains retreat
+
+- From noon to 2 PM ICT in the month after Thadingyut's full moon, through Tazaungdaing's (`CONFIG.kathin.windows`, through 2035), the town walks the Poy Sang Long's streets with no dance stops (`24c-shan-kathin.js`): streamer poles, a padetha tree (ပဒေသာပင်) on two shoulder poles, women with bowls, the folded saffron robe on a gilt tray under a white umbrella, the donors, and the Shan band. They reach the second monastery about 12:10 and stand at the foot of its stair until 2. Five monks wait on the porch (floor 2.6 m up) the whole time. Called off in the rain; `?kathin=1` runs a short timetable from the gate even in rain, `?kathin=0` keeps it off. `#festInfo` names the month when Halloween and the lion-dance season are quiet. Shan ပွႆးၵထိၼ် is ours, for a speaker to check.
 
 ### 2026-11-24: The Day/Night button is back, for this visit
 
@@ -121,12 +126,3 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   glossy leaf clumps with a skirt hanging round the rim, and 3–5 red fruit hang off every clump. All `part()`s, so they
   bake to instances. Fruit shows all year (the real crop is April–June). The waterfall cliff's ten instanced cone "pines"
   in `11-waterfall-and-stream.js` are untouched.
-
-### 2026-11-22: More fireworks, in every colour, on the night balloons
-
-- From the owner's Taunggyi photos: the fireworks balloon (`15g-balloon-ground.js`) now goes up three launches in five at night
-  (`NIGHT_SET`), and its rack throws out more and brighter fireworks for 70 s of its climb: a fountain of white and gold sparks
-  with coloured stars in it, rockets that streak out trailing sparks of their colour and pop, and a shell every 1–3 s that bursts
-  into a ball of 100–180 stars of one colour or two. Colours come from `fwCol()`: a set of firework colours (red, green, gold,
-  orange, blue, pink, cyan, violet, white) or, 40% of the time, any hue. Two shared point pools (`fwPool`: 3000 fine sparks,
-  2000 big stars) and up to 40 rockets; nothing is thrown with reduced motion.

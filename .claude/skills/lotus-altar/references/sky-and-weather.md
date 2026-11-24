@@ -29,6 +29,10 @@ temple's clock, small paper lotus lanterns stand round the stupa hill's main stu
 `13c-stupa-lotus-lanterns.js`), glowing after dark. `lotusLanternsNow()` checks the month; the frame loop passes
 `temple.setLotusLanterns(on)`. When no other season is showing, `#festInfo` names it. `?lotuslanterns=1` / `=0` force them.
 
+## Shan Kathin
+
+The robe offering after the rains retreat (`CONFIG.kathin`). The season is the lunar month from the day after the full moon of Thadingyut through the full moon of Tazaungmon; the years through 2035 are a table, `windows`, so add a year before it runs out. Within that month, from noon to 2 PM ICT, the town walks the Poy Sang Long's streets (no dance stops, so they reach the second monastery about 12:10) carrying a padetha tree and one set of saffron robes under a white umbrella. Five monks wait on the monastery's porch the whole time. Called off in the rain. While the month lasts, and Halloween and the lion-dragon season are not using it, `#festInfo` names it. `?kathin=1` / `=0` force it; `=1` runs a short timetable and starts again from the gate. `kathinNow()` and `kathinAt()` in the main script, `createShanKathin` in `24c-shan-kathin.js`, `temple.setKathin`.
+
 ## The torch
 
 Walking outside at night shows `#torchBtn` (and **T** toggles it). On Halloween night the torch starts on, any other

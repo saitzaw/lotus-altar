@@ -65,6 +65,8 @@
     // the Poy Sang Long procession from the gate to the second monastery, 8–11 am (gathered there and at the festival ground from about 9:25): `at` the seconds since it set out, or null to
     // run its short test timetable (?procession=1)
     setProcession(on, at) { FOLK.procession = on; FOLK.processionAt = at; },
+    // Shan Kathin, noon to 2 pm in the month after the rains retreat: `at` is seconds since noon, or null for the short test timetable (?kathin=1)
+    setKathin(on, at) { FOLK.kathin = on; FOLK.kathinAt = at; },
     // the fire balloons on the stupa hill: false while it rains, when the teams leave the fire pits cold
     // and which kind the teams fill: "day" (the animals), "night", "auto" (by the light) or null (none)
     setBalloons(on, kind) { FOLK.balloons = on; FOLK.balloonKind = kind === undefined ? "auto" : kind; },

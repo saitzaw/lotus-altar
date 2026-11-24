@@ -64,9 +64,21 @@ function festNote() {
     el.textContent = `🐉 Training for Chinese New Year${ny ? " (" + ny + ")" : ""} on the kung fu ground · dragon 6–9 AM and 9–10 PM · lion 9:30–11 AM and 6–8 PM ICT`;
     return;
   }
-  el.hidden = current !== "pagoda" || !fest.season;
-  el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
-    : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
+  if (fest.season) {
+    el.hidden = current !== "pagoda";
+    el.textContent = fest.night ? `🎃 Halloween night · the houses are dark after 9 PM ICT · a friendly ghost walks the roads${daylight > .5 ? " (switch to Night to see it)" : ""}`
+      : "🎃 Halloween festival · the houses go dark at 9 PM ICT tonight";
+    return;
+  }
+  if (KATHIN_FORCE !== false && (kathinSeason() || kathinNow())) {   // the robe offering, in its month; ?kathin=1 shows it on any day
+    el.hidden = current !== "pagoda";
+    const on = kathinNow(), wet = on && KATHIN_FORCE === null && rainingOut();
+    el.textContent = !on ? "Shan Kathin month · the robe offering leaves the temple gate at noon ICT"
+      : wet ? "Shan Kathin · called off while it rains. The robes go to the monastery another afternoon, noon–2 PM ICT"
+      : "Shan Kathin · the town carries the new robes from the gate to the second monastery until 2 PM ICT";
+    return;
+  }
+  el.hidden = true;
 }
 
 /* ---------- townsfolk: people out in the market and on the roads from 6 pm until they go home at 10 pm ICT ---------- */
@@ -111,6 +123,14 @@ const foodNow = () => STALLS_FORCE !== null ? STALLS_FORCE : inHours(CONFIG.food
 // the Poy Sang Long procession round the block opposite the gate (CONFIG.procession)
 const PROCESSION_FORCE = forced("procession");
 const processionNow = () => PROCESSION_FORCE !== null ? PROCESSION_FORCE : inHours(CONFIG.procession);
+// Shan Kathin (CONFIG.kathin): on through the robe-offering month, from noon until 2 pm. ?kathin=1 or =0 forces it
+const KATHIN_FORCE = forced("kathin");
+function kathinSeason(now = Date.now()) {
+  const [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: CONFIG.sky.tz, year: "numeric", month: "numeric", day: "numeric" }).format(now).split("-").map(Number), md = m * 100 + d;
+  return CONFIG.kathin.windows.some(([yy, sm, sd, em, ed]) => y === yy && md >= sm * 100 + sd && md <= em * 100 + ed);
+}
+const kathinNow = () => KATHIN_FORCE !== null ? KATHIN_FORCE : kathinSeason() && inHours(CONFIG.kathin);
+const kathinAt = () => KATHIN_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.kathin.from * 3600;
 // in the rain the procession is called off and no fire balloon goes up (?procession=1 still forces the procession on;
 // ?balloons=1 or =0 forces the balloons). Read in the frame loop, as wxKind is set further down
 const BALLOON_FORCE = forced("balloons");
@@ -126,8 +146,8 @@ const balloonsNow = () => BALLOON_PARAM === "day" || BALLOON_PARAM === "night" ?
 const rainingOut = () => wxKind === "rain";
 // how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
 const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow();
-setInterval(() => { balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); festNote(); }, 3e4);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), kathinOn = kathinNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow();
+setInterval(() => { balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); kathinOn = kathinNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

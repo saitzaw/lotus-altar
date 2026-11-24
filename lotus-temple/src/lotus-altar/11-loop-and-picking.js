@@ -96,6 +96,7 @@ function frame() {
   temple.setStalls(stallsOn);
   temple.setFoodStreet(foodOn);
   temple.setProcession(processionOn && (PROCESSION_FORCE !== null || !rainingOut()), processionAt());   // called off in the rain
+  temple.setKathin(kathinOn && (KATHIN_FORCE !== null || !rainingOut()), kathinAt());   // the robe offering, called off in the rain
   temple.setBalloons(BALLOON_FORCE !== null ? BALLOON_FORCE : !rainingOut(), balloonKind);
   temple.setFireLotus(FIRE_LOTUS_FORCE !== null ? FIRE_LOTUS_FORCE : fireLotusOn && !rainingOut());
   temple.setLotusLanterns(lotusLanternsOn);

@@ -273,7 +273,7 @@
      case of gongs hung under a bamboo pole that two men carry on their shoulders, one before it and one behind, while the third
      walks beside it pushing the beaters' rod. They play the stage's song, and the kinnara ahead keep to it. Returns two units,
      [drums and cymbals, gongs], each front +z ---------- */
-  function createProcessionBand(root) {
+  function createProcessionBand(root, gongNote) {
     const E = ensembleKit(), K = procKit(), shown = () => root.visible, list = picks.pagoda, here = V(0, 0, 0), r = rng(9700), pk = l => l[(r() * l.length) | 0];
     const TAN = 0xd8a878, TAN_LOW = 0xc89868;
     const walking = (D, units) => { D.userData = { body: null, legCol: new THREE.Color(TAN_LOW).convertSRGBToLinear(), swing: .3, phase: 0, legs: true }; units.push(D); };
@@ -306,7 +306,7 @@
     E.setArm(free, .15, .12, .35);
     back.updateMatrixWorld(true);
     const player = E.gongPlayer(gc, m.D, hand.e.children[hand.e.children.length - 1], hand);
-    const gongInfo = { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း) in their painted case, hung under a bamboo pole that two men carry on their shoulders through the town. The third walks beside them and sounds all five at once, pushing the rod that joins the padded beaters, so the gongs ring as one chord, with the long drums (ၵွင်ယၢဝ်း) and the cymbals (ၸၢပ်ႈ) of the Shan ensemble at the back of the Poy Sang Long." };
+    const gongInfo = gongNote || { tip: "Gongs · မွင်း", toast: "Five bronze bossed gongs (မွင်း) in their painted case, hung under a bamboo pole that two men carry on their shoulders through the town. The third walks beside them and sounds all five at once, pushing the rod that joins the padded beaters, so the gongs ring as one chord, with the long drums (ၵွင်ယၢဝ်း) and the cymbals (ၸၢပ်ႈ) of the Shan ensemble at the back of the Poy Sang Long." };
     E.gate(m.D, list, gongInfo, shown); E.gate(gc.F, list, gongInfo, shown); walking(m.D, bw);
     // the song: the drums lead and the cymbals and gongs answer, heard from where the band is
     let c = null;
