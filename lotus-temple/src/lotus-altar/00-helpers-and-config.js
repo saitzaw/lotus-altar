@@ -87,12 +87,12 @@ const CONFIG = {
   lotusLanterns: { months: [10, 11] },
   // Shan Kathin (ပွႆးၵထိၼ်, Burmese ကထိန်ပွဲ): the offering of a new set of robes to the monastery, after the rains retreat. The town
   // holds it on one day only, the full moon of Tazaungmon (Tazaungdaing), in November, and there is no Shinlaung procession that
-  // morning. `days` are [year, month, day] on the temple's clock; 2031's is in October because that year has two full moons then
-  // (ask the owner). The procession leaves Haw Kham at `from` and has gone home by `until` (round the old quarter and up
+  // morning. `days` are [year, month, day] on the temple's clock; always in November, as the owner says the town holds it (2031 has
+  // two full moons in October, so its day is the November one). The procession leaves Haw Kham at `from` and has gone home by `until` (round the old quarter and up
   // the main stair, with no stops, so it is at the second monastery about ten minutes after noon). Add a year before 2036.
   // ?kathin=1 runs the same walk on any day and starts again from Haw Kham, ?kathin=0 keeps it off. The Shan name is ours:
   // have a speaker check it
-  kathin: { from: 12, until: 14, days: [[2026, 11, 24], [2027, 11, 14], [2028, 11, 2], [2029, 11, 21], [2030, 11, 10], [2031, 10, 31], [2032, 11, 18], [2033, 11, 7], [2034, 11, 26], [2035, 11, 15]] },
+  kathin: { from: 12, until: 14, days: [[2026, 11, 24], [2027, 11, 14], [2028, 11, 2], [2029, 11, 21], [2030, 11, 10], [2031, 11, 30], [2032, 11, 18], [2033, 11, 7], [2034, 11, 26], [2035, 11, 15]] },
   // the dances on the festival ground's stage, each a list of [from, until] in hours on the temple's clock (17.75 is 5:45 pm): the
   // kinnara alone, leaping, before the biggest crowd (the epic's opening), the kinnara and kinnari pair, the to (တၢင်းၵႃႈတူဝ်း,
   // Burmese တိုးနယား) at dusk, the white and the yellow to together, the pair again, and to close, the two to with the kinnara

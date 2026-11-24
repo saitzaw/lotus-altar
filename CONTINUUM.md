@@ -88,7 +88,7 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ### 2026-11-24: The Shan Kathin on its one day
 
-- The owner says the town holds the Shan Kathin on one day only, the full moon of Tazaungmon in November, and there is no Shinlaung procession that day. `CONFIG.kathin.windows` (a month each year) became `days` ([year, month, day], the Tazaungmon full moons through 2035); `kathinSeason()` became `kathinDay()`, and `processionNow()` is false on that day unless `?procession=1`. `#festInfo` names the Kathin only on its day. 2031's full moon is Oct 31 in the table (that year has two full moons in October): ask the owner whether the town holds it then or on Nov 30.
+- The owner says the town holds the Shan Kathin on one day only, the full moon of Tazaungmon in November, and there is no Shinlaung procession that day. `CONFIG.kathin.windows` (a month each year) became `days` ([year, month, day], the Tazaungmon full moons through 2035); `kathinSeason()` became `kathinDay()`, and `processionNow()` is false on that day unless `?procession=1`. `#festInfo` names the Kathin only on its day. 2031 has two full moons in October; the owner confirmed the Kathin is always in November, so 2031's day is Nov 30.
 
 ### 2026-11-24: Sharper fireworks from the night balloons
 
