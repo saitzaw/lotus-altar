@@ -86,6 +86,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-24: Sharper fireworks from the night balloons
+
+- The owner found the balloon fireworks blurry. They had been drawn as `PointsMaterial` points with the soft `glowTex`, 1.2 m (sparks) and 2.6 m (stars) wide, so they piled up as a coloured fog. `fwPool` in `15g-balloon-ground.js` now draws each with a small `ShaderMaterial` (`FW_VS`/`FW_FS`): a hard white-hot core with a thin halo of its colour, sized in metres (`uH` set from the drawing buffer in `onBeforeRender`) but never under 2.5 px, white when just lit and its own colour after; and a `LineSegments` streak back along its velocity that fades to the tail. `emit` takes optional size, heat and streak factors. Shells now come as peonies, gold willows (long drooping streaks) or tilted rings, with a white flash and sometimes a crackle of glitter. Checked by rendering the pool code alone in headless Chromium; not yet seen inside the full scene at night.
+
 ### 2026-11-24: The Shan Kathin preview walks at the real pace
 
 - `?kathin=1` had been covering the whole route in 36 seconds, about 7 m/s, and then sending everyone to their places at 6 m/s. It now uses the same 0.45 m/s as the afternoon itself (`KATHIN.speed` in `24c-shan-kathin.js`), and once the band at the back has reached its place and everyone has stood for 48 seconds, it starts again from Haw Kham.

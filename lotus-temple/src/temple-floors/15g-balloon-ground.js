@@ -427,42 +427,84 @@
     // every second or two fires a shell that bursts into a ball of stars of one colour or two: red, green, gold, blue, pink, any hue
     const FW_C = [[1, .16, .1], [.2, 1, .3], [1, .78, .2], [1, .45, .1], [.35, .55, 1], [1, .3, .85], [.3, .95, 1], [.75, .3, 1], [1, 1, 1]], SPARK_C = [[.7, .85, 1], [1, .85, .5], [1, .95, .8], [1, 1, 1]];
     const _fc = new THREE.Color(), fwCol = () => r() < .6 ? FW_C[(r() * FW_C.length) | 0] : (_fc.setHSL(r(), 1, .55), [_fc.r, _fc.g, _fc.b]);
-    const fwPool = (N, size, drag, fall, twinkle) => {
-      const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), v = new Float32Array(N * 3), age = new Float32Array(N), life = new Float32Array(N), base = new Float32Array(N * 3);
-      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.BufferAttribute(pos, 3)); geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
-      const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+    // Each star is drawn sharp, as the eye sees a burning star at night: a small hard white-hot core with a thin halo of its colour,
+    // a few pixels across at any distance (never a soft blob), white when just lit and its true colour as it burns, and behind it a
+    // streak along its flight that fades to nothing, as a star leaves on the eye (and on a photo), long while it flies fast and
+    // shrinking as the air slows it, drooping as it falls
+    const FW_VS = "uniform float uH; attribute vec3 tint; attribute vec2 fx; varying vec3 vC; varying float vHot, vK;\n" +
+      "void main() { vec4 mv = modelViewMatrix * vec4(position, 1.); float px = fx.x * projectionMatrix[1][1] * uH / max(-mv.z, .1);\n" +
+      "  gl_PointSize = clamp(px, 2.5, 40.); vK = min(1., px * px / 6.25); vC = tint; vHot = fx.y; gl_Position = projectionMatrix * mv; }";
+    const FW_FS = "varying vec3 vC; varying float vHot, vK;\n" +
+      "void main() { vec2 d = gl_PointCoord * 2. - 1.; float r2 = dot(d, d); if (r2 > 1.) discard;\n" +
+      "  float core = exp(-r2 * 14.), halo = exp(-r2 * 4.) * .6 * (1. - r2);\n" +
+      "  vec3 c = vC * (core * 2.6 + halo) + vec3(core) * (.45 + .55 * vHot) * max(max(vC.r, vC.g), vC.b);\n" +
+      "  gl_FragColor = vec4(c * (.5 + .5 * vK), 1.); }";
+    const _db = new THREE.Vector2();
+    const fwPool = (N, size, drag, fall, twinkle, trail) => {
+      const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), fx = new Float32Array(N * 2), v = new Float32Array(N * 3), age = new Float32Array(N), life = new Float32Array(N), base = new Float32Array(N * 3), sz = new Float32Array(N), hot = new Float32Array(N), tr = new Float32Array(N);
+      const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.BufferAttribute(pos, 3)); geo.setAttribute("tint", new THREE.BufferAttribute(col, 3)); geo.setAttribute("fx", new THREE.BufferAttribute(fx, 2));
+      const mat = new THREE.ShaderMaterial({ uniforms: { uH: { value: 500 } }, vertexShader: FW_VS, fragmentShader: FW_FS, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+      const pts = new THREE.Points(geo, mat);
+      pts.onBeforeRender = rd => { mat.uniforms.uH.value = rd.getDrawingBufferSize(_db).y * .5; };   // so a star keeps its size in metres at any screen size
       pts.frustumCulled = false; pts.userData.noCull = true; pts.visible = false; g.add(pts);
+      // the streaks: a thin line from each star back along its flight, its colour at the head fading out at the tail
+      const lp = new Float32Array(N * 6), lc = new Float32Array(N * 6), lgeo = new THREE.BufferGeometry();
+      lgeo.setAttribute("position", new THREE.BufferAttribute(lp, 3)); lgeo.setAttribute("color", new THREE.BufferAttribute(lc, 3));
+      const lines = new THREE.LineSegments(lgeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, toneMapped: false }));
+      lines.frustumCulled = false; lines.userData.noCull = true; lines.visible = false; g.add(lines);
       let next = 0, on = false;
       return {
-        emit(x, y, z, vx, vy, vz, l, c) {
+        // c: its colour; s: its size against the pool's; h: how white-hot it is when lit; t: its streak against the pool's
+        emit(x, y, z, vx, vy, vz, l, c, s = 1, h = 0, t = 1) {
           const i = next, i3 = i * 3; next = (next + 1) % N; on = true;
           pos[i3] = x; pos[i3 + 1] = y; pos[i3 + 2] = z; v[i3] = vx; v[i3 + 1] = vy; v[i3 + 2] = vz; age[i] = 0; life[i] = l; base[i3] = c[0]; base[i3 + 1] = c[1]; base[i3 + 2] = c[2];
+          sz[i] = size * s; hot[i] = h; tr[i] = trail * t;
         },
         step(dt) {
           if (on) {
             let alive = 0; const k = 1 - Math.min(dt, .1) * drag, gv = fall * dt;
             for (let i = 0; i < N; i++) {
               if (age[i] >= life[i]) continue;
-              const a = age[i] += dt, i3 = i * 3;
-              if (a >= life[i]) { col[i3] = col[i3 + 1] = col[i3 + 2] = 0; continue; }
-              alive++; const u = a / life[i], f = (u > .7 ? (1 - u) / .3 : 1) * (twinkle ? .55 + .45 * Math.sin(a * 41 + i) : 1);   // full till the last of it, then dying
+              const a = age[i] += dt, i3 = i * 3, i6 = i * 6;
+              if (a >= life[i]) { col[i3] = col[i3 + 1] = col[i3 + 2] = 0; fx[i * 2] = 0; lc.fill(0, i6, i6 + 6); continue; }
+              alive++; const u = a / life[i];
+              // full till the last of it, then dying; the twinkling ones flicker hard as they burn out, like glitter
+              const f = (u > .7 ? (1 - u) / .3 : 1) * (twinkle ? (u > .5 ? (Math.sin(a * 53 + i * 7.1) > 0 ? 1 : .15) : .7 + .3 * Math.sin(a * 41 + i)) : 1);
               v[i3] *= k; v[i3 + 1] = v[i3 + 1] * k - gv; v[i3 + 2] *= k;
               pos[i3] += v[i3] * dt; pos[i3 + 1] += v[i3 + 1] * dt; pos[i3 + 2] += v[i3 + 2] * dt;
               col[i3] = base[i3] * f; col[i3 + 1] = base[i3 + 1] * f; col[i3 + 2] = base[i3 + 2] * f;
+              fx[i * 2] = sz[i] * (u > .8 ? .5 + 2.5 * (1 - u) : 1); fx[i * 2 + 1] = hot[i] * Math.max(0, 1 - u * 4);   // white in its first quarter, then its own colour
+              const T = tr[i];
+              lp[i6] = pos[i3]; lp[i6 + 1] = pos[i3 + 1]; lp[i6 + 2] = pos[i3 + 2];
+              lp[i6 + 3] = pos[i3] - v[i3] * T; lp[i6 + 4] = pos[i3 + 1] - v[i3 + 1] * T; lp[i6 + 5] = pos[i3 + 2] - v[i3 + 2] * T;
+              const w = T > 0 ? 1.7 : 0; lc[i6] = col[i3] * w; lc[i6 + 1] = col[i3 + 1] * w; lc[i6 + 2] = col[i3 + 2] * w; lc[i6 + 3] = lc[i6 + 4] = lc[i6 + 5] = 0;
             }
-            on = alive > 0; geo.attributes.position.needsUpdate = geo.attributes.color.needsUpdate = true;
+            on = alive > 0; geo.attributes.position.needsUpdate = geo.attributes.tint.needsUpdate = geo.attributes.fx.needsUpdate = true;
+            lgeo.attributes.position.needsUpdate = lgeo.attributes.color.needsUpdate = true;
           }
-          pts.visible = on;
+          pts.visible = lines.visible = on;
         },
-        hide() { pts.visible = false; }
+        hide() { pts.visible = lines.visible = false; }
       };
     };
-    const sparks = fwPool(3000, 1.2, 1, 7, true), stars = fwPool(2000, 2.6, .9, 3.5, false), rockets = [];
-    // a shell bursting: a ball of stars thrown out evenly every way, of one colour or two, with a white flash of sparks at its heart
+    // sparks: fine and short-lived, flickering, with short streaks; stars: the big coloured ones, with long streaks
+    const sparks = fwPool(3000, .22, 1.4, 8, true, .05), stars = fwPool(2400, .5, 1.1, 5, false, .14), rockets = [];
+    // a shell bursting, one of three kinds as the teams make them: a peony, a ball of coloured stars thrown out evenly every way
+    // (of one colour or two, white-hot as they leave); a willow, gold stars on long streaks that hang and droop slowly down; or a
+    // ring, stars thrown out round a tilted circle. A white flash at its heart, and in some a crackle of glitter as the stars die
     const shell = (x, y, z) => {
-      const c1 = fwCol(), c2 = r() < .45 ? fwCol() : c1, n = 100 + (r() * 80) | 0, sp = 15 + r() * 8;
-      for (let i = 0; i < n; i++) { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u), s_ = sp * (.85 + r() * .15); stars.emit(x, y, z, q * Math.cos(th) * s_, u * s_ + 2, q * Math.sin(th) * s_, 2 + r() * 1.2, i % 2 ? c2 : c1); }
-      for (let i = 0; i < 30; i++) { const th = r() * TAU, s_ = 3 + r() * 5; sparks.emit(x, y, z, Math.cos(th) * s_, -2 + r() * 6, Math.sin(th) * s_, .4 + r() * .4, SPARK_C[3]); }
+      const kind = r(), willow = kind < .22, ring = !willow && kind < .36;
+      const c1 = willow ? [1, .7, .28] : fwCol(), c2 = !willow && r() < .45 ? fwCol() : c1, n = willow ? 90 + (r() * 40) | 0 : 110 + (r() * 80) | 0, sp = willow ? 11 + r() * 4 : 15 + r() * 8;
+      const tx = r() * TAU, ct = Math.cos(tx), st = Math.sin(tx);
+      for (let i = 0; i < n; i++) {
+        let dx, dy, dz;
+        if (ring) { const th = i / n * TAU, rx = Math.cos(th), ry = Math.sin(th); dx = rx; dy = ry * ct; dz = ry * st; }
+        else { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u); dx = q * Math.cos(th); dy = u; dz = q * Math.sin(th); }
+        const s_ = sp * (.9 + r() * .1);
+        stars.emit(x, y, z, dx * s_, dy * s_ + 1.5, dz * s_, willow ? 3.2 + r() * 1.4 : 1.6 + r() * 1, i % 2 ? c2 : c1, willow ? .8 : 1, willow ? .3 : 1, willow ? 3 : 1);
+      }
+      stars.emit(x, y, z, 0, 0, 0, .12, [1, .95, .85], 9, 1, 0);   // the flash
+      if (r() < .4) { const n2 = 60 + (r() * 40) | 0; for (let i = 0; i < n2; i++) { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u), s_ = sp * (.4 + r() * .45); sparks.emit(x, y, z, q * Math.cos(th) * s_, u * s_, q * Math.sin(th) * s_, 1.4 + r() * .8, SPARK_C[3], 1.2, 1, .3); } }   // the crackle
     };
     // after dark the wick's fire shines through the paper: each glows in its own colour (the patterned ones through their pattern)
     glowing.forEach(m => { m.emissive.copy(m.color); if (m.map) m.emissiveMap = m.map; });
@@ -621,8 +663,8 @@
         if (Z.panel) { const u = held ? 0 : clamp((y - top - 3.6) / 8, 0, 1), P = b.parts[b.kind]; P.visible = u > .02; P.scale.y = Math.max(u, .02); }
         if (Z.fireworks && show && !held && !still && tau > b.fw0 && tau < b.fw1) {
           const x = G.position.x, yr = y - 2.9, z = G.position.z, k = Math.min(dt, .1), m = 1 - (tau - b.fw0) / (b.fw1 - b.fw0 + 8);
-          for (b.spAcc += k * 320 * m; b.spAcc >= 1; b.spAcc--) { const th = r() * TAU, sp = 12 + r() * 16; sparks.emit(x, yr, z, Math.cos(th) * sp, -3 + r() * 10, Math.sin(th) * sp, 1.5 + r() * 1.5, r() < .2 ? fwCol() : SPARK_C[(r() * 4) | 0]); }
-          for (b.stAcc += k * 30 * m; b.stAcc >= 1; b.stAcc--) { const th = r() * TAU, sp = 8 + r() * 13; stars.emit(x, yr, z, Math.cos(th) * sp, -5 + r() * 9, Math.sin(th) * sp, 2.5 + r() * 1.5, fwCol()); }
+          for (b.spAcc += k * 260 * m; b.spAcc >= 1; b.spAcc--) { const th = r() * TAU, sp = 12 + r() * 16; sparks.emit(x, yr, z, Math.cos(th) * sp, -3 + r() * 10, Math.sin(th) * sp, 1.2 + r() * 1.3, r() < .2 ? fwCol() : SPARK_C[(r() * 4) | 0], 1, .6); }
+          for (b.stAcc += k * 30 * m; b.stAcc >= 1; b.stAcc--) { const th = r() * TAU, sp = 8 + r() * 13; stars.emit(x, yr, z, Math.cos(th) * sp, -5 + r() * 9, Math.sin(th) * sp, 2 + r() * 1.5, fwCol(), .8, .6); }
           for (b.rkAcc += k * 3.5 * m; b.rkAcc >= 1 && rockets.length < 40; b.rkAcc--) { const th = r() * TAU, sp = 22 + r() * 16, c = fwCol(); rockets.push({ x, y: yr, z, vx: Math.cos(th) * sp, vy: -8 + r() * 22, vz: Math.sin(th) * sp, life: 1.2 + r() * 1, age: 0, acc: 0, c }); }
           if ((b.shellT -= k) <= 0) { b.shellT = .4 + r() * 3.6; shell(x + (r() - .5) * 40, Math.max(top + 6, y + (r() - .3) * 24), z + (r() - .5) * 40); }
         }
@@ -631,9 +673,9 @@
       // the rockets streak out, slowing and dropping, trailing sparks of their colour and gold, and pop into a little star of it
       for (let i = rockets.length - 1; i >= 0; i--) {
         const R_ = rockets[i], k = Math.min(dt, .1); R_.age += k;
-        if (R_.age >= R_.life) { for (let j = 0; j < 14; j++) { const th = r() * TAU, u = 2 * r() - 1, q = Math.sqrt(1 - u * u); stars.emit(R_.x, R_.y, R_.z, q * Math.cos(th) * 7, u * 7, q * Math.sin(th) * 7, .8 + r() * .6, R_.c); } rockets.splice(i, 1); continue; }
+        if (R_.age >= R_.life) { for (let j = 0; j < 14; j++) { const th = r() * TAU, u = 2 * r() - 1, q = Math.sqrt(1 - u * u); stars.emit(R_.x, R_.y, R_.z, q * Math.cos(th) * 7, u * 7, q * Math.sin(th) * 7, .8 + r() * .6, R_.c, .7, 1); } rockets.splice(i, 1); continue; }
         R_.vx *= 1 - .6 * k; R_.vz *= 1 - .6 * k; R_.vy -= 6 * k; R_.x += R_.vx * k; R_.y += R_.vy * k; R_.z += R_.vz * k;
-        for (R_.acc += k * 70; R_.acc >= 1; R_.acc--) sparks.emit(R_.x, R_.y, R_.z, (r() - .5) * 1.5, (r() - .5) * 1.5, (r() - .5) * 1.5, .4 + r() * .5, r() < .5 ? R_.c : SPARK_C[1]);
+        for (R_.acc += k * 70; R_.acc >= 1; R_.acc--) sparks.emit(R_.x, R_.y, R_.z, (r() - .5) * 1.5, (r() - .5) * 1.5, (r() - .5) * 1.5, .4 + r() * .5, r() < .5 ? R_.c : SPARK_C[1], .8, .5, 0);
       }
       sparks.step(dt); stars.step(dt);
       // the lanterns: each held up a few seconds in its launcher's hands while the hot air fills it, then let go, rising and drifting
