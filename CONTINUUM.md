@@ -86,9 +86,18 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-24: The Shan Kathin preview walks at the real pace
+
+- `?kathin=1` had been covering the whole route in 36 seconds, about 7 m/s, and then sending everyone to their places at 6 m/s. It now uses the same 0.45 m/s as the afternoon itself (`KATHIN.speed` in `24c-shan-kathin.js`), and once the band at the back has reached its place and everyone has stood for 48 seconds, it starts again from Haw Kham.
+- The route reads the stair's footpath and zebra crossing from `HILL.approach` (set in `13-stupa-hill.js`) instead of repeating that maths, so moving the stair moves the procession with it. The leg loops in both processions no longer make a closure for each walker every frame.
+
+### 2026-11-24: The Shan Kathin leaves Haw Kham and goes round the old quarter
+
+- The robe procession no longer follows the morning route from the temple gate. It forms on the palace lane in front of Haw Kham's town gate, walks east past the old Shan houses, down the market lane, west along the front street and up the main stair to the second monastery (`24c-shan-kathin.js`). About 250 m, so they arrive about 12:10 and stand until 2. The monks, the robe and the hours are unchanged.
+
 ### 2026-11-24: Shan Kathin, the robe offering after the rains retreat
 
-- From noon to 2 PM ICT in the month after Thadingyut's full moon, through Tazaungdaing's (`CONFIG.kathin.windows`, through 2035), the town walks the Poy Sang Long's streets with no dance stops (`24c-shan-kathin.js`): streamer poles, a padetha tree (ပဒေသာပင်) on two shoulder poles, women with bowls, the folded saffron robe on a gilt tray under a white umbrella, the donors, and the Shan band. They reach the second monastery about 12:10 and stand at the foot of its stair until 2. Five monks wait on the porch (floor 2.6 m up) the whole time. Called off in the rain; `?kathin=1` runs a short timetable from the gate even in rain, `?kathin=0` keeps it off. `#festInfo` names the month when Halloween and the lion-dance season are quiet. Shan ပွႆးၵထိၼ် is ours, for a speaker to check.
+- From noon to 2 PM ICT in the month after Thadingyut's full moon, through Tazaungdaing's (`CONFIG.kathin.windows`, through 2035), the town walks out from Haw Kham round the old quarter and up the main stair, with no dance stops (`24c-shan-kathin.js`): streamer poles, a padetha tree (ပဒေသာပင်) on two shoulder poles, women with bowls, the folded saffron robe on a gilt tray under a white umbrella, the donors, and the Shan band. They reach the second monastery about 12:10 and stand at the foot of its stair until 2. Five monks wait on the porch (floor 2.6 m up) the whole time. Called off in the rain; `?kathin=1` runs a short timetable from Haw Kham even in rain, `?kathin=0` keeps it off. `#festInfo` names the month when Halloween and the lion-dance season are quiet. Shan ပွႆးၵထိၼ် is ours, for a speaker to check.
 
 ### 2026-11-24: The Day/Night button is back, for this visit
 

@@ -73,9 +73,9 @@ function festNote() {
   if (KATHIN_FORCE !== false && (kathinSeason() || kathinNow())) {   // the robe offering, in its month; ?kathin=1 shows it on any day
     el.hidden = current !== "pagoda";
     const on = kathinNow(), wet = on && KATHIN_FORCE === null && rainingOut();
-    el.textContent = !on ? "Shan Kathin month · the robe offering leaves the temple gate at noon ICT"
+    el.textContent = !on ? "Shan Kathin month · the robe offering leaves Haw Kham at noon ICT"
       : wet ? "Shan Kathin · called off while it rains. The robes go to the monastery another afternoon, noon–2 PM ICT"
-      : "Shan Kathin · the town carries the new robes from the gate to the second monastery until 2 PM ICT";
+      : "Shan Kathin · the town carries the new robes from Haw Kham round the old quarter to the second monastery until 2 PM ICT";
     return;
   }
   el.hidden = true;

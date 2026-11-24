@@ -138,7 +138,7 @@ the largest single block of work in the app. Corridor views also trigger it (`se
 | Forest band and hills | z < −98; hills 150–190 m out | `mountainsAndForest` | `29-forest-and-hills.js` |
 | Townsfolk (evening), Halloween ghost | roads, market | `townsfolk`, `halloweenGhost` | `24-townsfolk.js`, `23-halloween-ghost.js` |
 | Poy Sang Long procession (8 AM, arriving about 9:25; gathered at the second monastery and festival ground until 11) | gate → front street → market lane → palace lane → east stair → lower terrace → second monastery | `createShinlaungProcession` | `24b-shinlaung-procession.js` |
-| Shan Kathin (noon–2 PM in the month after the rains retreat; at the monastery from about 12:10) | the same streets, ending at the second monastery; five monks on its porch | `createShanKathin` | `24c-shan-kathin.js` |
+| Shan Kathin (noon–2 PM in the month after the rains retreat; at the monastery from about 12:10) | from Haw Kham around the old quarter, up the main stair, to the second monastery; five monks on its porch | `createShanKathin` | `24c-shan-kathin.js` |
 
 ## Suggested performance routes
 

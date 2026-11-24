@@ -1,7 +1,8 @@
   /* ---------- Shan Kathin (ပွႆးၵထိၼ်, Burmese ကထိန်ပွဲ), the offering of robes after the rains retreat. Through the lunar month
      after the full moon of Thadingyut, until the full moon of Tazaungmon (CONFIG.kathin, ?kathin=1/0), the town carries one new
-     set of monastic robes to the second monastery. They leave the temple gate at noon, by the same streets as the Poy Sang Long,
-     with no dance stops, and reach the monastery about ten minutes later; the robe is offered at the foot of its stair and five
+     set of monastic robes to the second monastery. They leave Haw Kham's town gate at noon and go round the old quarter, the
+     wooden streets between the palace and the temple, with no dance stops, and reach the monastery about ten minutes
+     later; the robe is offered at the foot of its stair and five
      monks who kept the retreat wait on the porch to receive it. Everyone has gone home by 2. Called off while it rains.
      Streamer poles lead, then the padetha tree (ပဒေသာပင်) on two shoulder poles, women with offering bowls, the robe itself
      under a white umbrella, the donors, and the Shan band at the back. The Shan name is ours, for a speaker to check ---------- */
@@ -9,7 +10,7 @@
     speed: .45,     // metres a second, the same easy walk as the Poy Sang Long
     stride: 1.3,
     far: 170,       // hidden when the walker is farther than this from the head, or from the monks
-    test: { walk: 36, gather: 48 }   // with ?kathin=1: across the town in half a minute, then they stand and it starts again
+    test: { gather: 48 }   // with ?kathin=1: the same easy walk, then once all are in place they stand this long and it starts again from Haw Kham
   };
   const KATHIN_INFO = {
     tip: "Shan Kathin · ပွႆးၵထိၼ် · ကထိန်ပွဲ",
@@ -92,8 +93,8 @@
     return f;
   }
 
-  /* ---------- the whole offering, and the monks on the porch. The way is the Poy Sang Long's way, as far as the second
-     monastery; once the head arrives, each group walks to its own place in front of the stair. The monks stand all the while
+  /* ---------- the whole offering, and the monks on the porch. The way is out of Haw Kham round the old quarter and up the
+     main stair to the second monastery; once the head arrives, each group walks to its own place in front of the stair. The monks stand all the while
      the offering is out, whether or not the procession has come into view ---------- */
   function createShanKathin(g) {
     const K = procKit(), root = new THREE.Group(); root.userData.noCull = true; root.visible = false; g.add(root);
@@ -121,22 +122,23 @@
     walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); if (f.userData.lag === undefined) f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
     if (legs.instanceColor) legs.instanceColor.needsUpdate = true;
 
-    // the same streets as the novice procession: front street, market lane, palace lane, east stair, lower terrace, to the monastery
+    // out of Haw Kham's town gate, east along the palace lane, down the market lane, west along the front street to the main
+    // stair, up it to the lower terrace and along the footpath to the second monastery
     const H = HILL.group; H.updateMatrix();
-    const Hinv = new THREE.Matrix4().copy(H.matrix).invert(), t1 = HILL.terraces[1], PR = t1.r1 - 3.6;
+    const t1 = HILL.terraces[1], PR = t1.r1 - 3.6;
     const onHill = a => { const v = V(Math.sin(a) * PR, 0, -Math.cos(a) * PR).applyMatrix4(H.matrix); return [v.x, v.z]; };
-    const PL = LANES[4], laneZ = (PL.z0 + PL.z1) / 2, E = HILL.east, along = r => [HILL.cx + E[0] * r, HILL.cz + E[1] * r];
-    const landing = along(PR), lv = V(landing[0], 0, landing[1]).applyMatrix4(Hinv), aE = Math.atan2(lv.x, -lv.z), aEnd = Math.asin(6 / PR);
-    const W = [[-56, 54], [0, 54], [41, 54], [41, laneZ], [PL.x0, laneZ], along(HILL.rBase + .6), landing];
-    const nArc = Math.max(2, Math.ceil(Math.abs(aE - aEnd) * PR / 3));
-    for (let i = 1; i <= nArc; i++) W.push(onHill(aE + (aEnd - aE) * i / nArc));
+    const laneZ = (LANES[4].z0 + LANES[4].z1) / 2, mx = (LANES[2].x0 + LANES[2].x1) / 2;
+    const { foot, mouth, crossX } = HILL.approach, landing = onHill(0), aEnd = Math.asin(6 / PR);   // the path and zebra crossing the hill laid
+    const W = [[-12, laneZ], [16, laneZ], [mx, laneZ], [mx, 54], [crossX, 54], mouth, foot, landing];
+    const nArc = Math.max(2, Math.ceil(aEnd * PR / 3));
+    for (let i = 1; i <= nArc; i++) W.push(onHill(aEnd * i / nArc));
     const line = P => {
       const c = [0]; for (let i = 1; i < P.length; i++) c.push(c[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
       const len = c[c.length - 1];
       return { P, cum: c, len, at(s, o) { s = Math.min(len, Math.max(0, s)); let i = 1; while (i < c.length - 1 && c[i] < s) i++; const u = (s - c[i - 1]) / (c[i] - c[i - 1] || 1); o[0] = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * u; o[1] = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * u; return o; } };
     };
     const WAY = line(W), cum = WAY.cum, L = WAY.len, out = [0, 0], at = s => WAY.at(s, out);
-    const sOf = k => cum[k], S0 = sOf(1), sHill = sOf(4);
+    const sOf = k => cum[k], S0 = sOf(1), sHill = sOf(5);
     const toW = (x, z) => { const v = V(x, 0, z).applyMatrix4(H.matrix); return [v.x, v.z]; };
     const fa = (() => { const [ax, az] = toW(0, 0), [bx, bz] = toW(0, 1); return Math.atan2(bx - ax, bz - az); })();
     // where each stands once they have arrived, in the hill's frame: the robe at the foot of the stair, the tree just down the terrace
@@ -155,6 +157,8 @@
     };
     units.forEach((u, i) => Object.assign(u.userData, afterWay(u.userData.back, ...AFTER[i])));
     const arrive = (L - S0) / KATHIN.speed;
+    // with ?kathin=1, one round: the walk, the band at the back finding its place, then the standing
+    const testRound = arrive + Math.max(...units.map(u => u.userData.way.len)) / KATHIN.speed + KATHIN.test.gather;
 
     // five monks on the porch, above the stair (the porch floor is 2.6 m up; the roof begins 2.9 m above that)
     const monks = new THREE.Group(); monks.userData.noCull = true; monks.visible = false; g.add(monks);
@@ -176,9 +180,8 @@
       if (monks.visible !== nearMonks) monks.visible = nearMonks;
       let head, since, walked;
       if (FOLK.kathinAt === null) {
-        testT = (testT + dt) % (KATHIN.test.walk + KATHIN.test.gather);
-        const u = Math.min(1, testT / KATHIN.test.walk);
-        head = S0 + (L - S0) * u; since = testT - KATHIN.test.walk; walked = since > 0 ? since * 6 : 0;
+        testT = (testT + dt) % testRound;
+        head = Math.min(L, S0 + testT * KATHIN.speed); since = testT - arrive; walked = since > 0 ? since * KATHIN.speed : 0;
       } else {
         head = Math.min(L, S0 + Math.max(0, FOLK.kathinAt) * KATHIN.speed);
         since = FOLK.kathinAt - arrive; walked = since > 0 ? since * KATHIN.speed : 0;
@@ -211,10 +214,11 @@
       walkers.forEach((f, i) => {
         const d = f.userData; f.updateMatrix();
         if (!d.legs) { legs.setMatrixAt(i * 2, zero); legs.setMatrixAt(i * 2 + 1, zero); return; }
-        [-1, 1].forEach((sd, k) => {
+        for (let k = 0; k < 2; k++) {   // a plain loop: no closure per walker per frame
+          const sd = k * 2 - 1;
           rot.makeRotationX(sd * Math.sin(d.phase) * d.swing * Math.max(motion, .3)); hip.makeTranslation(sd * .1, .82, 0).multiply(rot);
           m.multiplyMatrices(d.unit.matrix, f.matrix).multiply(hip); legs.setMatrixAt(i * 2 + k, m);
-        });
+        }
       });
       legs.instanceMatrix.needsUpdate = true;
     });

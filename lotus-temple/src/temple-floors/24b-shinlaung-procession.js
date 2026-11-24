@@ -493,10 +493,11 @@
       walkers.forEach((f, i) => {
         const d = f.userData; f.updateMatrix();
         if (!d.legs) { legs.setMatrixAt(i * 2, zero); legs.setMatrixAt(i * 2 + 1, zero); return; }
-        [-1, 1].forEach((sd, k) => {
+        for (let k = 0; k < 2; k++) {   // a plain loop: no closure per walker per frame
+          const sd = k * 2 - 1;
           rot.makeRotationX(sd * Math.sin(d.phase) * d.swing * Math.max(motion, .3)); hip.makeTranslation(sd * .1, .82, 0).multiply(rot);
           m.multiplyMatrices(d.unit.matrix, f.matrix).multiply(hip); legs.setMatrixAt(i * 2 + k, m);
-        });
+        }
       });
       legs.instanceMatrix.needsUpdate = true;
     });

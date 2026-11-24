@@ -325,6 +325,7 @@
     const pathLen = Math.max(3, (foot.z - 60.8) / -dir.z);
     flat(mesh(new THREE.BoxGeometry(3.6, .06, pathLen + .4), M.stone, 0, .03, -rBase - pathLen / 2, H));
     const xc = Math.min(-47.5, foot.x + dir.x * pathLen);
+    HILL.approach = { foot: [foot.x, foot.z], mouth: [foot.x + dir.x * pathLen, foot.z + dir.z * pathLen], crossX: xc };   // for the processions
     for (let i = 0; i < 6; i++) flat(mesh(new THREE.BoxGeometry(.5, .02, 7.6), std({ color: 0xf4f0e6, roughness: .7 }), xc - 2.5 + i, .05, 54, g));
     // stupas, one instanced mesh per part: weathered sandstone with darker blotches, dark iron hti crowns
     const stoneTex = canvasTex(128, (c, sz) => { c.fillStyle = "#c89c84"; c.fillRect(0, 0, sz, sz); const r = rng(12); for (let i = 0; i < 200; i++) { c.fillStyle = `rgba(${60 + r() * 40 | 0},${50 + r() * 30 | 0},${40 + r() * 30 | 0},${.1 + r() * .18})`; c.beginPath(); c.arc(r() * sz, r() * sz, 2 + r() * 8, 0, TAU); c.fill(); } });

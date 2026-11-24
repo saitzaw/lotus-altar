@@ -6,7 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-24
 
 ### Added
-- Shan Kathin, the offering of robes after the rains retreat. In the month after Thadingyut's full moon, through Tazaungdaing's, the town carries one new set of monastic robes from the temple gate to the second monastery at noon, with a padetha tree and the Shan band, and five monks wait on the porch to receive them. They have gone home by 2 PM. It is called off while it rains. On this computer, `?kathin=1` shows it at any time.
+- Shan Kathin, the offering of robes after the rains retreat. In the month after Thadingyut's full moon, through Tazaungdaing's, the town carries one new set of monastic robes from Haw Kham around the old quarter to the second monastery at noon, with a padetha tree and the Shan band, and five monks wait on the porch to receive them. They have gone home by 2 PM. It is called off while it rains. On this computer, `?kathin=1` shows it at any time.
 
 ## 2026-11-23
 

@@ -43,7 +43,7 @@ hours change, update this file in the same commit.
 |---|---|---|---|
 | The 30 days before Chinese New Year | Dragon dance training 6–9 AM and 9–10 PM; lion dance training 9:30–11 AM and 6–8 PM. Quiet on New Year's day | Kung fu ground | `lionDragon` |
 | October and November (all day and night) | Lotus lanterns (ဆီမီးပူဇော်): 160 small pink paper lotus lanterns, each with a flame, offered to the Buddha round the main stupa (along the terrace walk's parapet, in a row round the stupa's foot, at both ends of every step), for the festivals of light of Thadingyut (October) and Tazaungdaing (November). They glow after dark | Main stupa, top of the stupa hill | `lotusLanterns` |
-| Noon – 2:00 PM, in the Kathin month (the day after the full moon of Thadingyut through the full moon of Tazaungmon; the years through 2035 are listed in `CONFIG.kathin.windows`) | Shan Kathin (ပွႆးၵထိၼ်, ကထိန်ပွဲ): the town carries one new set of monastic robes from the gate to the second monastery, by the same streets as the morning procession, with no dance stops. A padetha tree (ပဒေသာပင်) goes with them, and the robe is under a white umbrella. They arrive about 12:10. Five monks wait on the porch to receive the robe. Called off while it rains | Gate → front street → market lane → Haw Kham road → second monastery; monks on its porch | `kathin` |
+| Noon – 2:00 PM, in the Kathin month (the day after the full moon of Thadingyut through the full moon of Tazaungmon; the years through 2035 are listed in `CONFIG.kathin.windows`) | Shan Kathin (ပွႆးၵထိၼ်, ကထိန်ပွဲ): the town carries one new set of monastic robes from Haw Kham around the old quarter to the second monastery, with no dance stops. A padetha tree (ပဒေသာပင်) goes with them, and the robe is under a white umbrella. They arrive about 12:10. Five monks wait on the porch to receive the robe. Called off while it rains | Haw Kham → palace lane → market lane → front street → main stair → second monastery; monks on its porch | `kathin` |
 | Oct 27 – Nov 1 (Halloween) | Houses go dark 9 PM – 5 AM, a friendly ghost walks the roads, walkers carry a torch | Town | `halloween` |
 | All year | Weather by season, changing every 3 hours: rain May–Oct, cool clear days and misty mornings Nov–Feb, smoky haze Mar–Apr | Everywhere outside | `weather` |
 
@@ -58,7 +58,7 @@ Add one of these to the address, e.g. `http://localhost:8000/?procession=1`:
 | Event | Switch it on | Switch it off |
 |---|---|---|
 | Procession (short 20 s stops, then it starts again from the gate; runs even in rain) | `?procession=1` | `?procession=0` |
-| Shan Kathin (a short walk, then they stand at the monastery and it starts again from the gate; runs even in rain) | `?kathin=1` | `?kathin=0` |
+| Shan Kathin (the real walking pace, then they stand at the monastery and it starts again from Haw Kham; runs even in rain) | `?kathin=1` | `?kathin=0` |
 | Fire balloons (even in rain) | `?balloons=1` (the kind for the light), `?balloons=day`, `?balloons=night` | `?balloons=0` |
 | Fire lotus towers (even in rain) | `?firelotus=1` | `?firelotus=0` |
 | Lotus lanterns round the main stupa | `?lotuslanterns=1` | `?lotuslanterns=0` |
