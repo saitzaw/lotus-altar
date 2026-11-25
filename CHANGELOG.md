@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-25
 
 ### Changed
+- The seven-day market at night: a paper lantern glows under every stall, and warm light over the aisles shows the stalls, their goods and the shoppers.
 - The night outside feels like night: moonlit blue shadows, a deep blue sky with the hills dark against it, and the lamps, lanterns and lit windows standing out. The halls and the daytime look are unchanged.
 
 ### Added

@@ -2,6 +2,7 @@
      tents for games of chance (dice), and an open-air opera stage with benches in front; bulbs strung overhead light up at night.
      Scenery only: nothing here takes bets or payment. */
   let fourTop = null, MARKET = null;
+  const _lc = new THREE.Color();
   const bellRingers = [];   // ringing the bell in the outdoor Bell Tower   // the four-animal top game in the market, and the market's bounds, once built
   function sevenDayMarket(g) {
     const list = picks.pagoda, X0 = 43, X1 = 104, Z0 = -14, Z1 = 47.4, r = rng(321);
@@ -13,7 +14,7 @@
     const bambooM = std({ color: 0xb8a060, roughness: .8, flatShading: true }), wood = std({ color: 0x7a5a3a, roughness: .7, flatShading: true }), steelM = std({ color: 0x5a5e62, roughness: .4, metalness: .7, flatShading: true });
     const TARPS = [0x2a6ac0, 0xe0702a, 0x2f8a4a, 0xc02a2a, 0xe8c030, 0x8a3ab0].map(c => std({ color: c, roughness: .7, side: THREE.DoubleSide, flatShading: true }));
     const stalls = [];   // where each stall stands, for its goods, seller and shoppers (marketStalls)
-    const bulbs = [];
+    const bulbs = [], lanternsAt = [];
     const bulb = (x, y, z, col = 0xffe0a0) => { const b = glowSprite(col, .9, .8); b.material.fog = false; b.position.set(x, y, z); g.add(b); bulbs.push(b); };
     const string = (a, b, n, sag) => { for (let i = 0; i <= n; i++) { const t = i / n; bulb(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t - Math.sin(Math.PI * t) * sag, a.z + (b.z - a.z) * t, [0xffe0a0, 0xff9a6a, 0xa0d0ff, 0xb0ffb0][i % 4]); } };
     // stalls: bamboo poles, a sloping tarp, a table (its goods and seller are in marketStalls); a few use a big umbrella instead
@@ -22,6 +23,7 @@
       sRect(s, -1.6, 1.6, -1.3, 1.3);
       const W = 3.0, D = 2.4, tarp = TARPS[(r() * TARPS.length) | 0], umb = r() < .2;
       stalls.push({ x, z, face, umb });
+      lanternsAt.push(V(0, umb ? 2.1 : 1.95, umb ? .5 : .35).applyAxisAngle(V(0, 1, 0), face).add(V(x, 0, z)));   // its paper lantern, over the table
       if (umb) {   // umbrella stall
         mesh(new THREE.CylinderGeometry(.04, .04, 2.6, 6), steelM, 0, 1.3, -.2, s);
         const um = mesh(new THREE.ConeGeometry(1.7, .6, 8, 1, true), tarp, 0, 2.7, -.2, s); um.castShadow = false;
@@ -218,10 +220,26 @@
     if (document.fonts && document.fonts.load) document.fonts.load('600 60px "Noto Sans Myanmar"', "ဈေး").then(() => { gateSign.needsUpdate = true; }, () => {});
     mesh(new THREE.BoxGeometry(37, .14, .14), steelM, 68, 4.95, 46.6, g);
     clickable(list, flat(mesh(new THREE.PlaneGeometry(5.6, 1.2), std({ map: gateSign, emissive: 0xffffff, emissiveMap: gateSign, emissiveIntensity: .4, roughness: .6, side: THREE.DoubleSide }), 68, 5.6, 46.7, g)), { market: true, tip: "Walk into the seven-day market" });
-    // the bulbs and the opera's lights burn at night while the townsfolk are out, and go dark when everyone goes home
+    // a round paper lantern hung under every stall's tarp, warm white, orange or red, glowing after dark (one instanced mesh and
+    // one cloud of glows), and a warm light over the middle of each aisle so the stalls, their goods and the shoppers are seen
+    const LANTERN_COLS = [0xffe4b0, 0xffa050, 0xff6a3a].map(c => new THREE.Color(c));
+    const lanterns = new THREE.InstancedMesh(new THREE.SphereGeometry(.22, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), lanternsAt.length);
+    const m4 = new THREE.Matrix4(), lp = new Float32Array(lanternsAt.length * 3), lc = new Float32Array(lanternsAt.length * 3);
+    lanternsAt.forEach((p, i) => { const c = LANTERN_COLS[i % 3]; lanterns.setMatrixAt(i, m4.makeScale(1, .85, 1).setPosition(p)); lp.set([p.x, p.y, p.z], i * 3); lc.set([c.r, c.g, c.b], i * 3); });
+    lanterns.castShadow = lanterns.receiveShadow = false; lanterns.frustumCulled = false; lanterns.userData.noCull = true;
+    const lg = new THREE.BufferGeometry(); lg.setAttribute("position", new THREE.BufferAttribute(lp, 3)); lg.setAttribute("color", new THREE.BufferAttribute(lc, 3));
+    const lanternGlows = new THREE.Points(lg, new THREE.PointsMaterial({ size: 1.9, vertexColors: true, map: glowTex, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+    lanternGlows.frustumCulled = false; lanternGlows.userData.noCull = true;
+    g.add(lanterns, lanternGlows);
+    const aisleLights = AISLES.map(ax => { const l = new THREE.PointLight(0xffc888, 0, 19, 1.6); l.position.set(ax, 3.1, 30); g.add(l); return l; });
+    // the bulbs, the lanterns and the opera's lights burn at night while the townsfolk are out, and go dark when everyone goes home
     let dark = 1, open = null;
     const light = () => {
       const k = dark * open;
+      lanternsAt.forEach((p, i) => lanterns.setColorAt(i, _lc.copy(LANTERN_COLS[i % 3]).multiplyScalar(.45 + .55 * k)));   // by day plain paper
+      lanterns.instanceColor.needsUpdate = true;
+      lanternGlows.material.opacity = .85 * k;
+      aisleLights.forEach(l => l.intensity = 2.1 * k);
       bulbs.forEach(b => b.material.opacity = .85 * k + .1);
       spots.forEach(s => s.material.opacity = .9 * k + .15);
       stageLight.intensity = 1.8 * k;

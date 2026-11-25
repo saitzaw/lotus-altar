@@ -78,7 +78,7 @@ Fifteen low-poly people (`townsfolk` in `temple-floors.js`) are out from 6 PM un
 the seven-day market's aisles (`MARKET_WAYS`), stopping at stalls, and five walk the roads the ghost uses (`GHOST_ROADS`),
 keeping to one side. They stop and turn to a walker who comes close. When `wx.rain` passes `CONFIG.townsfolk.umbrella`
 they put up umbrellas. The main script passes both each frame with `temple.setTownsfolk(out, umbrellas)`. The seven-day
-market's string bulbs and the opera's lights follow `out` too: lit at night while people are out, fading dark when they go
+market's string bulbs, the paper lantern under each stall and the three warm lights over its aisles (`aisleLights`, added at load, dark by day) and the opera's lights follow `out` too: lit at night while people are out, fading dark when they go
 home (the gambling hall stays lit so the four-animal top can still be played).
 `?townsfolk=1` / `?townsfolk=0` force them out or in. They are drawn in a blocky style (big heads with faces, two grey-haired
 elders) and dressed for a cold night in the hills: long-sleeved jackets, scarves, knitted hats or towel turbans, baggy Shan
