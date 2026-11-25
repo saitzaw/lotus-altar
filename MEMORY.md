@@ -68,10 +68,18 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - To render the night sky at another time, stub the clock in a script placed before the three.js tag:
   `const T0 = Date.UTC(...); Date.now = () => T0;`.
 
+## Where test runs live
+
+Every headless test, screenshot, probe and benchmark goes in its own folder under `~/lotus-altar-tests/` (for example
+`~/lotus-altar-tests/kathin-shot/`), never loose in `$HOME` and never in the repo. The folder is outside the repo because it
+holds about 1 GB of screenshots and Chromium profiles, and under `$HOME` because snap Chromium can't use `/tmp`. Put each
+run's `--user-data-dir` inside its folder too (`prof-a`, `prof-b`, …). Older runs from before 2026-11-25 (`balloontest`,
+`perfbench`, `eastshot`, …) were moved there with their script paths updated.
+
 ## Measuring speed in headless Chromium
 
 - For numbers (draw calls, render ms, load timings), headless Chromium on the real GPU works and is quick (~30 s a run): no
-  swiftshader flags, a fresh `--user-data-dir` under `$HOME` for every run (a profile left by a killed run stays locked and
+  swiftshader flags, a fresh `--user-data-dir` under `~/lotus-altar-tests/` for every run (a profile left by a killed run stays locked and
   the next run prints nothing at all), `--virtual-time-budget=60000 --dump-dom`, and a probe script loaded right after
   `lotus-altar.js` that reads a `window.__probe = { THREE, renderer, world, camera, temple }` line added just before the last
   `})();` of the copied `lotus-altar.js`. Swiftshader is far too slow for the full outdoor world (no frame within 400 s).
@@ -86,7 +94,7 @@ Plain `chromium --headless --screenshot` of an outdoor view usually comes back b
 Software rendering (swiftshader) is too slow for the frame to land before the capture, and `setTimeout` steps break under
 `--virtual-time-budget`. What works:
 
-1. Build, copy `dist/` to a throwaway folder under `$HOME` (snap Chromium can't use `/tmp`), and serve it on a spare port.
+1. Build, copy `dist/` to a new folder under `~/lotus-altar-tests/` (snap Chromium can't use `/tmp`), and serve it on a spare port.
 2. In the copy's `lotus-altar.js` (the joined file in `dist/`) (the code is inside an IIFE), add this right after `const controls = new THREE.OrbitControls(...)`:
    `window.__t={camera,controls,renderer,world,enterWalk:(...a)=>enterWalk(...a)};`
 3. The page opens on the real sun, so a run after dark opens at night (the Day button switches, but clicking it from a test fades over ~1.6 s of the frame clock, which headless frames advance only ~4 ms at a time; `--force-prefers-reduced-motion` makes it instant). Force day by opening the page as `http://localhost:<port>/?day=1`
@@ -127,10 +135,10 @@ Traps:
   Set `temple.culling = false` (expose `temple` on `__t` with a getter) before rendering, or refresh the inverse yourself.
 - To find an outdoor place's world position, look up a clickable by its tip (`world.traverse`, `userData.tip`) and use its
   parent's `localToWorld`; the grounds' frame is not the world frame.
-- Launch each headless run with its own `--user-data-dir` under `$HOME`, one at a time: two at once, or a reused profile, can exit
+- Launch each headless run with its own `--user-data-dir` under `~/lotus-altar-tests/`, one at a time: two at once, or a reused profile, can exit
   at once with no console output.
 - Don't stop the test server with `pkill -f <pattern>` when the pattern also matches your own shell command, because that
-  kills the shell. Kill it by PID instead, and delete the throwaway folder afterwards.
+  kills the shell. Kill it by PID instead, and leave the run's folder in `~/lotus-altar-tests/`.
 - JavaScript's `%` keeps the sign, so `arr[n % 2]` is `undefined` for negative `n` (a bar count that starts below zero). Use
   `n & 1` or `((n % k) + k) % k`. An exception in the frame loop turns the whole screen black, so after touching anything
   that runs every frame, load the page plainly (no hooks into the internals) and check it renders and logs no errors.

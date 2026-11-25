@@ -19,16 +19,17 @@ Useful address flags: `?halloween=1|0`, `?weather=rain|clear|cloudy|mist|haze`, 
 claude.ai Artifact they are ignored and everyone sees the real schedule. The site owner asked for this; read any new shortcut through
 `devParam`, never `location.search` directly.
 
-Headless check on this machine (snap Chromium can't write to `/tmp`, so save screenshots under `$HOME`):
+Headless check on this machine (snap Chromium can't write to `/tmp`; every test run gets its own folder under
+`~/lotus-altar-tests/`, see `MEMORY.md`):
 
 ```bash
 chromium --headless=new --no-sandbox --use-angle=swiftshader --enable-unsafe-swiftshader \
   --enable-logging=stderr --virtual-time-budget=14000 --window-size=1200,800 \
-  --screenshot=$HOME/shot.png "http://localhost:8000/?weather=rain" 2>&1 | grep CONSOLE
+  --screenshot=$HOME/lotus-altar-tests/rain/shot.png "http://localhost:8000/?weather=rain" 2>&1 | grep CONSOLE
 ```
 
-The page opens in the floor-1 hall; to test outside, serve a throwaway copy of `dist/index.html` with a script that
-clicks `#outsideBtn` and then `#fpBtn`, and delete it afterwards. Software rendering is slow (a minute or more per
+The page opens in the floor-1 hall; to test outside, serve a copy of `dist/` in a folder under `~/lotus-altar-tests/`
+with a script that clicks `#outsideBtn` and then `#fpBtn`. Software rendering is slow (a minute or more per
 shot), and headless can't play audio. Plain screenshots of outdoor spots often come back blank; `MEMORY.md` at the repo
 root has a method that works (render inside the page and log the image).
 
