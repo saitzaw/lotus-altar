@@ -11,7 +11,7 @@ const $ = id => document.getElementById(id);
 /* ---------- settings: change these to adjust the shrine ---------- */
 const CONFIG = {
   start: "pagoda",                                    // where the page opens: "pagoda" (outside the gate) or a floor number
-  light: { exposure: .82, key: 1.5, hemisphere: .3, dayIndoor: 0x7a6c5a },   // dayIndoor: the haze in a hall by day
+  light: { exposure: .82, key: 1.5, hemisphere: .3, dayIndoor: 0x7a6c5a, night: .86, nightSky: 0x050a1a, nightHaze: 0x08101f, nightEnv: 0x0c1222, nightEnvSteps: 8 },   // dayIndoor: the haze in a hall by day; night: exposure outside after dark (share of the day's); nightSky, nightHaze: the sky and distance outside at night; nightEnv: how much of the reflected surroundings is left outside at night (a dim blue), in nightEnvSteps steps to day
   camera: {
     full: { pos: [0, 4.2, 7.0], target: [0, 1.4, .5] },   // a wide view of the whole shrine, the bench and the fortune sticks; orbits all the way round
     corridor: { pos: [0, 1.65, 8.4], target: [0, 1.6, 9.6], fov: 65 },

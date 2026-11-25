@@ -116,8 +116,10 @@ const floorTex = canvasTex(256, (g, s) => {
 });
 floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(14, 14);
 
-/* environment map so metal and glaze catch light */
-(() => {
+/* environment map so metal and glaze catch light. The halls keep the warm lamplit one; outside it dims and cools with the
+   daylight through ENVS (0 night … last full), so a moonlit courtyard isn't lit like a lamplit hall. Same-sized maps, so
+   swapping one for another recompiles nothing */
+const ENVS = (() => {
   const pm = new THREE.PMREMGenerator(renderer);
   const env = new THREE.Scene();
   const sky = canvasTex(64, (g, s) => {
@@ -125,13 +127,23 @@ floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(14, 
     l.addColorStop(0, "#ffe2b0"); l.addColorStop(.45, "#a5602a"); l.addColorStop(.6, "#3a1a0c"); l.addColorStop(1, "#120804");
     g.fillStyle = l; g.fillRect(0, 0, s, s);
   });
-  env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide })));
+  const dome = new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide }), cards = [];
+  env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), dome));
   [[4, 5, 3], [-5, 3, 2], [0, 4, -5]].forEach(([x, y, z], i) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshBasicMaterial({ color: i === 2 ? 0xff9a40 : 0xfff0d0, side: THREE.DoubleSide }));
-    m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m);
+    const c = new THREE.Color(i === 2 ? 0xff9a40 : 0xfff0d0), m = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m); cards.push([m.material, c]);
   });
-  world.environment = pm.fromScene(env, 0.04).texture;
+  const N = CONFIG.light.nightEnvSteps, night = new THREE.Color(CONFIG.light.nightEnv), out = [];
+  for (let i = 0; i < N; i++) {
+    const k = i / (N - 1), tint = night.clone().lerp(new THREE.Color(0xffffff), k * k);   // eased, so dusk stays dim until the sun is well up
+    dome.color.copy(tint); cards.forEach(([m, c]) => m.color.copy(c).multiply(tint));
+    out.push(pm.fromScene(env, 0.04).texture);
+  }
+  pm.dispose();
+  world.environment = out[N - 1];
+  return out;
 })();
+const envFor = (outside, d) => outside ? ENVS[Math.round(d * (ENVS.length - 1))] : ENVS[ENVS.length - 1];
 
 /* ---------- materials ---------- */
 const std = o => new THREE.MeshStandardMaterial(o);

@@ -68,6 +68,10 @@ lesson when you learn one, and delete a lesson once it stops being true.
 - To render the night sky at another time, stub the clock in a script placed before the three.js tag:
   `const T0 = Date.UTC(...); Date.now = () => T0;`.
 
+- If a night (or any dark) scene outside looks lit like dusk no matter how low the lights go, it is the environment map
+  (`world.environment`, `ENVS`): it lights every standard material on its own. Render once with every light hidden to tell
+  lights from environment and emissive. Outside it now dims with the daylight (`envFor`).
+
 ## Where test runs live
 
 Every headless test, screenshot, probe and benchmark goes in its own folder under `~/lotus-altar-tests/` (for example

@@ -274,10 +274,11 @@ function weatherStep(dt) {
   ["fog", "k", "rain", "wind"].forEach(n => wx[n] += (T[n] - wx[n]) * e);
   wx.tint.lerp(_wxTint.set(T.tint), e);
   const out = current === "pagoda" || inCorridor;
+  world.environment = envFor(out, daylight);   // here as well as in applySky: leaving the balcony doesn't always pass through it
   if (out) {   // closer haze, a greyer sky and a dimmer day
     const base = inCorridor ? CONFIG.fog.corridor : inMarket ? CONFIG.fog.walk : CONFIG.fog.outside, f = inMarket ? wx.fog : .5 + .5 * wx.fog;
     world.fog.near = base[0] * f; world.fog.far = base[1] * f;
-    renderer.toneMappingExposure = CONFIG.light.exposure * (1 + .05 * daylight) * (1 - .2 * wx.k * daylight);
+    renderer.toneMappingExposure = outExposure(daylight) * (1 - .2 * wx.k * daylight);
     skyColors();
   }
   const show = out && wx.rain > .02 && !reduceMotion;
@@ -303,12 +304,15 @@ const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
 const dayParam = devParam("day");
 let dayChoice = dayParam === "1" ? 1 : dayParam === "0" ? 0 : null, daylight = dayChoice == null ? 0 : dayChoice, liveDaylight = 0, dayFadeUntil = -1;
 const dayFading = () => now < dayFadeUntil;   // on the frame clock, so a fade cleared by a jump elsewhere cannot lock the button
-// the sky and haze outside: black at night, under the stars and moon
+// outside the eye is a little less open at night, so the dark stays dark and the lamps stand out
+const outExposure = d => CONFIG.light.exposure * (CONFIG.light.night + (1.05 - CONFIG.light.night) * d);
+// the sky and haze outside: deep blue at night, under the stars and moon
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
   const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
-  world.background.copy(out ? mix(0x000000, 0x86b8e6) : mix(0x120a07, CONFIG.light.dayIndoor));
-  world.fog.color.copy(out ? mix(0x000000, 0xb4cce0) : mix(0x120a07, CONFIG.light.dayIndoor));
+  const night = c => new THREE.Color(c).multiplyScalar(1 - dark);   // a deep blue night, black once Halloween's houses go dark
+  world.background.copy(out ? night(CONFIG.light.nightSky).lerp(new THREE.Color(0x86b8e6), d) : mix(0x120a07, CONFIG.light.dayIndoor));
+  world.fog.color.copy(out ? night(CONFIG.light.nightHaze).lerp(new THREE.Color(0xb4cce0), d) : mix(0x120a07, CONFIG.light.dayIndoor));
   if (out && wx.k > .001) {   // cloud, rain, mist or haze greys the sky (darker at night)
     const tint = _wxSky.copy(wx.tint).multiplyScalar(.15 + .85 * d), k = wx.k * (1 - dark);
     world.background.lerp(tint, k); world.fog.color.lerp(tint, k);
@@ -317,7 +321,8 @@ function skyColors() {
 function applySky() {
   const out = current === "pagoda" || inCorridor, d = daylight;
   skyColors();
-  renderer.toneMappingExposure = CONFIG.light.exposure * (out ? 1 + .05 * d : 1);
+  world.environment = envFor(out, d);
+  renderer.toneMappingExposure = out ? outExposure(d) : CONFIG.light.exposure;
   temple.setDaylight(d);
   lampsOn = 1 - d;
   lanternMat.emissiveIntensity = CONFIG.lanterns.glowStrength * (1 - d) + .05;
