@@ -111,6 +111,10 @@ const CONFIG = {
   // pair (or 1), to, twoTo, toKinnara, singer, or ?dancers=0 forces one
   dancers: { solo: [[14, 15.5]], pair: [[16, 17.75], [20.75, 21.75]], to: [[18, 19.5]], twoTo: [[19.75, 20.5]], toKinnara: [[22, 23]],
              singer: [[15 + 31 / 60, 16], [17 + 46 / 60, 17 + 59 / 60], [19 + 31 / 60, 19.75], [21 + 46 / 60, 22]] },   // 3:31–3:59, 5:46–5:58, 7:31–7:44, 9:46–9:59 pm
+  // the festival ground's night lights (the stage lamps, the bulbs along the pavilion's eaves, the lantern strings over the grass): lit
+  // once it is dark from `from` o'clock, put out at `until` when the closing dance is over, dark again till the next evening.
+  // ?festivallights=1 or =0 forces them (they are also lit whenever ?dancers= puts someone on the stage)
+  festivalLights: { from: 17, until: 23 },
   // dragon and lion dance training (舞龍 舞獅) on the kung fu ground, for the `days` before Chinese New Year (newYear: the first day of
   // the first lunar month, [year, month, day]); hours are [from, until] on the temple's clock, 21.5 is 9:30 pm. On New Year's day itself
   // the troupe dances in the town, so the ground is quiet. ?lionDragon=dragon, ?lionDragon=lion or ?lionDragon=0 forces one

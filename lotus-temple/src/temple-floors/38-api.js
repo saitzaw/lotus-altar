@@ -57,6 +57,8 @@
     // who dances on the festival stage: "solo" (the kinnara alone, a bigger crowd), "pair" (kinnara and kinnari), "to",
     // "twoTo" (the white and the yellow to), "toKinnara" (the two to with the kinnara alone, a bigger crowd), or null for none
     setDancers(show) { FOLK.dance = show; },
+    // the festival ground's stage lamps, eave bulbs and lantern strings: on in the evening (they light once it is dark), off when the last dance is over
+    setFestivalLights(on) { FOLK.festLights = on; },
     setService(on) { FOLK.service = on; },
     // the morning market's sellers on the ground at the seven-day market, 5–9 am
     setMorningMarket(on) { FOLK.morning = on; },

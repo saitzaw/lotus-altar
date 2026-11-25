@@ -165,6 +165,8 @@ const kathinAt = () => KATHIN_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86
 const BALLOON_FORCE = forced("balloons");
 // the fire lotus towers on the stupa hill (CONFIG.fireLotus), 7 pm to midnight, called off in the rain; ?firelotus=1 or =0 forces them
 const FIRE_LOTUS_FORCE = forced("firelotus"), fireLotusNow = () => inHours(CONFIG.fireLotus);
+// the festival ground's lights (CONFIG.festivalLights): the evening until the last dance ends, or whenever someone is forced onto the stage
+const FEST_LIGHTS_FORCE = forced("festivallights"), festLightsNow = () => FEST_LIGHTS_FORCE !== null ? FEST_LIGHTS_FORCE : inHours(CONFIG.festivalLights) || !!DANCE_FORCE;
 // the lotus lanterns round the main stupa (CONFIG.lotusLanterns), through their months on the temple's clock; ?lotuslanterns=1 or =0 forces them
 const LANTERN_FORCE = forced("lotuslanterns");
 const lotusLanternsNow = () => LANTERN_FORCE !== null ? LANTERN_FORCE : CONFIG.lotusLanterns.months.includes(+new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.sky.tz, month: "numeric" }).format(Date.now()));
@@ -176,8 +178,8 @@ const rainingOut = () => wxKind === "rain";
 // how long the procession has been walking, in seconds on the temple's clock (ICT is UTC+7 all year), or null when forced on
 const processionAt = () => PROCESSION_FORCE ? null : ((Date.now() / 1e3 + 7 * 3600) % 86400) - CONFIG.procession.from * 3600;
 let xmasOn = christmasNow(), carolsOn = carolsNow(), harvestOn = harvestNow();
-let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), kathinOn = kathinNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow();
-setInterval(() => { xmasOn = christmasNow(); carolsOn = carolsNow(); harvestOn = harvestNow(); balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); kathinOn = kathinNow(); festNote(); }, 3e4);
+let folkOut = folkNow(), danceOn = danceNow(), drill = drillNow(), serviceOn = serviceNow(), morningOn = morningNow(), stallsOn = stallsNow(), foodOn = foodNow(), processionOn = processionNow(), kathinOn = kathinNow(), balloonKind = balloonsNow(), fireLotusOn = fireLotusNow(), lotusLanternsOn = lotusLanternsNow(), festLightsOn = festLightsNow();
+setInterval(() => { xmasOn = christmasNow(); carolsOn = carolsNow(); harvestOn = harvestNow(); balloonKind = balloonsNow(); fireLotusOn = fireLotusNow(); lotusLanternsOn = lotusLanternsNow(); festLightsOn = festLightsNow(); folkOut = folkNow(); danceOn = danceNow(); drill = drillNow(); serviceOn = serviceNow(); morningOn = morningNow(); stallsOn = stallsNow(); foodOn = foodNow(); processionOn = processionNow(); kathinOn = kathinNow(); festNote(); }, 3e4);
 
 /* ---------- the beat officer: commented out for now; uncomment this block, `policeStep()` in the frame loop and `beatOfficer(g)` in
    temple-floors.js to bring him back. After dark he chases a visitor on foot anywhere outside the temple and the markets ---------- */

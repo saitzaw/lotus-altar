@@ -91,6 +91,7 @@ function frame() {
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
   temple.setGuardHats(wx.rain > CONFIG.guardHats);
   temple.setDancers(danceOn);
+  temple.setFestivalLights(festLightsOn);
   temple.setService(serviceOn);
   temple.setMorningMarket(morningOn);
   temple.setStalls(stallsOn);

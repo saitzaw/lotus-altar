@@ -65,7 +65,28 @@
     [[-T / 2 + 1, -R / 2 + 1], [T / 2 - 1, -R / 2 + 1], [-T / 2 + 1, R / 2 - 1], [T / 2 - 1, R / 2 - 1]].forEach(([x, z]) => {
       for (let i = 1; i < 12; i++) { const t = i / 12, b = glowSprite([0xffd060, 0xff7040, 0x80d0ff][i % 3], .9, .8); b.material.fog = false; b.position.set(x * t, 11 - 7.5 * t - Math.sin(Math.PI * t) * 1.2, FZ + (z - FZ) * t); G.add(b); lamps.push(b); }
     });
-    onDaylight(d => { lamps.forEach(b => b.material.opacity = .85 * (1 - d) + .08); balloon.material.emissiveIntensity = .7 * (1 - d); });
+    // the festival's night lights: bulbs along both eaves of the pavilion, a lamp hung under its roof over each half of the stage, a
+    // spotlight from the field onto the dancers, and a warm light over the grass from the lantern strings. Lit after dark while the
+    // evening's shows are on (FOLK.festLights, CONFIG.festivalLights), fading out over a few seconds when the last dance is over
+    [-1, 1].forEach(sd => { for (let i = 0; i <= 14; i++) { const b = glowSprite([0xffe0a0, 0xff9a6a, 0xffe0a0, 0xa0d0ff][i % 4], .7, .7); b.material.fog = false; b.position.set(-PW / 2 - .3 + i * (PW + .6) / 14, 4.45, PZ + sd * (PD / 2 + .75)); G.add(b); lamps.push(b); } });
+    const hung = [-3.5, 3.5].map(x => { const b = glowSprite(0xfff0c8, 1.3, .9); b.material.fog = false; b.position.set(x, 4.2, PZ); G.add(b); lamps.push(b);
+      const l = new THREE.PointLight(0xffd8a0, 0, 13, 1.4); l.position.set(x, 4.0, PZ); G.add(l); return l; });
+    const stageSpot = new THREE.SpotLight(0xfff0d8, 0, 26, .55, .5, 1); stageSpot.position.set(0, 7.5, PZ + PD / 2 + 7); stageSpot.target.position.set(0, 1.6, PZ); G.add(stageSpot, stageSpot.target);
+    const fieldLight = new THREE.PointLight(0xffc890, 0, 26, 1.3); fieldLight.position.set(0, 8, FZ - 1); G.add(fieldLight);
+    let dark = 1, lit = null;
+    const light = () => {
+      const k = dark * lit;
+      lamps.forEach(b => b.material.opacity = .85 * k + .08);
+      balloon.material.emissiveIntensity = .7 * k;
+      hung.forEach(l => l.intensity = 2.2 * k); stageSpot.intensity = 3 * k; fieldLight.intensity = 1.6 * k;
+    };
+    onDaylight(d => { dark = 1 - d; if (lit !== null) light(); });
+    updaters.pagoda.push(dt => {
+      const want = FOLK.festLights ? 1 : 0;
+      if (lit === want) return;
+      lit = lit === null ? want : clamp(lit + (want ? dt : -dt) / 3, 0, 1);   // the lights go out over a few seconds
+      light();
+    });
     const dancers = kinnaraDancers(G, list, 0, PZ), to = toDancers(G, list, 0, PZ), to2 = toDancers(G, list, 0, PZ, true), singer = stageSinger(G, list, 0, PZ);   // on the stage's centre
     G.updateMatrixWorld(true); { const w = G.localToWorld(new THREE.Vector3(0, 0, PZ)); STAGE[0] = w.x; STAGE[1] = w.z; }
     const audience = festivalAudience(G, list, 0, PZ, [[0, FZ, 1.9], ...[-8, -4, 4, 8].map(x => [x, R / 2 - 3, 1.5])]);   // kept off the flag pole and the kahtein trees
