@@ -4,6 +4,7 @@ What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel
 For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-25
+- The night sky outside, from the pagoda's top floor and the bell tower now holds real stars where they really stand over the temple: Orion, the Plough, Cassiopeia, the Pleiades, Scorpius and Sagittarius, the Southern Cross low in the south, with thousands of fainter stars, and the Milky Way across the sky, brightest toward Sagittarius and split by the Great Rift. The sky turns through the night; the stars twinkle (held still under reduced motion), dim and redden near the horizon, hide behind cloud, rain, mist and haze, and a bright moon washes out the faint ones and the Milky Way.
 
 ### Changed
 - The high school's windows go dark at 8 PM, when the last teachers and pupils have gone home, and stay dark until 6 AM.

@@ -11,10 +11,7 @@
     // the sky's radius: everything in the world must stand well inside it, or the night sphere and the day dome (at .94 of it) hide it
     const SKY_R = 420;
     g.add(new THREE.Mesh(new THREE.SphereGeometry(SKY_R, 48, 24), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false })));
-    const starPos = [], rs = rng(5);
-    for (let i = 0; i < 700; i++) { const a = rs() * TAU, e = .15 + rs() * 1.3; const d = SKY_R * .9; starPos.push(Math.cos(a) * Math.cos(e) * d, Math.sin(e) * d, Math.sin(a) * Math.cos(e) * d); }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
-    const stars = new THREE.Points(sg, new THREE.PointsMaterial({ size: 1.2, color: 0xfff4e0, map: glowTex, transparent: true, depthWrite: false, fog: false })); g.add(stars);
+    const stars = starrySky(g, SKY_R * .9, 5);   // the stars and the Milky Way, where they really stand tonight
     daySky(g, SKY_R, stars, .3);   // from outside the camera looks down on the temple, so the sky it sees is low
     const groundMat = std({ color: 0x1c1712, roughness: 1 });
     const ground = flat(mesh(new THREE.CircleGeometry(SKY_R + 40, 96), groundMat, 0, 0, 0, g)); ground.rotation.x = -Math.PI / 2;

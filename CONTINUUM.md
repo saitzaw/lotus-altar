@@ -86,6 +86,15 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-25: Stars and the Milky Way
+- `starrySky(parent, r, seed)` in `00-closure-and-sky-helpers.js` replaces the three random star clouds (outside, the pagoda top's
+  vista, the bell tower). About 80 bright stars at their real RA/Dec (`BRIGHT_STARS`, J2000, typed from memory: worth a check against
+  a catalogue) plus 3400 seeded faint ones, 40% of them near the galactic plane; the Milky Way is a band mesh built in galactic
+  coordinates (`galDir`) with a canvas texture (`milkyWayTex`, made once). Both are ShaderMaterials turned each frame by the local
+  sidereal time and latitude (`celestial.lst`, `at`, `lat`, from `Astro.lst` in `updateCelestial`).
+- `temple.setStarlight(k)` from the frame loop (`1 - wx.k * 1.8`) hides them under weather; the moon's `fraction` and altitude dim
+  the faint stars and the Milky Way. Late November's nights near full moon show a faint Milky Way: that is on purpose.
+
 ### 2026-11-25: School windows dark after 8 PM
 
 - The high school's windows have their own glass (`schoolGlass` in `26-hospital-football-school.js`, passed to `civic()` as

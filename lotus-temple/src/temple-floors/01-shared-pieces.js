@@ -253,10 +253,7 @@
     });
     const vw = new THREE.Group(); vw.position.set(0, 0, Z0); g.add(vw); g.userData.vista = vw;   // replaced by the real grounds when they are built
     vw.add(new THREE.Mesh(new THREE.SphereGeometry(70, 32, 16), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide, fog: false })));
-    const starPos = [], rs = rng(23);
-    for (let i = 0; i < 400; i++) { const a = rs() * TAU, e = .12 + rs() * 1.3; starPos.push(Math.cos(a) * Math.cos(e) * 66, Math.sin(e) * 66, Math.sin(a) * Math.cos(e) * 66); }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
-    const stars = new THREE.Points(sg, new THREE.PointsMaterial({ size: .5, color: 0xfff4e0, map: glowTex, transparent: true, depthWrite: false, fog: false })); vw.add(stars);
+    const stars = starrySky(vw, 66, 23);
     daySky(vw, 70, stars);
     const sunC = new THREE.DirectionalLight(0xfff0d8, 0); sunC.position.set(6, 12, 20); g.add(sunC); dayLight(sunC, [0xfff0d8, 0], [0xfff0d8, 1.2]);
     const hillTex = canvasTex(512, (c, sz) => {

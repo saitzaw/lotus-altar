@@ -51,6 +51,8 @@
     setHalloween({ on, out }) { FEST.on = on; if (out !== FEST.out) { FEST.out = out; dayParts.forEach(fn => fn(daylight)); } },
     get ghost() { return FEST.ghost || null; },
     // townsfolk: out in the market and on the roads in the evening and night, under umbrellas when it rains
+    // how much of the starry sky shows through the weather (1 clear, 0 overcast)
+    setStarlight(k) { if (Math.abs(k - SKYVIEW.clear) < .002) return; SKYVIEW.clear = k; SKY_LAYERS.forEach(fn => fn()); },
     setTownsfolk(out, umbrellas) { FOLK.out = out; FOLK.umbrellas = umbrellas; },
     // the palace guards put their straw hats on while it rains, and sling them on their backs again after
     setGuardHats(rain) { if (rain === GUARD_HATS.rain) return; GUARD_HATS.rain = rain; GUARD_HATS.back.forEach(o => o.visible = !rain); GUARD_HATS.on.forEach(o => o.visible = rain); },

@@ -16,6 +16,12 @@ clock through `Intl.DateTimeFormat` with `timeZone: CONFIG.sky.tz`, never the vi
   lanterns' `lanternMat` and their halos (`lanternGlow()`) go dark too. Each hall gets `daylit(group)` when it is built
   (and the main hall in `dress()`): its hemisphere, key and side lights ease to pale daylight. Indoors the background and
   fog go from lamplit dark to `CONFIG.light.dayIndoor`.
+- The stars and the Milky Way (`starrySky(parent, r, seed)` in `00-closure-and-sky-helpers.js`, used outside, in the pagoda top's
+  vista and the bell tower) stand where they really are: the bright stars from `BRIGHT_STARS` (RA, Dec, magnitude, colour), faint
+  seeded ones thicker along the galactic plane, and a Milky Way band mesh in galactic coordinates with a canvas texture
+  (`milkyWayTex`). A ShaderMaterial turns them by the local sidereal time (`celestial.lst` at `celestial.at`, from `Astro.lst`) and
+  latitude every frame. Twinkle stops under `reduceMotion`; `temple.setStarlight(k)` (weather, 0–1) and a bright moon dim them;
+  `daySky` fades them by day through the returned `fade(v)`.
 - The night outside is set by four things, all in `CONFIG.light`: the pagoda grounds' hemisphere and moonlight (`lights()` at the
   end of `36-lion-dragon-dance.js`, which builds the pagoda exterior), a lower exposure after dark (`night`, through
   `outExposure()`), the deep blue sky and haze (`nightSky`, `nightHaze`) and, most of all, the environment map. The halls'

@@ -88,6 +88,7 @@ function frame() {
   aimPrompt(dt);
   festStep(dt);
   weatherStep(dt);
+  temple.setStarlight(clamp(1 - wx.k * 1.8, 0, 1));   // cloud, rain, mist and haze hide the stars
   temple.setTownsfolk(folkOut, wx.rain > CONFIG.townsfolk.umbrella);
   temple.setGuardHats(wx.rain > CONFIG.guardHats);
   temple.setDancers(danceOn);

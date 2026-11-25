@@ -17,6 +17,7 @@ const Astro = (() => {
     return { ra: ra(l, b), dec: dec(l, b), dist: 385001 - 20905 * Math.cos(M) };
   };
   return {
+    lst(t, lon) { return sidereal(toDays(t), rad * -lon); },   // the local sidereal time, as an angle
     sun(t, lat, lon) { const lw = rad * -lon, phi = rad * lat, d = toDays(t), c = sunCoords(d), H = sidereal(d, lw) - c.ra; return { az: az(H, phi, c.dec), alt: alt(H, phi, c.dec) }; },
     moon(t, lat, lon) {
       const lw = rad * -lon, phi = rad * lat, d = toDays(t), c = moonCoords(d), H = sidereal(d, lw) - c.ra;
@@ -74,7 +75,7 @@ function updateCelestial() {
   const ill = Astro.illumination(now);
   const mNow = Astro.moon(now, lat, lon), up = mNow.alt > -.01;
   const moon = { up, dir: skyDir(mNow.az, Math.max(mNow.alt, 0)), rot: ill.angle - mNow.q, az: mNow.az, alt: mNow.alt };
-  temple.setCelestial({ sun: skyDir(sunAt.az, sunAt.alt), moon, moonTex: moonTexture(ill.fraction), fraction: ill.fraction });
+  temple.setCelestial({ sun: skyDir(sunAt.az, sunAt.alt), moon, moonTex: moonTexture(ill.fraction), fraction: ill.fraction, lst: Astro.lst(now, lon), at: now, lat });
   const fmt = t => new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: tz });
   const height = a => a > 60 * deg ? "high in the " : a < 15 * deg ? "low in the " : "in the ";
   const rise = from => { for (let t = from; t < from + 864e5 * 1.1; t += 6e5) if (Astro.moon(t, lat, lon).alt > 0) return t; return null; };

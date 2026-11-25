@@ -52,7 +52,7 @@
 
 | Piece | What | Key names |
 |---|---|---|
-| `00-closure-and-sky-helpers.js` | opens `TempleFloors`, unpacks `ctx`; shared state; seeded `rng`; `part`/`bakeParts`; daylight, sky, celestial hooks; sign textures | `rng` `part` `bakeParts` `onDaylight` `daySky` `dayLight` `daylit` `writing` `FEST` `FOLK` `COP` |
+| `00-closure-and-sky-helpers.js` | opens `TempleFloors`, unpacks `ctx`; shared state; seeded `rng`; `part`/`bakeParts`; daylight, sky, celestial hooks; sign textures | `rng` `part` `bakeParts` `onDaylight` `daySky` `starrySky` `dayLight` `daylit` `writing` `FEST` `FOLK` `COP` |
 | `01-shared-pieces.js` | lanterns, spiral stairs, stair room, front wall, balcony corridor, lattice windows, hall walls, doorways | `lantern` `spiralStairs` `stairRoom` `corridor` `hallWalls` `doorway` |
 | `02-roofs.js` | curved tiled eaves, balustrades, beams, brackets, columns, pedestals, thrones, offering tables | `curvedEave` `tiledEave` `throne` `offeringTable` |
 | `03-hall-2f-lamps-and-lotus-hall.js` | 2F Hall of a Thousand Lamps; 蓮華寺 interior | `lampHall` `library` |

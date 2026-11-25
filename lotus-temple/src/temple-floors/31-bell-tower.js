@@ -8,10 +8,7 @@
       c.fillStyle = l; c.fillRect(0, 0, s, s);
     });
     g.add(new THREE.Mesh(new THREE.SphereGeometry(26, 32, 16), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide, fog: false })));
-    const starPos = [], rs = rng(11);
-    for (let i = 0; i < 300; i++) { const a = rs() * TAU, e = .2 + rs() * 1.2; starPos.push(Math.cos(a) * Math.cos(e) * 24, Math.sin(e) * 24, Math.sin(a) * Math.cos(e) * 24); }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
-    const stars = new THREE.Points(sg, new THREE.PointsMaterial({ size: .25, color: 0xfff4e0, map: glowTex, transparent: true, depthWrite: false, fog: false })); g.add(stars);
+    const stars = starrySky(g, 24, 11);
     daySky(g, 26, stars);
     const ground = flat(mesh(new THREE.CircleGeometry(26, 48), std({ color: 0x2a211b, roughness: 1 }), 0, 0, 0, g)); ground.rotation.x = -Math.PI / 2;
     // the pavilion round the bell: stone platform, eight columns, painted beams and ceiling, low balustrade, tiled eave
