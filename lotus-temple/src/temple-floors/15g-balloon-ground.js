@@ -333,6 +333,14 @@
     const bandY = (v, sz) => (1 - v) * sz;   // a height up the envelope (v) to the canvas row (the crown at the top)
     // the night papers are left out of the fog, so a balloon high over the town still glows as brightly as the crowd sees it in the dark
     const nightPaper = [], paintedPaper = draw => { const m = std({ color: 0xffffff, map: canvasTex(512, draw), roughness: .9, fog: false }); m.side = THREE.DoubleSide; glowing.push(m); nightPaper.push(m); return m; };
+    // every team paints its own: a pad's copy of a painted night paper has its colours turned round the colour wheel by its own amount
+    // (hue.value, in turns; 0 is the paper as painted), a fresh scheme each flight, the glow from the fire inside turned with it
+    const HUE_GLSL = "uniform float uHue;\nvec3 hueTurn(vec3 c) { const vec3 k = vec3(.57735); float a = uHue * 6.2832, co = cos(a); return max(c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1. - co), 0.); }\n";
+    const hueCopy = m => {
+      const m2 = m.clone(), hue = { value: 0, isHue: true }; m2.userData.hue = hue; glowing.push(m2); nightPaper.push(m2);
+      m2.onBeforeCompile = sh => { sh.uniforms.uHue = hue; sh.fragmentShader = HUE_GLSL + sh.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\n  diffuseColor.rgb = hueTurn(diffuseColor.rgb);").replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n  totalEmissiveRadiance = hueTurn(totalEmissiveRadiance);"); };
+      return m2;
+    };
     const scallops = (c, sz, v, h, fill) => { c.fillStyle = fill; for (let x = 0; x < sz; x += sz / 24) { c.beginPath(); c.arc(x + sz / 48, bandY(v, sz), h, 0, Math.PI); c.fill(); } };
     // painted with dancers in crowns between red pillars, over bands of green, red and gold (as in the owner's first photo)
     const dancersPaper = paintedPaper((c, sz) => {
@@ -406,11 +414,12 @@
         const ln = mesh(new THREE.CylinderGeometry(.02, .02, 3.5, 4), rope, 0, -1.75, 0, A); ln.castShadow = false;
         return P;
       } },
-      { key: "dancers", h: 14.7, tip: "A painted night balloon · ညမီးပုံးပျံ", make(A) { mesh(envG, dancersPaper, 0, 0, 0, A); } },
+      { key: "dancers", h: 14.7, tip: "A painted night balloon · ညမီးပုံးပျံ", make(A) { return mesh(envG, hueCopy(dancersPaper), 0, 0, 0, A).material.userData.hue; } },
       { key: "fireworks", h: 14.7, fireworks: true, tip: "A fireworks balloon · စိန်နားပန် မီးပုံးပျံ", make(A) {
-        mesh(envG, flowersPaper, 0, 0, 0, A);
+        const hue = mesh(envG, hueCopy(flowersPaper), 0, 0, 0, A).material.userData.hue;
         mesh(new THREE.CylinderGeometry(.02, .02, 2.6, 4), rope, 0, -1.3, 0, A).castShadow = false;
         mesh(new THREE.BoxGeometry(.9, .5, .9), bamboo, 0, -2.85, 0, A);   // the rack of fireworks
+        return hue;
       } }
     ];
     // the deva balloon, hung round its middle with diamonds and tassels and round its mouth with little box lanterns
@@ -492,22 +501,32 @@
     };
     // sparks: fine and short-lived, flickering, with short streaks; stars: the big coloured ones, with long streaks
     const sparks = fwPool(3000, .22, 1.4, 8, true, .05), stars = fwPool(2400, .5, 1.1, 5, false, .14), rockets = [];
-    // a shell bursting, one of three kinds as the teams make them: a peony, a ball of coloured stars thrown out evenly every way
-    // (of one colour or two, white-hot as they leave); a willow, gold stars on long streaks that hang and droop slowly down; or a
-    // ring, stars thrown out round a tilted circle. A white flash at its heart, and in some a crackle of glitter as the stars die
-    const shell = (x, y, z) => {
-      const kind = r(), willow = kind < .22, ring = !willow && kind < .36;
-      const c1 = willow ? [1, .7, .28] : fwCol(), c2 = !willow && r() < .45 ? fwCol() : c1, n = willow ? 90 + (r() * 40) | 0 : 110 + (r() * 80) | 0, sp = willow ? 11 + r() * 4 : 15 + r() * 8;
-      const tx = r() * TAU, ct = Math.cos(tx), st = Math.sin(tx);
-      for (let i = 0; i < n; i++) {
-        let dx, dy, dz;
-        if (ring) { const th = i / n * TAU, rx = Math.cos(th), ry = Math.sin(th); dx = rx; dy = ry * ct; dz = ry * st; }
-        else { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u); dx = q * Math.cos(th); dy = u; dz = q * Math.sin(th); }
-        const s_ = sp * (.9 + r() * .1);
-        stars.emit(x, y, z, dx * s_, dy * s_ + 1.5, dz * s_, willow ? 3.2 + r() * 1.4 : 1.6 + r() * 1, i % 2 ? c2 : c1, willow ? .8 : 1, willow ? .3 : 1, willow ? 3 : 1);
-      }
+    // a shell bursting, in one of the patterns the teams make: a peony, a ball of coloured stars thrown out evenly every way (of one
+    // colour or two, white-hot as they leave); a willow, gold stars on long streaks that hang and droop slowly down; a ring, stars thrown
+    // out round a tilted circle; a double ring, two circles crossed in two colours; a saturn, a small ball of stars inside a wide ring; a
+    // palm, a few big stars on long streaks with a burst of small ones round them; a crossette, stars that fly out and split, each into a
+    // little burst of its own; a glitter shell, a ball of twinkling stars. A white flash at its heart, and in some a crackle as the stars die.
+    // Each flight's rack is loaded with its own few patterns (pat) and, often, its own few colours (pal)
+    const PATTERNS = ["peony", "willow", "ring", "double", "saturn", "palm", "crossette", "glitter"];
+    const ball = () => { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u); return [q * Math.cos(th), u, q * Math.sin(th)]; };
+    const circle = (th, tx, ty) => { const rx = Math.cos(th), ry = Math.sin(th), ct = Math.cos(tx), st = Math.sin(tx), y = ry * ct, z = ry * st; return [rx * Math.cos(ty) - z * Math.sin(ty), y, rx * Math.sin(ty) + z * Math.cos(ty)]; };
+    const flightLoad = () => {
+      const pat = PATTERNS.slice().sort(() => r() - .5).slice(0, 2 + (r() * 3) | 0);
+      const pal = r() < .55 ? Array.from({ length: 2 + (r() * 2) | 0 }, fwCol) : null;
+      return { pat, pal, col: () => pal ? pal[(r() * pal.length) | 0] : fwCol() };
+    };
+    const shell = (x, y, z, L) => {
+      const kind = L.pat[(r() * L.pat.length) | 0], c1 = kind === "willow" ? [1, .7, .28] : L.col(), c2 = kind !== "willow" && r() < .45 ? L.col() : c1;
+      const sp = kind === "willow" ? 11 + r() * 4 : kind === "glitter" ? 12 + r() * 6 : 15 + r() * 8, tx = r() * TAU, ty = r() * TAU;
+      const star = (d, s_, l, c, size = 1, hot = 1, trail = 1) => stars.emit(x, y, z, d[0] * s_, d[1] * s_ + 1.5, d[2] * s_, l, c, size, hot, trail);
+      if (kind === "peony" || kind === "willow") { const w = kind === "willow", n = w ? 90 + (r() * 40) | 0 : 110 + (r() * 80) | 0; for (let i = 0; i < n; i++) star(ball(), sp * (.9 + r() * .1), w ? 3.2 + r() * 1.4 : 1.6 + r(), i % 2 ? c2 : c1, w ? .8 : 1, w ? .3 : 1, w ? 3 : 1); }
+      else if (kind === "ring" || kind === "double") { const n = 70 + (r() * 30) | 0; for (let i = 0; i < n; i++) star(circle(i / n * TAU, tx, ty), sp * (.95 + r() * .05), 1.6 + r() * .8, c1); if (kind === "double") for (let i = 0; i < n; i++) star(circle(i / n * TAU, tx + Math.PI / 2, ty), sp * (.95 + r() * .05), 1.6 + r() * .8, c2 === c1 ? L.col() : c2); }
+      else if (kind === "saturn") { for (let i = 0; i < 60; i++) star(ball(), sp * .45 * (.9 + r() * .1), 1.4 + r() * .6, c2); for (let i = 0; i < 80; i++) star(circle(i / 80 * TAU, tx, ty), sp * 1.1, 1.8 + r() * .6, c1); }
+      else if (kind === "palm") { const n = 7 + (r() * 5) | 0; for (let i = 0; i < n; i++) { const d = ball(); d[1] = Math.abs(d[1]) * .8 + .2; star(d, sp * 1.05, 2.6 + r() * .8, c1, 1.8, .6, 2.6); } for (let i = 0; i < 50; i++) star(ball(), sp * .5 * (.8 + r() * .2), 1.2 + r() * .5, c2, .7); }
+      else if (kind === "crossette") { const n = 10 + (r() * 8) | 0; for (let i = 0; i < n; i++) { const d = ball(), s_ = sp * .9; rockets.push({ x, y, z, vx: d[0] * s_, vy: d[1] * s_ + 1.5, vz: d[2] * s_, life: .55 + r() * .35, age: 0, acc: 0, c: i % 2 ? c2 : c1 }); } }
+      else { const n = 140 + (r() * 60) | 0; for (let i = 0; i < n; i++) { const d = ball(), s_ = sp * (.6 + r() * .4); sparks.emit(x, y, z, d[0] * s_, d[1] * s_ + 1, d[2] * s_, 1.6 + r() * 1.2, i % 3 ? c1 : SPARK_C[3], 1.6, 1, .5); } }   // the glitter
       stars.emit(x, y, z, 0, 0, 0, .12, [1, .95, .85], 9, 1, 0);   // the flash
-      if (r() < .4) { const n2 = 60 + (r() * 40) | 0; for (let i = 0; i < n2; i++) { const u = 2 * r() - 1, th = r() * TAU, q = Math.sqrt(1 - u * u), s_ = sp * (.4 + r() * .45); sparks.emit(x, y, z, q * Math.cos(th) * s_, u * s_, q * Math.sin(th) * s_, 1.4 + r() * .8, SPARK_C[3], 1.2, 1, .3); } }   // the crackle
+      if (kind !== "glitter" && r() < .4) { const n2 = 60 + (r() * 40) | 0; for (let i = 0; i < n2; i++) { const d = ball(), s_ = sp * (.4 + r() * .45); sparks.emit(x, y, z, d[0] * s_, d[1] * s_, d[2] * s_, 1.4 + r() * .8, SPARK_C[3], 1.2, 1, .3); } }   // the crackle
     };
     // after dark the wick's fire shines through the paper: each glows in its own colour (the patterned ones through their pattern)
     glowing.forEach(m => { m.emissive.copy(m.color); if (m.map) m.emissiveMap = m.map; });
@@ -525,7 +544,7 @@
         return A;
       });
       const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, ring, wick, halo, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, fw0: 3, fw1: 91, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      return { p, G, ring, wick, halo, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, load: flightLoad(), fw0: 3, fw1: 91, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
@@ -636,10 +655,12 @@
           b.cyc = c; b.mode = want;
           const set = want === "day" ? DAY_SET : want === "night" ? NIGHT_SET : null, kind = set ? set[(c * pads.length + p.k) % set.length] : -1;
           if (kind !== b.kind) { if (b.kind >= 0) b.shapes[b.kind].visible = false; if (kind >= 0) b.shapes[kind].visible = true; b.kind = kind; }
+          // a painted night balloon comes in a new colour scheme each flight, now and then just as the photos show it
+          if (kind >= 0 && b.parts[kind] && b.parts[kind].isHue) b.parts[kind].value = r() < .25 ? 0 : r();
           if (kind >= 0 && DEFS[kind].fireworks) {   // each flight starts at its own height, 6–12 m above the terrace, then keeps going
             const q = rng(9100 + c * 13 + p.k * 7), h0 = 6 + q() * 6, lift = mouth0 - top;
             const disc = B.climb * B.climb - 4 * B.accel * (lift - h0);
-            b.fw0 = (-B.climb + Math.sqrt(disc)) / (2 * B.accel); b.fw1 = B.rise - 4;
+            b.fw0 = (-B.climb + Math.sqrt(disc)) / (2 * B.accel); b.fw1 = B.rise - 4; b.load = flightLoad();
           }
         }
         if (b.kind < 0) { G.visible = false; p.fire.visible = false; p.glow.material.opacity = 0; p.cord.visible = false; return; }
@@ -668,10 +689,10 @@
         if (Z.panel) { const u = held ? 0 : clamp((y - top - 3.6) / 8, 0, 1), P = b.parts[b.kind]; P.visible = u > .02; P.scale.y = Math.max(u, .02); }
         if (Z.fireworks && show && !held && !still && tau > b.fw0 && tau < b.fw1) {
           const x = G.position.x, yr = y - 2.9, z = G.position.z, k = Math.min(dt, .1), m = 1 - (tau - b.fw0) / (b.fw1 - b.fw0 + 8);
-          for (b.spAcc += k * 260 * m; b.spAcc >= 1; b.spAcc--) { const th = r() * TAU, sp = 12 + r() * 16; sparks.emit(x, yr, z, Math.cos(th) * sp, -3 + r() * 10, Math.sin(th) * sp, 1.2 + r() * 1.3, r() < .2 ? fwCol() : SPARK_C[(r() * 4) | 0], 1, .6); }
-          for (b.stAcc += k * 30 * m; b.stAcc >= 1; b.stAcc--) { const th = r() * TAU, sp = 8 + r() * 13; stars.emit(x, yr, z, Math.cos(th) * sp, -5 + r() * 9, Math.sin(th) * sp, 2 + r() * 1.5, fwCol(), .8, .6); }
-          for (b.rkAcc += k * 3.5 * m; b.rkAcc >= 1 && rockets.length < 40; b.rkAcc--) { const th = r() * TAU, sp = 22 + r() * 16, c = fwCol(); rockets.push({ x, y: yr, z, vx: Math.cos(th) * sp, vy: -8 + r() * 22, vz: Math.sin(th) * sp, life: 1.2 + r() * 1, age: 0, acc: 0, c }); }
-          if ((b.shellT -= k) <= 0) { b.shellT = .4 + r() * 3.6; shell(x + (r() - .5) * 40, Math.max(top + 6, y + (r() - .3) * 24), z + (r() - .5) * 40); }
+          for (b.spAcc += k * 260 * m; b.spAcc >= 1; b.spAcc--) { const th = r() * TAU, sp = 12 + r() * 16; sparks.emit(x, yr, z, Math.cos(th) * sp, -3 + r() * 10, Math.sin(th) * sp, 1.2 + r() * 1.3, r() < .2 ? b.load.col() : SPARK_C[(r() * 4) | 0], 1, .6); }
+          for (b.stAcc += k * 30 * m; b.stAcc >= 1; b.stAcc--) { const th = r() * TAU, sp = 8 + r() * 13; stars.emit(x, yr, z, Math.cos(th) * sp, -5 + r() * 9, Math.sin(th) * sp, 2 + r() * 1.5, b.load.col(), .8, .6); }
+          for (b.rkAcc += k * 3.5 * m; b.rkAcc >= 1 && rockets.length < 40; b.rkAcc--) { const th = r() * TAU, sp = 22 + r() * 16, c = b.load.col(); rockets.push({ x, y: yr, z, vx: Math.cos(th) * sp, vy: -8 + r() * 22, vz: Math.sin(th) * sp, life: 1.2 + r() * 1, age: 0, acc: 0, c }); }
+          if ((b.shellT -= k) <= 0) { b.shellT = .4 + r() * 3.6; shell(x + (r() - .5) * 40, Math.max(top + 6, y + (r() - .3) * 24), z + (r() - .5) * 40, b.load); }
         }
       });
       crowd.forEach(m => m.visible = busy);

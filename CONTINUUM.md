@@ -86,6 +86,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-25: Night balloons in new colours, fireworks in new patterns
+
+- The owner asked for the fire balloons to change colour and the firework patterns to vary at random. In `15g-balloon-ground.js` each pad now has its own copy of the painted night papers (`hueCopy`): a clone of `dancersPaper`/`flowersPaper` whose `onBeforeCompile` turns `diffuseColor` and `totalEmissiveRadiance` round the grey axis by `uHue` (in turns; `HUE_GLSL`). The `make` of those two night kinds returns that uniform, so the launch code sets `b.parts[kind].value` to a random turn each flight (0, the painted colours, one time in four). The day animals, the deva balloon and the lantern balloon keep their colours. Fireworks: `shell(x, y, z, L)` takes a flight's load from `flightLoad()` (2–4 of `PATTERNS`, and in 55% of flights a palette of 2–3 colours, `L.col()`), drawn afresh each fireworks launch into `b.load`; the rack's fountain stars and rockets use the same colours. New patterns: `double`, `saturn`, `palm`, `crossette` (pushes short-lived `rockets`, which pop into small bursts) and `glitter` (twinkling `sparks`). Checked in headless Chromium at night (`~/lotus-altar-tests/balloon-colours/`): hue-turned papers render and all eight patterns draw, no console errors.
+
 ### 2026-11-25: Lanterns in the seven-day market
 
 - After the darker night the owner found the seven-day market hard to see. Every stall now has a round paper lantern under its tarp over the table (warm white, orange, red: one `InstancedMesh` plus a `Points` cloud of glows, `lanternsAt` in `12-market.js`), and a warm `PointLight` hangs over the middle of each of the three aisles (`aisleLights`, added at load). All follow the market's `light()`: lit at night while the townsfolk are out, dark after 10 PM; by day the lanterns are plain paper. That makes 18 point lights outside; keep an eye on phone frame rates.
