@@ -62,6 +62,9 @@ const CONFIG = {
   // the morning market: villagers sit on the ground along a lane of red earth at the seven-day market with greens, beans, chillies,
   // limes and avocados from their fields, from `from` until `until` o'clock on the temple's clock. ?morningMarket=1 or =0 forces it
   morningMarket: { from: 5, until: 9 },
+  // the high school is in use (teachers early, pupils, evening tuition) from `from` until `until` o'clock on the temple's clock: its windows
+  // light up after dark only in these hours, and stay dark once the last have gone home. ?school=1 or ?school=0 forces it
+  school: { from: 6, until: 20 },
   // the seven-day market's stalls: a seller at every stall and shoppers in the aisles in each [from, until] window, in hours on the temple's
   // clock: 9 am to noon, closed over the middle of the day, open again 5 to 9 pm (the morning market has gone home by 9). ?stalls=1 or ?stalls=0 forces them
   stalls: [[9, 12], [17, 21]],

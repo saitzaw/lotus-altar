@@ -13,6 +13,7 @@ hours change, update this file in the same commit.
 | 5:00 – 9:00 AM | Morning market: village women sell greens, chillies and limes on the ground | Seven-day market | `morningMarket` |
 | 8:00 – about 9:25 AM, every day but the Kathin day | Shinlaung procession (Poy Sang Long): gift poles and streamer poles in front, the boys on their carriers' shoulders, the families, then the kinnara, the to, and the Shan band (long drums, gongs, cymbals) at the back. It stops 15 min to dance at five places on the way. Called off while it rains | Gate → front street → market lane → Haw Kham road → second monastery | `procession` |
 | about 9:25 – 11:00 AM, every day but the Kathin day | Shinlaung gathered: the three boys on their carriers' shoulders in a row before the monastery's stair, the families and pole bearers crowded round them; the kinnara, the to and the band dance and play on the festival ground. All go home at 11 | Second monastery; festival ground | `procession` |
+| 6:00 AM – 8:00 PM | High school in use: its windows light up after dark only in these hours; after 8 PM no one is left and they stay dark until 6 AM | High school, south of the daily market | `school` |
 | 9:00 AM – 12:00 noon | Seven-day market: sellers at the stalls, shoppers in the aisles | Seven-day market | `stalls` |
 | 9:00 AM – 10:00 PM | Food street: cooks, diners, strollers | Food street, beside the market | `foodStreet` |
 | 2:00 – 3:30 PM | Kinnara dances alone (the biggest crowd) | Festival stage, stupa hill | `dancers.solo` |

@@ -94,6 +94,7 @@ function frame() {
   temple.setFestivalLights(festLightsOn);
   temple.setService(serviceOn);
   temple.setMorningMarket(morningOn);
+  temple.setSchool(schoolOn);
   temple.setStalls(stallsOn);
   temple.setFoodStreet(foodOn);
   temple.setProcession(processionOn && (PROCESSION_FORCE !== null || !rainingOut()), processionAt());   // called off in the rain

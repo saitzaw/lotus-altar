@@ -6,7 +6,7 @@
   // each floor and rows of windows on every side; an open corridor `corridor` deep along the front on every floor (as schools and
   // hospitals are built here); a corrugated hip roof, or a flat roof with a parapet when `roof` is null
   function civic(g, x, z, ry, o) {
-    const { W, D, floors, wall, trim = townFrame, roof = null, corridor = 0, data } = o, FH = 3.3, H = floors * FH, top = .3 + H;
+    const { W, D, floors, wall, trim = townFrame, roof = null, corridor = 0, data, glass = townGlass } = o, FH = 3.3, H = floors * FH, top = .3 + H;
     const h = new THREE.Group(); h.position.set(x, 0, z); h.rotation.y = ry; g.add(h);
     mesh(new THREE.BoxGeometry(W + .6, .3, D + corridor + .6), concrete, 0, .15, corridor / 2, h);   // the plinth
     const body = mesh(new THREE.BoxGeometry(W, H, D), wall, 0, .3 + H / 2, 0, h);
@@ -14,7 +14,7 @@
     sRect(h, -W / 2 - .3, W / 2 + .3, -D / 2 - .3, D / 2 + corridor + .3);
     const wins = [], nx = Math.max(1, Math.floor((W - 1.4) / 2.6)), nz = Math.max(1, Math.floor((D - 1.4) / 2.6));
     if (o.strip) {   // a modern block: one long band of glass round each floor instead of separate windows (stretched instances of a unit box)
-      const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), townGlass, floors * 4), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+      const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), glass, floors * 4), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
       for (let f = 0; f < floors; f++) {
         const y0 = .3 + f * FH;
         mesh(new THREE.BoxGeometry(W + .12, .22, D + .12), trim, 0, y0 + FH - .11, 0, h);
@@ -34,11 +34,11 @@
       for (let i = 0; i < nz; i++) { const pz = -D / 2 + D * (i + .5) / nz; wins.push([W / 2 + .02, y0 + 1.7, pz, Math.PI / 2], [-W / 2 - .02, y0 + 1.7, pz, Math.PI / 2]); }
     }
     if (wins.length) {
-      const im = new THREE.InstancedMesh(civicWin, townGlass, wins.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+      const im = new THREE.InstancedMesh(civicWin, glass, wins.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
       wins.forEach(([px, py, pz, a], i) => im.setMatrixAt(i, m4.compose(V(px, py, pz), q.setFromAxisAngle(V(0, 1, 0), a), V(1, 1, 1))));
       h.add(im);
     }
-    if (o.door) mesh(new THREE.BoxGeometry(2, 2.4, .1), townGlass, 0, 1.5, D / 2 + .03, h);
+    if (o.door) mesh(new THREE.BoxGeometry(2, 2.4, .1), glass, 0, 1.5, D / 2 + .03, h);
     if (corridor) {   // the open corridor: a floor slab on each storey, a parapet along the front (open on the ground floor), columns
       const zc = D / 2 + corridor / 2, zf = D / 2 + corridor - .1, n = Math.max(2, Math.round(W / 4));
       for (let f = 1; f <= floors; f++) mesh(new THREE.BoxGeometry(W, .2, corridor), concrete, 0, .3 + f * FH - .1, zc, h);
@@ -374,6 +374,10 @@
   // အခြေခံပညာ အထက်တန်းကျောင်း, the basic education high school, south of the daily market at the end of the market lane: a
   // four-storey main building with open corridors facing the playing field, a two-storey E-shaped classroom block opening onto it,
   // a white wall round the grounds with the gate on the lane, and the flag in front of the main building
+  // the school's windows: lit at dusk while pupils and teachers are still in, dark once the last have gone home at 8 pm (FOLK.school)
+  const schoolGlass = townGlass.clone();
+  const schoolLights = () => { schoolGlass.emissiveIntensity = .9 * (1 - daylight) * (FOLK.school ? 1 : 0) + .02; };
+  onDaylight(schoolLights);
   function highSchool(g) {
     const X0 = 46, X1 = 98, Z0 = 111, Z1 = 152, GZ = [118, 126];
     const data = { tip: "The high school", toast: "The basic education high school: a four-storey main building and a two-storey E-shaped classroom block round the playing field. Lessons start after assembly at the flag; at the bell the pupils in white and green spill out along the corridors." };
@@ -387,10 +391,10 @@
     civicSign(g, "အခြေခံပညာ အထက်တန်းကျောင်း", "Basic Education High School", "#2f7a4a", "#ffffff", 8, X0 - .35, 3.6, (GZ[0] + GZ[1]) / 2, -Math.PI / 2);
     flat(mesh(new THREE.BoxGeometry(X0 + 8 - LANES[2].x1, .06, GZ[1] - GZ[0]), forecourt, (LANES[2].x1 + X0 + 8) / 2, .035, (GZ[0] + GZ[1]) / 2, g));   // the path in
     // the main building along the back, its corridors facing north over the field
-    civic(g, 69, 146.5, Math.PI, { W: 42, D: 8, floors: 4, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), corridor: 2.4, door: true, data });
+    civic(g, 69, 146.5, Math.PI, { W: 42, D: 8, floors: 4, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), glass: schoolGlass, corridor: 2.4, door: true, data });
     // the E-shaped block on the east side: a spine with its corridor facing west, and three wings out toward the field
-    civic(g, 94.5, 126, -Math.PI / 2, { W: 26, D: 5, floors: 2, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), corridor: 2, data });
-    [115.5, 126, 136.5].forEach(z => civic(g, 85, z, 0, { W: 10, D: 6, floors: 2, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), data }));
+    civic(g, 94.5, 126, -Math.PI / 2, { W: 26, D: 5, floors: 2, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), glass: schoolGlass, corridor: 2, data });
+    [115.5, 126, 136.5].forEach(z => civic(g, 85, z, 0, { W: 10, D: 6, floors: 2, wall: civicCream, trim: civicGreen, roof: ROOFS[0](1), glass: schoolGlass, data }));
     // the playing field: grass with white lines and a goal at each end
     const FX0 = 52, FX1 = 78, FZ0 = 114, FZ1 = 136, white = std({ color: 0xf4f4ee, roughness: .8 });
     flat(mesh(new THREE.BoxGeometry(FX1 - FX0, .06, FZ1 - FZ0), std({ color: 0x5a8a3a, roughness: 1 }), (FX0 + FX1) / 2, .05, (FZ0 + FZ1) / 2, g)).receiveShadow = true;

@@ -62,6 +62,8 @@
     setService(on) { FOLK.service = on; },
     // the morning market's sellers on the ground at the seven-day market, 5–9 am
     setMorningMarket(on) { FOLK.morning = on; },
+    // someone is still in the high school (6 am–8 pm), so its windows light up after dark
+    setSchool(on) { if (FOLK.school !== on) { FOLK.school = on; schoolLights(); } },
     // the sellers at the seven-day market's stalls and the shoppers in its aisles, 9 am–noon and 5–9 pm
     setStalls(on) { FOLK.stalls = on; },
     // the food street's cooks, diners and strollers, 9 am–10 pm
