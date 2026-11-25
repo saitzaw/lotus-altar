@@ -9,10 +9,12 @@
   // lower terrace up to the upper) stop `tierIn` short of the field's ends; the launch pads (fractions along the field, radius);
   // a balloon's cycle (s): filling, held full, rising, gone; its climb and drift (m/s); the night lanterns: how many, each one's
   // cycle (s) and how long it is held up in its launcher's hands before it is let go, and how many people let them go down on the
-  // field by the parapet and up on the top steps of the terraces
+  // field by the parapet and up on the top steps of the terraces; how brightly the night balloons' paper glows from the fire inside
+  // (the day papers glow at `dayGlow` when sent up after dark), the strength of the warm halo round a night balloon in the sky, and
+  // the size of the lantern balloon's little candle lanterns
   const BALLOON_GROUND = { da0: .085, a1: 2.62, r1: 76.5, edge: 70.4, PH: .95, PW: .35, tiers: 9, tierIn: .1,
     pads: [[.22, 65], [.5, 64], [.78, 65]], fill: 55, hold: 15, rise: 95, gone: 10, climb: 1.4, accel: .012, drift: [.55, .3],
-    lanN: 180, lanP: 190, lanHold: 6, lanLow: 36, lanHigh: 30 };
+    lanN: 180, lanP: 190, lanHold: 6, lanLow: 36, lanHigh: 30, nightGlow: 1.8, dayGlow: .9, halo: .5, lampSize: 1.25 };
   // a slab in the hill's frame between an inner edge r0 (a radius, or a function of the angle) and an arc r1 round the hill's centre,
   // and two radii at angles b0, b1, from y0 up to y1 (the angle runs from the main stair, local -z, toward the east stair)
   function arcSlab(H, r0, r1, b0, b1, y0, y1, mat) {
@@ -329,7 +331,8 @@
     const envG = new THREE.LatheGeometry(ENV.map(([x, y]) => new THREE.Vector2(x, y)), 28);   // its v runs by profile point: .11 a point
     const envR = y => { for (let i = 1; i < ENV.length; i++) if (y <= ENV[i][1]) { const [r0, y0] = ENV[i - 1], [r1, y1] = ENV[i]; return r0 + (r1 - r0) * (y - y0) / (y1 - y0); } return 0; };
     const bandY = (v, sz) => (1 - v) * sz;   // a height up the envelope (v) to the canvas row (the crown at the top)
-    const paintedPaper = draw => { const m = std({ color: 0xffffff, map: canvasTex(512, draw), roughness: .9 }); m.side = THREE.DoubleSide; glowing.push(m); return m; };
+    // the night papers are left out of the fog, so a balloon high over the town still glows as brightly as the crowd sees it in the dark
+    const nightPaper = [], paintedPaper = draw => { const m = std({ color: 0xffffff, map: canvasTex(512, draw), roughness: .9, fog: false }); m.side = THREE.DoubleSide; glowing.push(m); nightPaper.push(m); return m; };
     const scallops = (c, sz, v, h, fill) => { c.fillStyle = fill; for (let x = 0; x < sz; x += sz / 24) { c.beginPath(); c.arc(x + sz / 48, bandY(v, sz), h, 0, Math.PI); c.fill(); } };
     // painted with dancers in crowns between red pillars, over bands of green, red and gold (as in the owner's first photo)
     const dancersPaper = paintedPaper((c, sz) => {
@@ -368,10 +371,10 @@
       ["#e04a8a", "#2aa060", "#f4f0e0"].forEach((col, i) => { c.strokeStyle = col; c.lineWidth = 14; for (let row = i; row < 7; row += 3) { c.beginPath(); for (let x = 0; x <= sz; x += 24) c.lineTo(x, bandY(.36 - row * .05, sz) + (x % 48 ? 10 : -4)); c.stroke(); } });
     });
     // the lantern balloon's own paper, plain and dim so its lanterns stand out (as in the owner's second photo)
-    const lampPaper = std({ color: 0x3a332c, roughness: 1 }); lampPaper.side = THREE.DoubleSide; glowing.push(lampPaper);
+    const lampPaper = std({ color: 0x3a332c, roughness: 1, fog: false }); lampPaper.side = THREE.DoubleSide; glowing.push(lampPaper);
     // the little candle lanterns: flowers of them round the paper, dotted rings between, and the stupa hung below, drawn on a small
     // canvas and taken as one lantern every other pixel (a pixel is 10 cm)
-    const lampM = new THREE.PointsMaterial({ size: .85, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+    const lampM = new THREE.PointsMaterial({ size: B.lampSize, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
     const pointsGeo = (pos, col) => { const G_ = new THREE.BufferGeometry(); G_.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); G_.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); return G_; };
     const WARM = [1, .62, .25], GOLD = [1, .8, .4], ROSE = [1, .42, .28];
     const envLamps = (() => {
@@ -508,20 +511,21 @@
     };
     // after dark the wick's fire shines through the paper: each glows in its own colour (the patterned ones through their pattern)
     glowing.forEach(m => { m.emissive.copy(m.color); if (m.map) m.emissiveMap = m.map; });
-    onDaylight(d => glowing.forEach(m => m.emissiveIntensity = .6 * (1 - d)));
+    onDaylight(d => glowing.forEach(m => m.emissiveIntensity = (nightPaper.includes(m) ? B.nightGlow : B.dayGlow) * (1 - d)));
     H.updateMatrixWorld(true);
     const hillC = H.localToWorld(V(0, 0, 0));
     const balloons = pads.map((p, k) => {
       const G = new THREE.Group(); G.userData.noCull = true; g.add(G);
       const ring = mesh(new THREE.TorusGeometry(1.0, .05, 6, 20), bamboo, 0, 0, 0, G); ring.rotation.x = Math.PI / 2;
       const wick = glowSprite(0xffa040, 1.6, .9); wick.position.y = -.2; G.add(wick);
+      const halo = glowSprite(0xffa050, 24, 0); halo.position.y = 7.5; halo.material.fog = false; G.add(halo);   // the warm light round a night balloon
       const parts = [], shapes = DEFS.map((Z, i) => {
         const A = new THREE.Group(); A.visible = false; G.add(A); parts[i] = Z.make(A);
         A.traverse(o => { if (o.isMesh) clickable(list, o, { tip: Z.tip, toast: data.toast }); });
         return A;
       });
       const w = H.localToWorld(V(p.x, top, p.z));
-      return { p, G, ring, wick, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, fw0: 3, fw1: 91, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
+      return { p, G, ring, wick, halo, shapes, parts, kind: -1, cyc: -1, mode: null, spAcc: 0, stAcc: 0, rkAcc: 0, shellT: 0, fw0: 3, fw1: 91, face: Math.atan2(hillC.x - w.x, hillC.z - w.z), wx: w.x, wz: w.z, off: k * (B.fill + B.hold + B.rise + B.gone) / pads.length + r() * 8 };
     });
     // the night lanterns: small paper lanterns (a cylinder of paper on a wire ring, a wax wick burning in the mouth) that the crowd
     // lights and lets go all over the field, one after another, drifting up over the town in a slow river of light. One instanced
@@ -654,6 +658,7 @@
         const A = b.shapes[b.kind]; A.scale.set(.35 + .65 * s, .45 + .55 * s, .35 + .65 * s); b.ring.scale.set(.35 + .65 * s, .35 + .65 * s, 1);
         G.rotation.set(held ? 0 : Math.sin(t * .33 + p.k * 2) * .04, b.face + tau * .015, held ? 0 : Math.sin(t * .4 + p.k) * .04);
         b.wick.material.opacity = (held ? .5 : .9) * fl;
+        b.halo.material.opacity = NIGHT_SET.includes(b.kind) ? B.halo * (.85 + .15 * fl) * (1 - dl) * (DEFS[b.kind].key === "lamps" ? .5 : 1) : 0;   // the lantern balloon's own lanterns carry its light
         // the fire under it burns while it fills and is held, then dies down; the mast's cord hangs to the animal's back until let go
         const burn = held ? fl : .15; p.fire.scale.set(burn, burn, burn); p.fire.visible = burn > .2; p.glow.material.opacity = .25 + .6 * burn * (1 - .6 * dl);
         const crown = mouth0 + Z.h * (.45 + .55 * s), mastTop = top + MAST - .3;

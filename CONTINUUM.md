@@ -86,6 +86,10 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-25: Brighter night balloons
+
+- The owner found the fire balloons dim at night. In `15g-balloon-ground.js` the night papers (painted, flowers, and the lantern balloon's plain paper) now ignore the fog, the night papers glow at `BALLOON_GROUND.nightGlow` 1.8 (was .6 for every paper; day papers sent up after dark use `dayGlow` .9), each night balloon carries a warm 24 m halo sprite (`halo` .5, half for the lantern balloon), and the lantern balloon's candle lanterns are bigger (`lampSize` 1.25, was .85). Checked in headless Chromium at night (`~/lotus-altar-tests/balloonglow/`).
+
 ### 2026-11-25: Christmas and the harvest thanksgiving at the Kachin church
 
 - The owner asked to prepare for Christmas and Thanksgiving, and chose: Thanksgiving as the church's harvest thanksgiving on the
