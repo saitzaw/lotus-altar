@@ -16,7 +16,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-24
 
 ### Added
-- Shan Kathin, the offering of robes after the rains retreat. On one day, the full moon of Tazaungmon (Tazaungdaing) in November, the town carries one new set of monastic robes from Haw Kham around the old quarter to the second monastery at noon, with a padetha tree and the Shan band, and five monks wait on the porch to receive them. They have gone home by 2 PM, and that morning there is no Shinlaung procession. It is called off while it rains. On this computer, `?kathin=1` shows it at any time.
+- Shan Kathin, the offering of robes after the rains retreat. On one day, the full moon of Tazaungmon (Tazaungdaing) in November, the town carries one new set of monastic robes from Haw Kham around the old quarter to the second monastery at noon, led by a great yellow flag, Buddhist flags and strings of little flags, with five padetha trees (one hung with banknotes under a white umbrella), a tower of flowers, a palanquin and the Shan band, and five monks wait on the porch to receive them. They have gone home by 2 PM, and that morning there is no Shinlaung procession. It is called off while it rains. On this computer, `?kathin=1` shows it at any time.
 
 ### Changed
 - The fireworks from the night balloons are sharp now instead of blurry: each star is a small white-hot point with a streak behind it, and the shells burst as coloured balls, gold willows that droop, or rings, some ending in a crackle of glitter.
