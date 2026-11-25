@@ -6,6 +6,7 @@ For working notes and open questions, see `CONTINUUM.md`.
 ## 2026-11-25
 
 ### Changed
+- The high school's windows go dark at 8 PM, when the last teachers and pupils have gone home, and stay dark until 6 AM.
 - The festival ground on the stupa hill is lit at night while the shows are on: bulbs along the pavilion's eaves, lamps under its roof, a spotlight on the dancers and warm light over the crowd. The lights come on after dark and go out at 11 PM when the closing dance is over.
 - Every night balloon flight looks different: the painted balloons come up in a new colour scheme each time (now and then in their own painted colours), and each fireworks balloon carries its own few kinds of shell and often its own few colours. New shells join the peonies, willows and rings: crossed double rings, saturns (a ball inside a wide ring), palms, crossettes whose stars split again, and twinkling glitter.
 - The seven-day market at night: a paper lantern glows under every stall, and warm light over the aisles shows the stalls, their goods and the shoppers.

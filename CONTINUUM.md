@@ -86,6 +86,12 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-25: School windows dark after 8 PM
+
+- The high school's windows have their own glass (`schoolGlass` in `26-hospital-football-school.js`, passed to `civic()` as
+  the new `glass` option); they glow after dark only while `FOLK.school` is on, set from `CONFIG.school` (6 AM – 8 PM ICT)
+  through `temple.setSchool`. Force with `?school=1` / `?school=0`. Not checked in a browser yet (the headless run timed out).
+
 ### 2026-11-25: Festival ground lit at night
 
 - The owner found the festival stage black at night (only the lantern-string glows showed). `16-festival-ground.js` now hangs bulbs along both eaves of the pavilion, a glow and a `PointLight` under its roof over each half of the stage (`hung`), a `SpotLight` from the field onto the dancers (`stageSpot`) and a warm `PointLight` over the grass (`fieldLight`), all added at load at intensity 0. They, the lantern strings and the resting balloon follow `light()`: lit when dark × `FOLK.festLights`, fading over 3 s. `CONFIG.festivalLights` (17–23, so lit from dusk until the 10–11 PM closing dance ends), `festLightsNow()` in `07-festivals-and-weather.js`, `temple.setFestivalLights`; `?festivallights=1/0` forces them, and any `?dancers=` turns them on. Before this the lantern strings glowed all night; now they go dark after 11 PM too. That adds 3 point lights and 1 spot outside (now 21 point lights); watch phone frame rates. Checked in headless Chromium (`~/lotus-altar-tests/nightlook/fl1.jpg`, `fl0.jpg`), no console errors.
