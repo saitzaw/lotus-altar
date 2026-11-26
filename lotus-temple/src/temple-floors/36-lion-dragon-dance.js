@@ -388,7 +388,7 @@
       // the moonlight thins and the roads fall dark between the street lamps
       const dark = (1 - d) * FEST.out;
       // by night only a faint blue skylight fills the shadows, so the lamps and lanterns carry the scene
-      hemi.color.copy(lerpC(0x34447e, 0xc8dcff, d)); hemi.groundColor.copy(lerpC(0x0e0a10, 0x5a4a34, d));
+      hemi.color.copy(lerpC(0x34447e, 0xc8dcff, d)).lerp(lerpC(0xe0a8a0, 0xd8946c, TWI.eve), .45 * TWI.k); hemi.groundColor.copy(lerpC(0x0e0a10, 0x5a4a34, d));   // the sky's light warms at dawn and dusk
       hemi.intensity = (.24 + .56 * d) * (1 - .8 * dark);
       sunLight.position.copy(celestial.sun).multiplyScalar(80);
       const moonUp = m && m.up;
@@ -396,6 +396,7 @@
       // moonlight scales with how much of the moon is lit and whether it is up; starlight keeps a little
       moonLight.intensity = (1 - d) * (moonUp ? .12 + .38 * celestial.fraction : .06) * (1 - .55 * dark);
       sunLight.intensity = 1.5 * d * clamp(Math.max(celestial.sun.y, 0) * 2.5, 0, 1);   // no sun once it has set
+      sunLight.color.copy(lerpC(0xfff0d8, 0xff9a58, .8 * TWI.k));   // and a low one shines gold
     };
     onDaylight(lights); onCelestial(lights);
     const warm = new THREE.SpotLight(0xffb070, 1.6, 70, .5, .7, 1); warm.position.set(14, 4, 24); warm.target.position.set(0, 10, 0); g.add(warm, warm.target);

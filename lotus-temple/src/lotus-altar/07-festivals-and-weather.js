@@ -301,23 +301,30 @@ function weatherStep(dt) {
   }
   a.needsUpdate = true;
 }
-const _wxTint = new THREE.Color(), _wxSky = new THREE.Color();
+const _wxTint = new THREE.Color(), _wxSky = new THREE.Color(), _twiHaze = new THREE.Color(), _twiDusk = new THREE.Color();
 
-// day and night outside follow the sun over the temple right now. The Day/Night button shows the other look for this
-// visit (dayChoice 1 or 0) and, pressed again, goes back to the real sky (null); nothing is kept once the page closes.
-// ?day=1 or ?day=0 opens on one look, and only on the developer's computer.
+// dawn, day, dusk and night outside follow the sun over the temple right now. The button shows the next look for this
+// visit (skyLook "dawn", "day", "dusk" or "night") and, once round, goes back to the real sky (null); nothing is kept once
+// the page closes. daylight is 0 night to 1 day; twilight is the dawn or dusk glow (0–1), twiEve 0 for dawn's colours, 1 for dusk's.
+// ?day=dawn|day|dusk|night (or 1 and 0) opens on one look, and only on the developer's computer.
 const dayParam = devParam("day");
-let dayChoice = dayParam === "1" ? 1 : dayParam === "0" ? 0 : null, daylight = dayChoice == null ? 0 : dayChoice, liveDaylight = 0, dayFadeUntil = -1;
+let skyLook = dayParam === "1" ? "day" : dayParam === "0" ? "night" : LOOKS.includes(dayParam) ? dayParam : null;
+let daylight = 0, twilight = 0, twiEve = 0, liveDaylight = 0, liveLook = "night", skyGoal = { d: 0, k: 0, eve: null }, dayFadeUntil = -1;
 const dayFading = () => now < dayFadeUntil;   // on the frame clock, so a fade cleared by a jump elsewhere cannot lock the button
 // outside the eye is a little less open at night, so the dark stays dark and the lamps stand out
 const outExposure = d => CONFIG.light.exposure * (CONFIG.light.night + (1.05 - CONFIG.light.night) * d);
-// the sky and haze outside: deep blue at night, under the stars and moon
+// the sky and haze outside: deep blue at night, under the stars and moon, warm at dawn and dusk
 function skyColors() {
   const out = current === "pagoda" || inCorridor, d = daylight, dark = festOut * (1 - d);
   const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), d);
   const night = c => new THREE.Color(c).multiplyScalar(1 - dark);   // a deep blue night, black once Halloween's houses go dark
   world.background.copy(out ? night(CONFIG.light.nightSky).lerp(new THREE.Color(0x86b8e6), d) : mix(0x120a07, CONFIG.light.dayIndoor));
   world.fog.color.copy(out ? night(CONFIG.light.nightHaze).lerp(new THREE.Color(0xb4cce0), d) : mix(0x120a07, CONFIG.light.dayIndoor));
+  if (out && twilight > .001) {   // the far distance takes on the dawn's peach or the dusk's orange
+    const tw = CONFIG.sky.twilight, k = twilight * (1 - dark);
+    _twiHaze.set(tw.dawn.haze).lerp(_twiDusk.set(tw.dusk.haze), twiEve);
+    world.background.lerp(_twiHaze, .85 * k); world.fog.color.lerp(_twiHaze, .6 * k);
+  }
   if (out && wx.k > .001) {   // cloud, rain, mist or haze greys the sky (darker at night)
     const tint = _wxSky.copy(wx.tint).multiplyScalar(.15 + .85 * d), k = wx.k * (1 - dark);
     world.background.lerp(tint, k); world.fog.color.lerp(tint, k);
@@ -328,27 +335,29 @@ function applySky() {
   skyColors();
   world.environment = envFor(out, d);
   renderer.toneMappingExposure = out ? outExposure(d) : CONFIG.light.exposure;
-  temple.setDaylight(d);
+  temple.setDaylight(d, twilight, twiEve);
   lampsOn = 1 - d;
   lanternMat.emissiveIntensity = CONFIG.lanterns.glowStrength * (1 - d) + .05;
   lanterns.forEach(l => l.userData.glow.material.opacity = .45 * (1 - d));
   const note = $("skyInfo"), real = skyNote && (liveDaylight > .5 ? skyNote.day : skyNote.night);
-  if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = dayChoice == null ? real : (dayChoice ? "Daylight view · " : "Night view · ") + real; }
+  if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = skyLook == null ? real : skyLook[0].toUpperCase() + skyLook.slice(1) + " view · " + real; }
   festNote();
-  const btn = $("timeBtn"), toDay = daylight <= .5, backToLive = dayChoice != null && (toDay ? 1 : 0) === (liveDaylight > .5 ? 1 : 0);
-  btn.textContent = toDay ? "☀ Day" : "☾ Night";
-  btn.title = backToLive ? "Back to the real sky over the temple" : toDay ? "Show the temple by day, for this visit" : "Show the temple at night, for this visit";
+  const btn = $("timeBtn"), next = nextLook(), backToLive = next === liveLook;
+  btn.textContent = LOOK_LABEL[next];
+  btn.title = backToLive ? "Back to the real sky over the temple" : `Show the temple at ${next === "day" ? "midday" : next}, for this visit`;
   btn.setAttribute("aria-label", btn.title);
 }
 updateCelestial();
 setInterval(() => { updateCelestial(); applySky(); }, 5 * 6e4);   // the sky moves on while the page is open
-// show the other look, or go back to the real sky when the other look is what is really overhead
+// the look after the one showing, round dawn, day, dusk and night; reaching what is really overhead goes back to the real sky
+function nextLook() { return LOOKS[(LOOKS.indexOf(skyLook || liveLook) + 1) % LOOKS.length]; }
 $("timeBtn").addEventListener("click", () => {
   if (dayFading()) return;
-  const from = daylight, to = from > .5 ? 0 : 1, dur = reduceMotion ? .01 : 1.6;
-  dayChoice = to === (liveDaylight > .5 ? 1 : 0) ? null : to;
-  dayFadeUntil = now + dur + .1;   // set first, so updateCelestial leaves daylight to the fade
-  updateCelestial();   // the noon sun for a daylight view after dark, the real one otherwise
-  const end = dayChoice == null ? liveDaylight : to;
-  tween(dur, t => { daylight = from + (end - from) * easeInOut(t); applySky(); }, () => { daylight = end; applySky(); });
+  const next = nextLook(), dur = reduceMotion ? .01 : 1.6, from = { d: daylight, k: twilight, e: twiEve };
+  skyLook = next === liveLook ? null : next;
+  dayFadeUntil = now + dur + .1;   // set first, so updateCelestial leaves the sky to the fade
+  updateCelestial();   // moves the sun to where it stands at that look today, or back to where it really is
+  const to = skyGoal, eTo = to.eve == null ? from.e : to.eve;
+  const set = s => { daylight = from.d + (to.d - from.d) * s; twilight = from.k + (to.k - from.k) * s; twiEve = from.e + (eTo - from.e) * s; applySky(); };
+  tween(dur, t => set(easeInOut(t)), () => set(1));
 });

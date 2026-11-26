@@ -59,19 +59,46 @@ function moonTexture(fraction) {
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
 }
 let skyNote = "";
+// the four looks of the sky outside. The real sky takes whichever the sun gives; the Dawn/Day/Dusk/Night button shows one of
+// them for this visit, with the sun where it stands at that look today (the moon stays where it really is)
+const LOOKS = ["dawn", "day", "dusk", "night"], LOOK_LABEL = { dawn: "🌅 Dawn", day: "☀ Day", dusk: "🌇 Dusk", night: "☾ Night" };
+// full day once the sun is 8° up, full night once it is 8° down, twilight between
+const dayOf = alt => clamp((alt / (Math.PI / 180) + 8) / 16, 0, 1);
+// the dawn or dusk glow: strongest with the sun just over the horizon, gone some way above it and some way below
+const glowOf = alt => clamp(1 - Math.abs(alt / (Math.PI / 180) - 1) / CONFIG.sky.twilight.span, 0, 1);
+// which look the sun gives; the sun's azimuth is from the south, westward, so a sun in the west is the evening's
+const lookOf = s => { const a = s.alt / (Math.PI / 180); return a > 6 ? "day" : a < -6 ? "night" : s.az > 0 ? "dusk" : "dawn"; };
+// what a look means for the sky: daylight, the warm glow, and whether that glow is the evening's (null: keep the last one);
+// with no look (the real sky) or for Dawn and Dusk, all three come from the sun's height and side
+const lookSky = (s, look) => {
+  if (look === "night") return { d: 0, k: 0, eve: null };
+  if (look === "day") return { d: 1, k: 0, eve: null };
+  const k = glowOf(s.alt);
+  return { d: dayOf(s.alt), k, eve: k > 0 ? (s.az > 0 ? 1 : 0) : null };
+};
+// midnight today on the temple's clock
+const templeMidnight = t => {
+  const wall = z => new Date(new Date(t).toLocaleString("en-US", { timeZone: z })).getTime();
+  const off = wall(CONFIG.sky.tz) - wall("UTC");
+  return Math.floor((t + off) / 864e5) * 864e5 - off;
+};
+// where the sun stands for a chosen look today: noon for Day (or the real sun if it is already well up), a little over the
+// eastern horizon for Dawn and the western one for Dusk; the Night view draws no sun, so it stays where it is
+function lookSun(look, sd, t) {
+  const { lat, lon } = CONFIG.sky, deg = Math.PI / 180, mid = templeMidnight(t), at = u => Astro.sun(u, lat, lon);
+  if (look === "day") return sd.alt >= 8 * deg ? sd : at(mid + 12 * 36e5);
+  if (look === "night") return sd;
+  const h = CONFIG.sky.twilight.look * deg, eve = look === "dusk";
+  for (let u = mid + (eve ? 12 : 0) * 36e5, end = u + 12 * 36e5; u < end; u += 12e4) { const s = at(u); if (eve ? s.alt <= h : s.alt >= h) return s; }
+  return sd;
+}
 function updateCelestial() {
   const { lat, lon, tz } = CONFIG.sky, now = Date.now(), deg = Math.PI / 180;
   const sd = Astro.sun(now, lat, lon);   // where the sun really is over the temple at this moment
-  // full day once the sun is 8° up, full night once it is 8° down, twilight between
-  liveDaylight = clamp((sd.alt / deg + 8) / 16, 0, 1);
-  if (!dayFading()) daylight = dayChoice == null ? liveDaylight : dayChoice;   // also settles a fade that a jump elsewhere cut short
-  // the daylight view asked for after dark puts the sun where it stands at noon today on the temple's clock
-  let sunAt = sd;
-  if (dayChoice === 1 && sd.alt < 8 * deg) {
-    const wall = z => new Date(new Date(now).toLocaleString("en-US", { timeZone: z })).getTime();
-    const off = wall(tz) - wall("UTC"), midnight = Math.floor((now + off) / 864e5) * 864e5 - off;
-    sunAt = Astro.sun(midnight + 12 * 36e5, lat, lon);
-  }
+  liveDaylight = dayOf(sd.alt); liveLook = lookOf(sd);
+  const sunAt = skyLook == null ? sd : lookSun(skyLook, sd, now);
+  skyGoal = lookSky(sunAt, skyLook);   // with no look chosen, the real sky follows the sun smoothly from one look to the next
+  if (!dayFading()) { daylight = skyGoal.d; twilight = skyGoal.k; if (skyGoal.eve != null) twiEve = skyGoal.eve; }   // also settles a fade that a jump elsewhere cut short
   const ill = Astro.illumination(now);
   const mNow = Astro.moon(now, lat, lon), up = mNow.alt > -.01;
   const moon = { up, dir: skyDir(mNow.az, Math.max(mNow.alt, 0)), rot: ill.angle - mNow.q, az: mNow.az, alt: mNow.alt };

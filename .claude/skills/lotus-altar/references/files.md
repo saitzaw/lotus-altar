@@ -38,7 +38,7 @@
 | `03-altar.js` | Guanyin's altar: bowls, candles, incense, bell, chant, fortune drawing | `buildBowls` `addCandle` `addIncense` `ringBell` `chant` `drawFortune` |
 | `04-altar-dressing.js` | lights, dust, flowers, fruit, water, effects, tweens; **`shrine()`** for every other statue's altar | `addFlower` `addFruit` `tween` `shrine` `offerAtShrine` |
 | `05-pagoda-and-camera-modes.js` | pagoda floors and the view from outside; camera modes | `applyMode` `placeInfo` |
-| `06-sun-and-moon.js` | real sun/moon positions and moon phase | `Astro` `updateCelestial` `moonTexture` |
+| `06-sun-and-moon.js` | real sun/moon positions and moon phase | `Astro` `LOOKS` `lookSky` `lookSun` `updateCelestial` `moonTexture` |
 | `07-festivals-and-weather.js` | Halloween, townsfolk hours, stage dance schedule (kinnara, to) and lion/dragon schedule, beat officer (commented out), day/night sky, weather | `festNow` `folkNow` `danceNow` `drillNow` `skyColors` `applySky` `weatherNow` `weatherStep` |
 | `08-sound.js` | WebAudio ambience and the festival stage ensemble | `ambStart` `ambStep` `templeBell` `longDrum` `stageGong` `stageCymbals` |
 | `09-top-game-and-action-bar.js` | four-animal top hook-up: the doorman's age check (21+), chips and bets; action bar sheets | `openTopGame` `openDoorCheck` `tgPlace` `openSheet` `setPanel` |

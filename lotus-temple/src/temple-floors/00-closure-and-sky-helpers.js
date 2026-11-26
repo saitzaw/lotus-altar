@@ -4,7 +4,7 @@
    Each floor is built the first time someone visits it. */
 window.TempleFloors = function TempleFloors(ctx) {
   "use strict";
-  const { THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus, makeFlame, tone, tween, sculptFigure, shrine, floors: FLOORS, places: PLACES, reduceMotion } = ctx;
+  const { THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus, makeFlame, tone, tween, sculptFigure, shrine, floors: FLOORS, places: PLACES, reduceMotion, twilight: TWILIGHT } = ctx;
   const PLAT = 0, ALT = { y: 1.1, z: .75 };   // halls have a level floor; statues stand on their own pedestals
   const groups = {}, updaters = {}, picks = {}, actions = {};
   let pagoda = null, hovered = null;
@@ -41,6 +41,7 @@ window.TempleFloors = function TempleFloors(ctx) {
   }
   // day and night: every outdoor sky registers how it changes with daylight d (0 = night, 1 = day)
   let daylight = 0;
+  const TWI = { k: 0, eve: 0 };   // the dawn or dusk glow (k 0–1) and whose colours it wears (eve 0 dawn, 1 dusk), set with daylight
   const dayParts = [];
   const onDaylight = fn => { dayParts.push(fn); fn(daylight); };
   // Halloween night (set from the main script): `out` 0–1 as the houses put their lights out at 9 pm,
@@ -63,17 +64,35 @@ window.TempleFloors = function TempleFloors(ctx) {
   // a day sky laid over a night sky of radius r: a blue dome that fades in, the sun, the stars fading out,
   // and the moon wherever it really is (by day too, paler, when it is above the horizon)
   // `top` is the highest altitude the camera there can see: true directions are kept, heights are scaled into the visible band
+  const _sunLow = new THREE.Color();
   const squash = (dir, top) => {
     const alt = Math.asin(clamp(dir.y, -1, 1)), h = Math.hypot(dir.x, dir.z) || 1, a2 = .05 + alt / (Math.PI / 2) * (top - .05);
     return V(dir.x / h * Math.cos(a2), Math.sin(a2), dir.z / h * Math.cos(a2));
   };
+  // the dome's colours: the blue day sky from its texture, and at dawn or dusk a glow by height (horizon, a band above, the high
+  // sky) that is brightest on the sun's side. Colours stay in sRGB as the texture does, so it matches a MeshBasicMaterial.
+  const SKY_VERT = "varying vec2 vUv; varying vec3 vDir; void main() { vUv = uv; vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }";
+  const SKY_FRAG = `uniform sampler2D map; uniform float uDay, uTwi, uEve; uniform vec3 uSun, dawnHor, dawnMid, dawnTop, dawnSun, duskHor, duskMid, duskTop, duskSun;
+    varying vec2 vUv; varying vec3 vDir;
+    void main() {
+      vec4 day = texture2D(map, vUv); vec3 d = normalize(vDir); float up = max(d.y, 0.);
+      vec3 c = mix(mix(dawnHor, duskHor, uEve), mix(dawnMid, duskMid, uEve), smoothstep(0., .18, up));
+      c = mix(c, mix(dawnTop, duskTop, uEve), smoothstep(.15, .7, up));
+      float side = dot(normalize(d.xz + 1e-5), normalize(uSun.xz + 1e-5)) * .5 + .5;   // 1 toward the sun, 0 away from it
+      c = mix(c * (.7 + .3 * side), mix(dawnSun, duskSun, uEve), .8 * pow(side, 3.) * (1. - smoothstep(0., .45, up)));
+      c = mix(c, day.rgb * .55, smoothstep(0., .04, -d.y));   // below the horizon the land stays land, dimmed
+      gl_FragColor = vec4(mix(day.rgb, c, uTwi), clamp(uDay + .9 * uTwi, 0., 1.));
+    }`;
   function daySky(parent, r, stars, top = .5) {
     const tex = canvasTex(256, (c, sz) => {
       const l = c.createLinearGradient(0, 0, 0, sz);
       l.addColorStop(0, "#1f5fb4"); l.addColorStop(.28, "#3f86d6"); l.addColorStop(.42, "#86b8e6"); l.addColorStop(.49, "#cfe0ec"); l.addColorStop(.51, "#76776c"); l.addColorStop(1, "#4e4a40");
       c.fillStyle = l; c.fillRect(0, 0, sz, sz);
     });
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(r * .94, 48, 24), new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false, transparent: true, depthWrite: false, toneMapped: false }));
+    const tw = TWILIGHT, uni = { map: { value: tex }, uDay: { value: 0 }, uTwi: { value: 0 }, uEve: { value: 0 }, uSun: { value: V(0, 1, 0) } };
+    ["dawn", "dusk"].forEach(w => ["hor", "mid", "top", "sun"].forEach(p => uni[w + p[0].toUpperCase() + p.slice(1)] = { value: new THREE.Color(tw[w][p]) }));
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(r * .94, 48, 24), new THREE.ShaderMaterial({ uniforms: uni, vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, side: THREE.BackSide, transparent: true, depthWrite: false }));
+    dome.renderOrder = -2;   // behind the stars, the sun and the moon
     parent.add(dome);
     const sun = glowSprite(0xfff2c8, r * .16, 1); sun.material.fog = false; parent.add(sun);
     const core = glowSprite(0xffffff, r * .05, 1); core.material.fog = false; parent.add(core);
@@ -90,11 +109,12 @@ window.TempleFloors = function TempleFloors(ctx) {
       disc.material.opacity = alpha; halo.material.opacity = alpha * (.15 + .45 * celestial.fraction);
     };
     const update = () => {
-      const d = daylight, sunUp = celestial.sun.y > 0;
-      dome.material.opacity = d; dome.visible = d > .001;
-      sun.position.copy(squash(celestial.sun, top)).multiplyScalar(r * .88); core.position.copy(sun.position);
-      sun.material.opacity = sunUp ? d : 0; core.material.opacity = sunUp ? d : 0; sun.visible = core.visible = sunUp && d > .001;
-      if (stars) stars.fade(1 - d);
+      const d = daylight, k = TWI.k, sunUp = celestial.sun.y > 0, lit = Math.max(d, k), sq = squash(celestial.sun, top);
+      uni.uDay.value = d; uni.uTwi.value = k; uni.uEve.value = TWI.eve; uni.uSun.value.copy(sq); dome.visible = d > .001 || k > .001;
+      sun.position.copy(sq).multiplyScalar(r * .88); core.position.copy(sun.position);
+      sun.material.color.setHex(0xfff2c8).lerp(_sunLow.setHex(0xff9a50), .7 * k);   // a low sun burns orange
+      sun.material.opacity = sunUp ? lit : 0; core.material.opacity = sunUp ? lit : 0; sun.visible = core.visible = sunUp && lit > .001;
+      if (stars) stars.fade(1 - lit);
       const info = celestial.moon;
       placeMoon(info, info && info.up ? 1 - .3 * d : 0);   // paler by day, when it is up in the afternoon
     };

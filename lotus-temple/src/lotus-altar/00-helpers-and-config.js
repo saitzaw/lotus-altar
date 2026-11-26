@@ -51,7 +51,10 @@ const CONFIG = {
   layout: { censerZ: 1.95, benchZ: 2.8, censerScale: 1.6 }, // distance in front of the statue (z) for censer and bench
   lanterns: { color: 0xb0180c, glow: 0xd0200a, glowStrength: .55 },
   // where the temple stands, for the real sun and moon; times are shown in Indochina Time (ICT, UTC+7)
-  sky: { lat: 13.75, lon: 100.5, tz: "Asia/Bangkok", place: "Bangkok" },
+  sky: { lat: 13.75, lon: 100.5, tz: "Asia/Bangkok", place: "Bangkok",
+    twilight: { span: 9, look: 3,   // span: degrees either side of the sun at 1° up over which the dawn or dusk glow fades; look: how high the sun stands in the Dawn and Dusk views
+      dawn: { hor: 0xffb48a, mid: 0xdc9cb4, top: 0x4e5e9e, sun: 0xffdca0, haze: 0xe6b4a4 },   // dawn in the east: peach at the horizon, rose, then a pale violet-blue; haze: the far distance
+      dusk: { hor: 0xff7838, mid: 0xb4587c, top: 0x2c306e, sun: 0xffb048, haze: 0xd4885c } } },   // dusk in the west: orange at the horizon, magenta-rose, then deep indigo
   // the Halloween festival: on these nights ([month, day] on the temple's clock) the houses put their lights out
   // at outHour (9 pm ICT), a friendly ghost walks the roads until untilHour and walkers carry a torch; the street and lane lights
   // stay on. Add ?halloween=1 to the address to see it at any time, or ?halloween=0 to turn it off

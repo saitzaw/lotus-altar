@@ -86,6 +86,13 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-26: Dawn, day, dusk and night skies
+- Owner asked for four sky colours (dawn, day, dusk, night) with the sun and moon kept where they are. The real sky now
+  glows warm while the sun is within ~9° of the horizon (peach/rose at dawn in the east, orange/indigo at dusk in the west).
+  `#timeBtn` cycles Dawn → Day → Dusk → Night → real sky (`skyLook`); a chosen Dawn/Dusk puts the sun 3° up at today's
+  sunrise/sunset, Day at noon; the moon always stays real. Colours in `CONFIG.sky.twilight`. `daySky`'s dome is now a
+  ShaderMaterial; `dayChoice` is gone. Checked headless: all four looks render, no console errors; button offers Dusk at noon.
+
 ### 2026-11-25: Stars and the Milky Way
 - `starrySky(parent, r, seed)` in `00-closure-and-sky-helpers.js` replaces the three random star clouds (outside, the pagoda top's
   vista, the bell tower). About 80 bright stars at their real RA/Dec (`BRIGHT_STARS`, J2000, typed from memory: worth a check against

@@ -1,7 +1,7 @@
 /* ---------- the pagoda: seven floors and the view from outside ---------- */
 const temple = window.TempleFloors({
   THREE, world, V, TAU, clamp, easeOut, mesh, lathe, std, M, glowSprite, glowTex, canvasTex, petalGeo, makeLotus,
-  makeFlame, tone: (...a) => tone(...a), tween: (...a) => tween(...a), sculptFigure, shrine, floors: CONFIG.floors, places: CONFIG.places, reduceMotion, cull: CONFIG.cull
+  makeFlame, tone: (...a) => tone(...a), tween: (...a) => tween(...a), sculptFigure, shrine, floors: CONFIG.floors, places: CONFIG.places, reduceMotion, cull: CONFIG.cull, twilight: CONFIG.sky.twilight
 });
 let current = 1;
 // the main hall gets the same festoons of lanterns and spiral staircase as the floors above

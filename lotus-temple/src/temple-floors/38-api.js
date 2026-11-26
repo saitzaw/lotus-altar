@@ -46,7 +46,8 @@
       if (HAW.rooms[mode]) return HAW.pillars.some(([cx, cz]) => c(cx, cz, .3)) || HAW.rooms[mode].some(r => rc(...r));   // the pillars; the dais and what stands before it
       return false;
     },
-    setDaylight(d) { daylight = d; dayParts.forEach(fn => fn(d)); },
+    // daylight d (0 night, 1 day), the dawn or dusk glow k (0–1) and eve (0 dawn's colours, 1 dusk's)
+    setDaylight(d, k = 0, eve = TWI.eve) { daylight = d; TWI.k = k; TWI.eve = eve; dayParts.forEach(fn => fn(d)); },
     // Halloween night: `on` lets the ghost out, `out` (0–1) puts out the houses' lights; `ghost` is where it is, while out
     setHalloween({ on, out }) { FEST.on = on; if (out !== FEST.out) { FEST.out = out; dayParts.forEach(fn => fn(daylight)); } },
     get ghost() { return FEST.ghost || null; },
