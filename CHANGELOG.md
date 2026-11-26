@@ -4,7 +4,7 @@ What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel
 For working notes and open questions, see `CONTINUUM.md`.
 
 ## 2026-11-26
-- The sky outside now has four looks: dawn, day, dusk and night. At sunrise the eastern sky turns peach and rose under a pale violet, at sunset the western sky glows orange into magenta and deep indigo, with a low orange sun and gold light on the temple. The sky button cycles through Dawn, Day, Dusk and Night for this visit, then back to the real sky; a chosen dawn or dusk puts the sun where it stands at today's sunrise or sunset, and the moon stays where it really is.
+- The sky outside now has four looks: dawn, day, dusk and night. At sunrise the eastern sky turns peach and rose under a pale violet, at sunset the western sky glows orange into magenta and deep indigo, with a low orange sun and gold light on the temple. The sky button shows which look is on now and, pressed, moves on through Dawn, Day, Dusk and Night for this visit, then back to the real sky; a chosen dawn or dusk puts the sun where it stands at today's sunrise or sunset, and the moon stays where it really is.
 
 ## 2026-11-25
 - The night sky outside, from the pagoda's top floor and the bell tower now holds real stars where they really stand over the temple: Orion, the Plough, Cassiopeia, the Pleiades, Scorpius and Sagittarius, the Southern Cross low in the south, with thousands of fainter stars, and the Milky Way across the sky, brightest toward Sagittarius and split by the Great Rift. The sky turns through the night; the stars twinkle (held still under reduced motion), dim and redden near the horizon, hide behind cloud, rain, mist and haze, and a bright moon washes out the faint ones and the Milky Way.

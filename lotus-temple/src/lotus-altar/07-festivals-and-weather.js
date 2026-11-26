@@ -342,13 +342,18 @@ function applySky() {
   const note = $("skyInfo"), real = skyNote && (liveDaylight > .5 ? skyNote.day : skyNote.night);
   if (note) { note.hidden = !out || !skyNote; if (skyNote) note.textContent = skyLook == null ? real : skyLook[0].toUpperCase() + skyLook.slice(1) + " view · " + real; }
   festNote();
-  const btn = $("timeBtn"), next = nextLook(), backToLive = next === liveLook;
-  btn.textContent = LOOK_LABEL[next];
-  btn.title = backToLive ? "Back to the real sky over the temple" : `Show the temple at ${next === "day" ? "midday" : next}, for this visit`;
-  btn.setAttribute("aria-label", btn.title);
+  skyButton();
 }
 updateCelestial();
 setInterval(() => { updateCelestial(); applySky(); }, 5 * 6e4);   // the sky moves on while the page is open
+// the button names the sky on show now; its tip says what pressing it shows next
+function skyButton() {
+  const btn = $("timeBtn"), shown = skyLook || liveLook, next = nextLook(), name = l => l === "day" ? "midday" : l;
+  btn.textContent = LOOK_LABEL[shown];
+  btn.title = `Sky: ${shown}${skyLook ? ", chosen for this visit" : ", the real sky over the temple"}. ` +
+    (next === liveLook ? "Press to go back to the real sky" : `Press to show the temple at ${name(next)}`);
+  btn.setAttribute("aria-label", btn.title);
+}
 // the look after the one showing, round dawn, day, dusk and night; reaching what is really overhead goes back to the real sky
 function nextLook() { return LOOKS[(LOOKS.indexOf(skyLook || liveLook) + 1) % LOOKS.length]; }
 $("timeBtn").addEventListener("click", () => {
@@ -357,6 +362,7 @@ $("timeBtn").addEventListener("click", () => {
   skyLook = next === liveLook ? null : next;
   dayFadeUntil = now + dur + .1;   // set first, so updateCelestial leaves the sky to the fade
   updateCelestial();   // moves the sun to where it stands at that look today, or back to where it really is
+  skyButton();   // the label changes at once, not when the fade begins
   const to = skyGoal, eTo = to.eve == null ? from.e : to.eve;
   const set = s => { daylight = from.d + (to.d - from.d) * s; twilight = from.k + (to.k - from.k) * s; twiEve = from.e + (eTo - from.e) * s; applySky(); };
   tween(dur, t => set(easeInOut(t)), () => set(1));

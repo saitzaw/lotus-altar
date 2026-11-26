@@ -66,8 +66,9 @@ const LOOKS = ["dawn", "day", "dusk", "night"], LOOK_LABEL = { dawn: "🌅 Dawn"
 const dayOf = alt => clamp((alt / (Math.PI / 180) + 8) / 16, 0, 1);
 // the dawn or dusk glow: strongest with the sun just over the horizon, gone some way above it and some way below
 const glowOf = alt => clamp(1 - Math.abs(alt / (Math.PI / 180) - 1) / CONFIG.sky.twilight.span, 0, 1);
-// which look the sun gives; the sun's azimuth is from the south, westward, so a sun in the west is the evening's
-const lookOf = s => { const a = s.alt / (Math.PI / 180); return a > 6 ? "day" : a < -6 ? "night" : s.az > 0 ? "dusk" : "dawn"; };
+// which look the sun gives: dawn or dusk while their glow shows plainly (about 6° down to 8° up), else day or night;
+// the sun's azimuth is from the south, westward, so a sun in the west is the evening's
+const lookOf = s => glowOf(s.alt) >= .2 ? (s.az > 0 ? "dusk" : "dawn") : s.alt > 0 ? "day" : "night";
 // what a look means for the sky: daylight, the warm glow, and whether that glow is the evening's (null: keep the last one);
 // with no look (the real sky) or for Dawn and Dusk, all three come from the sun's height and side
 const lookSky = (s, look) => {

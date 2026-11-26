@@ -92,6 +92,8 @@ The log keeps only the six or so most recent entries. When it grows past that, m
   `#timeBtn` cycles Dawn → Day → Dusk → Night → real sky (`skyLook`); a chosen Dawn/Dusk puts the sun 3° up at today's
   sunrise/sunset, Day at noon; the moon always stays real. Colours in `CONFIG.sky.twilight`. `daySky`'s dome is now a
   ShaderMaterial; `dayChoice` is gone. Checked headless: all four looks render, no console errors; button offers Dusk at noon.
+- Owner said the button and the sky did not match (it named the next look). It now names the look on show (`skyButton()`),
+  its tip says what a press shows; `lookOf` calls it dawn/dusk exactly while the glow shows (glow ≥ .2, about −6° to +8°).
 
 ### 2026-11-25: Stars and the Milky Way
 - `starrySky(parent, r, seed)` in `00-closure-and-sky-helpers.js` replaces the three random star clouds (outside, the pagoda top's
