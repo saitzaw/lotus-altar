@@ -36,7 +36,7 @@
     streamer.geometry.translate(0, -4.5, 0); streamer.position.set(.1, 13.6, FZ); G.add(streamer);
     // the pavilion stage (မဏ္ဍပ်): teak posts, a raised floor, a two-tier gable roof like the monasteries', at the uphill side
     const teak = std({ color: 0x43200f, roughness: .7 }), roofT = corrugated("#6a3a24", "#8e5838", "#40200f"); roofT.repeat.set(6, 1);
-    const roofM = std({ map: roofT, roughness: .5, metalness: .35, side: THREE.DoubleSide });
+    const roofM = std({ map: roofT, roughness: .8, metalness: .1, side: THREE.DoubleSide });   // matte, so the lamps under it don't streak glare across it
     const PZ = -R / 2 + 4.1, PW = 14, PD = 6.5;   // its centre, width and depth: wide enough for the two to to dance round each other
     sRect(G, -PW / 2, PW / 2, PZ - PD / 2, PZ + PD / 2 + 1.3); sCircle(G, 0, FZ, 1.1); [-8, -4, 4, 8].forEach(x => sCircle(G, x, R / 2 - 3, 1.1));
     mesh(new THREE.BoxGeometry(PW, 1.0, PD), teak, 0, .5, PZ, G);
@@ -67,8 +67,9 @@
     });
     // the festival's night lights: bulbs along both eaves of the pavilion, a lamp hung under its roof over each half of the stage, a
     // spotlight from the field onto the dancers, and a warm light over the grass from the lantern strings. Lit after dark while the
-    // evening's shows are on (FOLK.festLights, CONFIG.festivalLights), fading out over a few seconds when the last dance is over
-    [-1, 1].forEach(sd => { for (let i = 0; i <= 14; i++) { const b = glowSprite([0xffe0a0, 0xff9a6a, 0xffe0a0, 0xa0d0ff][i % 4], .7, .7); b.material.fog = false; b.position.set(-PW / 2 - .3 + i * (PW + .6) / 14, 4.45, PZ + sd * (PD / 2 + .75)); G.add(b); lamps.push(b); } });
+    // evening's shows are on (FOLK.festLights, CONFIG.festivalLights), fading out over a few seconds when the last dance is over.
+    // The eave bulbs hang clear below the eave: a glow pushed through the roof slab shows as a broken, flickering band
+    [-1, 1].forEach(sd => { for (let i = 0; i <= 14; i++) { const b = glowSprite([0xffe0a0, 0xff9a6a, 0xffe0a0, 0xa0d0ff][i % 4], .55, .7); b.material.fog = false; b.position.set(-PW / 2 - .3 + i * (PW + .6) / 14, 4.2, PZ + sd * (PD / 2 + .85)); G.add(b); lamps.push(b); } });
     const hung = [-3.5, 3.5].map(x => { const b = glowSprite(0xfff0c8, 1.3, .9); b.material.fog = false; b.position.set(x, 4.2, PZ); G.add(b); lamps.push(b);
       const l = new THREE.PointLight(0xffd8a0, 0, 13, 1.4); l.position.set(x, 4.0, PZ); G.add(l); return l; });
     const stageSpot = new THREE.SpotLight(0xfff0d8, 0, 26, .55, .5, 1); stageSpot.position.set(0, 7.5, PZ + PD / 2 + 7); stageSpot.target.position.set(0, 1.6, PZ); G.add(stageSpot, stageSpot.target);

@@ -65,7 +65,7 @@
     const drop = th => (THIGH + SHIN) * (1 - Math.cos(th));   // how far the hips sink when the knees bend by th (foot under the hip)
     // a dancer (male: the kinnara, else the kinnari) added to G, clickable in `list` with `data` while `shown()`
     function dancer(male, G, list, data, shown) {
-      const D = new THREE.Group(), B = new THREE.Group(); D.add(B);
+      const D = new THREE.Group(), B = new THREE.Group(); D.add(B); D.userData.noCull = true;   // shown and hidden by the show, so the distance culling must leave it alone
       // the upper body pivots at the hips (U) so the dancer can lean without his feet sliding; T holds its parts at their heights
       const U = new THREE.Group(); U.position.y = .84; B.add(U);
       const T = new THREE.Group(); T.position.y = -.84; U.add(T);
@@ -201,7 +201,7 @@
       const out = .08 + .3 * deep;   // the knees turned out, wider in the squat
       // along his path round the stage, kept clear of the musicians at the sides: moving while a foot is up, or in the air
       pp += f === "L" ? (onG ? 0 : 6 * s * (1 - s) * dt / ta) : RATE[f] * 6 * u * (1 - u) * dt / BAR;
-      const roam = FOLK.dance === "toKinnara" ? .6 : 1.3;   // a wider stage to roam; between the two to he keeps to the middle, a little forward
+      const roam = FOLK.dance === "toKinnara" ? .25 : 1.3;   // a wider stage to roam; between the two to he keeps to the middle, a little forward, so his open wings (about 2.2 m each side) never sweep through them
       d.D.position.set(C.x + Math.sin(pp * .3) * 1.3 * roam, C.y, C.z + Math.sin(pp * .6) * .6 * roam + Math.max(0, 1 - roam) * .8);
       d.D.rotation.y = Math.sin(pp * .4) * .9 + spin;   // mostly turned to the crowd
       const drop2 = th => (THIGH + SHIN) * (1 - Math.cos(th) * Math.cos(out));   // the hips' sink with the knees bent and turned out

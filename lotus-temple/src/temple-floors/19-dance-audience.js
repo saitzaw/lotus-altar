@@ -46,7 +46,7 @@
         const hd = sit ? null : head(1.45, skin, girl, top), geo = lowPoly(sit ? sitter(skin, top, lower, girl) : stander(skin, top, lower, girl, hd, false)), body = new THREE.Mesh(geo, M_);
         const wetGeo = sit ? null : lowPoly(stander(skin, top, lower, girl, hd, true));   // the same person holding an umbrella
         const sc = sit ? .8 + r() * .15 : 1.0 + r() * .12;
-        body.scale.setScalar(sc); body.position.set(x, 0, z); body.rotation.y = Math.atan2(cx - x, cz - z) + (r() - .5) * .3; body.castShadow = false;
+        body.scale.setScalar(sc); body.position.set(x, 0, z); body.rotation.y = Math.atan2(cx - x, cz - z) + (r() - .5) * .3; body.castShadow = false; body.userData.noCull = true;   // shown and hidden by the show, never by the distance culling
         clickable(list, body, data); body.raycast = function (ray, out) { if (body.visible) THREE.Mesh.prototype.raycast.call(this, ray, out); };
         G.add(body); folk.push({ body, sit, epic, geo, wetGeo, umb: UMBRELLA[(ru() * UMBRELLA.length) | 0], ry: body.rotation.y, ph: r() * TAU, lively: sit && r() < .6 });
       }

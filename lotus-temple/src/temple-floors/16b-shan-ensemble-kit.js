@@ -34,7 +34,7 @@
     // group's −0.28. B is all of him above the legs, so a sitting player can sway at the waist. Without `legs` a standing player
     // has none of his own (the procession's walking legs stand in for them)
     const musician = (P, x, y, z, ry, cloth, sit, suit, hat = true, legs = true) => {
-      const D = new THREE.Group(); D.position.set(x, y, z); D.rotation.y = ry; P.add(D);
+      const D = new THREE.Group(); D.position.set(x, y, z); D.rotation.y = ry; D.userData.noCull = true; P.add(D);   // shown and hidden by the show, never by the distance culling
       const [jacket, trousers] = suit || [tanTop, tanLow];   // his jacket and trousers
       const B = new THREE.Group(), clothM = std({ color: lin(cloth), roughness: .7 }); D.add(B);
       if (sit) {

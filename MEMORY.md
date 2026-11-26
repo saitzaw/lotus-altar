@@ -11,6 +11,11 @@ lesson when you learn one, and delete a lesson once it stops being true.
 
 ## Building the world
 
+- Anything a show or schedule hides and shows (dancers, players, audience, stalls) must start hidden or carry
+  `userData.noCull = true`. The distance culling (`37-culling.js`) indexes every object visible at build time and, on each
+  camera move, sets its `visible` from distance and view alone, overwriting what the show set: hidden figures pop back in as
+  you walk, and only while moving. Something hidden at build time is never indexed, so it is safe.
+
 - `build-dist.sh` joins the pieces in the order the *shell* sorts `src/<name>/*.js`, so it sets `LC_ALL=C` for the whole script.
   In other locales the dash is ignored and `18b-x.js` sorts before `18-y.js`, which drops a new piece into the middle of the
   previous function (here `toDancers` landed inside `kinnaraDancers` and was "not defined"). Prefix a new piece with the

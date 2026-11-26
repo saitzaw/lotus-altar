@@ -86,6 +86,17 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-26: Stage dancers no longer pop in when you move
+- Owner saw the kinnara and kinnari standing inside the to (to dance, two to) whenever they walked about. Cause: the
+  distance culling indexes everything visible at build time and sets `visible` by distance whenever the camera moves, so it
+  switched the hidden pair back on. The stage's kinnara dancers, ensemble players and audience now carry `userData.noCull`
+  (the to and the singer start hidden, so were never indexed). Checked headless with `?dancers=to`: old build showed both
+  winged dancers after every camera move, the new one none; owner confirmed in the browser.
+- In the closing dance (`toKinnara`) the kinnara keeps to the middle (roam .25) and each to stands 3.9 m out, a little
+  upstage, turned in less, so his open wings (~2.2 m a side) never sweep through them; no overlap in a headless check.
+- The pavilion roof is matte (roughness .8, metalness .1), so the hung lamps and spotlight no longer streak glare across its
+  underside, and the eave bulbs hang clear below the eave (y 4.2, size .55) instead of half through the roof slab.
+
 ### 2026-11-26: Dawn, day, dusk and night skies
 - Owner asked for four sky colours (dawn, day, dusk, night) with the sun and moon kept where they are. The real sky now
   glows warm while the sun is within ~9° of the horizon (peach/rose at dawn in the east, orange/indigo at dusk in the west).

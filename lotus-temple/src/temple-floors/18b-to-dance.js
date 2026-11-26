@@ -130,7 +130,7 @@
       let x, z, head0;
       if (walk) { x = C.x; z = C.z; head0 = Math.sin(pp * .3) * .3; }   // in the procession: looking this way and that as it goes
       else if (show === "twoTo") { const a = pp * .32 + (yellow ? Math.PI : 0); x = C.x + Math.cos(a) * 2.4; z = C.z - .2 + Math.sin(a) * 1.1; head0 = Math.atan2(-2.4 * Math.sin(a), 1.1 * Math.cos(a)); }   // round the oval, facing along it
-      else if (show === "toKinnara") { x = C.x + sd * 3.4 + Math.sin(pp * .5) * .4; z = C.z - .3 + Math.sin(pp * .35) * .6; head0 = -sd * .45 + Math.sin(pp * .3) * .25; }   // at its own side, turned in toward the kinnara and the crowd
+      else if (show === "toKinnara") { x = C.x + sd * 3.9 + Math.sin(pp * .5) * .25; z = C.z - .6 + Math.sin(pp * .35) * .6; head0 = -sd * .3 + Math.sin(pp * .3) * .25; }   // at its own side, a little upstage, turned in toward the kinnara and the crowd, its head kept clear of his wings
       else { x = C.x + Math.sin(pp * .35) * 2.2; z = C.z - .25 + Math.sin(pp * .7) * .5; head0 = Math.atan2(.77 * Math.cos(pp * .35), .35 * Math.cos(pp * .7)); }   // facing the way it travels
       let fB = .12, bB = .3, rise = 0, neckT = .3, nod = 0, yaw = 0, sway = 0, hop = 0, spin = 0, wag = .25, shake = 0;
       if (f === "w") { neckT += .08 * Math.sin(TAU * 3 * u); nod = .1 * Math.sin(TAU * 3 * u + 1); }
