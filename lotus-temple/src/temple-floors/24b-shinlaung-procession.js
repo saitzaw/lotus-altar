@@ -89,10 +89,15 @@
   }
 
   /* ---------- a sang long riding his carrier's shoulders, and the man beside them under the golden parasol: the carrier in baggy
-     golden-yellow Shan trousers, a t-shirt and a wide bamboo hat (ခမောက်), holding the boy's shins; the boy astride his shoulders
-     (ခွစီး) in bright silk with gilt shoulder flares and a Shan novice's flower headdress, tiers of white, pink and yellow blossoms
-     and a red spire, strands of jasmine hanging behind; the parasol bearer in a pastel jacket and headwrap holds the tall tiered
-     parasol (hti) leaning over the boy. Returns a group, front +z, the carrier to the bearer's left ---------- */
+     golden-yellow Shan trousers, a t-shirt, a striped Shan shoulder bag and a wide bamboo hat (ခမောက်), holding the boy's shins; the
+     boy astride his shoulders (ခွစီး) in bright silk sewn with gilt diamonds, silver wings rising from his shoulders, strands of gold
+     chain and pearls with a medallion on his chest, often dark glasses against the sun, and a Shan novice's flower headdress, tiers
+     of white, pink and yellow blossoms crowned with a plume of dyed feathers, strands of jasmine hanging behind; the parasol bearer
+     in a pastel jacket and headwrap holds up the wide golden paper parasol on its tall pole, its gilt finial high above and swags of
+     tinsel and strings of flowers hanging all round its rim. Returns a group, front +z, the carrier to the bearer's left ---------- */
+  // each boy's silk, the plume of his headdress and whether he wears dark glasses (by seed)
+  const SANG_LONG = [{ silk: 0xd82a30, plume: 0xe8283a, glasses: true }, { silk: 0x2a5ad0, plume: 0x3a3ac8, glasses: true }, { silk: 0x2a9a4a, plume: 0xec5a9a, glasses: false }];
+  const TINSEL = [0x8a3ac8, 0xf0c030, 0x2a5ad8, 0xd8283a, 0x2aa04a, 0xe03a9a, 0xd8dce0];
   function createShinlaungPair(seed = 1) {
     const K = procKit(), r = rng(9300 + seed), pk = l => l[(r() * l.length) | 0];
     const unit = new THREE.Group(), walkers = [], shades = [];
@@ -101,41 +106,66 @@
     procBody(cp, { top: shirt, trousers: TROUSER, skin });
     [-1, 1].forEach(sd => procArm(cp, sd, shirt, skin, [sd * .3, 1.08, .1], [sd * .2, 1.27, .16], true));
     cp.push([K.cone(.27, .17, 10), 0xd8b868, 0, 1.72, .03, .2], [K.cyl(.272, .272, .014, 10), 0xb89848, 0, 1.64, .015, .2], [K.box(.2, .018, .02), P_HAIR, 0, 1.46, .105]);   // the bamboo hat, its rim; a moustache
+    // a woven Shan bag at his right hip, its strap across his chest from the left shoulder
+    const BAG = pk([0xd8283a, 0x2a6ac8, 0xe08a2a]);
+    cp.push(K.rod([.15, 1.33, .12], [-.24, .99, .17], .012, .012, BAG, 4), K.rod([.15, 1.33, -.12], [-.24, .99, -.15], .012, .012, BAG, 4));
+    cp.push([K.box(.06, .12, .26), BAG, -.27, .74, 0], [K.box(.062, .05, .262), 0xf0c428, -.27, .82, 0], [K.box(.062, .03, .262), 0x2a9a4a, -.27, .865, 0], [K.box(.06, .1, .26), BAG, -.27, .93, 0], [K.box(.064, .025, .264), 0x1e1612, -.27, .99, 0]);
     const carrier = procFigure(cp, K.procM, TROUSER, .3, .42); unit.add(carrier); walkers.push(carrier);
     // the boy, built about his seat on the carrier's shoulders so he can sway there
-    const silk = pk([0x1fb8b0, 0xf0c428, 0xd82a30]), trim = silk === 0xf0c428 ? 0xd82a30 : P_GOLD, bskin = pk(P_SKIN), bp = [], SZ = -.2;
+    const look = SANG_LONG[(seed - 1) % SANG_LONG.length], silk = look.silk, trim = P_GOLD, bskin = pk(P_SKIN), bp = [], SZ = -.2;
     bp.push([K.cyl(.11, .12, .13, 8), silk, 0, 1.5, SZ]);
     [-1, 1].forEach(sd => {
       const hip = [sd * .08, 1.5, SZ + .02], knee = [sd * .21, 1.44, .1], ankle = [sd * .19, 1.12, .15];
       bp.push(K.rod(hip, knee, .058, .052, silk), K.rod(knee, ankle, .048, .04, silk), [K.box(.07, .05, .14), 0xf4f0e6, sd * .19, 1.09, .19]);
       bp.push(K.rod([sd * .13, 1.86, SZ + .02], [sd * .21, 1.72, -.08], .04, .036, silk), K.rod([sd * .21, 1.72, -.08], [sd * .1, 1.77, 0], .034, .03, silk), [K.ball(.032), bskin, sd * .1, 1.78, .02]);   // hands on the carrier's hat
-      bp.push([K.cone(.075, .13, 6), trim, sd * .16, 1.87, SZ, 0, 0, -sd * Math.PI / 2]);   // gilt flares at the shoulders
+      // silver wings swept up from the shoulders, edged in gilt
+      bp.push([K.box(.17, .045, .13), 0xdcdcd4, sd * .2, 1.9, SZ, 0, 0, sd * .4], [K.box(.13, .035, .1), 0xe8e8e0, sd * .26, 1.97, SZ, 0, 0, sd * .8], [K.box(.08, .03, .07), 0xdcdcd4, sd * .29, 2.04, SZ, 0, 0, sd * 1.15]);
+      bp.push([K.box(.18, .012, .135), trim, sd * .2, 1.876, SZ, 0, 0, sd * .4], [K.ball(.02), trim, sd * .31, 2.09, SZ]);
     });
     bp.push([K.cyl(.1, .125, .36, 9), silk, 0, 1.73, SZ], [K.cyl(.128, .128, .03, 9), trim, 0, 1.57, SZ], [K.cyl(.104, .104, .025, 9), trim, 0, 1.89, SZ]);   // the jacket, gilt bands at hem and collar
     bp.push([K.box(.03, .3, .012), trim, 0, 1.73, SZ + .115], [K.ball(.06), trim, 0, 1.82, SZ + .1]);   // its gilt front and a jewel at the chest
+    [1.66, 1.78].forEach((y, j) => [-1.15, -.45, .45, 1.15].forEach(a => { const rr = .114 + (1.78 - y) * .1; bp.push([K.box(.04, .04, .008), trim, Math.sin(a + j * .3) * rr, y, SZ + Math.cos(a + j * .3) * rr, 0, a + j * .3, Math.PI / 4]); }));   // gilt diamonds sewn on the silk
+    // strands of gold chain and pearls, the longest with a medallion, hanging lower in front
+    [[.135, 1.865, 0xf0c030, .008], [.15, 1.85, 0xf4f2ea, .012], [.165, 1.835, 0xe0b040, .01]].forEach(([rr, y, c, tb]) => bp.push([new THREE.TorusGeometry(rr, tb, 4, 14), c, 0, y, SZ, Math.PI / 2 + .5]));
+    bp.push([K.cyl(.036, .036, .012, 10), 0xf4f2ea, 0, 1.73, SZ + .152, Math.PI / 2 - .3], [K.cyl(.024, .024, .014, 8), 0x2a9a4a, 0, 1.73, SZ + .156, Math.PI / 2 - .3]);
     procHead(bp, bskin, { y: 2.0, z: SZ, s: .85, lips: 0xc8283a });
+    if (look.glasses) {   // dark glasses: two lenses, the bridge and the arms back to the ears
+      [-1, 1].forEach(sd => bp.push([K.box(.046, .032, .01), 0x101418, sd * .037, 2.014, SZ + .097], [K.box(.006, .007, .085), 0x101418, sd * .088, 2.02, SZ + .05]));
+      bp.push([K.box(.03, .008, .01), 0x101418, 0, 2.024, SZ + .099]);
+    }
     // the headdress: a gilt band, three tiers of blossoms narrowing upward, a white cap and the red spire
     const BLOOM = [0xf6f4ee, 0xf4b4c8, 0xf6e08a];
     bp.push([K.cyl(.102, .102, .045, 10), P_GOLD, 0, 2.06, SZ]);
     for (let i = 0; i < 11; i++) { const a = i / 11 * TAU; bp.push([K.ball(.036), BLOOM[i % 3], Math.sin(a) * .11, 2.1, SZ + Math.cos(a) * .11]); }
     for (let i = 0; i < 9; i++) { const a = (i + .5) / 9 * TAU; bp.push([K.cone(.03, .085, 5), BLOOM[(i + 1) % 3], Math.sin(a) * .085, 2.17, SZ + Math.cos(a) * .085]); }
     for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; bp.push([K.ball(.028), BLOOM[(i + 2) % 3], Math.sin(a) * .055, 2.235, SZ + Math.cos(a) * .055]); }
-    bp.push([K.cone(.055, .12, 7), 0xf6f4ee, 0, 2.31, SZ], [K.ball(.022), 0xd82a30, 0, 2.37, SZ], [K.cone(.018, .2, 5), 0xd82a30, 0, 2.47, SZ]);
+    bp.push([K.cone(.055, .12, 7), 0xf6f4ee, 0, 2.31, SZ], [K.ball(.03), P_GOLD, 0, 2.37, SZ]);
+    // the plume: dyed feathers standing up from the crown and fanning out, a tall one in the middle
+    const tip = new THREE.Color(look.plume).lerp(new THREE.Color(0xffffff), .35).getHex();
+    bp.push([K.cone(.022, .34, 4), look.plume, 0, 2.38 + .17, SZ]);
+    for (let i = 0; i < 10; i++) { const a = i / 10 * TAU, t = .32 + (i % 2) * .16, L = .26 + (i % 3) * .03; bp.push([K.cone(.02, L, 4), i % 2 ? tip : look.plume, Math.sin(a) * Math.sin(t) * L / 2, 2.37 + Math.cos(t) * L / 2, SZ + Math.cos(a) * Math.sin(t) * L / 2, t, a, 0]); }
     // strands of jasmine hanging round the back and sides, clear of the face
     for (let i = 0; i < 9; i++) { const a = Math.PI * (.38 + i / 8 * 1.24), x = Math.sin(a) * .12, z = SZ + Math.cos(a) * .12; bp.push(K.rod([x, 2.07, z], [x * 1.05, 1.9, z], .006, .006, 0xf6f4ee, 3), [K.ball(.018), BLOOM[i % 2], x * 1.05, 1.89, z]); }
     const boy = K.solid(bp, K.silkM, 0, -1.5, -SZ); boy.position.set(0, 1.5, SZ); carrier.add(boy); carrier.userData.boy = boy;
     // the parasol bearer, in a pastel jacket, both hands on the pole
-    const hskin = pk(P_SKIN), jacket = pk([0xf2dc78, 0xf2b0c0, 0xa8d0ec]), hp = [], A = [.12, .75, .28], T = [.85, 2.95, -.2];
+    const hskin = pk(P_SKIN), jacket = pk([0xf2dc78, 0xf2b0c0, 0xa8d0ec]), hp = [], A = [.12, .75, .28], T = [.85, 3.2, -.2];
     const on = y => { const u = (y - A[1]) / (T[1] - A[1]); return [A[0] + (T[0] - A[0]) * u, y, A[2] + (T[2] - A[2]) * u]; };
     procBody(hp, { top: jacket, trousers: 0x2e3446, skin: hskin, long: true }); procHeadwrap(hp, jacket); procCord(hp);
     procArm(hp, -1, jacket, hskin, [-.06, 1.0, .18], on(1.05)); procArm(hp, 1, jacket, hskin, [.33, 1.12, .04], on(1.38));
     hp.push(K.rod(A, T, .022, .018, 0xb8282a, 6), [K.ball(.03), P_GOLD, ...A]);   // the red lacquered pole
     const holder = procFigure(hp, K.procM, 0x2e3446, .3, -.43); unit.add(holder); walkers.push(holder);
-    // the parasol: three gilt tiers, a fringe of white and red tassels, a little spire; it turns slowly on its pole
-    const sp = [], GILT = 0xe8b02e, DEEP = 0xc8901e;
-    sp.push([K.cone(.78, .3, 12, true), GILT, 0, 0, 0], [new THREE.CylinderGeometry(.78, .78, .07, 12, 1, true), DEEP, 0, -.18, 0], [K.cone(.48, .22, 10, true), DEEP, 0, .2, 0], [K.cone(.27, .17, 8, true), GILT, 0, .36, 0]);
-    for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; sp.push([K.cone(.028, .13, 4), i % 2 ? 0xc8282a : 0xf6f2e4, Math.sin(a) * .78, -.28, Math.cos(a) * .78, Math.PI]); }
-    sp.push([K.ball(.045), GILT, 0, .47, 0], [K.cone(.022, .22, 5), GILT, 0, .6, 0], [K.cyl(.012, .012, .3, 4), DEEP, 0, -.05, 0]);
+    // the parasol: a wide shallow canopy of golden paper with a gilt rim, ribs under it, a tall gilt finial of knobs and bells;
+    // from the rim hang swags of coloured tinsel, rosettes and strings of paper flowers. It turns slowly on its pole
+    const sp = [], GILT = 0xe8b02e, DEEP = 0xc8901e, R = .95, N = 10, RIM = -.16, FLOWER = [0xf4b4c8, 0xf6f4ee, 0xe86aa8, 0xf0a030];
+    sp.push([K.cone(R, .28, 16, true), GILT, 0, 0, 0], [new THREE.CylinderGeometry(R, R, .06, 16, 1, true), DEEP, 0, RIM, 0], [K.cyl(.012, .012, .3, 4), DEEP, 0, -.05, 0]);
+    for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; sp.push(K.rod([0, -.06, 0], [Math.sin(a) * R * .96, RIM + .02, Math.cos(a) * R * .96], .006, .006, 0x8a6a30, 3)); }
+    sp.push([K.cyl(.05, .07, .06, 8), DEEP, 0, .17, 0], [K.ball(.065), GILT, 0, .25, 0], [K.cone(.055, .1, 8), DEEP, 0, .34, 0], [K.ball(.04), GILT, 0, .41, 0], [K.cone(.04, .08, 8), GILT, 0, .47, 0], [K.ball(.028), GILT, 0, .53, 0], [K.cone(.025, .3, 6), GILT, 0, .7, 0]);
+    for (let i = 0; i < N; i++) {
+      const a0 = i / N * TAU, a1 = (i + 1) / N * TAU, col = TINSEL[(i + seed) % TINSEL.length];
+      for (let k = 1; k < 12; k++) { const u = k / 12, a = a0 + (a1 - a0) * u, y = RIM - .02 - .2 * Math.sin(u * Math.PI); sp.push([K.ball(.028), col, Math.sin(a) * R, y, Math.cos(a) * R], [K.ball(.02), TINSEL[(i + seed + 3) % TINSEL.length], Math.sin(a) * (R + .025), y + .022, Math.cos(a) * (R + .025)]); }   // a swag of tinsel
+      sp.push([K.ball(.045), TINSEL[(i + 1) % TINSEL.length], Math.sin(a0) * R, RIM - .03, Math.cos(a0) * R]);   // a rosette where two swags meet
+      for (let k = 0; k < 6 + i % 3; k++) sp.push([K.ball(.024), FLOWER[(i + k) % FLOWER.length], Math.sin(a0) * R, RIM - .09 - k * .056, Math.cos(a0) * R]);   // a string of flowers
+    }
     const shade = K.solid(sp, K.shadeM); shade.position.set(T[0], T[1] + .02, T[2]); holder.add(shade); shades.push(shade);
     unit.userData = { walkers, shades, poles: [] };
     return unit;
@@ -392,7 +422,7 @@
     const legs = new THREE.InstancedMesh(K.legGeo, K.procM, walkers.length * 2);
     legs.frustumCulled = false; legs.castShadow = false; root.add(legs);
     walkers.forEach((f, i) => { legs.setColorAt(i * 2, f.userData.legCol); legs.setColorAt(i * 2 + 1, f.userData.legCol); if (f.userData.lag === undefined) f.userData.lag = (i % 2) * .9 + (i % 3) * .4; });
-    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. Bamboo poles hung with gifts lead, then tall poles dressed in paper streamers and yellow paper parasols; the families come behind with fans, monks' bowls and saffron robes for the new novices, then the kinnara dancers, and the to dances at the back. The great festival comes in the dry season, in March and April." };
+    const data = { tip: "Poy Sang Long · ပွႆးသၢင်ႇလွင်း · ရှင်ပြုပွဲ", toast: "The Shan novice ordination, Poy Sang Long. Before the boys become novices they are dressed as princes, as the Buddha was before he left his palace, and carried through the town on the shoulders of their uncles and cousins, their feet never touching the ground, under golden parasols, to the monastery where they will be ordained. In their finery they wear plumed flower headdresses, silver wings at the shoulders, necklaces of gold and pearls, and often dark glasses against the sun, and the wide golden parasols over them are hung with tinsel and strings of flowers. Bamboo poles hung with gifts lead, then tall poles dressed in paper streamers and yellow paper parasols; the families come behind with fans, monks' bowls and saffron robes for the new novices, then the kinnara dancers, and the to dances at the back. The great festival comes in the dry season, in March and April." };
     walkers.forEach(f => { const d = f.userData; if (d.body) clickable(picks.pagoda, d.body, data); if (d.boy) clickable(picks.pagoda, d.boy, data); });
 
     /* the way: the line of them waits along the front street west of the gate, the head in front of it; east to the market lane,

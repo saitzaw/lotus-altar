@@ -3,6 +3,9 @@
 What changed in Lotus Altar, newest first. Each push to `main` deploys to Vercel, so dates stand in for versions.
 For working notes and open questions, see `CONTINUUM.md`.
 
+## 2026-11-27
+- The Poy Sang Long looks more like the real one. The golden parasols over the boys are now wide, flat golden paper parasols on taller poles, with a tall gilt finial, and swags of coloured tinsel and strings of paper flowers hanging all round the rim. The boys in red, blue and green silk sewn with gilt diamonds wear silver wings at the shoulders, strands of gold chain and pearls with a medallion, and a plume of dyed feathers on top of their flower headdresses, and two of them wear dark glasses against the sun. Their carriers have striped Shan bags slung across the chest.
+
 ## 2026-11-26
 - The sky outside now has four looks: dawn, day, dusk and night. At sunrise the eastern sky turns peach and rose under a pale violet, at sunset the western sky glows orange into magenta and deep indigo, with a low orange sun and gold light on the temple. The sky button shows which look is on now and, pressed, moves on through Dawn, Day, Dusk and Night for this visit, then back to the real sky; a chosen dawn or dusk puts the sun where it stands at today's sunrise or sunset, and the moon stays where it really is.
 

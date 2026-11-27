@@ -86,6 +86,16 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 
 ## Log
 
+### 2026-11-27: Poy Sang Long dressed after the owner's photo
+- Owner sent a photo of a Poy Sang Long (Mae Hong Son style) and asked to enhance the procession. In `createShinlaungPair`
+  (`24b-shinlaung-procession.js`): the parasol is now one wide golden paper canopy (r .95) with ribs, a tall gilt finial, ten
+  tinsel swags, rosettes and flower strings (`TINSEL`), on a pole raised to 3.2 m; each boy has a fixed look (`SANG_LONG`: red,
+  blue, green silk; plume colour; dark glasses on two), gilt diamonds, silver shoulder wings, gold and pearl necklaces with a
+  medallion, and a feather plume in place of the red spire; carriers carry a striped Shan bag. Toast mentions the finery.
+- Not changed from the photo (ask first): the crowd of onlookers, carriers' orange trousers vs our golden-yellow, a teal
+  head-scarf on one boy. The boys' silk colours were random (teal, yellow, red) and are now fixed red, blue, green: revert if
+  the owner wants the old look. Checked headless on the GPU with `?procession=1&day=1`: renders, no console errors.
+
 ### 2026-11-26: Stage dancers no longer pop in when you move
 - Owner saw the kinnara and kinnari standing inside the to (to dance, two to) whenever they walked about. Cause: the
   distance culling indexes everything visible at build time and sets `visible` by distance whenever the camera moves, so it
