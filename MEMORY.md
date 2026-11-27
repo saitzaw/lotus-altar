@@ -115,6 +115,8 @@ Software rendering (swiftshader) is too slow for the frame to land before the ca
 5. If the log shows "Error creating WebGL context", launch with `--use-angle=swiftshader --enable-unsafe-swiftshader` (not
    `--disable-gpu`). Frames then take about 3 s each, so start counting frames only once `window.__t` exists and do the work
    in the first few frames after that.
+   Try the real GPU first (no angle flags): on 2026-11-27 swiftshader hung inside the first `renderer.render` of the street with
+   the procession out, while the GPU run gave three shots in under 5 minutes.
 6. If a run prints no `CONSOLE` lines at all and the screenshot is black, the page never reached your capture frame inside the
    budget: raise `--virtual-time-budget` (240000 works) rather than hunting for an error.
 7. Add `--enable-logging=stderr`, or snap Chromium prints no `CONSOLE` lines at all. Run with `--virtual-time-budget=60000` and pipe the output (`2>&1 | grep CONSOLE > log.txt`). A plain `> log.txt 2>&1`
