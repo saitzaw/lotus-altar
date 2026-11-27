@@ -95,6 +95,9 @@ The log keeps only the six or so most recent entries. When it grows past that, m
 - Not changed from the photo (ask first): the crowd of onlookers, carriers' orange trousers vs our golden-yellow, a teal
   head-scarf on one boy. The boys' silk colours were random (teal, yellow, red) and are now fixed red, blue, green: revert if
   the owner wants the old look. Checked headless on the GPU with `?procession=1&day=1`: renders, no console errors.
+- Owner: the parasol bearer must not walk beside the boy. He now walks 1.5 m behind and .6 m to the side (`HX`, `HZ`),
+  the pole leaning forward to a point over the boy, and the canopy sits in a `tilt` group square to the pole (it still spins
+  inside it). The flower strings tilt with it rather than hanging plumb.
 
 ### 2026-11-26: Stage dancers no longer pop in when you move
 - Owner saw the kinnara and kinnari standing inside the to (to dance, two to) whenever they walked about. Cause: the

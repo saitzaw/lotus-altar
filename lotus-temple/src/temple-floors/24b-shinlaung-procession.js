@@ -93,7 +93,8 @@
      boy astride his shoulders (ခွစီး) in bright silk sewn with gilt diamonds, silver wings rising from his shoulders, strands of gold
      chain and pearls with a medallion on his chest, often dark glasses against the sun, and a Shan novice's flower headdress, tiers
      of white, pink and yellow blossoms crowned with a plume of dyed feathers, strands of jasmine hanging behind; the parasol bearer
-     in a pastel jacket and headwrap holds up the wide golden paper parasol on its tall pole, its gilt finial high above and swags of
+     in a pastel jacket and headwrap walks two or three steps behind, the tall pole leaning forward so the wide golden paper parasol
+     tilts out over the boy, its gilt finial high above and swags of
      tinsel and strings of flowers hanging all round its rim. Returns a group, front +z, the carrier to the bearer's left ---------- */
   // each boy's silk, the plume of his headdress and whether he wears dark glasses (by seed)
   const SANG_LONG = [{ silk: 0xd82a30, plume: 0xe8283a, glasses: true }, { silk: 0x2a5ad0, plume: 0x3a3ac8, glasses: true }, { silk: 0x2a9a4a, plume: 0xec5a9a, glasses: false }];
@@ -147,13 +148,14 @@
     // strands of jasmine hanging round the back and sides, clear of the face
     for (let i = 0; i < 9; i++) { const a = Math.PI * (.38 + i / 8 * 1.24), x = Math.sin(a) * .12, z = SZ + Math.cos(a) * .12; bp.push(K.rod([x, 2.07, z], [x * 1.05, 1.9, z], .006, .006, 0xf6f4ee, 3), [K.ball(.018), BLOOM[i % 2], x * 1.05, 1.89, z]); }
     const boy = K.solid(bp, K.silkM, 0, -1.5, -SZ); boy.position.set(0, 1.5, SZ); carrier.add(boy); carrier.userData.boy = boy;
-    // the parasol bearer, in a pastel jacket, both hands on the pole
-    const hskin = pk(P_SKIN), jacket = pk([0xf2dc78, 0xf2b0c0, 0xa8d0ec]), hp = [], A = [.12, .75, .28], T = [.85, 3.2, -.2];
+    // the parasol bearer, in a pastel jacket, walking two or three steps behind the boy and a little to the side, both hands on
+    // the pole leaning forward so the parasol tilts out over the boy's head
+    const hskin = pk(P_SKIN), jacket = pk([0xf2dc78, 0xf2b0c0, 0xa8d0ec]), hp = [], HX = -.2, HZ = -1.5, A = [.1, .75, .3], T = [.42 - HX, 3.3, -.15 - HZ];
     const on = y => { const u = (y - A[1]) / (T[1] - A[1]); return [A[0] + (T[0] - A[0]) * u, y, A[2] + (T[2] - A[2]) * u]; };
     procBody(hp, { top: jacket, trousers: 0x2e3446, skin: hskin, long: true }); procHeadwrap(hp, jacket); procCord(hp);
-    procArm(hp, -1, jacket, hskin, [-.06, 1.0, .18], on(1.05)); procArm(hp, 1, jacket, hskin, [.33, 1.12, .04], on(1.38));
+    procArm(hp, -1, jacket, hskin, [-.1, 1.0, .25], on(1.05)); procArm(hp, 1, jacket, hskin, [.3, 1.12, .22], on(1.38));
     hp.push(K.rod(A, T, .022, .018, 0xb8282a, 6), [K.ball(.03), P_GOLD, ...A]);   // the red lacquered pole
-    const holder = procFigure(hp, K.procM, 0x2e3446, .3, -.43); unit.add(holder); walkers.push(holder);
+    const holder = procFigure(hp, K.procM, 0x2e3446, .3, HX, HZ); unit.add(holder); walkers.push(holder);
     // the parasol: a wide shallow canopy of golden paper with a gilt rim, ribs under it, a tall gilt finial of knobs and bells;
     // from the rim hang swags of coloured tinsel, rosettes and strings of paper flowers. It turns slowly on its pole
     const sp = [], GILT = 0xe8b02e, DEEP = 0xc8901e, R = .95, N = 10, RIM = -.16, FLOWER = [0xf4b4c8, 0xf6f4ee, 0xe86aa8, 0xf0a030];
@@ -166,7 +168,9 @@
       sp.push([K.ball(.045), TINSEL[(i + 1) % TINSEL.length], Math.sin(a0) * R, RIM - .03, Math.cos(a0) * R]);   // a rosette where two swags meet
       for (let k = 0; k < 6 + i % 3; k++) sp.push([K.ball(.024), FLOWER[(i + k) % FLOWER.length], Math.sin(a0) * R, RIM - .09 - k * .056, Math.cos(a0) * R]);   // a string of flowers
     }
-    const shade = K.solid(sp, K.shadeM); shade.position.set(T[0], T[1] + .02, T[2]); holder.add(shade); shades.push(shade);
+    // tilted square to the pole; the canopy turns about the pole inside the tilt
+    const tilt = new THREE.Group(); tilt.position.set(T[0], T[1] + .02, T[2]); tilt.quaternion.setFromUnitVectors(V(0, 1, 0), V(T[0] - A[0], T[1] - A[1], T[2] - A[2]).normalize()); holder.add(tilt);
+    const shade = K.solid(sp, K.shadeM); tilt.add(shade); shades.push(shade);
     unit.userData = { walkers, shades, poles: [] };
     return unit;
   }
